@@ -3,12 +3,14 @@ import random
 from abc import ABCMeta, abstractmethod
 from recommender import Recommender
 import matplotlib.pyplot as plt
-# file of constants. Here, "import *" should be safe
 from constants import *
 
-plt.style.use('ggplot')
+plt.style.use('seaborn-whitegrid')
 
-class PopularityRecommender(Recommender):	
+class PopularityRecommender(Recommender):
+	def __init__(self, theta_t, beta_t, delta_t = None):
+		return super(PopularityRecommender, self).__init__(theta_t, beta_t, delta_t)
+		
 	# Stores interaction without training
 	def store_interaction(self, interactions):
 		self.beta_t = np.add(self.beta_t, interactions)
@@ -16,8 +18,6 @@ class PopularityRecommender(Recommender):
 	# Trains model; it either adds new interactions,
 	# or it updates the score with the stored interactions
 	def train(self, interactions=None):
-		# Normally, this would be:
-		#self.s_t = np.dot(self.theta_t, self.beta_t)
 		if interactions is not None:
 			self.beta_t = np.add(self.beta_t, interactions)
 		self.s_t = self.beta_t
@@ -28,7 +28,7 @@ class PopularityRecommender(Recommender):
 		np.add.at(interactions, preference, 1)
 		return interactions
 
-	def generate_startup_interactions(self, num_startup_iter, num_items_per_iter=10, random_preference=False, preference=None):
+	def generate_startup_interactions(self, num_startup_iter, num_items_per_iter=10, random_preference=True, preference=None):
 		# Current assumptions:
 		# 1. First (num_startup_iter * num_items_per_iter) items presented for startup
 		# 2. New  num_items_per_iter items at each interaction, no recommendations
@@ -47,7 +47,7 @@ class PopularityRecommender(Recommender):
 	def measure_equilibrium(self, interactions, interactions_old, i):
 		self.delta_t[i] = np.trapz(interactions_old, dx=1) - np.trapz(interactions, dx=1)
 
-	def generate_interactions(self, num_iter, num_items_per_iter=10, num_new_items=5, random_preference=False, preference=None):
+	def generate_interactions(self, num_iter, num_items_per_iter=10, num_new_items=5, random_preference=True, preference=None):
 		# Current assumptions:
 		# 1. Interleave new items and recommended items, where recommended items appear at the beginning of the array
 		# 2. Fixed number of new/recommended items
@@ -60,7 +60,6 @@ class PopularityRecommender(Recommender):
 		#interacted = np.full((NUM_USERS, NUM_ITEMS), False)
 		#user_row = np.arange(0, NUM_USERS)
 		i = 0
-		j = 0
 		measure_interactions = np.zeros(NUM_ITEMS)
 		for t in range(num_iter * num_items_per_iter, NUM_ITEMS, num_new_items):
 			# Assume 10 items per iteration (new *and* recommended)
@@ -71,16 +70,16 @@ class PopularityRecommender(Recommender):
 				preference = np.random.randint(0, num_items_per_iter, size=(NUM_USERS))
 			interactions_old = np.copy(measure_interactions)
 			measure_interactions = self.interact(items[preference.astype(int)].astype(int))
-			interactions = np.copy(measure_interactions)
+			interactions = items[preference.astype(int)].astype(int)
 			# sort interaction
 			measure_interactions[::-1].sort()
-			self.measure_equilibrium(measure_interactions, interactions_old, j)
-			self.store_interaction(interactions)
+			assert(np.sum(measure_interactions) == NUM_USERS)
+			self.measure_equilibrium(measure_interactions, interactions_old, i)
+			self.store_interaction(self.interact(interactions))
 			#check = interacted[user_row, interactions] == False
 			#interacted[user_row, interactions] = True
 			self.train()
-			i = (i + 1) % NUM_STARTUP_ITER
-			j += 1
+			i = (i + 1)
 			#if np.all(check):
 			#	continue
 			# TODO: From here on, some user(s) has already interacted with the assigned item
@@ -90,7 +89,9 @@ class PopularityRecommender(Recommender):
 		return self.s_t.argsort()[-k:][::-1]
 
 if __name__ == '__main__':
-	rec = PopularityRecommender(np.ones((NUM_USERS, 1)), np.zeros(NUM_ITEMS), np.zeros(int((NUM_ITEMS - (NUM_STARTUP_ITER * NUM_ITEMS_PER_ITER))/(int(NUM_ITEMS_PER_ITER/2)))))
+	# TODO: temporary dimension for delta, change at some point
+	plot_dim = int((NUM_ITEMS - (NUM_STARTUP_ITER * NUM_ITEMS_PER_ITER))/(int(NUM_ITEMS_PER_ITER/2)))
+	rec = PopularityRecommender(np.ones((NUM_USERS, 1)), np.zeros(NUM_ITEMS), np.zeros(plot_dim))
 	# Startup
 	startup_int = rec.generate_startup_interactions(NUM_STARTUP_ITER, num_items_per_iter=NUM_ITEMS_PER_ITER, random_preference=True)
 	rec.train(startup_int)
