@@ -3,13 +3,11 @@ from abc import ABCMeta, abstractmethod
 
 # Recommender systems: abstract class
 class Recommender(metaclass=ABCMeta):
-	def __init__(self, theta_t, beta_t, delta_t = None):
+	@abstractmethod
+	def __init__(self, theta_t, beta_t):
 		self.s_t = None
 		self.theta_t = theta_t
 		self.beta_t = beta_t
-
-		# Measurements
-		self.delta_t = delta_t
 
 	def train(self):
 		self.s_t = np.dot(self.theta_t, self.beta_t)
