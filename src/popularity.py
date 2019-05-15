@@ -4,15 +4,20 @@ from abc import ABCMeta, abstractmethod
 from recommender import Recommender
 from measurements import Measurements
 import matplotlib.pyplot as plt
-from constants import *
+import constants as const
+import timeit
 
 plt.style.use('seaborn-whitegrid')
 
 class PopularityRecommender(Recommender):
     def __init__(self, num_users, num_items):
         self.measurements = Measurements(num_items)
-        self.theta_t = np.ones((num_users, 1))
-        self.beta_t = np.zeros(num_items)
+        self.theta_t = np.ones((num_users, 1), dtype=int)
+        self.beta_t = np.zeros((1, num_items), dtype=int)
+        self.s_t = None
+        self.new_items_iter = None
+        self.num_users = num_users
+        self.num_items = num_items
 
     # Stores interaction without training
     def store_interaction(self, interactions):
@@ -23,69 +28,74 @@ class PopularityRecommender(Recommender):
     def train(self, interactions=None):
         if interactions is not None:
             self.beta_t = np.add(self.beta_t, interactions)
-        self.s_t = self.beta_t
+        self.s_t = np.dot(self.theta_t, self.beta_t)
 
     # Return matrix that can be stored or used to train model
-    def interact(self, preference):
-        interactions = np.zeros(NUM_ITEMS)
-        np.add.at(interactions, preference, 1)
-        return interactions
+    def generate_interaction_matrix(self, interactions):
+        tot_interactions = np.zeros(self.num_items)
+        np.add.at(tot_interactions, interactions, 1)
+        return tot_interactions
 
     def measure_equilibrium(self, interactions):
         return self.measurements.measure_equilibrium(interactions)
 
-    def generate_startup_interactions(self, num_startup_iter, num_items_per_iter=10, random_preference=True, preference=None):
+    def interact_startup(self, num_startup_iter, num_items_per_iter=10, random_preference=True, preference=None):
         # Current assumptions:
         # 1. First (num_startup_iter * num_items_per_iter) items presented for startup
         # 2. New  num_items_per_iter items at each interaction, no recommendations
         # 3. TODO: consider user preferences that are not random
+        # TODO: remove loop for time here or optimize
+        self.new_items_iter = iter(np.arange(num_startup_iter * num_items_per_iter, self.num_items).reshape(-1, num_items_per_iter))
         if random_preference is True:
-            preference = np.zeros(NUM_USERS * num_startup_iter)
+            preference = np.zeros(self.num_users * num_startup_iter, dtype=int)
         index = 0
-        for t in range(1, num_startup_iter + 1):
+        for t in np.arange(1, num_startup_iter + 1):
             if random_preference is True:
-                preference[index:index+NUM_USERS] = np.random.randint((t-1) * num_items_per_iter, t * num_items_per_iter, size=(NUM_USERS))
-            index += NUM_USERS
-        return self.interact(preference.astype(int))
+                preference[index:index+self.num_users] = np.random.randint((t-1) * num_items_per_iter, t * num_items_per_iter, size=(self.num_users))
+            index += self.num_users
+        return self.generate_interaction_matrix(preference)
 
     #def generate_interactions(self, num_iter, num_items_per_iter=10, num_new_items=5, random_preference=True, preference=None):
-    def generate_interactions(self, num_items_per_iter=10, num_new_items=5, random_preference=True, preference=None):
+    def interact(self, num_recommended=5, num_new_items=5, random_preference=True, preference=None):
         # Current assumptions:
-        # 1. Interleave new items and recommended items, where recommended items appear at the beginning of the array
+        # 1. Interleave new items and recommended items
         # 2. Fixed number of new/recommended items
-        # 3. All users are presented with the same items
+        # 3. New items are chosen randomly from the same set of num_items_per_iter items
         # 4. Each user interacts with different elements depending on preference
         # 5. Train after every interaction
         # TODO: each user can interact with each element at most once
         # TODO: consider user preferences that are not random
-        num_recommended = num_items_per_iter - num_new_items
-        #interacted = np.full((NUM_USERS, NUM_ITEMS), False)
-        #user_row = np.arange(0, NUM_USERS)
-        # Assume 10 items per iteration (new *and* recommended)
-        items = np.concatenate((self.recommend(k=num_recommended), np.arange(t, t + num_new_items))).astype(int)
+        num_items_per_iter = num_new_items + num_recommended
+        #interacted = np.full((self.num_users, NUM_ITEMS), False)
+        #user_row = np.arange(0, self.num_users)
+        items = np.concatenate((self.recommend(k=num_recommended), np.random.choice(next(self.new_items_iter), size=(self.num_users, num_new_items))), axis=1)
+        np.random.shuffle(items.T)
         if random_preference is True:
-            preference = np.random.randint(0, num_items_per_iter, size=(NUM_USERS)).astype(int)
-        interactions = items[preference]
-        return self.interact(interactions)
+            preference = np.random.randint(0, num_items_per_iter, size=(self.num_users))
+        interactions = items[np.arange(items.shape[0], dtype=int), preference]
+        return self.generate_interaction_matrix(interactions)
         #if np.all(check):
         #    continue
         # TODO: From here on, some user(s) has already interacted with the assigned item
 
     def recommend(self, k=1):
         # TODO: what if I consistently only do k=1? In that case I might want to think of just sorting once
-        return self.s_t.argsort()[-k:][::-1]
+        #return self.s_t.argsort()[-k:][::-1]
+        # Assume s_t two-dimensional
+        return self.s_t.argsort()[:,::-1][:,0:k]
 
 
 if __name__ == '__main__':
-    rec = PopularityRecommender(NUM_USERS, NUM_ITEMS)
+    rec = PopularityRecommender(const.NUM_USERS, const.NUM_ITEMS)
     # Startup
-    startup_int = rec.generate_startup_interactions(NUM_STARTUP_ITER, num_items_per_iter=NUM_ITEMS_PER_ITER, random_preference=True)
+    startup_int = rec.interact_startup(const.NUM_STARTUP_ITER, num_items_per_iter=const.NUM_ITEMS_PER_ITER, random_preference=True)
     rec.train(startup_int)
 
     # Runtime
-    for t in range(NUM_STARTUP_ITER * NUM_ITEMS_PER_ITER, NUM_ITEMS, int(NUM_ITEMS_PER_ITER / 2)):
-        interactions = rec.generate_interactions(NUM_ITEMS_PER_ITER, int(NUM_ITEMS_PER_ITER / 2), True)
+    for t in range(const.TIMESTEPS):#range(NUM_STARTUP_ITER * NUM_ITEMS_PER_ITER, NUM_ITEMS, int(NUM_ITEMS_PER_ITER / 2)):
+        interactions = rec.interact(int(const.NUM_ITEMS_PER_ITER / 2), int(const.NUM_ITEMS_PER_ITER / 2), True)
         rec.measure_equilibrium(interactions)
         rec.train(interactions)
+
     plt.plot(np.arange(len(rec.measurements.delta_t)), rec.measurements.delta_t)
     plt.show()

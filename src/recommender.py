@@ -17,17 +17,13 @@ class Recommender(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def generate_interaction_matrix(self):
+        pass
+
+    @abstractmethod
     def interact(self):
         pass
 
     @abstractmethod
-    def measure_equilibrium(self):
-        pass
-
-    @abstractmethod
-    def generate_interactions(self):
-        pass
-
-    @abstractmethod
-    def generate_startup_interactions(self):
+    def interact_startup(self):
         pass
