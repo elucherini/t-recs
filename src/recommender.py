@@ -27,3 +27,7 @@ class Recommender(metaclass=ABCMeta):
     @abstractmethod
     def interact_startup(self):
         pass
+    
+    @abstractmethod
+    def measure_equilibrium(self, interactions):
+        pass
