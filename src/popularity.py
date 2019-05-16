@@ -53,7 +53,8 @@ class PopularityRecommender(Recommender):
             if random_preference is True:
                 preference[index:index+self.num_users] = np.random.randint((t-1) * num_items_per_iter, t * num_items_per_iter, size=(self.num_users))
             index += self.num_users
-        return self.generate_interaction_matrix(preference)
+        interactions = self.generate_interaction_matrix(preference)
+        self.store_interaction(interactions)
 
     #def generate_interactions(self, num_iter, num_items_per_iter=10, num_new_items=5, random_preference=True, preference=None):
     def interact(self, num_recommended=5, num_new_items=5, random_preference=True, preference=None):
@@ -73,7 +74,9 @@ class PopularityRecommender(Recommender):
         if random_preference is True:
             preference = np.random.randint(0, num_items_per_iter, size=(self.num_users))
         interactions = items[np.arange(items.shape[0], dtype=int), preference]
-        return self.generate_interaction_matrix(interactions)
+        interactions = self.generate_interaction_matrix(interactions)
+        self.store_interaction(interactions)
+        self.measure_equilibrium(interactions)
         #if np.all(check):
         #    continue
         # TODO: From here on, some user(s) has already interacted with the assigned item
@@ -84,18 +87,20 @@ class PopularityRecommender(Recommender):
         # Assume s_t two-dimensional
         return self.s_t.argsort()[:,::-1][:,0:k]
 
+    def get_delta(self):
+        return self.measurements.get_delta()
+
 
 if __name__ == '__main__':
     rec = PopularityRecommender(const.NUM_USERS, const.NUM_ITEMS)
     # Startup
-    startup_int = rec.interact_startup(const.NUM_STARTUP_ITER, num_items_per_iter=const.NUM_ITEMS_PER_ITER, random_preference=True)
-    rec.train(startup_int)
+    rec.interact_startup(const.NUM_STARTUP_ITER, num_items_per_iter=const.NUM_ITEMS_PER_ITER, random_preference=True)
+    rec.train()
 
     # Runtime
-    for t in range(const.TIMESTEPS):#range(NUM_STARTUP_ITER * NUM_ITEMS_PER_ITER, NUM_ITEMS, int(NUM_ITEMS_PER_ITER / 2)):
-        interactions = rec.interact(int(const.NUM_ITEMS_PER_ITER / 2), int(const.NUM_ITEMS_PER_ITER / 2), True)
-        rec.measure_equilibrium(interactions)
-        rec.train(interactions)
-
-    plt.plot(np.arange(len(rec.measurements.delta_t)), rec.measurements.delta_t)
+    for t in range(const.TIMESTEPS):
+        rec.interact(int(const.NUM_ITEMS_PER_ITER / 2), int(const.NUM_ITEMS_PER_ITER / 2), True)
+        rec.train()
+    delta_t = rec.get_delta()
+    plt.plot(np.arange(len(delta_t)), delta_t)
     plt.show()
