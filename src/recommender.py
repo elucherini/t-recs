@@ -17,10 +17,6 @@ class Recommender(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def generate_interaction_matrix(self):
-        pass
-
-    @abstractmethod
     def interact(self):
         pass
 

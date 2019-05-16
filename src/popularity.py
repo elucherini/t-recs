@@ -20,7 +20,7 @@ class PopularityRecommender(Recommender):
         self.num_items = num_items
 
     # Stores interaction without training
-    def store_interaction(self, interactions):
+    def _store_interaction(self, interactions):
         self.beta_t = np.add(self.beta_t, interactions)
 
     # Trains model; it either adds new interactions,
@@ -31,7 +31,7 @@ class PopularityRecommender(Recommender):
         self.s_t = np.dot(self.theta_t, self.beta_t)
 
     # Return matrix that can be stored or used to train model
-    def generate_interaction_matrix(self, interactions):
+    def _generate_interaction_matrix(self, interactions):
         tot_interactions = np.zeros(self.num_items)
         np.add.at(tot_interactions, interactions, 1)
         return tot_interactions
@@ -53,8 +53,8 @@ class PopularityRecommender(Recommender):
             if random_preference is True:
                 preference[index:index+self.num_users] = np.random.randint((t-1) * num_items_per_iter, t * num_items_per_iter, size=(self.num_users))
             index += self.num_users
-        interactions = self.generate_interaction_matrix(preference)
-        self.store_interaction(interactions)
+        interactions = self._generate_interaction_matrix(preference)
+        self._store_interaction(interactions)
 
     #def generate_interactions(self, num_iter, num_items_per_iter=10, num_new_items=5, random_preference=True, preference=None):
     def interact(self, num_recommended=5, num_new_items=5, random_preference=True, preference=None):
@@ -74,8 +74,8 @@ class PopularityRecommender(Recommender):
         if random_preference is True:
             preference = np.random.randint(0, num_items_per_iter, size=(self.num_users))
         interactions = items[np.arange(items.shape[0], dtype=int), preference]
-        interactions = self.generate_interaction_matrix(interactions)
-        self.store_interaction(interactions)
+        interactions = self._generate_interaction_matrix(interactions)
+        self._store_interaction(interactions)
         self.measure_equilibrium(interactions)
         #if np.all(check):
         #    continue
