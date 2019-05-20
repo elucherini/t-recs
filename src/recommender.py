@@ -28,7 +28,8 @@ class Recommender(metaclass=ABCMeta):
         return self.s_t.argsort()[:,::-1][:,0:k]
 
     @abstractmethod
-    def interact(self, user_vector=None, num_recommended=5, num_new_items=5, random_preference=True, preference=None):
+    def interact(self, user_vector, num_recommended, num_new_items, random_preference, 
+        preference, recommended):
         # Current assumptions:
         # 1. Interleave new items and recommended items
         # 2. Fixed number of new/recommended items
@@ -40,7 +41,7 @@ class Recommender(metaclass=ABCMeta):
         num_items_per_iter = num_new_items + num_recommended
         #interacted = np.full((self.num_users, NUM_ITEMS), False)
         #user_row = np.arange(0, self.num_users)
-        items = np.concatenate((self.recommend(k=num_recommended), np.random.choice(next(self.new_items_iter), size=(self.num_users, num_new_items))), axis=1)
+        items = np.concatenate((recommended, np.random.choice(next(self.new_items_iter), size=(self.num_users, num_new_items))), axis=1)
         np.random.shuffle(items.T)
         if random_preference is True:
             preference = np.random.randint(0, num_items_per_iter, size=(self.num_users))
@@ -52,7 +53,7 @@ class Recommender(metaclass=ABCMeta):
         #    continue
         # TODO: From here on, some user(s) has already interacted with the assigned item
 
-    def interact_startup(self, num_startup_iter, num_items_per_iter=10, random_preference=True, preference=None, constant=None):
+    def interact_startup(self, num_startup_iter, num_items_per_iter, random_preference, preference, constant):
         # Current assumptions:
         # 1. First (num_startup_iter * num_items_per_iter) items presented for startup
         # 2. New  num_items_per_iter items at each interaction, no recommendations

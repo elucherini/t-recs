@@ -18,7 +18,6 @@ class PopularityRecommender(Recommender):
         self.num_users = num_users
         self.num_items = num_items
 
-    # Stores interaction without training
     def _store_interaction(self, interactions):
         self.beta_t = np.add(self.beta_t, interactions)
 
@@ -37,7 +36,7 @@ class PopularityRecommender(Recommender):
     def interact(self, user_vector=None, num_recommended=5, num_new_items=5, random_preference=True,
                                                                                     preference=None):
         interactions = super().interact(user_vector, num_recommended, num_new_items, 
-            random_preference, preference)
+            random_preference, preference, self.recommend(k=num_recommended))
         self._store_interaction(interactions)
         self.measure_equilibrium(interactions)
 
