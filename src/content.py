@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import constants as const
 
 class ContentFiltering(Recommender):
-    def __init__(self, num_users, items_representation=None, num_items=None, A=None):
+    def __init__(self, num_users, num_items, items_representation=None, A=None):
         if items_representation is None:
             self.measurements = Measurements(num_items)
             self.beta_t = self._init_item_attributes(num_items, A)
@@ -17,8 +17,8 @@ class ContentFiltering(Recommender):
         self.theta_t = np.zeros((num_users, A))
         self.s_t = None
         self.new_items_iter = None
-        #self.num_users = num_users
-        #self.num_items = num_items
+        self.num_users = num_users
+        self.num_items = num_items
 
     def _init_item_attributes(self, num_items, A):
         # TODO: non-random attributes?
@@ -33,20 +33,27 @@ class ContentFiltering(Recommender):
             dist[row, col] = 1
         return dist
 
+    def _store_interaction(self, interactions):
+
+
     def train(self):
         super().train()
 
     def recommend(self, k=1):
         super().recommend(k=k)
 
-    def interact(self):
-        pass
+    def interact(self, user_vector=None, num_recommended=5, num_new_items=5, random_preference=True,
+                                                                                    preference=None):
+        interactions = super().interact(user_vector, num_recommended, num_new_items, 
+            random_preference, preference, self.recommend(k=num_recommended))
 
-    def interact_startup(self):
-        pass
+    def interact_startup(self, num_startup_iter, num_items_per_iter=10, random_preference=True,
+                                                                preference=None):
+        interactions = super().interact_startup(num_startup_iter, num_items_per_iter, 
+            random_preference, preference, const.CONSTANT)
     
     def measure_equilibrium(self, interactions):
-        pass
+        self.measurements.measure_equilibrium(interactions)
 
 if __name__ == '__main__':
     # A = number of attribute tags, determines dimensions of theta_t and beta_t

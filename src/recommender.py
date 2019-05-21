@@ -53,6 +53,7 @@ class Recommender(metaclass=ABCMeta):
         #    continue
         # TODO: From here on, some user(s) has already interacted with the assigned item
 
+    @abstractmethod
     def interact_startup(self, num_startup_iter, num_items_per_iter, random_preference, preference, constant):
         # Current assumptions:
         # 1. First (num_startup_iter * num_items_per_iter) items presented for startup

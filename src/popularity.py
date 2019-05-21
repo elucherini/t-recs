@@ -28,9 +28,9 @@ class PopularityRecommender(Recommender):
         return self.measurements.measure_equilibrium(interactions)
 
     def interact_startup(self, num_startup_iter, num_items_per_iter=10, random_preference=True,
-                                                                preference=None, constant=None):
+                                                                preference=None):
         interactions = super().interact_startup(num_startup_iter, num_items_per_iter, 
-            random_preference, preference, constant)
+            random_preference, preference, const.CONSTANT)
         self._store_interaction(interactions)
 
     def interact(self, user_vector=None, num_recommended=5, num_new_items=5, random_preference=True,
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     rec = PopularityRecommender(const.NUM_USERS, const.NUM_ITEMS)
     # Startup
     rec.interact_startup(const.NUM_STARTUP_ITER, num_items_per_iter=const.NUM_ITEMS_PER_ITER, 
-        random_preference=True, constant=const.CONSTANT)
+        random_preference=True)
     rec.train()
 
     users = np.arange(const.NUM_USERS, dtype=int)
