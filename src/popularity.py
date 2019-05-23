@@ -3,20 +3,18 @@ import random
 from abc import ABCMeta, abstractmethod
 from recommender import Recommender
 from measurements import Measurements
-import matplotlib.pyplot as plt
 import constants as const
 
-plt.style.use('seaborn-whitegrid')
-
 class PopularityRecommender(Recommender):
-    def __init__(self, num_users, num_items):
+    def __init__(self, num_users, num_items, num_startup_iter=10, num_items_per_iter=10,
+        randomize_recommended=True, num_recommended=None, num_new_items=None,
+        user_preference=False):
+        # TODO: check on invalid parameters
         self.theta_t = np.ones((num_users, 1), dtype=int)
         self.beta_t = np.zeros((1, num_items), dtype=int)
-        self.s_t = None
-        self.measurements = Measurements(num_items)
-        self.new_items_iter = None
-        self.num_users = num_users
-        self.num_items = num_items
+        super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
+        randomize_recommended, num_recommended, num_new_items,
+        user_preference, Measurements(num_items))
 
     def _store_interaction(self, interactions):
         self.beta_t = np.add(self.beta_t, interactions)
@@ -24,44 +22,29 @@ class PopularityRecommender(Recommender):
     def train(self):
         return super().train()
 
-    def measure_equilibrium(self, interactions):
-        return self.measurements.measure_equilibrium(interactions)
+    def measure_equilibrium(self, interactions, plot=False):
+        return self.measurements.measure_equilibrium(interactions, plot)
 
-    def interact_startup(self, num_startup_iter, num_items_per_iter=10, random_preference=True,
-                                                                preference=None):
-        interactions = super().interact_startup(num_startup_iter, num_items_per_iter, 
-            random_preference, preference, const.CONSTANT)
+    def interact_startup(self):
+        interactions = super().interact_startup(const.CONSTANT)
         self._store_interaction(interactions)
 
-    def interact(self, user_vector=None, num_recommended=5, num_new_items=5, random_preference=True,
-                                                                                    preference=None):
-        interactions = super().interact(user_vector, num_recommended, num_new_items, 
-            random_preference, preference, self.recommend(k=num_recommended))
+    def interact(self, user_vector=None, plot=False):
+        if self.randomize_recommended:
+            num_new_items = 1#np.random.randint(1, const.NUM_ITEMS_PER_ITER)#int(abs(np.random.normal(0, 2)) % const.NUM_ITEMS_PER_ITER)
+            num_recommended = const.NUM_ITEMS_PER_ITER-num_new_items
+        else:
+            num_new_items = self.num_new_items
+            num_recommended = self.num_recommended
+        interactions = super().interact(user_vector, self.recommend(k=num_recommended), num_new_items)
         self._store_interaction(interactions)
-        self.measure_equilibrium(interactions)
+        self.measure_equilibrium(interactions, plot=plot)
 
+    # Recommends items proportional to their popularity
     def recommend(self, k=1):
-        return super().recommend(k=k)
+        rec = self.s_t.argsort()
+        p = np.arange(1, self.num_items + 1)
+        return np.random.choice(rec[0], p=p/p.sum(), size=(self.num_users, k))
 
     def get_delta(self):
         return self.measurements.get_delta()
-
-
-if __name__ == '__main__':
-    rec = PopularityRecommender(const.NUM_USERS, const.NUM_ITEMS)
-    # Startup
-    rec.interact_startup(const.NUM_STARTUP_ITER, num_items_per_iter=const.NUM_ITEMS_PER_ITER, 
-        random_preference=True)
-    rec.train()
-
-    users = np.arange(const.NUM_USERS, dtype=int)
-
-    # Runtime
-    for t in range(const.TIMESTEPS - const.NUM_ITEMS_PER_ITER):
-        rec.interact(user_vector=users, num_recommended=1, num_new_items=const.NUM_ITEMS_PER_ITER - 1, 
-            random_preference=True)
-        rec.train()
-
-    delta_t = rec.get_delta()
-    plt.plot(np.arange(len(delta_t)), delta_t)
-    plt.show()
