@@ -19,8 +19,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('recommender', metavar='r', type=str, nargs=1, help='Type of recommender system',
         choices=choices)
+    parser.add_argument('--debug', '-d', help='Debug info', action='store_true')
 
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args()
     rec_type = args.recommender[0]
 
     #print(rec_args[args.recommender[0]])
@@ -29,7 +30,8 @@ if __name__ == '__main__':
             num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True, user_preference=False)
     else:
         rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS, num_startup_iter=const.NUM_STARTUP_ITER,
-            num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True, user_preference=False, **rec_args[rec_type])
+            num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True, user_preference=False, 
+            **rec_args[rec_type])
 
     print('Num items:', const.NUM_ITEMS, '\nUsers:', const.NUM_USERS, '\nItems per iter:', const.NUM_ITEMS_PER_ITER)
     # Startup
@@ -41,9 +43,9 @@ if __name__ == '__main__':
     # Runtime
     for t in range(const.TIMESTEPS - const.NUM_STARTUP_ITER):
         plot = False
-        
-        if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
-            plot=True
+        if args.debug:
+            if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
+                plot=True
         #print('New', num_new_items, 'Rec', num_recommended)
         rec.interact(user_vector=users, plot=plot)
         rec.train()
