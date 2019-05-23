@@ -24,7 +24,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     rec_type = args.recommender[0]
 
-    #print(rec_args[args.recommender[0]])
     if rec_args[rec_type] is None:
         rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS, num_startup_iter=const.NUM_STARTUP_ITER,
             num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True, user_preference=False)
@@ -34,11 +33,17 @@ if __name__ == '__main__':
             **rec_args[rec_type])
 
     print('Num items:', const.NUM_ITEMS, '\nUsers:', const.NUM_USERS, '\nItems per iter:', const.NUM_ITEMS_PER_ITER)
-    # Startup
-    rec.interact_startup()
-    rec.train()
 
     users = np.arange(const.NUM_USERS, dtype=int)
+
+    # Startup
+    for t in range(const.NUM_STARTUP_ITER):
+        plot = False
+        if args.debug:
+            if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
+                plot=True
+        rec.interact(user_vector=users, plot=plot, startup=True)
+    rec.train()
 
     # Runtime
     for t in range(const.TIMESTEPS - const.NUM_STARTUP_ITER):
@@ -46,7 +51,6 @@ if __name__ == '__main__':
         if args.debug:
             if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
                 plot=True
-        #print('New', num_new_items, 'Rec', num_recommended)
         rec.interact(user_vector=users, plot=plot)
         rec.train()
 
