@@ -3,7 +3,6 @@ import random
 from abc import ABCMeta, abstractmethod
 from recommender import Recommender
 from measurements import Measurements
-import constants as const
 
 class PopularityRecommender(Recommender):
     def __init__(self, num_users, num_items, num_startup_iter=10, num_items_per_iter=10,

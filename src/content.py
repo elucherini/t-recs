@@ -4,7 +4,6 @@ from abc import ABCMeta, abstractmethod
 from recommender import Recommender
 from measurements import Measurements
 import matplotlib.pyplot as plt
-import constants as const
 from scipy.optimize import nnls
 
 class ContentFiltering(Recommender):
@@ -49,7 +48,7 @@ class ContentFiltering(Recommender):
         return dist
 
     def _store_interaction(self, interactions):
-        A = np.tile(self.beta_t, const.NUM_USERS)
+        A = np.tile(self.beta_t, self.num_users)
         x, _ = nnls(A, interactions)
 
     def train(self):
@@ -58,20 +57,20 @@ class ContentFiltering(Recommender):
     def recommend(self, k=1):
         super().recommend(k=k)
 
-    def interact(self, user_vector=None, plot=False):
-        if self.randomize_recommended:
-            num_new_items = 1#np.random.randint(1, const.NUM_ITEMS_PER_ITER)#int(abs(np.random.normal(0, 2)) % const.NUM_ITEMS_PER_ITER)
-            num_recommended = const.NUM_ITEMS_PER_ITER-num_new_items
+    def interact(self, user_vector=None, plot=False, startup=False):
+        if startup:
+            num_new_items = self.num_items_per_iter
+            num_recommended = 0
+        elif self.randomize_recommended:
+            num_new_items = np.random.randint(1, self.num_items_per_iter)
+            num_recommended = self.num_items_per_iter-num_new_items
         else:
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
-        interactions = super().interact(user_vector, self.recommend(k=num_recommended), num_new_items)
+        recommended = self.recommend(k=num_recommended) if not startup else None
+        interactions = super().interact(user_vector, recommended, num_new_items)
         self._store_interaction(interactions)
         self.measure_equilibrium(interactions, plot=plot)
-
-    def interact_startup(self):
-        interactions = super().interact_startup(const.CONSTANT)
-        self._store_interaction(interactions)
     
     def measure_equilibrium(self, interactions, plot=False):
         return self.measurements.measure_equilibrium(interactions, plot)

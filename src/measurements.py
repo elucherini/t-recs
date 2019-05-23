@@ -1,7 +1,6 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-import constants as const
 
 plt.style.use('seaborn-whitegrid')
 
@@ -14,7 +13,6 @@ class Measurements():
     # In other words, it looks at homogeneity vs heterogeneity
     def measure_equilibrium(self, interactions, plot=False):
         interactions[::-1].sort()
-        assert(np.sum(interactions) == const.NUM_USERS)
         if plot:
             plt.plot(np.arange(len(interactions)), interactions)
             plt.show()
