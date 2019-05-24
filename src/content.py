@@ -76,5 +76,5 @@ class ContentFiltering(Recommender):
         return self.measurements.measure_equilibrium(interactions, plot)
 
 
-    def get_delta(self):
+    def get_heterogeneity(self):
         return self.measurements.get_delta()
