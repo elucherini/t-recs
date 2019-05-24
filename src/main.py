@@ -34,15 +34,13 @@ if __name__ == '__main__':
 
     print('Num items:', const.NUM_ITEMS, '\nUsers:', const.NUM_USERS, '\nItems per iter:', const.NUM_ITEMS_PER_ITER)
 
-    users = np.arange(const.NUM_USERS, dtype=int)
-
     # Startup
     for t in range(const.NUM_STARTUP_ITER):
         plot = False
         if args.debug:
             if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
                 plot=True
-        rec.interact(user_vector=users, plot=plot, startup=True)
+        rec.interact(plot=plot, startup=True)
     rec.train()
 
     # Runtime
@@ -51,7 +49,7 @@ if __name__ == '__main__':
         if args.debug:
             if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
                 plot=True
-        rec.interact(user_vector=users, plot=plot)
+        rec.interact(plot=plot)
         rec.train()
 
     delta_t = rec.get_delta()

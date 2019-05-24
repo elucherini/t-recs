@@ -57,7 +57,7 @@ class ContentFiltering(Recommender):
     def recommend(self, k=1):
         super().recommend(k=k)
 
-    def interact(self, user_vector=None, plot=False, startup=False):
+    def interact(self, plot=False, startup=False):
         if startup:
             num_new_items = self.num_items_per_iter
             num_recommended = 0
@@ -68,7 +68,7 @@ class ContentFiltering(Recommender):
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
         recommended = self.recommend(k=num_recommended) if not startup else None
-        interactions = super().interact(user_vector, recommended, num_new_items)
+        interactions = super().interact(recommended, num_new_items)
         self._store_interaction(interactions)
         self.measure_equilibrium(interactions, plot=plot)
     

@@ -25,6 +25,7 @@ class Recommender(metaclass=ABCMeta):
         # NOTE user_preference either accepts False (randomize user preferences),
         # or it accepts an array of user preferences
         self.user_preference = user_preference
+        self.user_vector = np.arange(num_users, dtype=int)
 
     # Return matrix that can be stored to train a model
     def _generate_interaction_matrix(self, interactions):
@@ -44,7 +45,7 @@ class Recommender(metaclass=ABCMeta):
         return self.s_t.argsort()[:,::-1][:,0:k]
 
     @abstractmethod
-    def interact(self, user_vector, recommended, num_new_items):
+    def interact(self, recommended, num_new_items):
         # Current assumptions:
         # 1. Interleave new items and recommended items
         # 2. Fixed number of new/recommended items
@@ -63,7 +64,7 @@ class Recommender(metaclass=ABCMeta):
             return
         if num_new_items:
             col = np.random.randint(indices_prime.shape[1], size=(self.num_users, num_new_items))
-            row = np.repeat(user_vector, num_new_items).reshape((self.num_users, -1))
+            row = np.repeat(self.user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = indices_prime[row, col]
         
         if recommended is not None and num_new_items:
@@ -76,7 +77,7 @@ class Recommender(metaclass=ABCMeta):
         np.random.shuffle(items.T)
         if self.user_preference is False:
             preference = np.random.randint(num_new_items, size=(self.num_users))
-        interactions = items[user_vector, preference]
-        self.indices[user_vector, interactions] = -1
+        interactions = items[self.user_vector, preference]
+        self.indices[self.user_vector, interactions] = -1
         #print(self.indices)
         return self._generate_interaction_matrix(interactions)
