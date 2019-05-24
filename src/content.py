@@ -12,11 +12,11 @@ class ContentFiltering(Recommender):
         user_preference=False, measurements=None):
         if items_representation is None:
             measurements = Measurements(num_items)
-            self.beta_t = self._init_item_attributes(num_items, A)
+            self.item_attributes = self._init_item_attributes(num_items, A)
         else:
             measurements = Measurements(items_representation.shape[0])
-            self.beta_t = items_representation
-        self.theta_t = self._init_user_profiles(num_users, A)#np.zeros((num_users, A))
+            self.item_attributes = items_representation
+        self.user_profiles = self._init_user_profiles(num_users, A)#np.zeros((num_users, A))
         super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
         randomize_recommended, num_recommended, num_new_items,
         user_preference, measurements)
@@ -48,7 +48,7 @@ class ContentFiltering(Recommender):
         return dist
 
     def _store_interaction(self, interactions):
-        A = np.tile(self.beta_t, self.num_users)
+        A = np.tile(self.item_attributes, self.num_users)
         x, _ = nnls(A, interactions)
 
     def train(self):

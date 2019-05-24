@@ -8,8 +8,8 @@ class Recommender(metaclass=ABCMeta):
     def __init__(self, num_users, num_items, num_startup_iter=10, num_items_per_iter=10,
         randomize_recommended=True, num_recommended=None, num_new_items=None,
         user_preference=False, measurements=None):
-        # NOTE: Children classes must implement theta and beta
-        self.s_t = None
+        # NOTE: Children classes must implement user_profiles (theta_t) and item_attributes (beta_t)
+        self.scores = None
         self.measurements = measurements
         self.num_users = num_users
         self.num_items = num_items
@@ -35,14 +35,14 @@ class Recommender(metaclass=ABCMeta):
 
     # Train recommender system
     def train(self):
-        self.s_t = np.dot(self.theta_t, self.beta_t)
+        self.scores = np.dot(self.user_profiles, self.item_attributes)
 
     # TODO: what if I consistently only do k=1? In that case I might want to think of just sorting once
-    #return self.s_t.argsort()[-k:][::-1]
-    # Assume s_t two-dimensional
+    #return self.scores.argsort()[-k:][::-1]
+    # Assume scores two-dimensional
     @abstractmethod
     def recommend(self, k=1):
-        return self.s_t.argsort()[:,::-1][:,0:k]
+        return self.scores.argsort()[:,::-1][:,0:k]
 
     @abstractmethod
     def interact(self, recommended, num_new_items):

@@ -35,24 +35,12 @@ if __name__ == '__main__':
     print('Num items:', const.NUM_ITEMS, '\nUsers:', const.NUM_USERS, '\nItems per iter:', const.NUM_ITEMS_PER_ITER)
 
     # Startup
-    for t in range(const.NUM_STARTUP_ITER):
-        plot = False
-        if args.debug:
-            if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
-                plot=True
-        rec.interact(plot=plot, startup=True)
-    rec.train()
+    rec.startup_and_train(const.NUM_STARTUP_ITER, debug=args.debug)
 
     # Runtime
-    for t in range(const.TIMESTEPS - const.NUM_STARTUP_ITER):
-        plot = False
-        if args.debug:
-            if t % 50 == 0 or t == const.TIMESTEPS - const.NUM_STARTUP_ITER - 1:
-                plot=True
-        rec.interact(plot=plot)
-        rec.train()
+    rec.run(const.TIMESTEPS - const.NUM_STARTUP_ITER, debug=args.debug, train=True)
 
-    delta_t = rec.get_delta()
+    delta_t = rec.get_heterogeneity()
     plt.style.use('seaborn-whitegrid')
     plt.plot(np.arange(len(delta_t)), delta_t)
     plt.show()

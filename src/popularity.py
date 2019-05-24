@@ -9,14 +9,14 @@ class PopularityRecommender(Recommender):
         randomize_recommended=True, num_recommended=None, num_new_items=None,
         user_preference=False):
         # TODO: check on invalid parameters
-        self.theta_t = np.ones((num_users, 1), dtype=int)
-        self.beta_t = np.zeros((1, num_items), dtype=int)
+        self.user_profiles = np.ones((num_users, 1), dtype=int)
+        self.item_attributes = np.zeros((1, num_items), dtype=int)
         super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
         randomize_recommended, num_recommended, num_new_items,
         user_preference, Measurements(num_items))
 
     def _store_interaction(self, interactions):
-        self.beta_t = np.add(self.beta_t, interactions)
+        self.item_attributes = np.add(self.item_attributes, interactions)
 
     def train(self):
         return super().train()
@@ -32,6 +32,7 @@ class PopularityRecommender(Recommender):
             num_new_items = np.random.randint(1, self.num_items_per_iter)
             num_recommended = self.num_items_per_iter-num_new_items
         else:
+            # TODO: these may be constants or iterators on vectors
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
         recommended = self.recommend(k=num_recommended) if not startup else None
@@ -47,14 +48,35 @@ class PopularityRecommender(Recommender):
             print('recommend Nope')
             return
         row = np.repeat(self.user_vector, indices_prime.shape[1]).reshape((self.num_users, -1))
-        s_filtered = self.s_t[row, indices_prime]
+        s_filtered = self.scores[row, indices_prime]
         permutation = s_filtered.argsort()
         rec = indices_prime[row, permutation]
-        #rec = self.s_t.argsort()
+        #rec = self.scores.argsort()
         probabilities = np.arange(1, rec.shape[1] + 1)
         probabilities = probabilities/probabilities.sum()
         picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
         return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
 
-    def get_delta(self):
+    def get_heterogeneity(self):
         return self.measurements.get_delta()
+
+    def startup_and_train(self, timesteps=50, debug=False):
+        self.measurements.set_delta(timesteps)
+        for t in range(timesteps):
+            plot = False
+            if debug:
+                if t % 50 == 0 or t == timesteps - 1:
+                    plot=True
+            self.interact(plot=plot, startup=True)
+        self.train()
+
+    def run(self, timesteps=50, train=True, debug=False):
+        self.measurements.set_delta(timesteps)
+        for t in range(timesteps):
+            plot = False
+            if debug:
+                if t % 50 == 0 or t == timesteps - 1:
+                    plot=True
+            self.interact(plot=plot)
+            if train:
+                self.train()
