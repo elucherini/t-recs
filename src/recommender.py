@@ -11,11 +11,12 @@ class Recommender(metaclass=ABCMeta):
         # NOTE: Children classes must implement theta and beta
         self.s_t = None
         self.measurements = measurements
-        self.new_items_iter = None
         self.num_users = num_users
         self.num_items = num_items
         self.num_startup_iter = num_startup_iter
         self.num_items_per_iter = num_items_per_iter
+        # Matrix keeping track of the items consumed by each user
+        self.indices = np.tile(np.arange(num_items), (num_users,)).reshape((num_users, num_items))
         if not randomize_recommended:
             self.num_recommended = num_recommended
             self.num_new_items = num_new_items
@@ -50,22 +51,32 @@ class Recommender(metaclass=ABCMeta):
         # 3. New items are chosen randomly from the same set of num_items_per_iter * const.CONSTANT items
         # 4. Each user interacts with different elements depending on preference
         # 5. Train after every interaction
-        # TODO: each user can interact with each element at most once
-        #interacted = np.full((self.num_users, NUM_ITEMS), False)
-        #user_row = np.arange(0, self.num_users)
-        #items = np.concatenate((recommended, np.random.choice(next(self.new_items_iter), size=(self.num_users, num_new_items))), axis=1)
-        if recommended is not None:
-            items = np.concatenate((recommended, np.random.randint(self.num_items, size=(self.num_users, num_new_items))), axis=1)
+        if recommended is None and num_new_items == 0:
+            # TODO throw exception here
+            print("Nope")
+            return
+        assert(np.count_nonzero(self.indices == -1) % self.num_users == 0)
+        indices_prime = self.indices[np.where(self.indices>=0)].reshape((self.num_users, -1))
+        if indices_prime.shape[1] < num_new_items:
+            print("Not enough items")
+            # TODO exception
+            return
+        if num_new_items:
+            col = np.random.randint(indices_prime.shape[1], size=(self.num_users, num_new_items))
+            row = np.repeat(user_vector, num_new_items).reshape((self.num_users, -1))
+            new_items = indices_prime[row, col]
+        
+        if recommended is not None and num_new_items:
+            items = np.concatenate((recommended, new_items), axis=1)
+        elif num_new_items:
+            items = new_items
         else:
-            items = np.random.randint(self.num_items, size=(self.num_users, num_new_items))
-        assert(items.shape[1] == self.num_items_per_iter)
+            items = recommended
+        
         np.random.shuffle(items.T)
         if self.user_preference is False:
-            preference = np.random.randint(0, self.num_items_per_iter, size=(self.num_users))
+            preference = np.random.randint(num_new_items, size=(self.num_users))
         interactions = items[user_vector, preference]
+        self.indices[user_vector, interactions] = -1
+        #print(self.indices)
         return self._generate_interaction_matrix(interactions)
-        #self._store_interaction(interactions)
-        #self.measure_equilibrium(interactions)
-        #if np.all(check):
-        #    continue
-        # TODO: From here on, some user(s) has already interacted with the assigned item

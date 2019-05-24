@@ -34,16 +34,27 @@ class PopularityRecommender(Recommender):
         else:
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
-        recommended = self.recommend(k=num_recommended) if not startup else None
+        recommended = self.recommend(user_vector=user_vector, k=num_recommended) if not startup else None
         interactions = super().interact(user_vector, recommended, num_new_items)
         self._store_interaction(interactions)
         self.measure_equilibrium(interactions, plot=plot)
 
     # Recommends items proportional to their popularity
-    def recommend(self, k=1):
-        rec = self.s_t.argsort()
-        p = np.arange(1, self.num_items + 1)
-        return np.random.choice(rec[0], p=p/p.sum(), size=(self.num_users, k))
+    def recommend(self, user_vector, k=1):
+        indices_prime = self.indices[np.where(self.indices>=0)].reshape((self.num_users, -1))
+        if k > indices_prime.shape[1]:
+            # TODO exception
+            print('recommend Nope')
+            return
+        row = np.repeat(user_vector, indices_prime.shape[1]).reshape((self.num_users, -1))
+        s_filtered = self.s_t[row, indices_prime]
+        permutation = s_filtered.argsort()
+        rec = indices_prime[row, permutation]
+        #rec = self.s_t.argsort()
+        probabilities = np.arange(1, rec.shape[1] + 1)
+        probabilities = probabilities/probabilities.sum()
+        picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
+        return rec[np.repeat(user_vector, k).reshape((self.num_users, -1)), picks]
 
     def get_delta(self):
         return self.measurements.get_delta()
