@@ -3,6 +3,7 @@ import random
 from abc import ABCMeta, abstractmethod
 from recommender import Recommender
 from measurements import Measurements
+import matplotlib.pyplot as plt
 
 class PopularityRecommender(Recommender):
     def __init__(self, num_users, num_items, num_startup_iter=10, num_items_per_iter=10,
@@ -51,7 +52,6 @@ class PopularityRecommender(Recommender):
         s_filtered = self.scores[row, indices_prime]
         permutation = s_filtered.argsort()
         rec = indices_prime[row, permutation]
-        #rec = self.scores.argsort()
         probabilities = np.arange(1, rec.shape[1] + 1)
         probabilities = probabilities/probabilities.sum()
         picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
@@ -61,22 +61,26 @@ class PopularityRecommender(Recommender):
         return self.measurements.get_delta()
 
     def startup_and_train(self, timesteps=50, debug=False):
+        assert(np.count_nonzero(self.scores) == 0)
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             plot = False
             if debug:
-                if t % 50 == 0 or t == timesteps - 1:
+                if t == 0: #or t == timesteps - 1:
                     plot=True
             self.interact(plot=plot, startup=True)
         self.train()
+        #plt.plot(np.arange(self.scores.shape[1]), sorted(self.scores[0]))
+        #plt.show()
 
     def run(self, timesteps=50, train=True, debug=False):
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             plot = False
             if debug:
-                if t % 50 == 0 or t == timesteps - 1:
+                if t == 0:#% 50 == 0 or t == timesteps - 1:
                     plot=True
             self.interact(plot=plot)
+            plt.show()
             if train:
                 self.train()

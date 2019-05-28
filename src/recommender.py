@@ -31,6 +31,7 @@ class Recommender(metaclass=ABCMeta):
     def _generate_interaction_matrix(self, interactions):
         tot_interactions = np.zeros(self.num_items)
         np.add.at(tot_interactions, interactions, 1)
+        assert(tot_interactions.sum() == self.num_users)
         return tot_interactions
 
     # Train recommender system
@@ -48,10 +49,7 @@ class Recommender(metaclass=ABCMeta):
     def interact(self, recommended, num_new_items):
         # Current assumptions:
         # 1. Interleave new items and recommended items
-        # 2. Fixed number of new/recommended items
-        # 3. New items are chosen randomly from the same set of num_items_per_iter * const.CONSTANT items
-        # 4. Each user interacts with different elements depending on preference
-        # 5. Train after every interaction
+        # 2. Each user interacts with one element depending on preference
         if recommended is None and num_new_items == 0:
             # TODO throw exception here
             print("Nope")
