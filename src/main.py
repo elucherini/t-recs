@@ -1,5 +1,4 @@
 import argparse
-import sys
 import numpy as np
 import constants as const
 import matplotlib.pyplot as plt
