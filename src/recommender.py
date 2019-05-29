@@ -1,5 +1,6 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
+import matplotlib.pyplot as plt
 
 # Recommender systems: abstract class
 class Recommender(metaclass=ABCMeta):
@@ -26,13 +27,6 @@ class Recommender(metaclass=ABCMeta):
         # or it accepts an array of user preferences
         self.user_preference = user_preference
         self.user_vector = np.arange(num_users, dtype=int)
-
-    # Return matrix that can be stored to train a model
-    def _generate_interaction_matrix(self, interactions):
-        tot_interactions = np.zeros(self.num_items)
-        np.add.at(tot_interactions, interactions, 1)
-        assert(tot_interactions.sum() == self.num_users)
-        return tot_interactions
 
     # Train recommender system
     def train(self):
@@ -77,5 +71,29 @@ class Recommender(metaclass=ABCMeta):
             preference = np.random.randint(num_new_items, size=(self.num_users))
         interactions = items[self.user_vector, preference]
         self.indices[self.user_vector, interactions] = -1
-        #print(self.indices)
-        return self._generate_interaction_matrix(interactions)
+        return interactions
+
+    def startup_and_train(self, timesteps=50, debug=False):
+        assert(np.count_nonzero(self.scores) == 0)
+        self.measurements.set_delta(timesteps)
+        for t in range(timesteps):
+            plot = False
+            if debug:
+                if t == 0: #or t == timesteps - 1:
+                    plot=True
+            self.interact(plot=plot, startup=True)
+        self.train()
+        #plt.plot(np.arange(self.scores.shape[1]), sorted(self.scores[0]))
+        #plt.show()
+
+    def run(self, timesteps=50, train=True, debug=False):
+        self.measurements.set_delta(timesteps)
+        for t in range(timesteps):
+            plot = False
+            if debug:
+                if t == 0:#% 50 == 0 or t == timesteps - 1:
+                    plot=True
+            self.interact(plot=plot)
+            plt.show()
+            if train:
+                self.train()

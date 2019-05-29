@@ -14,14 +14,17 @@ class PopularityRecommender(Recommender):
         randomize_recommended, num_recommended, num_new_items,
         user_preference, Measurements(num_items))
 
+    def _generate_interaction_matrix(self, interactions):
+        tot_interactions = np.zeros(self.num_items)
+        np.add.at(tot_interactions, interactions, 1)
+        assert(tot_interactions.sum() == self.num_users)
+        return tot_interactions
+
     def _store_interaction(self, interactions):
         self.item_attributes = np.add(self.item_attributes, interactions)
 
     def train(self):
         return super().train()
-
-    def measure_equilibrium(self, interactions, plot=False):
-        return self.measurements.measure_equilibrium(interactions, plot)
 
     def interact(self, plot=False, startup=False):
         if startup:
@@ -36,8 +39,9 @@ class PopularityRecommender(Recommender):
             num_recommended = self.num_recommended
         recommended = self.recommend(k=num_recommended) if not startup else None
         interactions = super().interact(recommended, num_new_items)
-        self._store_interaction(interactions)
-        self.measure_equilibrium(interactions, plot=plot)
+        interaction_matrix = self._generate_interaction_matrix(interactions)
+        self._store_interaction(interaction_matrix)
+        self.measure_equilibrium(interaction_matrix, plot=plot)
 
     # Recommends items proportional to their popularity
     def recommend(self, k=1):
@@ -55,30 +59,14 @@ class PopularityRecommender(Recommender):
         picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
         return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
 
+    def startup_and_train(self, timesteps=50, debug=False):
+        return super().startup_and_train(timesteps, debug)
+
+    def run(self, timesteps=50, train=True, debug=False):
+        return super().run(timesteps, train, debug)
+
     def get_heterogeneity(self):
         return self.measurements.get_delta()
 
-    def startup_and_train(self, timesteps=50, debug=False):
-        assert(np.count_nonzero(self.scores) == 0)
-        self.measurements.set_delta(timesteps)
-        for t in range(timesteps):
-            plot = False
-            if debug:
-                if t == 0: #or t == timesteps - 1:
-                    plot=True
-            self.interact(plot=plot, startup=True)
-        self.train()
-        #plt.plot(np.arange(self.scores.shape[1]), sorted(self.scores[0]))
-        #plt.show()
-
-    def run(self, timesteps=50, train=True, debug=False):
-        self.measurements.set_delta(timesteps)
-        for t in range(timesteps):
-            plot = False
-            if debug:
-                if t == 0:#% 50 == 0 or t == timesteps - 1:
-                    plot=True
-            self.interact(plot=plot)
-            plt.show()
-            if train:
-                self.train()
+    def measure_equilibrium(self, interactions, plot=False):
+        return self.measurements.measure_equilibrium(interactions, plot)
