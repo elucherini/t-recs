@@ -17,7 +17,7 @@ class Recommender(metaclass=ABCMeta):
         self.num_startup_iter = num_startup_iter
         self.num_items_per_iter = num_items_per_iter
         # Matrix keeping track of the items consumed by each user
-        self.indices = np.tile(np.arange(num_items), (num_users,)).reshape((num_users, num_items))
+        self.indices = np.tile(np.arange(num_items), (num_users, 1))
         if not randomize_recommended:
             self.num_recommended = num_recommended
             self.num_new_items = num_new_items
