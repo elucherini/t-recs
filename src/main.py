@@ -10,9 +10,9 @@ if __name__ == '__main__':
     # Supported recommender systems
     rec_dict = {'popularity':PopularityRecommender, 'content':ContentFiltering}
     # Supported additional arguments for each recommender system
-    rec_args = {'popularity': None, 
-        'content': {'A':100, 'items_representation': None}
-        }
+    rec_args = {'popularity': None}
+    # A: number of attributes; items_representation: non-random representation of items based on attributes
+    rec_args['content'] = {'A':50, 'items_representation': None}
     choices = set(rec_dict.keys())
 
     parser = argparse.ArgumentParser()
