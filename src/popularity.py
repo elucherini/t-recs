@@ -12,13 +12,7 @@ class PopularityRecommender(Recommender):
         self.item_attributes = np.zeros((1, num_items), dtype=int)
         super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
         randomize_recommended, num_recommended, num_new_items,
-        user_preference, Measurements(num_items))
-
-    def _generate_interaction_matrix(self, interactions):
-        tot_interactions = np.zeros(self.num_items)
-        np.add.at(tot_interactions, interactions, 1)
-        assert(tot_interactions.sum() == self.num_users)
-        return tot_interactions
+        user_preference, Measurements(num_items, num_users))
 
     def _store_interaction(self, interactions):
         self.item_attributes = np.add(self.item_attributes, interactions)
@@ -38,26 +32,15 @@ class PopularityRecommender(Recommender):
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
         recommended = self.recommend(k=num_recommended) if not startup else None
+        if num_recommended > 0:
+            assert(num_recommended == recommended.shape[1])
         interactions = super().interact(recommended, num_new_items)
-        interaction_matrix = self._generate_interaction_matrix(interactions)
+        interaction_matrix = self.measure_equilibrium(interactions, plot=plot)
         self._store_interaction(interaction_matrix)
-        self.measure_equilibrium(interaction_matrix, plot=plot)
 
     # Recommends items proportional to their popularity
     def recommend(self, k=1):
-        indices_prime = self.indices[np.where(self.indices>=0)].reshape((self.num_users, -1))
-        if k > indices_prime.shape[1]:
-            # TODO exception
-            print('recommend Nope')
-            return
-        row = np.repeat(self.user_vector, indices_prime.shape[1]).reshape((self.num_users, -1))
-        s_filtered = self.scores[row, indices_prime]
-        permutation = s_filtered.argsort()
-        rec = indices_prime[row, permutation]
-        probabilities = np.arange(1, rec.shape[1] + 1)
-        probabilities = probabilities/probabilities.sum()
-        picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
-        return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
+        return super().recommend(k)
 
     def startup_and_train(self, timesteps=50, debug=False):
         return super().startup_and_train(timesteps, debug)

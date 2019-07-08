@@ -12,7 +12,17 @@ if __name__ == '__main__':
     # Supported additional arguments for each recommender system
     rec_args = {'popularity': None}
     # A: number of attributes; items_representation: non-random representation of items based on attributes
-    rec_args['content'] = {'A':50, 'items_representation': None}
+    rec_args['content'] = {'A':100}
+    rec_args['content']['items_representation'] = np.zeros((const.NUM_ITEMS, rec_args['content']['A']))
+    
+    for i, row in enumerate(rec_args['content']['items_representation']):
+        A = rec_args['content']['A']
+        n_indices = np.random.randint(1, A)
+        indices = np.random.randint(A, size=(n_indices))
+        row[indices] = 1
+        rec_args['content']['items_representation'][i,:] = row
+    rec_args['content']['items_representation'] = rec_args['content']['items_representation'].T
+    
     choices = set(rec_dict.keys())
 
     parser = argparse.ArgumentParser()
@@ -32,6 +42,7 @@ if __name__ == '__main__':
             **rec_args[rec_type])
 
     print('Num items:', const.NUM_ITEMS, '\nUsers:', const.NUM_USERS, '\nItems per iter:', const.NUM_ITEMS_PER_ITER)
+    print('Recommender system:', rec_type)
 
     # Startup
     rec.startup_and_train(const.NUM_STARTUP_ITER, debug=args.debug)
@@ -43,3 +54,4 @@ if __name__ == '__main__':
     plt.style.use('seaborn-whitegrid')
     plt.plot(np.arange(len(delta_t)), delta_t)
     plt.show()
+    

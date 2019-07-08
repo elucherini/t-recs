@@ -5,23 +5,26 @@ import matplotlib.pyplot as plt
 from scipy.optimize import nnls
 
 class ContentFiltering(Recommender):
-    def __init__(self, num_users, num_items, items_representation=None, A=None, num_startup_iter=10,
+    def __init__(self, num_users, num_items, items_representation=None, A=100, num_startup_iter=10,
         num_items_per_iter=10, randomize_recommended=True, num_recommended=None, num_new_items=None,
         user_preference=False, measurements=None):
         if items_representation is None:
-            measurements = Measurements(num_items)
-            self.item_attributes = self._init_item_attributes(num_items, A)
+            measurements = Measurements(num_items, num_users)
+            self.item_attributes = self._init_item_attributes(A, num_items)
         else:
-            measurements = Measurements(items_representation.shape[0])
+            measurements = Measurements(items_representation.shape[1], num_users)
             self.item_attributes = items_representation
-        self.user_profiles = self._init_user_profiles(num_users, A)#np.zeros((num_users, A))
+        # TODO: user profiles should be learned from users' interactions
+        self.user_profiles = np.zeros((num_users, A))#self._init_user_profiles(A, num_users)
         super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
         randomize_recommended, num_recommended, num_new_items,
         user_preference, measurements)
+        print(self.item_attributes.shape)
 
-    def _init_item_attributes(self, num_items, A):
+    def _init_item_attributes(self, A, num_items):
+        # Binary representations
         # TODO: non-random attributes?
-        dist = abs(np.random.normal(0, 0.8, size=(A, num_items)).round(0))
+        dist = abs(np.random.normal(0, 0.8, size=(num_items, A)).round(0))
         dist[np.where(dist > 1)] = 1
         # Is there any row with all item attributes set to zero?
         rows_not_zeros = np.any(dist > 0, axis=1)
@@ -30,30 +33,33 @@ class ContentFiltering(Recommender):
             row = np.where(rows_not_zeros == False)[0]
             col = np.random.randint(0, A, size=(row.size))
             dist[row, col] = 1
-        return dist
+        return dist.T
 
-    def _init_user_profiles(self, num_users, A):
+    def _init_user_profiles(self, A, num_users):
+        # Real numbers
         # TODO: non-random attributes?
         dist = abs(np.random.normal(0, 0.8, size=(num_users, A)))
-        dist[np.where(dist > 1)] = 1
         # Is there any row with all item attributes set to zero?
         rows_not_zeros = np.any(dist > 0, axis=1)
-        # If so, change a random element in the row(s) to one
+        # If so, change a random element in the row(s)
         if False in rows_not_zeros:
             row = np.where(rows_not_zeros == False)[0]
             col = np.random.randint(0, A, size=(row.size))
-            dist[row, col] = 1
+            dist[row, col] = np.random.rand()
         return dist
 
     def _store_interaction(self, interactions):
-        A = np.tile(self.item_attributes, self.num_users)
-        x, _ = nnls(A, interactions)
+        interactions_per_user = np.zeros((self.num_users, self.num_items))
+        interactions_per_user[self.user_vector, interactions] = 1
+        user_attributes = np.dot(interactions_per_user, self.item_attributes.T)
+        self.user_profiles = np.add(self.user_profiles, user_attributes)
+        #x, _ = nnls(A, interactions)
 
     def train(self):
-        super().train()
-
-    def recommend(self, k=1):
-        super().recommend(k=k)
+        # Normalize user_profiles
+        user_profiles = self.user_profiles / self.user_profiles.sum()
+        super().train(user_profiles=user_profiles)
+        #print(self.scores)
 
     def interact(self, plot=False, startup=False):
         if startup:
@@ -63,16 +69,27 @@ class ContentFiltering(Recommender):
             num_new_items = np.random.randint(1, self.num_items_per_iter)
             num_recommended = self.num_items_per_iter-num_new_items
         else:
+            # TODO: these may be constants or iterators on vectors
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
         recommended = self.recommend(k=num_recommended) if not startup else None
+        if num_recommended > 0:
+            assert(num_recommended == recommended.shape[1])
         interactions = super().interact(recommended, num_new_items)
-        self._store_interaction(interactions)
         self.measure_equilibrium(interactions, plot=plot)
-    
-    def measure_equilibrium(self, interactions, plot=False):
-        return self.measurements.measure_equilibrium(interactions, plot)
+        self._store_interaction(interactions)
 
+    def recommend(self, k=1):
+        return super().recommend(k=k)
+
+    def startup_and_train(self, timesteps=50, debug=False):
+        return super().startup_and_train(timesteps, debug)
+
+    def run(self, timesteps=50, train=True, debug=False):
+        return super().run(timesteps, train, debug)
 
     def get_heterogeneity(self):
         return self.measurements.get_delta()
+
+    def measure_equilibrium(self, interactions, plot=False):
+        return self.measurements.measure_equilibrium(interactions, plot)

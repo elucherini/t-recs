@@ -4,21 +4,32 @@ import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
 
 class Measurements():
-    def __init__(self, num_items):
+    def __init__(self, num_items, num_users):
         self.delta_t = None
         self.index = None
-        self.interactions_old = np.zeros(num_items)
+        self.histogram_old = np.zeros(num_items)
+        self.num_items = num_items
+        self.num_users = num_users
+
+
+    def _generate_interaction_histogram(self, interactions):
+        histogram = np.zeros(self.num_items)
+        np.add.at(histogram, interactions, 1)
+        assert(histogram.sum() == self.num_users)
+        return histogram
 
     # This measure of equilibrium corresponds to measuring whether popularity is spread out among many items or only a few.
     # In other words, it looks at homogeneity vs heterogeneity
     def measure_equilibrium(self, interactions, plot=False):
-        interactions[::-1].sort()
+        histogram = self._generate_interaction_histogram(interactions)
+        histogram[::-1].sort()
         if plot:
-            plt.plot(np.arange(len(interactions)), interactions)
+            plt.plot(np.arange(len(histogram)), histogram)
             plt.show()
-        self.delta_t[self.index] = np.trapz(self.interactions_old, dx=1) - np.trapz(interactions, dx=1)
-        self.interactions_old = np.copy(interactions)
+        self.delta_t[self.index] = np.trapz(self.histogram_old, dx=1) - np.trapz(histogram, dx=1)
+        self.histogram_old = np.copy(histogram)
         self.index += 1
+        return histogram
 
     def get_delta(self):
         return self.delta_t

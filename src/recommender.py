@@ -29,15 +29,31 @@ class Recommender(metaclass=ABCMeta):
         self.user_vector = np.arange(num_users, dtype=int)
 
     # Train recommender system
-    def train(self):
-        self.scores = np.dot(self.user_profiles, self.item_attributes)
+    def train(self, user_profiles=None, item_attributes=None):
+        user_profiles = user_profiles if user_profiles is not None else self.user_profiles
+        item_attributes = item_attributes if item_attributes is not None else self.item_attributes
+        self.scores = np.dot(user_profiles, item_attributes)
 
     # TODO: what if I consistently only do k=1? In that case I might want to think of just sorting once
     #return self.scores.argsort()[-k:][::-1]
     # Assume scores two-dimensional
     @abstractmethod
     def recommend(self, k=1):
-        return self.scores.argsort()[:,::-1][:,0:k]
+        indices_prime = self.indices[np.where(self.indices>=0)].reshape((self.num_users, -1))
+        if k > indices_prime.shape[1]:
+            # TODO exception
+            print('recommend Nope')
+            return
+        row = np.repeat(self.user_vector, indices_prime.shape[1]).reshape((self.num_users, -1))
+        s_filtered = self.scores[row, indices_prime]
+        permutation = s_filtered.argsort()
+        rec = indices_prime[row, permutation]
+        probabilities = np.arange(1, rec.shape[1] + 1)
+        probabilities = probabilities/probabilities.sum()
+        picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
+        #print(self.scores.argsort()[:,::-1][:,0:5])
+        return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
+        #return self.scores.argsort()[:,::-1][:,0:k]
 
     @abstractmethod
     def interact(self, recommended, num_new_items):
