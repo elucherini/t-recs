@@ -3,4 +3,4 @@ Simulator for recommender systems
 
 Usage:
 
-`python3 src/main.py [popularity|content (coming soon)] [--debug]`
+`python3 src/main.py [popularity|content] [--debug]`
