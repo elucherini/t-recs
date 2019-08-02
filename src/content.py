@@ -1,27 +1,32 @@
 import numpy as np
 from recommender import Recommender
 from measurements import Measurements
+from user_preferences import UserPreferences
 import matplotlib.pyplot as plt
 from scipy.optimize import nnls
 
 class ContentFiltering(Recommender):
     def __init__(self, num_users, num_items, items_representation=None, A=100, num_startup_iter=10,
         num_items_per_iter=10, randomize_recommended=True, num_recommended=None, num_new_items=None,
-        user_preference=False, measurements=None):
+        user_preferences=False, debug_user_preferences=False, measurements=None):
         if items_representation is None:
             measurements = Measurements(num_items, num_users)
-            self.item_attributes = self._init_item_attributes(A, num_items)
+            self.item_attributes = self._init_random_item_attributes(A, num_items)
         else:
-            measurements = Measurements(items_representation.shape[1], num_users)
             self.item_attributes = items_representation
+            measurements = Measurements(self.item_attributes.shape[1], num_users)
         # TODO: user profiles should be learned from users' interactions
         self.user_profiles = np.zeros((num_users, A))#self._init_user_profiles(A, num_users)
+        if user_preferences:
+            preferences = UserPreferences(num_users, num_items, debug=debug_user_preferences)
+        else:
+            preferences = None
         super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
-        randomize_recommended, num_recommended, num_new_items,
-        user_preference, measurements)
-        print(self.item_attributes.shape)
+            randomize_recommended, num_recommended, num_new_items,
+            preferences, measurements)
+        #print(self.item_attributes.shape)
 
-    def _init_item_attributes(self, A, num_items):
+    def _init_random_item_attributes(self, A, num_items):
         # Binary representations
         # TODO: non-random attributes?
         dist = abs(np.random.normal(0, 0.8, size=(num_items, A)).round(0))
@@ -61,7 +66,7 @@ class ContentFiltering(Recommender):
         super().train(user_profiles=user_profiles)
         #print(self.scores)
 
-    def interact(self, plot=False, startup=False):
+    def interact(self, plot=False, step=None, startup=False):
         if startup:
             num_new_items = self.num_items_per_iter
             num_recommended = 0
@@ -76,20 +81,20 @@ class ContentFiltering(Recommender):
         if num_recommended > 0:
             assert(num_recommended == recommended.shape[1])
         interactions = super().interact(recommended, num_new_items)
-        self.measure_equilibrium(interactions, plot=plot)
+        self.measure_equilibrium(interactions, plot=plot, step=step)
         self._store_interaction(interactions)
 
     def recommend(self, k=1):
         return super().recommend(k=k)
 
     def startup_and_train(self, timesteps=50, debug=False):
-        return super().startup_and_train(timesteps, debug)
+        return super().run(timesteps, startup=True, train=False, debug=debug)
 
     def run(self, timesteps=50, train=True, debug=False):
-        return super().run(timesteps, train, debug)
+        return super().run(timesteps, startup=False, train=train, debug=debug)
 
     def get_heterogeneity(self):
         return self.measurements.get_delta()
 
-    def measure_equilibrium(self, interactions, plot=False):
-        return self.measurements.measure_equilibrium(interactions, plot)
+    def measure_equilibrium(self, interactions, plot=False, step=None):
+        return self.measurements.measure_equilibrium(interactions, plot=plot, step=step)

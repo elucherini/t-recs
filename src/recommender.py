@@ -8,7 +8,7 @@ class Recommender(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, num_users, num_items, num_startup_iter=10, num_items_per_iter=10,
         randomize_recommended=True, num_recommended=None, num_new_items=None,
-        user_preference=False, measurements=None):
+        user_preferences=False, measurements=None):
         # NOTE: Children classes must implement user_profiles (theta_t) and item_attributes (beta_t)
         self.scores = None
         self.measurements = measurements
@@ -23,10 +23,11 @@ class Recommender(metaclass=ABCMeta):
             self.num_new_items = num_new_items
         else:
             self.randomize_recommended = True
-        # NOTE user_preference either accepts False (randomize user preferences),
-        # or it accepts an array of user preferences
-        self.user_preference = user_preference
+        # NOTE user_preferences either accepts False (randomize user preferences),
+        # or it accepts a matrix of user preferences
+        self.user_preferences = user_preferences
         self.user_vector = np.arange(num_users, dtype=int)
+        self.item_vector = np.arange(2, num_items_per_iter + 2, dtype=int)
 
     # Train recommender system
     def train(self, user_profiles=None, item_attributes=None):
@@ -83,33 +84,50 @@ class Recommender(metaclass=ABCMeta):
             items = recommended
         
         np.random.shuffle(items.T)
-        if self.user_preference is False:
+        if self.user_preferences is None:
             preference = np.random.randint(num_new_items, size=(self.num_users))
+        else:
+            preference = self.user_preferences.get_user_choices(items, self.user_vector)
+            #print(preference)
+        #print(preference.shape)
         interactions = items[self.user_vector, preference]
         self.indices[self.user_vector, interactions] = -1
         return interactions
-
-    def startup_and_train(self, timesteps=50, debug=False):
+    '''
+    def startup_and_train(self, timesteps=50, debug=False, rule=None):
         assert(np.count_nonzero(self.scores) == 0)
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             plot = False
-            if debug:
-                if t == 0: #or t == timesteps - 1:
-                    plot=True
-            self.interact(plot=plot, startup=True)
+            step = None
+            if debug and rule is None and (t == 0 or t == timesteps - 1):
+                plot = True
+                step = t
+            elif debug and rule is not None and eval(rule):
+                plot = True
+                step = t
+            self.interact(plot=plot, step=step, startup=startup)
         self.train()
         #plt.plot(np.arange(self.scores.shape[1]), sorted(self.scores[0]))
         #plt.show()
+    '''
 
-    def run(self, timesteps=50, train=True, debug=False):
+    def run(self, timesteps=50, startup=True, train=True, debug=False, rule=None):
+        #assert(np.count_nonzero(self.scores))
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             plot = False
-            if debug:
-                if t == 0:#% 50 == 0 or t == timesteps - 1:
-                    plot=True
-            self.interact(plot=plot)
+            step = None
+            if debug and rule is None and (t == 0 or t == timesteps - 1):
+                plot = True
+                step = t
+            elif debug and rule is not None and eval(rule):
+                plot = True
+                step = t
+            self.interact(plot=plot, step=step, startup=startup)
             plt.show()
             if train:
                 self.train()
+        # If no training in between steps, train at the end: 
+        if not train:
+            self.train()

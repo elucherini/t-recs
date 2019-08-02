@@ -18,13 +18,18 @@ class Measurements():
         assert(histogram.sum() == self.num_users)
         return histogram
 
-    # This measure of equilibrium corresponds to measuring whether popularity is spread out among many items or only a few.
+    # This measure of equilibrium corresponds to measuring whether interactions
+    # are spread out among many items or only a few.
     # In other words, it looks at homogeneity vs heterogeneity
-    def measure_equilibrium(self, interactions, plot=False):
+    def measure_equilibrium(self, interactions, plot=False, step=None, interaction=None):
         histogram = self._generate_interaction_histogram(interactions)
         histogram[::-1].sort()
         if plot:
+            plot_b = 1
             plt.plot(np.arange(len(histogram)), histogram)
+            plt.title("Sorted interaction histogram at step " + str(step))
+            plt.xlabel("Item")
+            plt.ylabel("# interactions")
             plt.show()
         self.delta_t[self.index] = np.trapz(self.histogram_old, dx=1) - np.trapz(histogram, dx=1)
         self.histogram_old = np.copy(histogram)
