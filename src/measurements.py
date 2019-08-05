@@ -11,7 +11,6 @@ class Measurements():
         self.num_items = num_items
         self.num_users = num_users
 
-
     def _generate_interaction_histogram(self, interactions):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
