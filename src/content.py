@@ -67,7 +67,7 @@ class ContentFiltering(Recommender):
         user_profiles = self.user_profiles / self.user_profiles.sum()
         super().train(user_profiles=user_profiles)
 
-    def interact(self, step=None, startup=False, rule=False):
+    def interact(self, step=None, startup=False, measurement_visualization_rule=False):
         if startup:
             num_new_items = self.num_items_per_iter
             num_recommended = 0
@@ -82,28 +82,31 @@ class ContentFiltering(Recommender):
         if num_recommended > 0:
             assert(num_recommended == recommended.shape[1])
         interactions = super().interact(recommended, num_new_items)
-        self.measure_equilibrium(interactions, step=step, rule=rule)
+        self.measure_equilibrium(interactions, step=step, 
+            measurement_visualization_rule=measurement_visualization_rule)
         self._store_interaction(interactions)
         self.debugger.log("System updates user profiles based on last interaction:\n" + str(self.user_profiles.astype(int)))
 
     def recommend(self, k=1):
         return super().recommend(k=k)
 
-    def startup_and_train(self, timesteps=50, rule=False):
+    def startup_and_train(self, timesteps=50, measurement_visualization_rule=False):
         self.debugger.log('Startup -- recommend random items')
-        return self.run(timesteps, startup=True, train_between_steps=False, rule=rule)
+        return self.run(timesteps, startup=True, train_between_steps=False, 
+            measurement_visualization_rule=measurement_visualization_rule)
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True, rule=False):
+    def run(self, timesteps=50, startup=False, train_between_steps=True,
+                                     measurement_visualization_rule=False):
         if not startup:
             self.debugger.log('Run -- interleave recommendation and random items from now on')
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             self.debugger.log('Step %d' % t)
-            if rule is not False:
-                evaluate = eval("t" + rule)
+            if measurement_visualization_rule is not False:
+                evaluate_rule = eval("t" + measurement_visualization_rule)
             else:
-                evaluate = rule
-            self.interact(step=t, startup=startup, rule=evaluate)
+                evaluate_rule = measurement_visualization_rule
+            self.interact(step=t, startup=startup, measurement_visualization_rule=evaluate_rule)
             #super().run(startup=False, train=train, step=step)
             if train_between_steps:
                 self.train()
@@ -115,5 +118,6 @@ class ContentFiltering(Recommender):
     def get_heterogeneity(self):
         return self.measurements.get_delta()
 
-    def measure_equilibrium(self, interactions, step, rule=False):
-        return self.measurements.measure_equilibrium(interactions, step=step, rule=rule)
+    def measure_equilibrium(self, interactions, step, measurement_visualization_rule=False):
+        return self.measurements.measure_equilibrium(interactions, step=step, 
+            visualization_rule=measurement_visualization_rule)

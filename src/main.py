@@ -64,11 +64,11 @@ if __name__ == '__main__':
             user_preferences=True, debugger=debugger, **rec_args[rec_type])
 
     # Startup
-    rec.startup_and_train(timesteps=const.NUM_STARTUP_ITER, rule=False)
+    rec.startup_and_train(timesteps=const.NUM_STARTUP_ITER, measurement_visualization_rule=False)
 
     # Runtime
     rec.run(timesteps=const.TIMESTEPS - const.NUM_STARTUP_ITER, train_between_steps=True,
-    rule="% 50 == 0")
+    measurement_visualization_rule="% 50 == 0")
 
     delta_t = rec.get_heterogeneity()
     

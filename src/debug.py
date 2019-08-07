@@ -39,6 +39,10 @@ class Debug():
     def get_logger(self, name):
         return self.logger[name]
 
+    def flush_all(self):
+        for _, name in enumerate(self.logger.keys()):
+            self.logger[name].handler.flush()
+
 # Class to configure debug logging module
 class DebugLogger():
     '''
@@ -51,17 +55,17 @@ class DebugLogger():
         self.logger.setLevel(level)
 
         # create console handler and set level to debug
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
+        self.handler = logging.StreamHandler()
+        self.handler.setLevel(logging.DEBUG)
 
         # create formatter
         formatter = logging.Formatter('%(name)s - %(message)s')
 
         # add formatter to handler
-        handler.setFormatter(formatter)
+        self.handler.setFormatter(formatter)
 
         # add handler to logger
-        self.logger.addHandler(handler)
+        self.logger.addHandler(self.handler)
 
         # test
         self._test_configured_logger()
