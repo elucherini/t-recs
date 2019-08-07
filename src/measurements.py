@@ -1,15 +1,13 @@
 import numpy as np
 
-import matplotlib.pyplot as plt
-plt.style.use('seaborn-whitegrid')
-
 class Measurements():
-    def __init__(self, num_items, num_users):
+    def __init__(self, num_items, num_users, debugger):
         self.delta_t = None
         self.index = None
         self.histogram_old = np.zeros(num_items)
         self.num_items = num_items
         self.num_users = num_users
+        self.debugger = debugger.get_logger(__name__.upper())
 
     def _generate_interaction_histogram(self, interactions):
         histogram = np.zeros(self.num_items)
@@ -20,22 +18,22 @@ class Measurements():
     # This measure of equilibrium corresponds to measuring whether interactions
     # are spread out among many items or only a few.
     # In other words, it looks at homogeneity vs heterogeneity
-    def measure_equilibrium(self, interactions, plot=False, step=None, interaction=None):
+    def measure_equilibrium(self, interactions, step, interaction=None, rule=False):
         histogram = self._generate_interaction_histogram(interactions)
         histogram[::-1].sort()
-        if plot:
-            plot_b = 1
-            plt.plot(np.arange(len(histogram)), histogram)
-            plt.title("Sorted interaction histogram at step " + str(step))
-            plt.xlabel("Item")
-            plt.ylabel("# interactions")
-            plt.show()
+        if self.debugger.is_enabled() and rule:
+            self.debugger.pyplot_plot(np.arange(histogram.shape[0]), histogram,
+                title="Sorted interaction histogram at step " + str(step),
+                xlabel="Item", ylabel="# interactions")
         self.delta_t[self.index] = np.trapz(self.histogram_old, dx=1) - np.trapz(histogram, dx=1)
         self.histogram_old = np.copy(histogram)
         self.index += 1
         return histogram
 
     def get_delta(self):
+        if self.debugger.can_show_results():
+            self.debugger.pyplot_plot(np.arange(self.delta_t.shape[0]), self.delta_t,
+                title='Heterogeneity', xlabel='Timestep', ylabel='Delta')
         return self.delta_t
 
     def set_delta(self, n):

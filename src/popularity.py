@@ -5,9 +5,9 @@ from user_preferences import UserPreferences
 import matplotlib.pyplot as plt
 
 class PopularityRecommender(Recommender):
-    def __init__(self, num_users, num_items, num_startup_iter=10, num_items_per_iter=10,
+    def __init__(self, num_users, num_items, num_items_per_iter=10,
         randomize_recommended=True, num_recommended=None, num_new_items=None,
-        user_preferences=False, debug_user_preferences=False):
+        user_preferences=True, debug_user_preferences=False):
         # TODO: check on invalid parameters
         self.user_profiles = np.ones((num_users, 1), dtype=int)
         self.item_attributes = np.zeros((1, num_items), dtype=int)
@@ -15,9 +15,9 @@ class PopularityRecommender(Recommender):
             preferences = UserPreferences(num_users, num_items, debug=debug_user_preferences)
         else:
             preferences = None
-        super().__init__(num_users, num_items, num_startup_iter, num_items_per_iter,
+        super().__init__(num_users, num_items, num_items_per_iter,
             randomize_recommended, num_recommended, num_new_items,
-            preferences, Measurements(num_items, num_users))
+            preferences, Measurements(num_items, num_users), debugger)
 
     def _store_interaction(self, interactions):
         self.item_attributes = np.add(self.item_attributes, interactions)

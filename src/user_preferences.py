@@ -4,8 +4,8 @@ import seaborn
 import matplotlib.pyplot as plt
 
 class UserPreferences():
-    def __init__(self, num_users, num_items, debug=False):
-        self.debug = debug
+    def __init__(self, num_users, num_items, debugger):
+        self.debugger = debugger.get_logger(__name__.upper())
         self.preferences = self._compute_preferences(num_users, num_items)
 
     def _compute_preferences(self, num_users, num_items):
@@ -14,7 +14,7 @@ class UserPreferences():
         #preferences = np.dot(general_user_preferences, general_item_attributes.T)
         #fraction = np.random.beta(np.full((num_users * num_items), 2), np.full((num_users * num_items), 10)).reshape((num_users, num_items))#self.distribution(**self.distribution_params)
         preferences = np.abs(np.random.normal(0, 5, size=(num_users, num_items)))
-        if self.debug:
+        if self.debugger.is_enabled():
             self.print_debug(preferences)
         # Only a fraction of the preferences is known to the users
         #return fraction * preferences
@@ -31,17 +31,22 @@ class UserPreferences():
         # 0.1 * np.random.dirichlet(np.full((num_items), 100))
         return mu_alpha #np.random.dirichlet(mu_alpha).reshape((1, num_items))
 
+    def get_preference_matrix(self, user=None):
+        if user is None:
+            return self.preferences
+        else:
+            return self.preferences[user, :]
+
     def get_user_choices(self, items, user_vector):
         m = self.preferences[user_vector.reshape((items.shape[0], 1)), items]
+        self.debugger.log('User scores for given items are:\n' + str(m))
         return m.argsort()[:,::-1][:,0]
 
     def print_debug(self, preferences):
         best_items = preferences.argmax(axis=1)
-        plt.style.use('seaborn-whitegrid')
-        plt.hist(best_items, np.arange(preferences.shape[1]))
-        plt.xlabel('Items')
-        plt.ylabel('# users who like item i the most')
-        plt.title('Histogram of users liking each item the most')
+        self.debugger.pyplot_plot(best_items, np.arange(preferences.shape[1]),
+            plot_func=plt.hist, xlabel='Items', ylabel='# users who like item i the most',
+            title='Histogram of users liking each item the most')
         plt.show()
 
 
