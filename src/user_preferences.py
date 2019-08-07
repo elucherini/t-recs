@@ -44,7 +44,7 @@ class UserPreferences():
 
     def print_debug(self, preferences):
         best_items = preferences.argmax(axis=1)
-        self.debugger.pyplot_plot(best_items, np.arange(preferences.shape[1]),
+        self.debugger.pyplot_plot(best_items, np.arange(preferences.shape[1] + 1),
             plot_func=plt.hist, xlabel='Items', ylabel='# users who like item i the most',
             title='Histogram of users liking each item the most')
         plt.show()
