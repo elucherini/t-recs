@@ -90,23 +90,21 @@ class ContentFiltering(Recommender):
     def recommend(self, k=1):
         return super().recommend(k=k)
 
-    def startup_and_train(self, timesteps=50, measurement_visualization_rule=False):
+    def startup_and_train(self, timesteps=50, 
+        measurement_visualization_rule= lambda x: False):
         self.debugger.log('Startup -- recommend random items')
         return self.run(timesteps, startup=True, train_between_steps=False, 
             measurement_visualization_rule=measurement_visualization_rule)
 
     def run(self, timesteps=50, startup=False, train_between_steps=True,
-                                     measurement_visualization_rule=False):
+                                     measurement_visualization_rule=lambda x: False):
         if not startup:
             self.debugger.log('Run -- interleave recommendation and random items from now on')
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             self.debugger.log('Step %d' % t)
-            if measurement_visualization_rule is not False:
-                evaluate_rule = eval("t" + measurement_visualization_rule)
-            else:
-                evaluate_rule = measurement_visualization_rule
-            self.interact(step=t, startup=startup, measurement_visualization_rule=evaluate_rule)
+            self.interact(step=t, startup=startup, 
+                measurement_visualization_rule=measurement_visualization_rule(t))
             #super().run(startup=False, train=train, step=step)
             if train_between_steps:
                 self.train()
