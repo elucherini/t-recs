@@ -8,7 +8,7 @@ class ActualUserScores():
     def __init__(self, num_users, item_representation, debugger):
         self.debugger = debugger.get_logger(__name__.upper())
         self.actual_scores = self._compute_actual_scores(num_users, item_representation,
-            spread=20)
+            spread=num_users/50)
 
     def _compute_actual_scores(self, num_users, item_representation, 
         spread=1000):
@@ -17,9 +17,7 @@ class ActualUserScores():
         user_profiles = user_profiles / user_profiles.sum(axis=1)[:,None]
         # Calculate actual user scores
         actual_scores = np.dot(user_profiles, item_representation)
-        self.debugger.log("Items:\n" + str(item_representation))
-        self.debugger.log("User profiles:\n" + str(user_profiles))
-        self.debugger.log("Actual score:\n" + str(actual_scores))
+        self.debugger.log("Actual user score:\n" + str(actual_scores))
         if self.debugger.is_enabled():
             self.print_debug(actual_scores)
         return actual_scores
@@ -71,4 +69,8 @@ if __name__ == '__main__':
 
     # Random binary item representation
     item_representation = np.random.binomial(1, .3, size=(num_items, A))
+
+    # Print item representation
+    logger = debugger.get_logger(__name__.upper())
+    logger.log("Items:\n" + str(item_representation))
     actual_scores = ActualUserScores(num_users, item_representation.T, debugger)
