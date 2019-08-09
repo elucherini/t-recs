@@ -80,7 +80,7 @@ class ContentFiltering(Recommender):
             num_new_items = self.num_items_per_iter
             num_recommended = 0
         elif self.randomize_recommended:
-            num_new_items = np.random.randint(1, self.num_items_per_iter)
+            num_new_items = np.random.randint(0, self.num_items_per_iter)
             num_recommended = self.num_items_per_iter-num_new_items
         else:
             # TODO: these may be constants or iterators on vectors
@@ -108,7 +108,7 @@ class ContentFiltering(Recommender):
     def run(self, timesteps=50, startup=False, train_between_steps=True,
                                      measurement_visualization_rule=lambda x: False):
         if not startup:
-            self.debugger.log('Run -- interleave recommendation and random items from ' + \
+            self.debugger.log('Run -- interleave recommendations and random items from ' + \
                 'now on')
         self.measurements.set_delta(timesteps)
         for t in range(timesteps):

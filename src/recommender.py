@@ -41,7 +41,7 @@ class Recommender(metaclass=ABCMeta):
             user_profiles = user_profiles 
         else:
             user_profiles = self.user_profiles
-            
+
         if item_attributes is not None:
             item_attributes = item_attributes
         else:
@@ -57,18 +57,25 @@ class Recommender(metaclass=ABCMeta):
     def recommend(self, k=1):
         indices_prime = self.indices[np.where(self.indices>=0)]
         indices_prime = indices_prime.reshape((self.num_users, -1))
+        #self.debugger.log('Indices_prime:\n' + str(indices_prime))
         if k > indices_prime.shape[1]:
             # TODO exception
-            print('recommend Nope')
+            print('Not enough items left!')
             return
         row = np.repeat(self.user_vector, indices_prime.shape[1])
         row = row.reshape((self.num_users, -1))
+        #self.debugger.log('row:\n' + str(row))
         s_filtered = self.predicted_scores[row, indices_prime]
+        #self.debugger.log('s_filtered\n' + str(s_filtered))
         permutation = s_filtered.argsort()
+        #self.debugger.log('permutation\n' + str(permutation))
         rec = indices_prime[row, permutation]
         probabilities = np.arange(1, rec.shape[1] + 1)
         probabilities = probabilities/probabilities.sum()
-        picks = np.random.choice(permutation[0], p=probabilities, size=(self.num_users, k))
+        #self.debugger.log('probabilities\n' + str(probabilities))
+        picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
+        #self.debugger.log('picks\n' + str(picks))
+        #self.debugger.log('recommendations\n' + str(rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]))
         #print(self.predicted_scores.argsort()[:,::-1][:,0:5])
         return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
         #return self.predicted_scores.argsort()[:,::-1][:,0:k]
