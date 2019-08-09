@@ -17,30 +17,31 @@ rec_dict = {'popularity':PopularityRecommender, 'content':ContentFiltering}
 rec_args = {'popularity': None,
             # A: number of attributes (must be integer);
             'content': {'A': None,
-            # items_representation: representation of items based on 
+            # item_representation: representation of items based on 
             # attributes (must be matrix)
-                        'items_representation': None}}
+                        'item_representation': None}}
 # Supported debug options, each representing a module
 debug_opt = {'MEASUREMENTS': False,
-            'USER_PREFERENCES': True,
-            'RECOMMENDER': True}
+            'USER_SCORES': True,
+            'RECOMMENDER': False}
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
 
 if __name__ == '__main__':
     # Set up
-    rec_args['content']['A'] = 5
-    rec_args['content']['items_representation'] = np.zeros((const.NUM_ITEMS, 
+    rec_args['content']['A'] = const.NUM_ATTRIBUTES
+    '''
+    rec_args['content']['item_representation'] = np.zeros((const.NUM_ITEMS, 
         rec_args['content']['A']), dtype=int)
     
-    for i, row in enumerate(rec_args['content']['items_representation']):
+    for i, row in enumerate(rec_args['content']['item_representation']):
         A = rec_args['content']['A']
         n_indices = np.random.randint(1, A)
         indices = np.random.randint(A, size=(n_indices))
         row[indices] = 1
-        rec_args['content']['items_representation'][i,:] = row
-    rec_args['content']['items_representation'] = rec_args['content']['items_representation'].T
-
+        rec_args['content']['item_representation'][i,:] = row
+    rec_args['content']['item_representation'] = rec_args['content']['item_representation'].T
+    '''
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('recommender', metavar='r', type=str, nargs=1,
@@ -57,11 +58,11 @@ if __name__ == '__main__':
     if rec_args[rec_type] is None:
         rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS,
             num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True,
-            user_preferences=True, debugger=debugger)
+            actual_user_scores=True, debugger=debugger)
     else:
         rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS,
             num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True,
-            user_preferences=True, debugger=debugger, **rec_args[rec_type])
+            actual_user_scores=True, debugger=debugger, **rec_args[rec_type])
 
     # Startup
     rec.startup_and_train(timesteps=const.NUM_STARTUP_ITER)

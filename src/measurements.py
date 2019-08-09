@@ -18,14 +18,16 @@ class Measurements():
     # This measure of equilibrium corresponds to measuring whether interactions
     # are spread out among many items or only a few.
     # In other words, it looks at homogeneity vs heterogeneity
-    def measure_equilibrium(self, interactions, step, interaction=None, visualization_rule=False):
+    def measure_equilibrium(self, interactions, step, interaction=None, 
+                                            visualization_rule=False):
         histogram = self._generate_interaction_histogram(interactions)
         histogram[::-1].sort()
         if self.debugger.is_enabled() and visualization_rule:
             self.debugger.pyplot_plot(np.arange(histogram.shape[0]), histogram,
                 title="Sorted interaction histogram at step " + str(step),
                 xlabel="Item", ylabel="# interactions")
-        self.delta_t[self.index] = np.trapz(self.histogram_old, dx=1) - np.trapz(histogram, dx=1)
+        self.delta_t[self.index] = np.trapz(self.histogram_old, dx=1) - \
+                                    np.trapz(histogram, dx=1)
         self.histogram_old = np.copy(histogram)
         self.index += 1
         return histogram

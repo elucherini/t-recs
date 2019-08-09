@@ -1,23 +1,24 @@
 import numpy as np
 from recommender import Recommender
 from measurements import Measurements
-from user_preferences import UserPreferences
+from user_scores import ActualUserScores
 import matplotlib.pyplot as plt
 
 class PopularityRecommender(Recommender):
     def __init__(self, num_users, num_items, num_items_per_iter=10,
         randomize_recommended=True, num_recommended=None, num_new_items=None,
-        user_preferences=True, debug_user_preferences=False):
+        actual_user_scores=True, debug_user_preferences=False):
         # TODO: check on invalid parameters
         self.user_profiles = np.ones((num_users, 1), dtype=int)
         self.item_attributes = np.zeros((1, num_items), dtype=int)
-        if user_preferences:
-            preferences = UserPreferences(num_users, num_items, debug=debug_user_preferences)
+        if actual_user_scores:
+            actual_scores = ActualUserScores(num_users, self.item_attributes, 
+                debug=debug_user_preferences)
         else:
-            preferences = None
+            actual_scores = None
         super().__init__(num_users, num_items, num_items_per_iter,
             randomize_recommended, num_recommended, num_new_items,
-            preferences, Measurements(num_items, num_users), debugger)
+            actual_scores, Measurements(num_items, num_users), debugger)
 
     def _store_interaction(self, interactions):
         self.item_attributes = np.add(self.item_attributes, interactions)
