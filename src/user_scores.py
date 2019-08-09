@@ -17,7 +17,6 @@ class ActualUserScores():
         user_profiles = user_profiles / user_profiles.sum(axis=1)[:,None]
         # Calculate actual user scores
         actual_scores = np.dot(user_profiles, item_representation)
-        self.debugger.log("Actual user score:\n" + str(actual_scores))
         if self.debugger.is_enabled():
             self.print_debug(actual_scores)
         return actual_scores
@@ -62,7 +61,6 @@ if __name__ == '__main__':
     num_items = 1125
     A = num_items
 
-
     # Random normalized representation
     #item_representation = np.random.randint(0, num_items, size=(num_items, A))
     #item_representation = item_representation / item_representation.sum(axis=1)[:,None]
@@ -74,3 +72,4 @@ if __name__ == '__main__':
     logger = debugger.get_logger(__name__.upper())
     logger.log("Items:\n" + str(item_representation))
     actual_scores = ActualUserScores(num_users, item_representation.T, debugger)
+    logger.log("Actual user score:\n" + str(actual_scores.actual_scores))
