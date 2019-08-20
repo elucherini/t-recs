@@ -5,9 +5,11 @@ from user_scores import ActualUserScores
 import matplotlib.pyplot as plt
 
 class ContentFiltering(Recommender):
-    def __init__(self, num_users, num_items, item_representation=None, A=100,
+    def __init__(self, num_users, num_items, item_representation=None, A=None,
         num_items_per_iter=10, randomize_recommended=True, num_recommended=None,
         num_new_items=None, actual_user_scores=True, debugger=None, measurements=None):
+        if A is None:
+            A = int(num_items - num_items / 10)
         if item_representation is None:
             measurements = Measurements(num_items, num_users, debugger)
             self.item_attributes = self._init_random_item_attributes(A, num_items, 
@@ -33,8 +35,7 @@ class ContentFiltering(Recommender):
             'attributes:\n' + str(self.user_profiles))
 
     def _init_random_item_attributes(self, A, num_items, binary=False):
-        # Binary representations
-        # TODO: non-random attributes?
+        # TODO: attributes from distributions
         if binary:
             dist = np.random.binomial(1, .3, size=(num_items, A))
         else:

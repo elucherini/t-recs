@@ -70,9 +70,9 @@ class Recommender(metaclass=ABCMeta):
         permutation = s_filtered.argsort()
         #self.debugger.log('permutation\n' + str(permutation))
         rec = indices_prime[row, permutation]
-        probabilities = np.arange(1, rec.shape[1] + 1)
+        probabilities = np.arange(1, rec.shape[1] + 1)**2
         probabilities = probabilities/probabilities.sum()
-        #self.debugger.log('probabilities\n' + str(probabilities))
+        self.debugger.log('Rec ordered:\n' + str(rec))
         picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
         #self.debugger.log('picks\n' + str(picks))
         #self.debugger.log('recommendations\n' + str(rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]))
