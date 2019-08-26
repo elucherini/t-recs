@@ -1,6 +1,10 @@
 import argparse
 import numpy as np
+
+# Uncomment one of the constant files
 import constants as const
+#import constants_small as const
+
 import matplotlib.pyplot as plt
 from enum import Enum
 
@@ -16,20 +20,20 @@ rec_dict = {'popularity':PopularityRecommender, 'content':ContentFiltering}
 # No additional arguments are supported for popularity rec sys
 rec_args = {'popularity': None,
             # A: number of attributes (must be integer);
-            'content': {'A': None,
+            'content': {'num_attributes': None,
             # item_representation: representation of items based on 
             # attributes (must be matrix)
                         'item_representation': None}}
 # Supported debug options, each representing a module
 debug_opt = {'MEASUREMENTS': False,
             'USER_SCORES': True,
-            'RECOMMENDER': False}
+            'RECOMMENDER': True}
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
 
 if __name__ == '__main__':
     # Set up
-    rec_args['content']['A'] = const.NUM_ATTRIBUTES
+    rec_args['content']['num_attributes'] = const.NUM_ATTRIBUTES
     '''
     rec_args['content']['item_representation'] = np.zeros((const.NUM_ITEMS, 
         rec_args['content']['A']), dtype=int)

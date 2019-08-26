@@ -9,6 +9,7 @@ class ActualUserScores():
         self.debugger = debugger.get_logger(__name__.upper())
         self.actual_scores = self._compute_actual_scores(num_users, item_representation,
             spread=num_users/50)
+        self.print_debug(self.actual_scores)
 
     def _compute_actual_scores(self, num_users, item_representation, 
         spread=1000):
@@ -17,8 +18,6 @@ class ActualUserScores():
         user_profiles = user_profiles / user_profiles.sum(axis=1)[:,None]
         # Calculate actual user scores
         actual_scores = np.dot(user_profiles, item_representation)
-        if self.debugger.is_enabled():
-            self.print_debug(actual_scores)
         return actual_scores
 
     def _compute_general_preferences(self, num_users):
@@ -32,6 +31,13 @@ class ActualUserScores():
         mu_alpha = np.random.random(size=(num_items, 1))
         # 0.1 * np.random.dirichlet(np.full((num_items), 100))
         return mu_alpha #np.random.dirichlet(mu_alpha).reshape((1, num_items))
+
+    def expand_items(self, item_representation, num_new_items):
+        new_scores = self._compute_actual_scores(self.actual_scores.shape[0],
+            item_representation[:,-num_new_items:])
+        self.actual_scores = np.concatenate((self.actual_scores, new_scores),
+            axis=1)
+        self.print_debug(self.actual_scores)
 
     def get_actual_user_scores(self, user=None):
         if user is None:
@@ -57,9 +63,10 @@ if __name__ == '__main__':
     # Debugger module
     debugger = Debug(__name__.upper(), True)
 
-    num_users = 1000
-    num_items = 1125
+    num_users = 3
+    num_items = 5
     A = num_items
+    num_new_items = 2
 
     # Random normalized representation
     #item_representation = np.random.randint(0, num_items, size=(num_items, A))
@@ -72,4 +79,9 @@ if __name__ == '__main__':
     logger = debugger.get_logger(__name__.upper())
     logger.log("Items:\n" + str(item_representation))
     actual_scores = ActualUserScores(num_users, item_representation.T, debugger)
+    logger.log("Actual user score:\n" + str(actual_scores.actual_scores))
+    new_items = np.random.binomial(1,.3, size=(num_new_items, A))
+    logger.log("Adding %d new items:\n%s" % (num_new_items, str(new_items)))
+    actual_scores.expand_items(np.concatenate((actual_scores.actual_scores, new_items), 
+        axis=0), num_new_items)
     logger.log("Actual user score:\n" + str(actual_scores.actual_scores))

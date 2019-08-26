@@ -45,8 +45,8 @@ class PopularityRecommender(Recommender):
         self._store_interaction(interaction_matrix)
 
     # Recommends items proportional to their popularity
-    def recommend(self, k=1):
-        return super().recommend(k)
+    def recommend(self, k=1, indices_prime=None):
+        return super().recommend(k, indices_prime)
 
     def startup_and_train(self, timesteps=50, debug=False):
         return super().run(timesteps, startup=True, train=False, debug=debug)

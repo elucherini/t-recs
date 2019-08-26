@@ -50,18 +50,30 @@ class Recommender(metaclass=ABCMeta):
         self.debugger.log('System updates predicted scores given by users (rows) ' + \
             'to items (columns):\n' + str(self.predicted_scores))
 
+    @abstractmethod
+    def _expand_items(self, num_new_items):
+        new_indices = np.tile(np.arange(self.num_items, self.num_items + num_new_items), 
+            (self.num_users,1))
+        self.indices = np.concatenate((self.indices, new_indices), axis=1)
+        self.num_items += num_new_items
+        self.actual_user_scores.expand_items(self.item_attributes, num_new_items)
+        self.measurements.expand_items(num_new_items)
+        self.debugger.log('Successfully added %d new items' % num_new_items)
+
     # TODO: what if I consistently only do k=1? In that case I might want to think of just sorting once
     #return self.scores.argsort()[-k:][::-1]
     # Assume scores two-dimensional
     @abstractmethod
-    def recommend(self, k=1):
-        indices_prime = self.indices[np.where(self.indices>=0)]
-        indices_prime = indices_prime.reshape((self.num_users, -1))
+    def recommend(self, k=1, indices_prime=None):
+        if indices_prime is None:
+            indices_prime = self.indices[np.where(self.indices>=0)]
+            indices_prime = indices_prime.reshape((self.num_users, -1))
         #self.debugger.log('Indices_prime:\n' + str(indices_prime))
-        if k > indices_prime.shape[1]:
-            # TODO exception
-            print('Not enough items left!')
-            return
+        if indices_prime.size == 0 or k > indices_prime.shape[1]:
+            self.debugger.log('Insufficient number of items left!')
+            self._expand_items()
+            indices_prime = self.indices[np.where(self.indices>=0)]
+            indices_prime = indices_prime.reshape((self.num_users, -1))
         row = np.repeat(self.user_vector, indices_prime.shape[1])
         row = row.reshape((self.num_users, -1))
         #self.debugger.log('row:\n' + str(row))
@@ -70,7 +82,7 @@ class Recommender(metaclass=ABCMeta):
         permutation = s_filtered.argsort()
         #self.debugger.log('permutation\n' + str(permutation))
         rec = indices_prime[row, permutation]
-        probabilities = np.arange(1, rec.shape[1] + 1)**2
+        probabilities = np.logspace(0.0, rec.shape[1]/10.0, num=rec.shape[1], base=2)
         probabilities = probabilities/probabilities.sum()
         self.debugger.log('Rec ordered:\n' + str(rec))
         picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
@@ -81,21 +93,27 @@ class Recommender(metaclass=ABCMeta):
         #return self.predicted_scores.argsort()[:,::-1][:,0:k]
 
     @abstractmethod
-    def interact(self, recommended, num_new_items):
-        # Current assumptions:
-        # 1. Interleave new items and recommended items
-        # 2. Each user interacts with one element depending on preference
-        if recommended is None and num_new_items == 0:
+    def interact(self, num_recommended, num_new_items):
+        if num_recommended == 0 and num_new_items == 0:
             # TODO throw exception here
             print("Nope")
             return
-        assert(np.count_nonzero(self.indices == -1) % self.num_users == 0)
+        if num_recommended > 0:
+            recommended = self.recommend(k=num_recommended)
+            assert(num_recommended == recommended.shape[1])
+        else:
+            recommended = None
+        # Current assumptions:
+        # 1. Interleave new items and recommended items
+        # 2. Each user interacts with one element depending on preference
         indices_prime = self.indices[np.where(self.indices>=0)]
         indices_prime = indices_prime.reshape((self.num_users, -1))
+        assert(np.count_nonzero(self.indices == -1) % self.num_users == 0)
         if indices_prime.shape[1] < num_new_items:
-            print("Not enough items")
-            # TODO exception
-            return
+            self.debugger.log('Insufficient number of items left!')
+            self._expand_items()
+            indices_prime = self.indices[np.where(self.indices>=0)]
+            indices_prime = indices_prime.reshape((self.num_users, -1))
         if num_new_items:
             col = np.random.randint(indices_prime.shape[1], size=(self.num_users, num_new_items))
             row = np.repeat(self.user_vector, num_new_items).reshape((self.num_users, -1))
@@ -113,7 +131,6 @@ class Recommender(metaclass=ABCMeta):
             self.debugger.log('System recommended these items (cols) to each user ' +\
                 '(rows):\n' + str(recommended))
             items = recommended
-        
         np.random.shuffle(items.T)
         #self.debugger.log("System recommends these items (columns) to each user (rows):\n" + str(items))
         if self.actual_user_scores is None:
