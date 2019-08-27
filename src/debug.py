@@ -17,12 +17,13 @@ class Debug():
         self.logger = dict()
         # If only one logger
         if not isinstance(names, list):
+            name = names
             # This determines whether to enable debugging log
             if enabled is True:
                 level = logging.DEBUG
             else:
                 level = logging.INFO
-            self.logger[names] = DebugLogger(names, level)
+            self.logger[name] = DebugLogger(name, level)
             return
         # If multiple loggers (common case)
         for name, en in zip(names, enabled):

@@ -24,7 +24,8 @@ class ContentFiltering(Recommender):
         self.user_profiles = np.zeros((num_users, num_items), dtype=int)
         if actual_user_scores:
             actual_scores = ActualUserScores(num_users, self.item_attributes, 
-                debugger)
+                debugger, distribution=np.random.normal, normalize=True,
+                loc=0, scale=num_users/50)
         else:
             actual_scores = None
         super().__init__(num_users, num_items, num_items_per_iter,
