@@ -15,8 +15,9 @@ class ActualUserScores():
     '' @num_users: number of users in the system
     '' @item_representation: description of items known by both users and system
     '' @debugger: Debug instance
-    '' @distribution: 
-    '' @kwargs: arguments of distribution except for size
+    '' @distribution: distribution for random sampling
+    '' @normalize: set to False if user_profiles should not be normalized
+    '' @**kwargs: arguments of distribution (leave out size)
     '''
     def __init__(self, num_users, item_representation, debugger, distribution=np.random.normal, 
         normalize=True, **kwargs):
@@ -30,10 +31,12 @@ class ActualUserScores():
     '' Internal function to compute user scores
     '' @num_users: number of users
     '' @item_representation: description of items
-    '' @param: parameters of distribution
+    '' @distribution: distribution for random sampling
+    '' @**kwargs: arguments of distribution (leave out size)
     '''
     def _compute_actual_scores(self, num_users, item_representation, 
         distribution=np.random.normal, **kwargs):
+        # Store value of normalize and remove from kwargs
         if 'normalize' in kwargs:
             normalize = kwargs.pop('normalize')
         else:
@@ -51,9 +54,12 @@ class ActualUserScores():
     '' This function should be called when new items are introduced at runtime
     '' @item_representation: description of items
     '' @num_new_items: number of items introduced at runtime
+    '' @normalize: set to False if user_profiles should not be normalized
+    '' @distribution: distribution for random sampling
+    '' @**kwargs: arguments of distribution (leave out size)
     '''
-    def expand_items(self, item_representation, num_new_items, distribution=np.random.normal,
-        **kwargs):
+    def expand_items(self, item_representation, num_new_items, normalize=True,
+        distribution=np.random.normal, **kwargs):
         new_scores = self._compute_actual_scores(self.actual_scores.shape[0],
             item_representation[:,-num_new_items:], distribution=distribution,
             **kwargs)
@@ -65,6 +71,7 @@ class ActualUserScores():
     '' Return the actual user scores.
     '' If @user is not None, the function returns the actual scores for user u.
     '' @user: user id (index in the matrix)
+    '' TODO: expand this
     '''
     def get_actual_user_scores(self, user=None):
         if user is None:

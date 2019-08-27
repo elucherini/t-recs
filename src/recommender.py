@@ -56,7 +56,6 @@ class Recommender(metaclass=ABCMeta):
             (self.num_users,1))
         self.indices = np.concatenate((self.indices, new_indices), axis=1)
         self.num_items += num_new_items
-        self.actual_user_scores.expand_items(self.item_attributes, num_new_items)
         self.measurements.expand_items(num_new_items)
         self.debugger.log('Successfully added %d new items' % num_new_items)
 
