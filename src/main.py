@@ -18,7 +18,7 @@ rec_dict = {'popularity':PopularityRecommender, 'content':ContentFiltering}
 # DO NOT CHANGE THE KEYS OF THE FOLLOWING DICTIONARIES
 # Supported additional arguments for each recommender system
 # No additional arguments are supported for popularity rec sys
-rec_args = {'popularity': None,
+rec_args = {'popularity': {},
             # A: number of attributes (must be integer);
             'content': {'num_attributes': None,
             # item_representation: representation of items based on 
@@ -58,15 +58,16 @@ if __name__ == '__main__':
     # Create instance
     args = parser.parse_args()
     rec_type = args.recommender[0]
-
+    '''
     if rec_args[rec_type] is None:
         rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS,
             num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True,
             actual_user_scores=True, debugger=debugger)
     else:
-        rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS,
-            num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True,
-            actual_user_scores=True, debugger=debugger, **rec_args[rec_type])
+    '''
+    rec = rec_dict[rec_type](const.NUM_USERS, const.NUM_ITEMS,
+        num_items_per_iter=const.NUM_ITEMS_PER_ITER, randomize_recommended=True,
+        actual_user_scores=True, debugger=debugger, **rec_args[rec_type])
 
     # Startup
     rec.startup_and_train(timesteps=const.NUM_STARTUP_ITER)

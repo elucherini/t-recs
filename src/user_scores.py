@@ -13,9 +13,10 @@ from debug import Debug
 class ActualUserScores():
     '''
     '' @num_users: number of users in the system
-    '' @item_representation: description of items known by both users and system
+    '' @item_representation: description of items known by both users and system. The 
+    ''      dimensions of this matrix must be |A|x|I|.
     '' @debugger: Debug instance
-    '' @distribution: distribution for random sampling
+    '' @distribution: distribution for random sampling of user profiles
     '' @normalize: set to False if user_profiles should not be normalized
     '' @**kwargs: arguments of distribution (leave out size)
     '''
@@ -31,7 +32,7 @@ class ActualUserScores():
     '' Internal function to compute user scores
     '' @num_users: number of users
     '' @item_representation: description of items
-    '' @distribution: distribution for random sampling
+    '' @distribution: distribution for random sampling of user profiles
     '' @**kwargs: arguments of distribution (leave out size)
     '''
     def _compute_actual_scores(self, num_users, item_representation, 
@@ -41,11 +42,12 @@ class ActualUserScores():
             normalize = kwargs.pop('normalize')
         else:
             normalize = True
+        # Compute user profiles (|U|x|A|)
         user_profiles = abs(distribution(**kwargs, 
             size=(num_users, item_representation.shape[0])))
         if normalize:
             user_profiles = user_profiles / user_profiles.sum(axis=1)[:,None]
-        # Calculate actual user scores
+        # Compute actual user scores
         actual_scores = np.dot(user_profiles, item_representation)
         return actual_scores
 
@@ -55,14 +57,16 @@ class ActualUserScores():
     '' @item_representation: description of items
     '' @num_new_items: number of items introduced at runtime
     '' @normalize: set to False if user_profiles should not be normalized
-    '' @distribution: distribution for random sampling
+    '' @distribution: distribution for random sampling of user profiles
     '' @**kwargs: arguments of distribution (leave out size)
     '''
     def expand_items(self, item_representation, num_new_items, normalize=True,
         distribution=np.random.normal, **kwargs):
+        # Compute actual user scores for new items
         new_scores = self._compute_actual_scores(self.actual_scores.shape[0],
             item_representation[:,-num_new_items:], distribution=distribution,
             **kwargs)
+        # Update actual user scores
         self.actual_scores = np.concatenate((self.actual_scores, new_scores),
             axis=1)
         self._print_debug()
@@ -106,10 +110,11 @@ class ActualUserScores():
 if __name__ == '__main__':
     # Debugger module
     debugger = Debug(__name__.upper(), True)
+    logger = debugger.get_logger(__name__.upper())
 
     num_users = 3
     num_items = 5
-    A = num_items
+    A = num_items - 1
     num_new_items = 2
 
     # Random normalized representation
@@ -119,12 +124,32 @@ if __name__ == '__main__':
     # Random binary item representation
     item_representation = np.random.binomial(1, .3, size=(num_items, A))
 
+    # Custom distribution; here, we wrap around a normal distribution to show
+    # that any distribution, not just the ones included in numpy.random, can be
+    # used
+    #  
+    # FIXME: When defining this function, we must assume size is passed by the caller. 
+    # This is probably not intuitive enough
+    def my_distribution(param, size=None):
+        if size is None:
+            logger.log('No size was given -- exit')
+            return
+        matrix = np.random.binomial(1, param, size=size)
+        index = np.random.randint(size[0])
+        logger.log('The distribution is binomial. However, for ' + \
+            'the sake of it, we change element [0, %d] into a 7' % index)
+        matrix[0, index] = 7
+        return matrix
+
     # Print item representation
-    logger = debugger.get_logger(__name__.upper())
-    logger.log("Items:\n" + str(item_representation))
+    logger.log("Items (|I|x|A|):\n" + str(item_representation))
+    # Compute scores
     actual_scores = ActualUserScores(num_users, item_representation.T, debugger,
-        normalize=True, loc=0, scale=3)
-    logger.log("Actual user score:\n" + str(actual_scores.actual_scores))
+        normalize=False, distribution=my_distribution, param=.5)
+    logger.log("Actual user score (|U|x|I|) with custom distribution:\n" + \
+        str(actual_scores.actual_scores))
+
+    # Define new items
     new_items = np.random.binomial(1,.3, size=(num_new_items, A))
     logger.log("Adding %d new items:\n%s" % (num_new_items, str(new_items)))
     actual_scores.expand_items(np.concatenate((actual_scores.actual_scores, new_items), 
