@@ -56,7 +56,6 @@ class Recommender(metaclass=ABCMeta):
             (self.num_users,1))
         self.indices = np.concatenate((self.indices, new_indices), axis=1)
         self.num_items += num_new_items
-        self.measurements.expand_items(num_new_items)
         self.debugger.log('Successfully added %d new items' % num_new_items)
 
     # TODO: what if I consistently only do k=1? In that case I might want to think of just sorting once
@@ -83,9 +82,8 @@ class Recommender(metaclass=ABCMeta):
         rec = indices_prime[row, permutation]
         probabilities = np.logspace(0.0, rec.shape[1]/10.0, num=rec.shape[1], base=2)
         probabilities = probabilities/probabilities.sum()
-        self.debugger.log('Rec ordered:\n' + str(rec))
-        picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
-        #self.debugger.log('picks\n' + str(picks))
+        self.debugger.log('Items ordered by preference for each user:\n' + str(rec))
+        picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k)) 
         #self.debugger.log('recommendations\n' + str(rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]))
         #print(self.predicted_scores.argsort()[:,::-1][:,0:5])
         return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
@@ -100,19 +98,23 @@ class Recommender(metaclass=ABCMeta):
         if num_recommended > 0:
             recommended = self.recommend(k=num_recommended)
             assert(num_recommended == recommended.shape[1])
+            assert(recommended.shape[0] == self.num_users)
+            self.debugger.log('System recommended these items (cols) to each user ' +\
+                '(rows):\n' + str(recommended))
         else:
             recommended = None
+        indices_prime = self.indices[np.where(self.indices>=0)]
+        indices_prime = indices_prime.reshape((self.num_users, -1))
         # Current assumptions:
         # 1. Interleave new items and recommended items
         # 2. Each user interacts with one element depending on preference
-        indices_prime = self.indices[np.where(self.indices>=0)]
-        indices_prime = indices_prime.reshape((self.num_users, -1))
         assert(np.count_nonzero(self.indices == -1) % self.num_users == 0)
         if indices_prime.shape[1] < num_new_items:
             self.debugger.log('Insufficient number of items left!')
             self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
+
         if num_new_items:
             col = np.random.randint(indices_prime.shape[1], size=(self.num_users, num_new_items))
             row = np.repeat(self.user_vector, num_new_items).reshape((self.num_users, -1))
@@ -120,15 +122,11 @@ class Recommender(metaclass=ABCMeta):
             self.debugger.log('System picked these items (cols) randomly for each user ' + \
                 '(rows):\n' + str(new_items))
         
-        if recommended is not None and num_new_items:
-            self.debugger.log('System recommended these items (cols) to each user ' + \
-                '(rows):\n' + str(recommended))
+        if num_recommended and num_new_items:
             items = np.concatenate((recommended, new_items), axis=1)
         elif num_new_items:
             items = new_items
         else:
-            self.debugger.log('System recommended these items (cols) to each user ' +\
-                '(rows):\n' + str(recommended))
             items = recommended
         np.random.shuffle(items.T)
         #self.debugger.log("System recommends these items (columns) to each user (rows):\n" + str(items))

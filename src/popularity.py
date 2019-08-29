@@ -18,7 +18,7 @@ class PopularityRecommender(Recommender):
             actual_scores = None
         super().__init__(num_users, num_items, num_items_per_iter,
             randomize_recommended, num_recommended, num_new_items,
-            actual_scores, Measurements(num_items, num_users), debugger)
+            actual_scores, Measurements(num_users, debugger), debugger)
 
     def _store_interaction(self, interactions):
         self.item_attributes = np.add(self.item_attributes, interactions)

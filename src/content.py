@@ -13,13 +13,12 @@ class ContentFiltering(Recommender):
         #self.num_attributes = num_attributes
         self.binary = True
         if item_representation is None:
-            measurements = Measurements(num_items, num_users, debugger)
+            measurements = Measurements(debugger)
             self.item_attributes = self._init_random_item_attributes(num_attributes, 
                 num_items, binary=self.binary)
         else:
             self.item_attributes = item_representation
-            measurements = Measurements(self.item_attributes.shape[1], num_users, 
-                debugger)
+            measurements = Measurements(debugger)
         # TODO: user profiles should be learned from users' interactions
         self.user_profiles = np.zeros((num_users, num_items), dtype=int)
         if actual_user_scores:
@@ -143,5 +142,5 @@ class ContentFiltering(Recommender):
         return self.measurements.get_delta()
 
     def measure_equilibrium(self, interactions, step, measurement_visualization_rule=False):
-        return self.measurements.measure_equilibrium(interactions, step=step, 
-            visualize=measurement_visualization_rule)
+        return self.measurements.measure_equilibrium(step, interactions, self.num_users,
+            self.num_items, visualize=measurement_visualization_rule)
