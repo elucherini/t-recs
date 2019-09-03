@@ -10,12 +10,13 @@ class Recommender(metaclass=ABCMeta):
         randomize_recommended=True, num_recommended=None, num_new_items=None,
         actual_user_scores=False, measurements=None, debugger=None):
         # NOTE: Children classes must implement user_profiles and item_attributes
-        self.predicted_scores = None
+        self.debugger = debugger.get_logger(__name__.upper())
+        # set self.predicted_scores
+        self.train(normalize=False)
         self.measurements = measurements
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
-        self.debugger = debugger.get_logger(__name__.upper())
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
         if not randomize_recommended:
@@ -73,6 +74,8 @@ class Recommender(metaclass=ABCMeta):
         row = np.repeat(self.user_vector, indices_prime.shape[1])
         row = row.reshape((self.num_users, -1))
         #self.debugger.log('row:\n' + str(row))
+        self.debugger.log('Row:\n' + str(row))
+        self.debugger.log('Indices_prime:\n' + str(indices_prime))
         s_filtered = self.predicted_scores[row, indices_prime]
         #self.debugger.log('s_filtered\n' + str(s_filtered))
         permutation = s_filtered.argsort()

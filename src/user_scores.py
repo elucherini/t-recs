@@ -24,8 +24,8 @@ class ActualUserScores():
         distribution=np.random.normal, normalize=True, **kwargs):
         kwargs['normalize'] = normalize
         # Compute actual user profiles (|U|x|A|)
-        self.user_profiles = self._compute_user_profiles(num_users, item_representation.shape[0],
-        distribution=distribution, **kwargs)
+        self.user_profiles = self._compute_user_profiles(num_users, 
+            item_representation.shape[0], distribution=distribution, **kwargs)
         # Compute actual user scores (|U|x|I|)
         self.actual_scores = self._compute_actual_scores(self.user_profiles,
             item_representation)
@@ -55,8 +55,7 @@ class ActualUserScores():
         else:
             normalize = True
         # Compute user profiles (|U|x|A|)
-        user_profiles = abs(distribution(**kwargs, 
-            size=(num_users, num_attr)))
+        user_profiles = abs(distribution(**kwargs, size=(num_users, num_attr)))
         if normalize:
             user_profiles = user_profiles / user_profiles.sum(axis=1)[:,None]
         return user_profiles
@@ -71,6 +70,9 @@ class ActualUserScores():
     '''
     def expand_items(self, item_representation):
         # Compute actual user scores for new items
+        assert(item_representation.shape[0] == self.user_profiles.shape[1])
+        if item_representation.shape[1] < self.actual_scores.shape[1]:
+            raise ValueError("Wrong size for item_representation: ")
         new_scores = self._compute_actual_scores(self.user_profiles,
             item_representation)
         # Update actual user scores

@@ -34,8 +34,6 @@ class ContentFiltering(Recommender):
         self.debugger.log('Num attributes: %d' % self.item_attributes.shape[0])
         self.debugger.log('Attributes of each item (rows):\n%s' % \
             (str(self.item_attributes.T)))
-        self.debugger.log('User profiles known to the system represented by their ' + \
-            'attributes:\n%s' % str(self.user_profiles))
 
     def _init_random_item_attributes(self, num_attributes, num_items, binary=False):
         # TODO: attributes from distributions
@@ -86,9 +84,12 @@ class ContentFiltering(Recommender):
         self.actual_user_scores.expand_items(self.item_attributes)
         self.train()
 
-    def train(self):
+    def train(self, normalize=True):
         # Normalize user_profiles
-        user_profiles = self.user_profiles / self.user_profiles.sum(axis=1)[:,None]
+        if normalize:
+            user_profiles = self.user_profiles / self.user_profiles.sum(axis=1)[:,None]
+        else:
+            user_profiles = self.user_profiles
         super().train(user_profiles=user_profiles)
 
     def interact(self, step=None, startup=False, measurement_visualization_rule=False):
