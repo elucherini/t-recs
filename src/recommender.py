@@ -32,8 +32,6 @@ class Recommender(metaclass=ABCMeta):
         self.debugger.log('Num items: %d' % self.num_items)
         self.debugger.log('Users: %d' % self.num_users)
         self.debugger.log('Items per iter: %d' % self.num_items_per_iter)
-        self.debugger.log('Actual scores given by users (rows) to items (columns), ' + \
-            'unknown to system:\n' + str(self.actual_user_scores.get_actual_user_scores()))
 
     # Train recommender system
     def train(self, user_profiles=None, item_attributes=None):

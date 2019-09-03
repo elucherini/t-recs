@@ -78,14 +78,12 @@ class ContentFiltering(Recommender):
         if num_new_items is None:
             num_new_items = 2 * self.num_items_per_iter
         super()._expand_items(num_new_items)
-        self.actual_user_scores.expand_items(self.item_attributes, num_new_items,
-            distribution=np.random.normal, normalize=True, loc=0,
-            scale=self.num_users/50)
         num_attributes = self.item_attributes.shape[0]
         new_item_attributes = self._init_random_item_attributes(num_attributes, 
             num_new_items, self.binary)
         self.item_attributes = np.concatenate((self.item_attributes, new_item_attributes),
             axis=1)
+        self.actual_user_scores.expand_items(self.item_attributes)
         self.train()
 
     def train(self):

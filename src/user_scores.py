@@ -20,23 +20,35 @@ class ActualUserScores():
     '' @normalize: set to False if user_profiles should not be normalized
     '' @**kwargs: arguments of distribution (leave out size)
     '''
-    def __init__(self, num_users, item_representation, debugger, distribution=np.random.normal, 
-        normalize=True, **kwargs):
+    def __init__(self, num_users, item_representation, debugger, 
+        distribution=np.random.normal, normalize=True, **kwargs):
         kwargs['normalize'] = normalize
-        self.actual_scores = self._compute_actual_scores(num_users, item_representation,
-            distribution=distribution, **kwargs)
-        self.debugger = debugger.get_logger(__name__.upper())
+        # Compute actual user profiles (|U|x|A|)
+        self.user_profiles = self._compute_user_profiles(num_users, item_representation.shape[0],
+        distribution=distribution, **kwargs)
+        # Compute actual user scores (|U|x|I|)
+        self.actual_scores = self._compute_actual_scores(self.user_profiles,
+            item_representation)
+        try:
+            self.debugger = debugger.get_logger(__name__.upper())
+        except AttributeError as e:
+            print("Error! Measurements argument 'debugger' must be an instance of Debug")
+            raise
         self._print_debug()
 
     '''
-    '' Internal function to compute user scores
+    '' Internal function to compute actual user scores
     '' @num_users: number of users
     '' @item_representation: description of items
     '' @distribution: distribution for random sampling of user profiles
     '' @**kwargs: arguments of distribution (leave out size)
     '''
-    def _compute_actual_scores(self, num_users, item_representation, 
-        distribution=np.random.normal, **kwargs):
+    def _compute_actual_scores(self, user_profiles, item_representation):
+        # Compute actual user scores
+        return np.dot(user_profiles, item_representation)
+
+    def _compute_user_profiles(self, num_users, num_attr, distribution=np.random.normal,
+        **kwargs):
         # Store value of normalize and remove from kwargs
         if 'normalize' in kwargs:
             normalize = kwargs.pop('normalize')
@@ -44,31 +56,26 @@ class ActualUserScores():
             normalize = True
         # Compute user profiles (|U|x|A|)
         user_profiles = abs(distribution(**kwargs, 
-            size=(num_users, item_representation.shape[0])))
+            size=(num_users, num_attr)))
         if normalize:
             user_profiles = user_profiles / user_profiles.sum(axis=1)[:,None]
-        # Compute actual user scores
-        actual_scores = np.dot(user_profiles, item_representation)
-        return actual_scores
+        return user_profiles
 
     '''
     '' Compute user scores of new items
     '' This function should be called when new items are introduced at runtime
     '' @item_representation: description of items
     '' @num_new_items: number of items introduced at runtime
-    '' @normalize: set to False if user_profiles should not be normalized
     '' @distribution: distribution for random sampling of user profiles
     '' @**kwargs: arguments of distribution (leave out size)
     '''
-    def expand_items(self, item_representation, num_new_items, normalize=True,
-        distribution=np.random.normal, **kwargs):
+    def expand_items(self, item_representation):
         # Compute actual user scores for new items
-        new_scores = self._compute_actual_scores(self.actual_scores.shape[0],
-            item_representation[:,-num_new_items:], distribution=distribution,
-            **kwargs)
+        new_scores = self._compute_actual_scores(self.user_profiles,
+            item_representation)
         # Update actual user scores
-        self.actual_scores = np.concatenate((self.actual_scores, new_scores),
-            axis=1)
+        self.actual_scores = new_scores#np.concatenate((self.actual_scores, new_scores),
+        #    axis=1)
         self._print_debug()
 
     '''
@@ -104,6 +111,8 @@ class ActualUserScores():
             plot_func=plt.hist, xlabel='Items', ylabel='# users who like item i the most',
             title='Histogram of users liking each item the most')
         plt.show()
+        self.debugger.log('Actual scores given by users (rows) to items (columns), ' + \
+            'unknown to system:\n' + str(self.get_actual_user_scores()))
 
 
 # Unit test
