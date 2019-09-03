@@ -14,9 +14,12 @@ class Debug():
     ''     number of elements
     '''
     def __init__(self, names, enabled=False):
-        self.logger = dict()
         # If only one logger
+        self.logger = dict()
         if not isinstance(names, list):
+            if not isinstance(enabled, bool):
+                raise TypeError("Argument enabled must be a " + \
+                    "bool or a list of bools, but it's " + str(type(enabled)))
             name = names
             # This determines whether to enable debugging log
             if enabled is True:
@@ -25,8 +28,16 @@ class Debug():
                 level = logging.INFO
             self.logger[name] = DebugLogger(name, level)
             return
+        
         # If multiple loggers (common case)
+        if len(names) != len(enabled):
+            raise ValueError("Length of arguments must be the same" + \
+                "but they are " + str(len(names)) + " and " + str(len(enabled)))
         for name, en in zip(names, enabled):
+            print(name, en)
+            if not isinstance(en, bool):
+                raise TypeError("Argument enabled must be a" + \
+                    "bool or a list of bools, but it's" + str(type(en)))
             if en is True:
                 level = logging.DEBUG
             else:
@@ -40,6 +51,9 @@ class Debug():
     def get_logger(self, name):
         return self.logger[name]
 
+    '''
+    '' Flush all loggers
+    '''
     def flush_all(self):
         for _, name in enumerate(self.logger.keys()):
             self.logger[name].handler.flush()
@@ -115,7 +129,7 @@ class DebugLogger():
             plt.xlabel(xlabel)
         if ylabel is not None:
             plt.ylabel(ylabel)
-        self.log('Plot: ' + log_msg)
+        self.log('Plot ' + log_msg)
         plt.show()
 
     # TODO implement
@@ -124,3 +138,6 @@ class DebugLogger():
     '''
     #def seaborn_plot(self, plot_func=sns., *plot_args, title=None):
     #   return
+
+if __name__ == '__main__':
+    d = Debug('a', False)

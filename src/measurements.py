@@ -19,8 +19,9 @@ class Measurements():
         self.default_increment = default_increment
         try:
             self.debugger = debugger.get_logger(__name__.upper())
-        except Exception as e:
-            print(e)
+        except AttributeError as e:
+            print("Error! Measurements argument 'debugger' must be an instance of Debug")
+            raise
         self.debugger.log("Delta size set to: %d" % self.delta_t.size)
         #self._expand_delta()
 
@@ -64,6 +65,7 @@ class Measurements():
         visualize=False):
         if self.delta_t is None or self.index >= self.delta_t.size:
             self._expand_delta()
+        assert(interactions.size == num_users)
         histogram = self._generate_interaction_histogram(interactions, num_users,
             num_items)
         histogram[::-1].sort()
@@ -84,11 +86,12 @@ class Measurements():
     '' Return measurement
     '''
     def get_delta(self):
-        if self.debugger.can_show_results():
-            x = np.arange(self.delta_t[:self.index].shape[0])
-            y = self.delta_t[:self.index]
-            self.debugger.pyplot_plot(x, y, title='Heterogeneity', xlabel='Timestep', 
-                ylabel='Delta')
+        #if self.debugger.can_show_results():
+        collected_data = self.delta_t[:self.index]
+        x = np.arange(collected_data.shape[0])
+        y = collected_data
+        self.debugger.pyplot_plot(x, y, title='Heterogeneity', xlabel='Timestep', 
+            ylabel='Delta')
         return self.delta_t[:self.index]
 
 if __name__ == '__main__':
