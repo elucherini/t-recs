@@ -26,8 +26,8 @@ rec_args = {'popularity': {},
                         'item_representation': None}}
 # Supported debug options, each representing a module
 debug_opt = {'MEASUREMENTS': False,
-            'USER_SCORES': True,
-            'RECOMMENDER': True}
+            'USER_SCORES': False,
+            'RECOMMENDER': False}
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
 
@@ -76,5 +76,5 @@ if __name__ == '__main__':
     rec.run(timesteps=const.TIMESTEPS - const.NUM_STARTUP_ITER, train_between_steps=True,
     measurement_visualization_rule=lambda x: x % 50 == 0)
 
-    delta_t = rec.get_heterogeneity()
+    delta_t = rec.get_measurements()
     

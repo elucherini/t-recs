@@ -104,7 +104,7 @@ class ContentFiltering(Recommender):
             num_new_items = self.num_new_items
             num_recommended = self.num_recommended
         interactions = super().interact(num_recommended, num_new_items)
-        self.measure_equilibrium(interactions, step=step, 
+        self.measure_content(interactions, step=step, 
             measurement_visualization_rule=measurement_visualization_rule)
         self._store_interaction(interactions)
         self.debugger.log("System updates user profiles based on last interaction:\n" + \
@@ -138,8 +138,21 @@ class ContentFiltering(Recommender):
         #return super().run(timesteps, startup=False, train=train)
 
     def get_heterogeneity(self):
-        return self.measurements.get_delta()
+        heterogeneity = self.measurements.get_measurements()['delta']
+        self.debugger.pyplot_plot(heterogeneity['x'], heterogeneity['y'], title='Heterogeneity', xlabel='Timestep', 
+            ylabel='Delta')
+        return heterogeneity
 
-    def measure_equilibrium(self, interactions, step, measurement_visualization_rule=False):
-        return self.measurements.measure_equilibrium(step, interactions, self.num_users,
-            self.num_items, visualize=measurement_visualization_rule)
+    def get_measurements(self):
+        measurements = self.measurements.get_measurements()
+        for name, measure in measurements.items():
+            self.debugger.pyplot_plot(measure['x'], measure['y'],
+                title=str(name.capitalize()), xlabel='Timestep', 
+                ylabel=str(name))
+        return measurements
+
+    def measure_content(self, interactions, step, measurement_visualization_rule=False):
+        self.measurements.measure(step, interactions, self.num_users,
+            self.num_items, self.predicted_scores,
+            self.actual_user_scores.get_actual_user_scores(),
+            visualize=measurement_visualization_rule)
