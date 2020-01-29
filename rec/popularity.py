@@ -1,8 +1,7 @@
 import numpy as np
-from recommender import Recommender
-from measurements import Measurements
-from user_scores import ActualUserScores
-import matplotlib.pyplot as plt
+from .recommender import Recommender
+from .measurements import Measurements
+from .user_scores import ActualUserScores
 
 class PopularityRecommender(Recommender):
     def __init__(self, num_users, num_items, num_items_per_iter=10,
@@ -26,7 +25,7 @@ class PopularityRecommender(Recommender):
     def train(self):
         return super().train()
 
-    def interact(self, plot=False, step=None, startup=False):
+    def interact(self, step=None, startup=False):
         if startup:
             num_new_items = self.num_items_per_iter
             num_recommended = 0
