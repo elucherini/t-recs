@@ -75,11 +75,11 @@ class ContentFiltering(Recommender, VerboseMode):
             user_profiles = self.user_profiles
         Recommender.train(self, user_profiles=user_profiles)
 
-    def interact(self, step=None, startup=False, measurement_visualization_rule=False):
+    def interact(self, step=None, startup=False):
         if startup:
             num_new_items = self.num_items_per_iter
             num_recommended = 0
-        elif self.randomize_recommended:
+        else:
             num_new_items = np.random.randint(0, self.num_items_per_iter)
             num_recommended = self.num_items_per_iter-num_new_items
         '''
@@ -89,8 +89,7 @@ class ContentFiltering(Recommender, VerboseMode):
             num_recommended = self.num_recommended
         '''
         interactions = Recommender.interact(self, num_recommended, num_new_items)
-        self.measure_content(interactions, step=step, 
-            measurement_visualization_rule=measurement_visualization_rule)
+        self.measure_content(interactions, step=step)
         self._store_interaction(interactions)
         self.log("System updates user profiles based on last interaction:\n" + \
             str(self.user_profiles.astype(int)))
@@ -98,22 +97,18 @@ class ContentFiltering(Recommender, VerboseMode):
     def recommend(self, k=1, indices_prime=None):
         return Recommender.recommend(self, k=k, indices_prime=indices_prime)
 
-    def startup_and_train(self, timesteps=50, 
-                measurement_visualization_rule= lambda x: False):
+    def startup_and_train(self, timesteps=50):
         self.log('Startup -- recommend random items')
-        return self.run(timesteps, startup=True, train_between_steps=False, 
-            measurement_visualization_rule=measurement_visualization_rule)
+        return self.run(timesteps, startup=True, train_between_steps=False)
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True,
-                                     measurement_visualization_rule=lambda x: False):
+    def run(self, timesteps=50, startup=False, train_between_steps=True):
         if not startup:
             self.log('Run -- interleave recommendations and random items ' + \
                 'from now on')
         #self.measurements.set_delta(timesteps)
         for t in range(timesteps):
             self.log('Step %d' % t)
-            self.interact(step=t, startup=startup, 
-                measurement_visualization_rule=measurement_visualization_rule(t))
+            self.interact(step=t, startup=startup)
             #super().run(startup=False, train=train, step=step)
             if train_between_steps:
                 self.train()
@@ -134,7 +129,7 @@ class ContentFiltering(Recommender, VerboseMode):
             #    ylabel=str(name))
         return measurements
 
-    def measure_content(self, interactions, step, measurement_visualization_rule=False):
+    def measure_content(self, interactions, step):
         self.measurements.measure(step, interactions, self.num_users,
             self.num_items, self.predicted_scores,
             self.actual_user_scores.get_actual_user_scores())

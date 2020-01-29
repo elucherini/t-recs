@@ -5,3 +5,4 @@ from .popularity import PopularityRecommender
 from .debug import VerboseMode, DebugLogger
 from .user_scores import ActualUserScores
 from .items import Items
+from .stats import Distribution
