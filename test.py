@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     # Initialize parser and parse arguments
     parser = argparse.ArgumentParser(description='Test/debug recsys')
-    parser.add_argument('-debug', '-d', choices=choices, required=True,
+    parser.add_argument('--debug', '-d', choices=choices, required=True,
                         action='store', help='Decide on module to debug',
                         nargs='+')
 

@@ -1,6 +1,12 @@
 # algo-segregation
 Simulator for recommender systems
 
-Usage:
+Example usage:
 
-`python3 src/main.py [popularity|content] [--debug]`
+```
+import rec
+
+recsys = rec.ContentFiltering()
+recsys.run(timesteps=10)
+measurements = recsys.get_measurements()
+```
