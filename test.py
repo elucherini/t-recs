@@ -146,14 +146,21 @@ def ContentFiltering_test(items, attr, users, item_repr=None, user_repr=None,
         logger.info("ERROR: Did not fail")
         raise Exception("Violated rule with item and user representation!")
 
-    logger.info("Trying random init with other params")
-    num_items_per_iter = 15
-    num_new_items = 70
+    logger.info("Trying default init with other params")
+    num_items_per_iter = np.random.randint(5, 100)
+    num_new_items = np.random.randint(20, 400)
     c = ContentFiltering(verbose=False,
         num_items_per_iter=num_items_per_iter,
         num_new_items=num_new_items)
     assert(num_items_per_iter == c.num_items_per_iter)
     assert(num_new_items == c.num_new_items)
+    logger.info("Successfully initialized with %d new items and %d items" % (num_new_items,
+        num_items_per_iter) + " per iter\n" )
+
+    logger.info("Run a few steps with ContentFiltering...")
+    c.run()
+    assert(c.user_profiles.all() != 0)
+    logger.info("Ran default num of times successfully")
     return True
 
 # --------------------------------------------------------- #

@@ -1,4 +1,4 @@
-# Import all known scipy 1.4.1 distributions
+# Import scipy 1.4.1 continuous, multivariate, and discrete distributions
 from scipy.stats import alpha, anglit, arcsine, argus, beta, betaprime, bradford, \
                         burr, burr12, cauchy, chi, chi2, cosine, crystalball, dgamma, \
                         dweibull, erlang, expon, exponnorm, exponweib, exponpow, f, \

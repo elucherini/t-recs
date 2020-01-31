@@ -2,24 +2,31 @@ import numpy as np
 from abc import ABCMeta, abstractmethod
 from .measurements import Measurements
 from .user_scores import ActualUserScores
+from .utils import normalize_matrix
 
 # Recommender systems: abstract class
 class Recommender(metaclass=ABCMeta):
 
     @abstractmethod
-    def __init__(self, num_users, num_items, num_items_per_iter, num_new_items):
-        # NOTE: Children classes must implement user_profiles and item_attributes
+    def __init__(self, user_representation, item_representation, actual_user_preferences,
+                            num_users, num_items, num_items_per_iter, num_new_items):
+        self.user_profiles = user_representation
+        self.item_attributes = item_representation
         # set predicted scores
         self.train(normalize=False)
-        # TODO: keep actual_user_scores separate from system in Users class
-        self.actual_user_scores = ActualUserScores(num_users=num_users,
-                item_representation=self.item_attributes, 
-                normalize=True)
+
+        if actual_user_preferences is not None:
+            self.actual_user_scores = actual_user_preferences
+        else:
+            self.actual_user_scores = ActualUserScores(num_users=num_users,
+                    item_representation=item_representation,
+                    normalize=True)
 
         self.measurements = Measurements()
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
+        self.num_new_items = num_new_items
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
         # NOTE user_preferences either accepts False (randomize user preferences),
@@ -32,26 +39,17 @@ class Recommender(metaclass=ABCMeta):
         self.log('Items per iter: %d' % self.num_items_per_iter)
 
     # Train recommender system
-    def train(self, user_profiles=None, item_attributes=None):
-        if user_profiles is not None:
-            user_profiles = user_profiles
+    def train(self, normalize=True):
+        if normalize:
+            user_profiles = normalize_matrix(self.user_profiles, axis=1)
         else:
             user_profiles = self.user_profiles
-
-        if item_attributes is not None:
-            print(item_attributes.shape)
-            item_attributes = item_attributes
-        else:
-            item_attributes = self.item_attributes
-        self.predicted_scores = np.dot(user_profiles, item_attributes)
+        self.predicted_scores = np.dot(user_profiles, self.item_attributes)
         self.log('System updates predicted scores given by users (rows) ' + \
             'to items (columns):\n' + str(self.predicted_scores))
-        
-    # TODO: what if I consistently only do k=1? In that case I might want to think of just sorting once
-    #return self.scores.argsort()[-k:][::-1]
+
     # Assume scores two-dimensional
-    @abstractmethod
-    def recommend(self, k=1, indices_prime=None):
+    def generate_recommendations(self, k=1, indices_prime=None):
         if indices_prime is None:
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
@@ -80,14 +78,21 @@ class Recommender(metaclass=ABCMeta):
         return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
         #return self.predicted_scores.argsort()[:,::-1][:,0:k]
 
-    @abstractmethod
-    def interact(self, num_recommended, num_new_items):
+    def recommend(self, startup=False):
+        if startup:
+            num_new_items = self.num_items_per_iter
+            num_recommended = 0
+        else:
+            num_new_items = np.random.randint(0, self.num_items_per_iter)
+            num_recommended = self.num_items_per_iter - num_new_items
+
         if num_recommended == 0 and num_new_items == 0:
             # TODO throw exception here
             print("Nope")
             return
+
         if num_recommended > 0:
-            recommended = self.recommend(k=num_recommended)
+            recommended = self.generate_recommendations(k=num_recommended)
             assert(num_recommended == recommended.shape[1])
             assert(recommended.shape[0] == self.num_users)
             self.log('System recommended these items (cols) to each user ' +\
@@ -120,20 +125,64 @@ class Recommender(metaclass=ABCMeta):
         else:
             items = recommended
         np.random.shuffle(items.T)
-        #self.log("System recommends these items (columns) to each user (rows):\n" + str(items))
-        if self.actual_user_scores is None:
-            preference = np.random.randint(num_new_items, size=(self.num_users))
-        else:
-            preference = self.actual_user_scores.get_user_choices(items, self.user_vector)
-            #print(preference)
-        #print(preference.shape)
-        interactions = items[self.user_vector, preference]
-        self.log("Users choose the following items respectively:\n" + \
-            str(interactions))
-        self.indices[self.user_vector, interactions] = -1
-        return interactions
+        return items
 
-    @abstractmethod
-    def run(self, step=None, startup=False):
-        #assert(np.count_nonzero(self.predicted_scores))
-        self.interact(step=step, startup=startup)
+        @abstractmethod
+        def update_user_profiles(self):
+            pass
+
+
+    def run(self, timesteps=50, startup=False, train_between_steps=True):
+        if not startup:
+            self.log('Run -- interleave recommendations and random items ' + \
+                'from now on')
+        for t in range(timesteps):
+            self.log('Step %d' % t)
+            # 
+            items = self.recommend(startup=startup)
+            interactions = self.actual_user_scores.get_user_feedback(items, 
+                                                        self.user_vector)
+            self.indices[self.user_vector, interactions] = -1
+            self.update_user_profiles(interactions)
+            self.log("System updates user profiles based on last interaction:\n" + \
+                str(self.user_profiles.astype(int)))
+            self.measure_content(interactions, step=t)
+            #self.get_user_feedback()
+            # train between steps:
+            if train_between_steps:
+                self.train()
+        # If no training in between steps, train at the end:
+        if not train_between_steps:
+            self.train()
+
+
+    def startup_and_train(self, timesteps=50):
+        self.log('Startup -- recommend random items')
+        return self.run(timesteps, startup=True, train_between_steps=False)
+
+    def _expand_items(self, num_new_items=None):
+        if not isinstance(num_new_items, int) or num_new_items < 1:
+            num_new_items = 2 * self.num_items_per_iter
+        new_indices = np.tile(self.item_attributes.expand_items(self, num_new_items),
+            (self.num_users,1))
+        self.indices = np.concatenate((self.indices, new_indices), axis=1)
+        self.actual_user_scores.expand_items(self.item_attributes)
+        self.train()
+
+
+    def get_heterogeneity(self):
+        heterogeneity = self.measurements.get_measurements()['delta']
+        return heterogeneity
+
+    def get_measurements(self):
+        measurements = self.measurements.get_measurements()
+        #for name, measure in measurements.items():
+            #self.debugger.pyplot_plot(measure['x'], measure['y'],
+            #    title=str(name.capitalize()), xlabel='Timestep', 
+            #    ylabel=str(name))
+        return measurements
+
+    def measure_content(self, interactions, step):
+        self.measurements.measure(step, interactions, self.num_users,
+            self.num_items, self.predicted_scores,
+            self.actual_user_scores.get_actual_user_scores())

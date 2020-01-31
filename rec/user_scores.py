@@ -19,7 +19,7 @@ class ActualUserScores(VerboseMode):
     '' @verbose: if True, enable verbose mode
     '' @distribution: Distribution instance for random sampling of user profiles
     '''
-    def __init__(self, num_users=None, item_representation=None, 
+    def __init__(self, actual_user_profiles=None, actual_user_scores=None, num_users=None, item_representation=None, 
         normalize=True, verbose=False, distribution=None):
         # Initialize verbose mode
         super().__init__(__name__.upper(), verbose)
@@ -117,10 +117,14 @@ class ActualUserScores(VerboseMode):
     '' @items: recommended/new items provided by the system at the current timestep
     '' @user_vector: vector of user ids used for indexing
     '''
-    def get_user_choices(self, items, user_vector):
+    def get_user_feedback(self, items, user_vector):
         m = self.actual_scores[user_vector.reshape((items.shape[0], 1)), items]
         self.log('User scores for given items are:\n' + str(m))
-        return m.argsort()[:,::-1][:,0]
+        sorted_user_preferences = m.argsort()[:,::-1][:,0]
+        interactions = items[user_vector, sorted_user_preferences]
+        self.log("Users interact with the following items respectively:\n" + \
+            str(interactions))
+        return interactions
 
     '''
     '' Utility function for debug
