@@ -14,13 +14,7 @@ def normalize_matrix(matrix, axis=1):
 
 def toDataFrame(data, index=None):
     if index is None:
-        try:
-            df = pd.DataFrame(data)
-        except:
-            raise
+        df = pd.DataFrame(data)
     else:
-        try:
-            df = pd.DataFrame(data).set_index(index)
-        except:
-            raise
+        df = pd.DataFrame(data).set_index(index)
     return df
