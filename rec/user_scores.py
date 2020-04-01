@@ -116,9 +116,12 @@ class ActualUserScores(VerboseMode):
                 TypeError: If item_representation is not a 2-dimensional :obj:`numpy.ndarray`.
         """
         # Error if item_representation is invalid
+        # FIXME temporary workaround to test SIR
+        if item_representation.ndim != 2:
+            item_representation = np.tile(item_representation, (num_users, 1))
         if not isinstance(item_representation, np.ndarray) or item_representation.ndim != 2:
-            raise TypeError("item_representation must be a |A|x|I| matrix and can't \
-                            be None")
+            raise TypeError("item_representation must be a |A|x|I| matrix and can't " + \
+                            "be None")
         # Use distribution if specified, otherwise default to self.distribution
         if distribution is not None and isinstance(distribution, Distribution):
             self.distribution = distribution
@@ -198,7 +201,7 @@ class ActualUserScores(VerboseMode):
         return interactions
 
     def _print_verbose(self):
-        """ Utility function used for debugging. Prints information to log.
+        """Utility function used for debugging. Prints information to log.
         """
         best_items = self.actual_scores.argmax(axis=1)
         self.log('Shape: ' + str(self.actual_scores.shape))

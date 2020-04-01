@@ -185,7 +185,9 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         # Current assumptions:
         # 1. Interleave new items and recommended items
         # 2. Each user interacts with one element depending on preference
+        # 3. Users can't interact with the same item more than once
         assert(np.count_nonzero(self.indices == -1) % self.num_users == 0)
+        self.log("Choice among %d items" % (indices_prime.shape[0]))
         if indices_prime.shape[1] < num_new_items:
             self.log('Insufficient number of items left!')
             self._expand_items()
@@ -217,7 +219,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         pass
 
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True):
+    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=False):
         """ Runs simulation for the given timesteps.
 
             Args:
@@ -227,17 +229,22 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                 train_between_steps (bool, optional): if True, the model is
                     retrained after each step with the information gathered
                     in the previous step.
+                repeated_items (bool, optional): if True, repeated items are allowed
+                    in the system -- that is, users can interact with the same
+                    item more than once. Examples of common instances in which 
+                    this is useful: infection and network propagation models.
+                    Default is False.
         """
         if not startup:
             self.log('Run -- interleave recommendations and random items ' + \
                 'from now on')
         for t in range(timesteps):
             self.log('Step %d' % t)
-            # 
             items = self.recommend(startup=startup)
             interactions = self.actual_user_scores.get_user_feedback(items, 
                                                         self.user_vector)
-            self.indices[self.user_vector, interactions] = -1
+            if not repeated_items:
+                self.indices[self.user_vector, interactions] = -1
             self._update_user_profiles(interactions)
             self.log("System updates user profiles based on last interaction:\n" + \
                 str(self.user_profiles.astype(int)))

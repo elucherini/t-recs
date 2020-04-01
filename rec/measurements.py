@@ -11,17 +11,16 @@ class Measurements(VerboseMode):
                 when the measurement module runs out of free space.
             verbose (bool, optional): If True, enables verbose mode. Disabled by default.
 
-
         Attributes:
             Attributes inherited by :class:`VerboseMode`, plus:
             delta_t (:obj:`numpy.array`): An array containing a measurement of
                 heterogeneity per timestep.
             mse (:obj:`numpy.array`): An array containing the mean squared error
                 at each timestep.
-            index (int): the index of the first free position in the arrays. This
-                implementation expects that all arrays are updated at each timestep.
 
         Private attributes:
+            _index (int): the index of the first free position in the arrays. This
+                implementation expects that all arrays are updated at each timestep.
             _histogram_old (:obj:`numpy.array` or None): contains the previous histogram
                 of user interactions. It is used by the methods that measure homogeneity.
             _default_increment (int): default number of positions the arrays of the measurement
@@ -30,7 +29,7 @@ class Measurements(VerboseMode):
     def __init__(self, default_increment = 20, verbose=False):
         self.delta_t = np.zeros(default_increment)
         self.mse = np.zeros(default_increment)
-        self.index = 0
+        self._index = 0
         self._histogram_old = None
         # Determine how many timesteps to set up each time
         self._default_increment = default_increment
@@ -56,20 +55,20 @@ class Measurements(VerboseMode):
         return histogram
 
     def _expand_array(self, array, timesteps=None):    
-    '''
-        Internal function to expand the measurement module to include
-        additional timesteps. This is called when the measurement array
-        we want to modify only has a few free positions left.
+        '''
+            Internal function to expand the measurement module to include
+            additional timesteps. This is called when the measurement array
+            we want to modify only has a few free positions left.
 
-        Args:
-            array (:obj:`numpy.array`) : measurement array to expand
-            timesteps (int, optional): number of steps (positions in the array) to add.
-                If None, the array is incremented by default_increment.
+            Args:
+                array (:obj:`numpy.array`) : measurement array to expand
+                timesteps (int, optional): number of steps (positions in the array) to add.
+                    If None, the array is incremented by _default_increment.
 
-        Returns: :obj:`numpy.array` resized array.
-    '''
+            Returns: :obj:`numpy.array` resized array.
+        '''
         if timesteps is None:
-            timesteps = self.default_increment
+            timesteps = self._default_increment
         self.log("Expanding measurement array size to: %d" % (array.size + timesteps))
         return np.resize(array, array.size + timesteps)
 
@@ -87,7 +86,7 @@ class Measurements(VerboseMode):
         """
         self._measure_equilibrium(step, interactions, num_users, num_items)
         self._measure_mse(predicted, actual)
-        self.index += 1
+        self._index += 1
 
     def _measure_equilibrium(self, step, interactions, num_users, num_items):   
         '''
@@ -105,7 +104,7 @@ class Measurements(VerboseMode):
     
             Returns: :obj:`numpy.array` with homogeneity.
         '''
-        if self.delta_t is None or self.index >= self.delta_t.size:
+        if self.delta_t is None or self._index >= self.delta_t.size:
             self.delta_t = self._expand_array(self.delta_t)
         assert(interactions.size == num_users)
         histogram = self._generate_interaction_histogram(interactions, num_users,
@@ -114,7 +113,7 @@ class Measurements(VerboseMode):
         if self._histogram_old is None:
             self._histogram_old = np.zeros(num_items)
         # delta(t) = Area(histogram(t-1)) - Area(histogram(t))
-        self.delta_t[self.index] = np.trapz(self._histogram_old, dx=1) - \
+        self.delta_t[self._index] = np.trapz(self._histogram_old, dx=1) - \
                                     np.trapz(histogram, dx=1)
         self._histogram_old = np.copy(histogram)
         return histogram
@@ -130,16 +129,20 @@ class Measurements(VerboseMode):
                 actual (:obj:`numpy.array`): actual user preferences,
                     unknown to the system.
         """
-        if self.mse is None or self.index >= self.mse.size:
+        if self.mse is None or self._index >= self.mse.size:
             self.mse = self._expand_array(self.mse)
-        self.mse[self.index] = ((predicted - actual)**2).mean()
+        #print(np.where(predicted == 0)[0].shape)
+        #print(np.where(actual == 0)[0].shape)
+
+        self.mse[self._index] = ((predicted - actual)**2).mean()
+        #print((predicted - actual)**2)
 
     def _get_delta(self):
         """ Returns a measure of heterogeneity of content.
 
             Returns: dict with measure of homogeneity per timestep.
         """
-        collected_data = self.delta_t[:self.index]
+        collected_data = self.delta_t[:self._index]
         x = np.arange(collected_data.shape[0])
 
         return {'Timestep': x, 'Homogeneity': collected_data}
@@ -151,7 +154,7 @@ class Measurements(VerboseMode):
             Returns: dict of mean squared error per timestep.
 
         """
-        collected_data = self.mse[:self.index]
+        collected_data = self.mse[:self._index]
         x = np.arange(collected_data.shape[0])
         return {'Timestep': x, 'MSE': collected_data}
 
