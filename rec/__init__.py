@@ -1,4 +1,4 @@
-from .measurements import Measurements
+from .measurement import MSEMeasurement, HomogeneityMeasurement
 from .recommender import Recommender
 from .content import ContentFiltering
 from .social import SocialFiltering

@@ -1,6 +1,6 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
-from .measurements import Measurements
+from .measurement import MSEMeasurement
 from .user_scores import ActualUserScores
 from .utils import normalize_matrix, toDataFrame
 from .debug import VerboseMode
@@ -75,7 +75,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                     item_representation=item_representation,
                     normalize=True)
 
-        self.measurements = Measurements()
+        self.measurements = [MSEMeasurement()]
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
@@ -284,28 +284,25 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         self.actual_user_scores.expand_items(self.item_attributes)
         self.train()
 
-
-    def get_heterogeneity(self):
-        """ Returns measurement of heterogeneity in the interactions of users.
-            For more details, see the :class:`Measurements` class.
-
-            Returns: heterogeneity measure.
-        """
-        heterogeneity = self.measurements.get_measurements()['delta']
-        return heterogeneity
-
     def get_measurements(self):
         """ Returns all available measurements. For more details,
             please see the :class:`Measurements` class.
 
             Returns: Pandas dataframe of all available measurements.
         """
-        measurements = self.measurements.get_measurements()
+        measurements = {'Timesteps': None}
+        for metric in self.measurements:
+
+            measurements = {**measurements, **metric.get_measurement()}
         #for name, measure in measurements.items():
             #self.debugger.pyplot_plot(measure['x'], measure['y'],
             #    title=str(name.capitalize()), xlabel='Timestep', 
             #    ylabel=str(name))
-        return toDataFrame(measurements, index='Timestep')
+        if measurements['Timesteps'] == None:
+            # pick first measurement's length for # of timesteps since they're going to be the same
+            elapsed = np.arange(self.measurements[0].get_timesteps())
+            measurements['Timesteps'] = elapsed
+        return measurements#toDataFrame(measurements, index='Timestep')
 
     def measure_content(self, interactions, step):
         """ Calls method in the :class:`Measurements` module to record metrics.
@@ -317,6 +314,5 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                     per users at a given time step.
                 step (int): step on which the recorded interactions refers to.
         """
-        self.measurements.measure(step, interactions, self.num_users,
-            self.num_items, self.predicted_scores,
-            self.actual_user_scores.get_actual_user_scores())
+        for metric in self.measurements:
+            metric.measure(step, interactions, self)
