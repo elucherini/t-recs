@@ -115,7 +115,7 @@ class ContentFiltering(Recommender):
         if user_representation is None:
             if num_users is None:
                 raise ValueError("num_users and user_representation can't be both None")
-            user_representation = np.zeros((num_users, num_attributes), dtype=int)
+            user_representation = np.zeros((num_users, num_attributes))
         elif user_representation.shape[1] == item_representation.shape[0]:
             num_users = user_representation.shape[0]
         else:

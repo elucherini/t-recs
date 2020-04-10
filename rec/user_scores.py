@@ -60,7 +60,8 @@ class ActualUserScores(VerboseMode):
 
         # default if distribution not specified or invalid type
         if distribution is None or not isinstance(distribution, Distribution):
-            self.distribution = Distribution('norm', non_negative=True)
+            self.distribution = Distribution('norm', non_negative=True, integers=True,
+                                                loc=0, scale=100)
             self.log('Initialize default normal distribution with no size')
         else:
             self.distribution = distribution
@@ -91,9 +92,9 @@ class ActualUserScores(VerboseMode):
                 A |U|x|I| :obj:`numpy.ndarray` matrix representing the real scores.
         """
         # Compute actual user scores
-        scores = np.dot(user_profiles, item_representation)
         if self.normalize:
-            scores = normalize_matrix(scores)
+            user_profiles = normalize_matrix(user_profiles)
+        scores = np.dot(user_profiles, item_representation)
         return scores
 
     def compute_actual_scores(self, item_representation, num_users, distribution=None):
@@ -208,3 +209,6 @@ class ActualUserScores(VerboseMode):
 
         self.log('Actual scores given by users (rows) to items (columns), ' + \
             'unknown to system:\n' + str(self.get_actual_user_scores()))
+
+    def __sub__(self, other):
+        return self.actual_scores - other.actual_scores

@@ -66,9 +66,10 @@ class Distribution:
     '' @non_negative: bool
     '' @**kwargs: distribution parameters
     '''
-    def __init__(self, distr_type='norm', non_negative=False, **kwargs):
+    def __init__(self, distr_type='norm', non_negative=False, integers=False, **kwargs):
         self.parameters = kwargs
         self.non_negative = non_negative
+        self.integers = integers
         if isinstance(distr_type, str) and distr_type in names:
             self.type = distr_type
             distr_f = names[distr_type]#list(names.keys())[list(names.values()).index(distr_type)]
@@ -85,6 +86,8 @@ class Distribution:
             result = self.function(**self.parameters)
             if self.non_negative:
                 result = abs(result)
+            if self.integers:
+                result = result.astype(int)
             return result
 
 
