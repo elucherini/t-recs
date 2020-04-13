@@ -1,13 +1,13 @@
 from .recommender import Recommender
 from .social import SocialFiltering
 from .stats import Distribution
-from .measurement import DiffusionTreeMeasurement
+from .measurement import StructuralVirality
 import numpy as np
 import math
 
-class SIRModel(SocialFiltering, Recommender):
+class BassModel(SocialFiltering, Recommender):
     '''SIR model that, for now, only supports one item at a time'''
-    def __init__(self, num_users=100, num_items=1250, infection_state=None,
+    def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
         actual_user_scores=None, verbose=False, num_items_per_iter=10, num_new_items=30):
         # Give precedence to user_representation, otherwise build empty one
@@ -59,7 +59,7 @@ class SIRModel(SocialFiltering, Recommender):
         assert(infection_threshold is not None)
         assert(infection_threshold < 1 and infection_threshold > 0)
         self.infection_threshold = abs(infection_threshold)
-        self.measurements = [DiffusionTreeMeasurement(np.copy(infection_state))]
+        self.measurements = [StructuralVirality(np.copy(infection_state))]
         # Initialize recommender system
         Recommender.__init__(self, user_representation, item_representation, actual_user_scores,
                                 num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
@@ -134,3 +134,10 @@ class SIRModel(SocialFiltering, Recommender):
         Recommender.run(self, timesteps=timesteps, startup=startup,
                         train_between_steps=train_between_steps,
                         repeated_items=repeated_items)
+
+
+    def draw_diffusion_tree(self):
+        self.measurements[0].draw_tree()
+
+    def get_structural_virality(self):
+        return self.measurements[0].get_structural_virality()

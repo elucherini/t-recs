@@ -4,10 +4,11 @@ import numpy as np
 import networkx as nx
 
 class Measurement(VerboseMode, metaclass=ABCMeta):
-    def __init__(self, default_increment, verbose=False):
+    def __init__(self, default_increment, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_data = np.zeros(default_increment)
-        self._index = 0
+        self.measurement_data[0] = init_value
+        self._index = 1
         self._default_increment = default_increment
 
     def _expand_array(self, timesteps=None):    
@@ -66,7 +67,7 @@ class HomogeneityMeasurement(Measurement):
         self.histogram = None
         self._old_histogram = None
         self.name = 'homogeneity'
-        Measurement.__init__(self, default_increment, verbose)
+        Measurement.__init__(self, default_increment, verbose, init_value=None)
 
     def measure(self, step, interactions, recommender):
         '''
@@ -103,7 +104,7 @@ class HomogeneityMeasurement(Measurement):
 class MSEMeasurement(Measurement):
     def __init__(self, default_increment=100, verbose=False):
         self.name = 'MSE'
-        Measurement.__init__(self, default_increment, verbose)
+        Measurement.__init__(self, default_increment, verbose, init_value=None)
 
     def measure(self, step, interactions, recommender):
         """ Measures and records the mean
@@ -125,12 +126,13 @@ class MSEMeasurement(Measurement):
 
 class DiffusionTreeMeasurement(Measurement):
     def __init__(self, infection_state, default_increment=100, verbose=False):
-        self.name = 'Diffusion tree'
+        self.name = 'Infections'
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, np.copy(infection_state))
         self._old_infection_state = np.copy(infection_state)
-        Measurement.__init__(self, default_increment, verbose)
+        Measurement.__init__(self, default_increment, verbose, 
+            init_value=self.diffusion_tree.number_of_nodes())
 
     def _find_parents(self, user_profiles, 
                                     new_infected_users):
@@ -161,15 +163,34 @@ class DiffusionTreeMeasurement(Measurement):
                             self._old_infection_state)
         if (new_infections == 0).all():
             # no new infections
-            return
+            return 0
         new_infected_users = np.where(new_infections > 0)[0] # only the rows
         self._add_to_graph(user_profiles, new_infected_users)
+        # return number of new infections
+        return new_infected_users.shape[0]
 
     def measure(self, step, interactions, recommender):
         # test
         # number of infected users
-        num_infected = np.sum(recommender.infection_state)
-        self._manage_new_infections(recommender.user_profiles,
+        num_new_infections = self._manage_new_infections(recommender.user_profiles,
             recommender.infection_state)
+        if self.measurement_data is None or self._index >= self.measurement_data.size:
+            self.measurement_data = self._expand_array()
+        #self.measurement_data[self._index] = num_new_infections
         #print(recommender.infection_state)
+        self.measurement_data[self._index] = self.diffusion_tree.number_of_nodes()
         self._old_infection_state = np.copy(recommender.infection_state)
+        Measurement.measure(self, step, interactions, recommender)
+
+    def draw_tree(self):
+        import matplotlib.pyplot as plt
+        nx.draw(self.diffusion_tree, with_labels=True)
+
+
+class StructuralVirality(DiffusionTreeMeasurement):
+    from networkx.algorithms.wiener import wiener_index
+    def __init__(self, infection_state, default_increment=100, verbose=False):
+        DiffusionTreeMeasurement.__init__(self, infection_state, default_increment, verbose)
+
+    def get_structural_virality(self):
+        return nx.wiener_index(self.diffusion_tree)

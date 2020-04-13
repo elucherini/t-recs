@@ -1,8 +1,7 @@
-from .measurement import MSEMeasurement, HomogeneityMeasurement
-from .recommender import Recommender
+from .measurement import MSEMeasurement, HomogeneityMeasurement, StructuralVirality
 from .content import ContentFiltering
 from .social import SocialFiltering
-from .sir import SIRModel
+from .bass import BassModel
 from .popularity import PopularityRecommender
 from .debug import VerboseMode, DebugLogger
 from .user_scores import ActualUserScores
