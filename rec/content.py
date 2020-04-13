@@ -1,5 +1,5 @@
 
-
+from .measurement import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from .recommender import Recommender
 from .stats import Distribution
@@ -122,6 +122,7 @@ class ContentFiltering(Recommender):
             raise ValueError("It should be user_representation.shape[1]" + \
                                 " == item_representation.shape[0]")
         assert(user_representation is not None)
+        self.measurements = [MSEMeasurement(), HomogeneityMeasurement()]
         # Initialize recommender system
         Recommender.__init__(self, user_representation, item_representation, actual_user_scores,
                                 num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)

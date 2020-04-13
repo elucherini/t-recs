@@ -1,10 +1,12 @@
 from .recommender import Recommender
 from .social import SocialFiltering
 from .stats import Distribution
+from .measurement import DiffusionTreeMeasurement
 import numpy as np
 import math
 
 class SIRModel(SocialFiltering, Recommender):
+    '''SIR model that, for now, only supports one item at a time'''
     def __init__(self, num_users=100, num_items=1250, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
         actual_user_scores=None, verbose=False, num_items_per_iter=10, num_new_items=30):
@@ -47,8 +49,8 @@ class SIRModel(SocialFiltering, Recommender):
         assert(item_representation is not None)
         if infection_state is None:
         # TODO change parameters
-            infection_state = Distribution(distr_type='binom', p=.3, n=1, 
-                                    size=(num_users, num_items)).compute()
+            infection_state = np.zeros((num_users, num_items))
+            infection_state[np.random.randint(num_users), :] = 1
         assert(infection_state is not None)
         self.infection_state = infection_state
         # TODO support separate threshold for each user
@@ -57,6 +59,7 @@ class SIRModel(SocialFiltering, Recommender):
         assert(infection_threshold is not None)
         assert(infection_threshold < 1 and infection_threshold > 0)
         self.infection_threshold = abs(infection_threshold)
+        self.measurements = [DiffusionTreeMeasurement(np.copy(infection_state))]
         # Initialize recommender system
         Recommender.__init__(self, user_representation, item_representation, actual_user_scores,
                                 num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
@@ -76,8 +79,9 @@ class SIRModel(SocialFiltering, Recommender):
 
         """
         infection_probabilities = self.predicted_scores[self.user_vector, interactions]
-        #print(self.predicted_scores)
+        #print("Interactions:\n", infection_probabilities)
         newly_infected = np.where(infection_probabilities > self.infection_threshold)
+        #print("Newly infected:\n", newly_infected)
         if newly_infected[0].shape[0] > 0:
             assert(newly_infected[0].shape == interactions[newly_infected].shape)
             # this might not be true since now some users don't get infected at all and self.indices
@@ -85,6 +89,7 @@ class SIRModel(SocialFiltering, Recommender):
             # be updated accordingly.
             #assert(self.infection_state[newly_infected, interactions[newly_infected]].all() == 0)
             self.infection_state[newly_infected, interactions[newly_infected]] = 1
+            #print("New infection state:\n", self.infection_state)
 
 
     def train(self, normalize=False):
@@ -98,19 +103,14 @@ class SIRModel(SocialFiltering, Recommender):
                     normalizing is not the only thing I might want to do)
         """
         # normalizing the user profiles is meaningless here
-        '''
-        if normalize:
-            user_profiles = normalize_matrix(self.user_profiles, axis=1)
-        else:
-            user_profiles = self.user_profiles
-        '''
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         #print(np.where(np.log(1 - self.item_attributes) == np.nan))
-        dot_product = np.dot(self.user_profiles, self.infection_state*np.log(1-self.item_attributes))
-        #assert(False)
-        #print(dot_product)
+        dot_product = np.dot(self.user_profiles, 
+            self.infection_state*np.log(1-self.item_attributes))
+        #print("Dot product (1-e^(dot_product)):\n", dot_product)
         # Probability of being infected at the current iteration
         self.predicted_scores = 1 - np.exp(dot_product)
+        #print('Predicted scores:\n', self.predicted_scores)
         self.log('System updates predicted scores given by users (rows) ' + \
             'to items (columns):\n' + str(self.predicted_scores))
 

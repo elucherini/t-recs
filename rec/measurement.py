@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from .debug import VerboseMode
 import numpy as np
+import networkx as nx
 
 class Measurement(VerboseMode, metaclass=ABCMeta):
     def __init__(self, default_increment, verbose=False):
@@ -90,7 +91,7 @@ class HomogeneityMeasurement(Measurement):
             recommender.num_items)
         histogram[::-1].sort()
         if self._old_histogram is None:
-            self._old_histogram = np.zeros(num_items)
+            self._old_histogram = np.zeros(recommender.num_items)
         # delta(t) = Area(histogram(t-1)) - Area(histogram(t))
         self.measurement_data[self._index] = np.trapz(self._old_histogram, dx=1) - \
                                     np.trapz(histogram, dx=1)
@@ -105,7 +106,7 @@ class MSEMeasurement(Measurement):
         Measurement.__init__(self, default_increment, verbose)
 
     def measure(self, step, interactions, recommender):
-        """ Internal function that measures and records the mean
+        """ Measures and records the mean
             squared error between the user preferences predicted
             by the system and the users' actual preferences.
 
@@ -119,5 +120,56 @@ class MSEMeasurement(Measurement):
             self.measurement_data = self._expand_array()
 
         self.measurement_data[self._index] = ((recommender.predicted_scores - recommender.actual_user_scores.actual_scores)**2).mean()
-        print(((recommender.predicted_scores - recommender.actual_user_scores.actual_scores)))
         Measurement.measure(self, step, interactions, recommender)
+
+
+class DiffusionTreeMeasurement(Measurement):
+    def __init__(self, infection_state, default_increment=100, verbose=False):
+        self.name = 'Diffusion tree'
+        self._old_infection_state = None
+        self.diffusion_tree = nx.Graph()
+        self._manage_new_infections(None, np.copy(infection_state))
+        self._old_infection_state = np.copy(infection_state)
+        Measurement.__init__(self, default_increment, verbose)
+
+    def _find_parents(self, user_profiles, 
+                                    new_infected_users):
+        if (self._old_infection_state == 0).all():
+            # Node is root
+            return None
+        # TODO: function is_following() based on code below:
+        # candidates must have been previously infected
+        prev_infected_users = np.where(self._old_infection_state > 0)[0]
+        # candidates must be connected to newly infected users
+        candidate_parents = user_profiles[:,prev_infected_users][new_infected_users]
+        parents = prev_infected_users[np.argsort(candidate_parents)[:,-1]]
+        return parents
+
+    def _add_to_graph(self, user_profiles, new_infected_users):
+        print("Infected users to add:\n", new_infected_users)
+        self.diffusion_tree.add_nodes_from(new_infected_users)
+        parents = self._find_parents(user_profiles, new_infected_users)
+        # connect parent(s) and child(ren)
+        if parents is not None:
+            edges = np.vstack((parents, new_infected_users)).T
+            self.diffusion_tree.add_edges_from(edges)
+
+    def _manage_new_infections(self, user_profiles, current_infection_state):
+        if self._old_infection_state is None:
+            self._old_infection_state = np.zeros(current_infection_state.shape)
+        new_infections = (current_infection_state - 
+                            self._old_infection_state)
+        if (new_infections == 0).all():
+            # no new infections
+            return
+        new_infected_users = np.where(new_infections > 0)[0] # only the rows
+        self._add_to_graph(user_profiles, new_infected_users)
+
+    def measure(self, step, interactions, recommender):
+        # test
+        # number of infected users
+        num_infected = np.sum(recommender.infection_state)
+        self._manage_new_infections(recommender.user_profiles,
+            recommender.infection_state)
+        #print(recommender.infection_state)
+        self._old_infection_state = np.copy(recommender.infection_state)

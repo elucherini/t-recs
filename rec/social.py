@@ -1,6 +1,7 @@
 from .recommender import Recommender
 from .stats import Distribution
 import numpy as np
+from .measurement import DiffusionTreeMeasurement
 
 class SocialFiltering(Recommender):
     """A customizable social-filtering recommendation system.

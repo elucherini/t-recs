@@ -75,7 +75,6 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                     item_representation=item_representation,
                     normalize=True)
 
-        self.measurements = [MSEMeasurement()]
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
@@ -126,7 +125,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             indices_prime = indices_prime.reshape((self.num_users, -1))
         if indices_prime.size == 0 or k > indices_prime.shape[1]:
             self.log('Insufficient number of items left!')
-            self._expand_items()
+            # FIXME for SIR
+            #self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
         row = np.repeat(self.user_vector, indices_prime.shape[1])
@@ -190,7 +190,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         self.log("Choice among %d items" % (indices_prime.shape[0]))
         if indices_prime.shape[1] < num_new_items:
             self.log('Insufficient number of items left!')
-            self._expand_items()
+            # FIXME SIR
+            #self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
 
