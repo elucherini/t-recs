@@ -148,7 +148,6 @@ class DiffusionTreeMeasurement(Measurement):
         return parents
 
     def _add_to_graph(self, user_profiles, new_infected_users):
-        print("Infected users to add:\n", new_infected_users)
         self.diffusion_tree.add_nodes_from(new_infected_users)
         parents = self._find_parents(user_profiles, new_infected_users)
         # connect parent(s) and child(ren)
