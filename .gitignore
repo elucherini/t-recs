@@ -125,3 +125,4 @@ dmypy.json
 # Other
 .DS_Store
 ssh.sh
+.backup
