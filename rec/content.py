@@ -40,7 +40,7 @@ class ContentFiltering(Recommender):
 
     Examples:
         ContentFiltering can be instantiated with no arguments -- in which case, it will
-        be initialized with the default parameters and the number of attributes and the 
+        be initialized with the default parameters and the number of attributes and the
         item/user representations will be assigned randomly.
 
         >>> cf = ContentFiltering()
@@ -63,7 +63,7 @@ class ContentFiltering(Recommender):
         >>> cf = ContentFiltering(num_users=1200, num_items=5000, num_attributes=2000)
         >>> cf.user_profiles.shape
         (1200, 2000) # <-- 1200 users, 2000 attributes
-        
+
         Or by generating representations for items and/or users:
         # Items are uniformly distributed. We indirectly define 100 attributes.
         >>> item_representation = np.random.randint(0, 1, size=(100, 200))
@@ -83,7 +83,7 @@ class ContentFiltering(Recommender):
 
         The same happens with the number of items and the number of attributes.
         In the latter case, the explicit number of attributes is ignored:
-        
+
         >>> cf = ContentFiltering(num_attributes=1400, item_representation=item_representation)
         >>> cf.item_attributes.shape
         (100, 200) # <-- 100 attributes, 200 items. num_attributes was ignored.
@@ -104,13 +104,14 @@ class ContentFiltering(Recommender):
                 raise ValueError("num_items and item_representation can't be both None")
             if user_representation is not None:
                 num_attributes = user_representation.shape[1]
-            else:
+            elif num_attributes is None:
                 num_attributes = np.random.randint(2, max(3, int(num_items - num_items / 10)))
-            item_representation = Distribution(distr_type='binom', p=.3, n=1, 
+            item_representation = Distribution(distr_type='binom', p=.3, n=1,
                                     size=(num_attributes, num_items)).compute()
 
         assert(num_attributes is not None)
         assert(item_representation is not None)
+        self.num_attributes = num_attributes
         # Give precedence to user_representation, otherwise build random one
         if user_representation is None:
             if num_users is None:
@@ -149,7 +150,7 @@ class ContentFiltering(Recommender):
 
     def train(self, normalize=True):
         """ Calls train method of parent class :class:`Recommender`.
-        
+
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
             False otherwise.

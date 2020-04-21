@@ -62,7 +62,7 @@ class SocialFiltering(Recommender):
             >>> sf = ContentFiltering(num_users=50)
             >>> sf.item_attributes.shape
             (50, 1250) # <-- 50 users, 1250 items (default)
-            
+
             Or by generating representations for items and/or users:
             # Items are uniformly distributed. We "indirectly" define 100 users.
             >>> item_representation = np.random.randint(0, 1, size=(100, 200))
@@ -82,7 +82,7 @@ class SocialFiltering(Recommender):
             (100, 200) # <-- 100 users, 200 items. num_users was ignored because user_representation was specified.
 
             The same happens with the number of items or users and item representations.
-            
+
             >>> sf = SocialFiltering(num_users=1400, item_representation=item_representation)
             >>> sf.item_attributes.shape
             (100, 200) # <-- 100 attributes, 200 items. num_users was ignored.
@@ -100,7 +100,7 @@ class SocialFiltering(Recommender):
             elif num_users is None:
                 raise ValueError("num_users and user_representation can't be both None")
             user_representation = np.diag(np.diag(np.ones((num_users, num_users), dtype=int)))
-        elif (item_representation is not None 
+        elif (item_representation is not None
             and item_representation.shape[0] != user_representation.shape[0]):
             raise ValueError("It should be user_representation.shape[0] (or shape[1])" + \
                                 " == item_representation.shape[0]")
@@ -150,7 +150,7 @@ class SocialFiltering(Recommender):
 
     def train(self, normalize=True):
         """ Calls train method of parent class :class:`Recommender`.
-        
+
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
             False otherwise.
@@ -163,21 +163,21 @@ class SocialFiltering(Recommender):
         if (user_index >= self.num_users or following_index >= self.num_users):
             raise ValueError("Number of user is %d, but indices %d and %d" + \
                             " were requested" % (self.num_users, user_index, following_index))
-        if (self.user_profiles[user_index, following_index] == 0):
-            self.user_profiles[user_index, following_index] = 1
+        if (self.user_profiles[following_index, user_index] == 0):
+            self.user_profiles[following_index, user_index] = 1
         else:
-            self.log("User %d was already following user %d" % (user_index, following_index))
-
+            self.log("User %d was already following user %d" % (following_index,
+                                                                user_index))
 
     def unfollow(self, user_index, following_index):
         # TODO allow for multiple indices
         if (user_index >= self.num_users or following_index >= self.num_users):
             raise ValueError("Number of user is %d, but indices %d and %d" + \
                             " were requested" % (self.num_users, user_index, following_index))
-        if (self.user_profiles[user_index, following_index] == 1):
-            self.user_profiles[user_index, following_index] = 0
+        if (self.user_profiles[following_index, user_index] == 1):
+            self.user_profiles[following_index, user_index] = 0
         else:
-            self.log("User %d was not following user %d" % (user_index, following_index))
+            self.log("User %d was not following user %d" % (following_index, user_index))
 
     def add_friends(self, user1_index, user2_index):
         # TODO allow for multiple indices
@@ -187,11 +187,11 @@ class SocialFiltering(Recommender):
         if (self.user_profiles[user1_index, user2_index] == 0):
             self.user_profiles[user1_index, user2_index] = 1
         else:
-            self.log("User %d was already following user %d" % (user1_index, user2_index))
+            self.log("User %d was already following user %d" % (user2_index, user1_index))
         if (self.user_profiles[user2_index, user1_index] == 0):
             self.user_profiles[user2_index, user1_index] = 1
         else:
-            self.log("User %d was already following user %d" % (user2_index, user2_index))
+            self.log("User %d was already following user %d" % (user1_index, user2_index))
 
     def remove_friends(self, user1_index, user2_index):
         # TODO allow for multiple indices
@@ -201,8 +201,8 @@ class SocialFiltering(Recommender):
         if (self.user_profiles[user1_index, user2_index] == 1):
             self.user_profiles[user1_index, user2_index] = 0
         else:
-            self.log("User %d was not following user %d" % (user1_index, user2_index))
+            self.log("User %d was not following user %d" % (user2_index, user1_index))
         if (self.user_profiles[user2_index, user1_index] == 1):
             self.user_profiles[user2_index, user1_index] = 0
         else:
-            self.log("User %d was not following user %d" % (user2_index, user2_index))
+            self.log("User %d was not following user %d" % (user1_index, user2_index))

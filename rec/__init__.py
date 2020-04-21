@@ -2,7 +2,7 @@ from .measurement import MSEMeasurement, HomogeneityMeasurement, StructuralViral
 from .content import ContentFiltering
 from .social import SocialFiltering
 from .bass import BassModel
-from .popularity import PopularityRecommender
+#from .popularity import PopularityRecommender
 from .debug import VerboseMode, DebugLogger
 from .user_scores import ActualUserScores
 from .items import Items

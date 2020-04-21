@@ -7,7 +7,7 @@ from .debug import VerboseMode
 
 class Recommender(VerboseMode, metaclass=ABCMeta):
     """Abstract class representing a recommender system.
-        
+
         All attributes and methods in this class are generic to all recommendation systems
         implemented.
 
@@ -87,11 +87,11 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         self.log('Num items: %d' % self.num_items)
         self.log('Users: %d' % self.num_users)
         self.log('Items per iter: %d' % self.num_items_per_iter)
-        
+
 
     def train(self, normalize=True):
         """ Updates recommender based on past interactions for better user predictions.
-        
+
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
                     False otherwise.
@@ -142,7 +142,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         probabilities = np.logspace(0.0, rec.shape[1]/10.0, num=rec.shape[1], base=2)
         probabilities = probabilities/probabilities.sum()
         self.log('Items ordered by preference for each user:\n' + str(rec))
-        picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k)) 
+        picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
         #self.log('recommendations\n' + str(rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]))
         #print(self.predicted_scores.argsort()[:,::-1][:,0:5])
         return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
@@ -201,7 +201,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             new_items = indices_prime[row, col]
             self.log('System picked these items (cols) randomly for each user ' + \
                 '(rows):\n' + str(new_items))
-        
+
         if num_recommended and num_new_items:
             items = np.concatenate((recommended, new_items), axis=1)
         elif num_new_items:
@@ -214,8 +214,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
     @abstractmethod
     def _update_user_profiles(self):
         """ Updates user profiles based on last interaction.
-            
-            It must be defined in the concrete class. 
+
+            It must be defined in the concrete class.
         """
         pass
 
@@ -232,7 +232,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                     in the previous step.
                 repeated_items (bool, optional): if True, repeated items are allowed
                     in the system -- that is, users can interact with the same
-                    item more than once. Examples of common instances in which 
+                    item more than once. Examples of common instances in which
                     this is useful: infection and network propagation models.
                     Default is False.
         """
@@ -242,7 +242,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         for t in range(timesteps):
             self.log('Step %d' % t)
             items = self.recommend(startup=startup)
-            interactions = self.actual_user_scores.get_user_feedback(items, 
+            interactions = self.actual_user_scores.get_user_feedback(items,
                                                         self.user_vector)
             if not repeated_items:
                 self.indices[self.user_vector, interactions] = -1
@@ -297,7 +297,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             measurements = {**measurements, **metric.get_measurement()}
         #for name, measure in measurements.items():
             #self.debugger.pyplot_plot(measure['x'], measure['y'],
-            #    title=str(name.capitalize()), xlabel='Timestep', 
+            #    title=str(name.capitalize()), xlabel='Timestep',
             #    ylabel=str(name))
         if measurements['Timesteps'] == None:
             # pick first measurement's length for # of timesteps since they're going to be the same
