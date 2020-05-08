@@ -158,4 +158,5 @@ class StructuralVirality(DiffusionTreeMeasurement):
         DiffusionTreeMeasurement.__init__(self, infection_state, verbose)
 
     def get_structural_virality(self):
-        return nx.wiener_index(self.diffusion_tree)
+        n = self.diffusion_tree.number_of_nodes()
+        return nx.wiener_index(self.diffusion_tree) / (n * (n - 1))

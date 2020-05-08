@@ -16,14 +16,15 @@ class BassModel(SocialFiltering, Recommender):
                 raise ValueError("num_users, infection_state, and user_representation can't be all None")
             if infection_state is not None:
                 num_users = infection_state.shape[0]
-            user_representation = np.diag(np.diag(np.ones((num_users, num_users), dtype=int)))
+            user_representation = np.diag(np.diag(np.ones((num_users, num_users),
+                                                          dtype=int)))
         elif (user_representation.shape[0] != user_representation.shape[1]):
             raise ValueError("user_representation should be a square matrix but it's %s" % (
                             str(user_representation.shape)))
-        elif (infection_state is not None and 
+        elif (infection_state is not None and
             user_representation.shape[0] != infection_state.shape[0]):
             raise ValueError("user_representation and infection_state should have same size on dim 0" + \
-                            "but they are sized %s and %s" % (str(user_representation.shape), 
+                            "but they are sized %s and %s" % (str(user_representation.shape),
                                 str(infection_state.shape)))
         else:
             num_users = user_representation.shape[0]
@@ -32,10 +33,10 @@ class BassModel(SocialFiltering, Recommender):
         assert(num_users == user_representation.shape[0] == user_representation.shape[1])
         # Give precedence to item_representation, otherwise build random one
         if item_representation is not None:
-            if (infection_state is not None 
+            if (infection_state is not None
                 and infection_state.shape[1] != item_representation.shape[1]):
                 raise ValueError("item_representation and infection_state should have same size on dim 1" + \
-                            "but they are sized %s and %s" % (str(item_representation.shape), 
+                            "but they are sized %s and %s" % (str(item_representation.shape),
                                 str(infection_state.shape)))
             num_items = item_representation.shape[1]
         elif infection_state is not None:
@@ -61,6 +62,7 @@ class BassModel(SocialFiltering, Recommender):
         self.infection_threshold = abs(infection_threshold)
         self.measurements = [StructuralVirality(np.copy(infection_state))]
         # Initialize recommender system
+        num_items_per_iter = 1
         Recommender.__init__(self, user_representation, item_representation, actual_user_scores,
                                 num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
 
@@ -92,29 +94,33 @@ class BassModel(SocialFiltering, Recommender):
             #print("New infection state:\n", self.infection_state)
 
 
-    def train(self, normalize=False):
+    def train(self, user_profiles=None, item_attributes=None, normalize=False):
         """ Overrides train method of parent class :class:`Recommender`.
-        
+
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
             False otherwise.
 
-            TODO: Rewrite so super().train() takes the arguments of the dot product (AKA turns out 
+            TODO: Rewrite so super().train() takes the arguments of the dot product (AKA turns out
                     normalizing is not the only thing I might want to do)
         """
         # normalizing the user profiles is meaningless here
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         #print(np.where(np.log(1 - self.item_attributes) == np.nan))
-        dot_product = np.dot(self.user_profiles, 
+        if user_profiles is None:
+            user_profiles = self.user_profiles
+        dot_product = np.dot(user_profiles,
             self.infection_state*np.log(1-self.item_attributes))
         #print("Dot product (1-e^(dot_product)):\n", dot_product)
         # Probability of being infected at the current iteration
-        self.predicted_scores = 1 - np.exp(dot_product)
+        predicted_scores = 1 - np.exp(dot_product)
         #print('Predicted scores:\n', self.predicted_scores)
         self.log('System updates predicted scores given by users (rows) ' + \
-            'to items (columns):\n' + str(self.predicted_scores))
+            'to items (columns):\n' + str(predicted_scores))
+        return predicted_scores
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
+    def run(self, timesteps=50, startup=False, train_between_steps=True,
+            repeated_items=True):
         """ Overrides run method of parent class :class:`Recommender`, so that repeated_items
             defaults to True in SIR models.
 
@@ -127,7 +133,7 @@ class BassModel(SocialFiltering, Recommender):
                     in the previous step.
                 repeated_items (bool, optional): if True, repeated items are allowed
                     in the system -- that is, users can interact with the same
-                    item more than once. Examples of common instances in which 
+                    item more than once. Examples of common instances in which
                     this is useful: infection and network propagation models.
                     Default is False.
         """

@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
 from .measurement import MSEMeasurement
-from .user_scores import ActualUserScores
+from .user_scores import Users#ActualUserScores
 from .utils import normalize_matrix, toDataFrame
 from .debug import VerboseMode
 
@@ -16,7 +16,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                 shape and meaning depends on the implementation of the concrete class.
             item_representation (:obj:`numpy.ndarray`): An array representing items. The
                 shape and meaning depends on the implementation of the concrete class.
-            actual_user_scores (:obj:`numpy.ndarray`): An array representing real user
+            actual_user_representation (:obj:`numpy.ndarray`): An array representing real user
                 preferences unknown to the system. The shape and meaning depends on the
                 implementation of the concrete class.
             num_users (int): The number of users in the system.
@@ -35,8 +35,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             item_attributes (:obj:`numpy.ndarray`): An array representing items, matching
                 item_representation. The shape and meaning depends on the implementation
                 of the concrete class.
-            actual_user_scores (:obj:`numpy.ndarray`): An array representing real user
-                preferences, matching actual_user_scores. The shape and meaning depends
+            actual_users (:obj:`numpy.ndarray`): An array representing real user
+                preferences, matching actual_users. The shape and meaning depends
                 on the implementation of the concrete class.
             predicted_scores (:obj:`numpy.ndarray`): An array representing the user
                 preferences as perceived by the system. The shape is always |U|x|I|,
@@ -58,22 +58,25 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                 for i in I.
     """
     @abstractmethod
-    def __init__(self, user_representation, item_representation, actual_user_scores,
-                            num_users, num_items, num_items_per_iter, num_new_items,
-                            verbose=False):
+    def __init__(self, user_representation, item_representation,
+                 actual_user_representation, num_users, num_items,
+                 num_items_per_iter, num_new_items, verbose=False):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
+        # init users and items
         self.user_profiles = user_representation
         self.item_attributes = item_representation
         # set predicted scores
-        self.train(normalize=False)
+        self.predicted_scores = self.train(self.user_profiles, self.item_attributes,
+                                           normalize=True)
+        assert(self.predicted_scores is not None)
 
-        if actual_user_scores is not None:
-            self.actual_user_scores = actual_user_scores
+        if actual_user_representation is not None:
+            self.actual_users = actual_user_representation
         else:
-            self.actual_user_scores = ActualUserScores(num_users=num_users,
-                    item_representation=item_representation,
-                    normalize=True)
+            self.actual_users = Users(size=self.user_profiles.shape)
+
+        self.actual_users.compute_user_scores(self.train)
 
         self.num_users = num_users
         self.num_items = num_items
@@ -89,7 +92,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         self.log('Items per iter: %d' % self.num_items_per_iter)
 
 
-    def train(self, normalize=True):
+    def train(self, user_profiles, item_attributes, normalize=True):
         """ Updates recommender based on past interactions for better user predictions.
 
             Args:
@@ -97,12 +100,12 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                     False otherwise.
         """
         if normalize:
-            user_profiles = normalize_matrix(self.user_profiles, axis=1)
-        else:
-            user_profiles = self.user_profiles
-        self.predicted_scores = np.dot(user_profiles, self.item_attributes)
+            user_profiles = normalize_matrix(user_profiles, axis=1)
+        predicted_scores = np.dot(user_profiles, item_attributes)
         self.log('System updates predicted scores given by users (rows) ' + \
-            'to items (columns):\n' + str(self.predicted_scores))
+            'to items (columns):\n' + str(predicted_scores))
+        assert(predicted_scores is not None)
+        return predicted_scores
 
     def generate_recommendations(self, k=1, indices_prime=None):
         """ Generate recommendations
@@ -125,8 +128,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             indices_prime = indices_prime.reshape((self.num_users, -1))
         if indices_prime.size == 0 or k > indices_prime.shape[1]:
             self.log('Insufficient number of items left!')
-            # FIXME for SIR
-            #self._expand_items()
+            # FIXME for Bass/SIR
+            self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
         row = np.repeat(self.user_vector, indices_prime.shape[1])
@@ -190,8 +193,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         self.log("Choice among %d items" % (indices_prime.shape[0]))
         if indices_prime.shape[1] < num_new_items:
             self.log('Insufficient number of items left!')
-            # FIXME SIR
-            #self._expand_items()
+            # FIXME for Bass/SIR
+            self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
 
@@ -220,7 +223,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         pass
 
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=False):
+    def run(self, timesteps=50, startup=False, train_between_steps=True,
+            repeated_items=False):
         """ Runs simulation for the given timesteps.
 
             Args:
@@ -242,7 +246,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         for t in range(timesteps):
             self.log('Step %d' % t)
             items = self.recommend(startup=startup)
-            interactions = self.actual_user_scores.get_user_feedback(items,
+            interactions = self.actual_users.get_user_feedback(items,
                                                         self.user_vector)
             if not repeated_items:
                 self.indices[self.user_vector, interactions] = -1
@@ -253,10 +257,12 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             #self.get_user_feedback()
             # train between steps:
             if train_between_steps:
-                self.train()
+                self.predicted_scores = self.train(self.user_profiles,
+                                                   self.item_attributes)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.train()
+            self.predicted_scores = self.train(self.user_profiles,
+                                               self.item_attributes)
 
 
     def startup_and_train(self, timesteps=50):
@@ -282,8 +288,8 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         new_indices = np.tile(self.item_attributes.expand_items(self, num_new_items),
             (self.num_users,1))
         self.indices = np.concatenate((self.indices, new_indices), axis=1)
-        self.actual_user_scores.expand_items(self.item_attributes)
-        self.train()
+        self.actual_users.expand_items(self.item_attributes)
+        self.predicted_scores = self.train(self.user_profiles, self.item_attributes)
 
     def get_measurements(self):
         """ Returns all available measurements. For more details,

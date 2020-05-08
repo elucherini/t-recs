@@ -14,6 +14,7 @@ class TestContentFiltering:
                                            c.user_profiles.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
                                            c.item_attributes.shape[0])
+        test_utils.assert_not_none(c.predicted_scores)
 
     def test_arguments(self, items=None, attr=None, users=None):
         if items is None:
@@ -30,6 +31,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
 
     def test_partial_arguments(self, items=None, users=None, attr=None):
         # init with partially given arguments
@@ -47,6 +49,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
         c = ContentFiltering(num_items=items)
         test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
         test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
@@ -54,6 +57,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
         c = ContentFiltering(num_attributes=attr)
         test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
         test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
@@ -61,6 +65,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
 
         c = ContentFiltering(num_users=users, num_items=items)
         test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
@@ -69,6 +74,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
         c = ContentFiltering(num_users=users, num_attributes=attr)
         test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
         test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
@@ -76,6 +82,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
         c = ContentFiltering(num_attributes=attr, num_items=items)
         test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
         test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
@@ -83,6 +90,7 @@ class TestContentFiltering:
                                                c.item_attributes.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
                                                c.user_profiles.shape[1])
+        test_utils.assert_not_none(c.predicted_scores)
 
     def test_representations(self, item_repr=None, user_repr=None, bad_user_repr=None):
         if item_repr is None:
@@ -102,6 +110,7 @@ class TestContentFiltering:
         test_utils.assert_correct_size_generic(item_repr.shape[0], c.num_attributes,
                                                c.user_profiles.shape[1])
         test_utils.assert_equal_arrays(item_repr, c.item_attributes)
+        test_utils.assert_not_none(c.predicted_scores)
 
         c = ContentFiltering(user_representation=user_repr)
         test_utils.assert_correct_num_users(user_repr.shape[0], c,
@@ -113,6 +122,8 @@ class TestContentFiltering:
         test_utils.assert_correct_size_generic(user_repr.shape[1], c.num_attributes,
                                                c.user_profiles.shape[1])
         test_utils.assert_equal_arrays(user_repr, c.user_profiles)
+        test_utils.assert_not_none(c.predicted_scores)
+
         c = ContentFiltering(user_representation=user_repr,
                              item_representation=item_repr)
         test_utils.assert_correct_num_users(user_repr.shape[0], c,
@@ -129,6 +140,7 @@ class TestContentFiltering:
                                                c.user_profiles.shape[1])
         test_utils.assert_equal_arrays(user_repr, c.user_profiles)
         test_utils.assert_equal_arrays(item_repr, c.item_attributes)
+        test_utils.assert_not_none(c.predicted_scores)
 
     def test_wrong_representation(self, user_repr=None, item_repr=None,
                                   bad_user_repr=None, bad_item_repr=None):
@@ -173,4 +185,5 @@ class TestContentFiltering:
                                            c.user_profiles.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
                                            c.item_attributes.shape[0])
+        test_utils.assert_not_none(c.predicted_scores)
 

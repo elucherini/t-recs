@@ -9,6 +9,7 @@ class TestBassModel:
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])
+        test_utils.assert_not_none(s.predicted_scores)
 
     def test_arguments(self, items=1, users=5):
         if items is None:
@@ -19,6 +20,7 @@ class TestBassModel:
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(items, s, s.item_attributes.shape[1])
+        test_utils.assert_not_none(s.predicted_scores)
 
     def test_partial_arguments(self, items=1, users=5):
         if items is None:
@@ -30,10 +32,12 @@ class TestBassModel:
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])
+        test_utils.assert_not_none(s.predicted_scores)
         s = BassModel(num_items=items)
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(items, s, s.item_attributes.shape[1])
+        test_utils.assert_not_none(s.predicted_scores)
 
     def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
@@ -48,6 +52,7 @@ class TestBassModel:
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(item_repr.shape[1], s, s.item_attributes.shape[1])
         test_utils.assert_equal_arrays(item_repr, s.item_attributes)
+        test_utils.assert_not_none(s.predicted_scores)
 
         # test user representation
         s = BassModel(user_representation=user_repr)
@@ -61,6 +66,7 @@ class TestBassModel:
                                             s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])
         test_utils.assert_equal_arrays(user_repr, s.user_profiles)
+        test_utils.assert_not_none(s.predicted_scores)
 
         # test item and user representations
         s = BassModel(user_representation=user_repr, item_representation=item_repr)
@@ -75,6 +81,7 @@ class TestBassModel:
         test_utils.assert_correct_num_items(item_repr.shape[1], s, s.item_attributes.shape[1])
         test_utils.assert_equal_arrays(user_repr, s.user_profiles)
         test_utils.assert_equal_arrays(item_repr, s.item_attributes)
+        test_utils.assert_not_none(s.predicted_scores)
 
     def test_wrong_representations(self, bad_user_repr=None):
         if bad_user_repr is None or bad_user_repr.shape[0] == bad_user_repr.shape[1]:
@@ -87,7 +94,8 @@ class TestBassModel:
     def test_additional_params(self, num_items_per_iter=None, num_new_items=None):
         # these are currently meaningless but at least it should not break
         if num_items_per_iter is None:
-            num_items_per_iter = np.random.randint(5, 100)
+            # TODO vary parameter
+            num_items_per_iter = 1#np.random.randint(5, 100)
         if num_new_items is None:
             num_new_items = np.random.randint(20, 400)
         s = BassModel(verbose=False, num_items_per_iter=num_items_per_iter,
@@ -95,6 +103,7 @@ class TestBassModel:
         assert(num_items_per_iter == s.num_items_per_iter)
         assert(num_new_items == s.num_new_items)
         # also check other params
+        test_utils.assert_not_none(s.predicted_scores)
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])

@@ -1,7 +1,7 @@
 import numpy as np
 from rec import ActualUserScores
 import test_utils
-
+'''
 class TestActualUserScores:
     def test_ActualUserScores(self, items=10, attr=5, users=6, expand_items_by=2):
         # random binary item_representation
@@ -19,3 +19,4 @@ class TestActualUserScores:
         s.expand_items(item_repr)
         test_utils.assert_equal_arrays(s.get_actual_user_scores(),
                                     s.actual_scores)
+'''

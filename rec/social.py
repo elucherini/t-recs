@@ -125,8 +125,7 @@ class SocialFiltering(Recommender):
         assert(num_items is not None)
         assert(item_representation is not None)
         # Initialize recommender system
-        Recommender.__init__(self, user_representation, item_representation, actual_user_scores,
-                                num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
+        Recommender.__init__(self, user_representation, item_representation, actual_user_scores, num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
 
 
     def _update_user_profiles(self, interactions):
@@ -148,15 +147,19 @@ class SocialFiltering(Recommender):
         assert(interactions_per_user.shape == self.item_attributes.shape)
         self.item_attributes = np.add(self.item_attributes, interactions_per_user)
 
-    def train(self, normalize=True):
+    def train(self, user_profiles=None, item_attributes=None, normalize=True):
         """ Calls train method of parent class :class:`Recommender`.
 
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
             False otherwise.
         """
-        assert(self.user_profiles.shape[1] == self.item_attributes.shape[0])
-        Recommender.train(self, normalize=normalize)
+        if user_profiles is None:
+            user_profiles = self.user_profiles
+        if item_attributes is None:
+            item_attributes = self.item_attributes
+        assert(user_profiles.shape[1] == item_attributes.shape[0])
+        return Recommender.train(self, user_profiles, item_attributes, normalize=normalize)
 
     def follow(self, user_index, following_index):
         # TODO allow for multiple indices

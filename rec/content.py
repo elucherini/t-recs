@@ -3,6 +3,7 @@ from .measurement import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from .recommender import Recommender
 from .stats import Distribution
+from .utils import is_size_good
 
 class ContentFiltering(Recommender):
     """A customizable content-filtering recommendation system.
@@ -27,7 +28,7 @@ class ContentFiltering(Recommender):
         user_representation (:obj:`numpy.ndarray`, optional): A |U|x|A| matrix representing the similarity
             between each item and attribute, as interpreted by the system. If this
             is not None, num_users is ignored.
-        actual_user_scores (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the real
+        actual_user_representation (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the real
             user scores. This matrix is *not* used for recommendations. This is
             only kept for measurements and the system is unaware of it.
         verbose (bool, optional): If True, enables verbose mode. Disabled by default.
@@ -87,13 +88,14 @@ class ContentFiltering(Recommender):
         >>> cf = ContentFiltering(num_attributes=1400, item_representation=item_representation)
         >>> cf.item_attributes.shape
         (100, 200) # <-- 100 attributes, 200 items. num_attributes was ignored.
-        >>> cf.user_profile.shape
+        >>> cf.user_profiles.shape
         (100, 100) # <-- 100 users (default), 100 attributes (as implicitly specified by item_representation)
 
     """
     def __init__(self, num_users=100, num_items=1250, num_attributes=None,
-        item_representation=None, user_representation=None, actual_user_scores=None,
+        item_representation=None, user_representation=None, actual_user_representation=None,
         verbose=False, num_items_per_iter=10, num_new_items=30):
+
         # Give precedence to item_representation, otherwise build random one
         if item_representation is not None:
             #self.item_attributes = item_representation
@@ -124,9 +126,11 @@ class ContentFiltering(Recommender):
                                 " == item_representation.shape[0]")
         assert(user_representation is not None)
         self.measurements = [MSEMeasurement(), HomogeneityMeasurement()]
+
         # Initialize recommender system
-        Recommender.__init__(self, user_representation, item_representation, actual_user_scores,
-                                num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
+        Recommender.__init__(self, user_representation, item_representation,
+                             actual_user_representation, num_users, num_items,
+                             num_items_per_iter, num_new_items, verbose=verbose)
 
     def _update_user_profiles(self, interactions):
         """ Private function that updates user profiles with data from
@@ -148,13 +152,17 @@ class ContentFiltering(Recommender):
         user_attributes = np.dot(interactions_per_user, self.item_attributes.T)
         self.user_profiles = np.add(self.user_profiles, user_attributes)
 
-    def train(self, normalize=True):
+    def train(self, user_profiles=None, item_attributes=None, normalize=True):
         """ Calls train method of parent class :class:`Recommender`.
 
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
             False otherwise.
         """
+        if user_profiles is None:
+            user_profiles = self.user_profiles
+        if item_attributes is None:
+            item_attributes = self.item_attributes
         assert(self.user_profiles.shape[1] == self.item_attributes.shape[0])
-        Recommender.train(self, normalize=normalize)
+        return Recommender.train(self, user_profiles, item_attributes, normalize=normalize)
 

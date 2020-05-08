@@ -1,9 +1,45 @@
-from .debug import VerboseMode
-from .stats import Distribution
-from .utils import normalize_matrix
+from debug import VerboseMode
+from stats import Distribution
+from utils import normalize_matrix
 import numpy as np
 
-class Items(VerboseMode):
+# subclass ndarray
+class Items(np.ndarray, VerboseMode):
+    def __new__(cls, input_array, num_items=None, verbose=False):
+        obj = np.asarray(input_array).view(cls)
+        obj.verbose = verbose
+        return obj
+
+    def __init__(self, *args, **kwargs):
+        VerboseMode.__init__(self, __name__.upper(), self.verbose)
+
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+        self.verbose = getattr(obj, 'verbose', False)
+
+class ItemsChild(Items):
+    def __new__(cls, item_repr=None, num_items=None, num_attributes=None,
+                verbose=False):
+        if (item_repr is not None and not isinstance(item_repr, np.ndarray) and
+                                      not isinstance(item_repr, list)):
+            raise TypeError("item_repr can either be a list, numpy.ndarray," + \
+                            " or None -- is %s" % (type(item_repr)))
+        if num_items is None or not isinstance(num_items, int):
+            num_items = 1000
+        if num_attributes is None or not isinstance(num_attributes, int):
+            num_attributes = 10000
+
+        obj = Items.__new__(cls, item_repr, num_items, verbose)
+        return obj
+
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+
+
+
+class ContentFilteringItems(Items):
     def __init__(self, num_items=None, num_attributes=None, normalize=False,
         verbose=False, distribution=None):
         # Initialize verbose mode
@@ -35,7 +71,7 @@ class Items(VerboseMode):
         # Compute items with (|A|x|I|)
         self.item_attributes = self.compute_item_attributes(num_items=self.num_items,
                                         num_attributes=self.num_attributes,
-                                        distribution=self.distribution, 
+                                        distribution=self.distribution,
                                         normalize=False)
 
     def _compute_item_attributes(self, num_items, num_attributes, normalize=False):
@@ -47,7 +83,7 @@ class Items(VerboseMode):
             item_attributes = normalize_matrix(item_attributes, axis=1)
         return item_attributes
 
-    def compute_item_attributes(self, num_items=1250, num_attributes=None, distribution=None, 
+    def compute_item_attributes(self, num_items=1250, num_attributes=None, distribution=None,
                                             normalize=False):
         # Error if num_items or num_attributes not valid
         if self.num_items is None and not isinstance(num_items, int):
@@ -78,3 +114,6 @@ class Items(VerboseMode):
         return new_indices
 
 
+if __name__ == '__main__':
+    a = ItemsChild([1,2,3], verbose=True)
+    print(a)
