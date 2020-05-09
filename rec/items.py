@@ -1,79 +1,41 @@
-from debug import VerboseMode
-from stats import Distribution
-from utils import normalize_matrix
+from .debug import VerboseMode
+from .distribution import Generator
+from .utils import normalize_matrix
 import numpy as np
 
 # subclass ndarray
-class Items(np.ndarray, VerboseMode):
+class FromNdArray(np.ndarray, VerboseMode):
     def __new__(cls, input_array, num_items=None, verbose=False):
         obj = np.asarray(input_array).view(cls)
         obj.verbose = verbose
         return obj
 
     def __init__(self, *args, **kwargs):
-        VerboseMode.__init__(self, __name__.upper(), self.verbose)
+        pass
 
     def __array_finalize__(self, obj):
         if obj is None:
             return
         self.verbose = getattr(obj, 'verbose', False)
 
-class ItemsChild(Items):
-    def __new__(cls, item_repr=None, num_items=None, num_attributes=None,
-                verbose=False):
-        if (item_repr is not None and not isinstance(item_repr, np.ndarray) and
-                                      not isinstance(item_repr, list)):
-            raise TypeError("item_repr can either be a list, numpy.ndarray," + \
-                            " or None -- is %s" % (type(item_repr)))
-        if num_items is None or not isinstance(num_items, int):
-            num_items = 1000
-        if num_attributes is None or not isinstance(num_attributes, int):
-            num_attributes = 10000
 
-        obj = Items.__new__(cls, item_repr, num_items, verbose)
-        return obj
-
-    def __array_finalize__(self, obj):
-        if obj is None:
-            return
-
-
-
-class ContentFilteringItems(Items):
-    def __init__(self, num_items=None, num_attributes=None, normalize=False,
-        verbose=False, distribution=None):
+class Items(FromNdArray):
+    def __init__(self, item_attributes=None, size=None, verbose=False):
         # Initialize verbose mode
-        super().__init__(__name__.upper(), verbose)
+        VerboseMode.__init__(self, __name__.upper(), self.verbose)
+        # general input checks
+        if item_attributes is not None:
+            if not isinstance(item_attributes, (list, np.ndarray)):
+                raise TypeError("item_attributes must be a list or numpy.ndarray")
+        if item_attributes is None and size is None:
+            raise ValueError("item_attributes and size can't both be None")
+        if item_attributes is None and not isinstance(size, tuple):
+            raise TypeError("size must be a tuple, is %s" % type(size))
+        if item_attributes is None and size is not None:
+            item_attributes = Generator().binomial(n=.3, p=1, size=size)
+        self.item_attributes = item_attributes
 
-        # default if distribution not specified or type not valid
-        if not isinstance(distribution, Distribution):
-            self.distribution = Distribution('norm', non_negative=True)
-            self.log('Initialized default normal distribution with no size')
-        else:
-            self.distribution = distribution
-
-        # Set up Items instance
-        if not isinstance(num_items, int):
-            self.num_items = None
-            self.num_attributes = num_attributes
-            self.item_attributes = None
-            self.log('Initialized empty ActualUserScores instance')
-            return
-
-        self.num_items = num_items
-
-        if not isinstance(num_attributes, int):
-            # default num_attributes if not specified or not valid
-            self.num_attributes = None
-        else:
-            self.num_attributes = num_attributes
-
-        # Compute items with (|A|x|I|)
-        self.item_attributes = self.compute_item_attributes(num_items=self.num_items,
-                                        num_attributes=self.num_attributes,
-                                        distribution=self.distribution,
-                                        normalize=False)
-
+    '''
     def _compute_item_attributes(self, num_items, num_attributes, normalize=False):
         # Compute item attributes (|A|x|I|)
         assert(num_items is not None and num_attributes is not None)
@@ -96,7 +58,7 @@ class ContentFilteringItems(Items):
         else:
             self.num_attributes = num_attributes
         # Use specified distribution if specified, otherwise default to self.distribution
-        if distribution is not None and isinstance(distribution, Distribution):
+        if distribution is not None and isinstance(distribution, Generator):
             self.distribution = distribution
         self.item_attributes = self._compute_item_attributes(self.num_attributes,
             self.num_items, normalize=normalize)
@@ -112,8 +74,13 @@ class ContentFilteringItems(Items):
         self.item_attributes = np.concatenate((self.item_attributes, new_item_attributes),
             axis=1)
         return new_indices
+    '''
 
 
 if __name__ == '__main__':
-    a = ItemsChild([1,2,3], verbose=True)
+    a = Items([1,2,3], verbose=True)
     print(a)
+    print(type(a))
+    print(a+2)
+    print(a.verbose)
+    #a.log("test Items")

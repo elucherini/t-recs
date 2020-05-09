@@ -17,6 +17,7 @@ class TestUsers:
         assert(s.actual_user_profiles.shape == (users, attr))
         s = Users(actual_user_profiles=np.random.randint(5, size=(users, attr)))
         assert(s.actual_user_profiles.shape == (users, attr))
+        s = Users(actual_user_profiles=[1,2,3])
 
     def test_content(self, items=10, attr=5, users=6, expand_items_by=2):
         """WARNING Before running this, make sure ContentFiltering is working properly"""
@@ -46,6 +47,14 @@ class TestUsers:
         test_utils.assert_equal_arrays(s.actual_user_scores,
                                        model.train(s.actual_user_profiles,
                                                    normalize=True))
+
+    def test_content_expand(self, items=10, attr=5, users=6, expand_items_by=2):
+        model = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
+        scores = Users(size=(users, attr))
+        # I'm not supposed to call this directly, but it's the fastest way to test
+        model._expand_items(num_new_items=expand_items_by)
+
+
 
 if __name__ == '__main__':
     t = TestUsers()

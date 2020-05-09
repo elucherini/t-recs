@@ -4,6 +4,7 @@ from .measurement import MSEMeasurement
 from .users import Users
 from .utils import normalize_matrix, toDataFrame
 from .debug import VerboseMode
+from .items import Items
 
 class Recommender(VerboseMode, metaclass=ABCMeta):
     """Abstract class representing a recommender system.
@@ -65,7 +66,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         # init users and items
         self.user_profiles = user_representation
-        self.item_attributes = item_representation
+        self.item_attributes = Items(item_representation)
         # set predicted scores
         self.predicted_scores = self.train(self.user_profiles, self.item_attributes,
                                            normalize=True)
@@ -128,8 +129,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             indices_prime = indices_prime.reshape((self.num_users, -1))
         if indices_prime.size == 0 or k > indices_prime.shape[1]:
             self.log('Insufficient number of items left!')
-            # FIXME for Bass/SIR
-            self._expand_items()
+            #self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
         row = np.repeat(self.user_vector, indices_prime.shape[1])
@@ -193,8 +193,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
         self.log("Choice among %d items" % (indices_prime.shape[0]))
         if indices_prime.shape[1] < num_new_items:
             self.log('Insufficient number of items left!')
-            # FIXME for Bass/SIR
-            self._expand_items()
+            #self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
 
@@ -283,13 +282,21 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
                     If None, it is equal to twice the number of items presented to the user
                     in one iteration.
         """
-        if not isinstance(num_new_items, int) or num_new_items < 1:
+        '''
+        if num_new_items is None:
             num_new_items = 2 * self.num_items_per_iter
-        new_indices = np.tile(self.item_attributes.expand_items(self, num_new_items),
-            (self.num_users,1))
+        if not isinstance(num_new_items, int):
+            raise TypeError("num_new_items should be int, is instead %s" % (
+                                                                    type(num_new_items)))
+        if num_new_items < 1:
+            raise ValueError("Can't increment items by a number smaller than 1!")
+        #new_indices = np.tile(self.item_attributes.expand_items(self, num_new_items),
+        #    (self.num_users,1))
         self.indices = np.concatenate((self.indices, new_indices), axis=1)
-        self.actual_users.expand_items(self.item_attributes)
+        self.actual_users.compute_user_scores(self.train)
         self.predicted_scores = self.train(self.user_profiles, self.item_attributes)
+        '''
+        pass
 
     def get_measurements(self):
         """ Returns all available measurements. For more details,

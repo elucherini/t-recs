@@ -54,9 +54,9 @@ class Users(VerboseMode):
                  size=None, verbose=False):
         super().__init__(__name__.upper(), verbose)
         # general input checks
-        if (actual_user_profiles is not None
-            and not isinstance(actual_user_profiles, np.ndarray)):
-            raise TypeError()
+        if actual_user_profiles is not None:
+            if not isinstance(actual_user_profiles, (list, np.ndarray)):
+                raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if interact_with_items is not None and not callable(interact_with_items):
             raise TypeError("interact_with_items must be callable")
         if actual_user_profiles is None and size is None:
@@ -65,7 +65,7 @@ class Users(VerboseMode):
             raise TypeError("size must be a tuple, is %s" % type(size))
         if actual_user_profiles is None and size is not None:
             actual_user_profiles = Generator().normal(size=size)
-        self.actual_user_profiles = actual_user_profiles
+        self.actual_user_profiles = np.asarray(actual_user_profiles)
         # this will be initialized by the system
         self.actual_user_scores = None
 
