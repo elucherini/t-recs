@@ -1,6 +1,6 @@
 from .recommender import Recommender
 from .social import SocialFiltering
-from .stats import Distribution
+from .distribution import Generator
 from .measurement import StructuralVirality
 import numpy as np
 import math
@@ -44,7 +44,7 @@ class BassModel(SocialFiltering, Recommender):
         elif num_items is None:
             raise ValueError("num_items, infection_state, and item_representation can't be all None")
         else:
-            item_representation = Distribution('uniform', size=(1,num_items)).compute()
+            item_representation = Generator().uniform(size=(1,num_items))
 
         assert(num_items is not None)
         assert(item_representation is not None)

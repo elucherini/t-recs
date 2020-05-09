@@ -1,5 +1,4 @@
 from .recommender import Recommender
-from .stats import Distribution
 import numpy as np
 from .measurement import DiffusionTreeMeasurement
 

@@ -1,7 +1,6 @@
 import numpy as np
 from .recommender import Recommender
 from .measurements import Measurements
-from .user_scores import ActualUserScores
 
 class PopularityRecommender(Recommender):
     def __init__(self, num_users, num_items, num_items_per_iter=10,
@@ -11,7 +10,7 @@ class PopularityRecommender(Recommender):
         self.user_profiles = np.ones((num_users, 1), dtype=int)
         self.item_attributes = np.zeros((1, num_items), dtype=int)
         if actual_user_scores:
-            actual_scores = ActualUserScores(num_users, self.item_attributes, 
+            actual_scores = ActualUserScores(num_users, self.item_attributes,
                 debug=debug_user_preferences)
         else:
             actual_scores = None

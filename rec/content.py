@@ -2,8 +2,7 @@
 from .measurement import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from .recommender import Recommender
-from .stats import Distribution
-from .utils import is_size_good
+from .distribution import Generator
 
 class ContentFiltering(Recommender):
     """A customizable content-filtering recommendation system.
@@ -108,8 +107,8 @@ class ContentFiltering(Recommender):
                 num_attributes = user_representation.shape[1]
             elif num_attributes is None:
                 num_attributes = np.random.randint(2, max(3, int(num_items - num_items / 10)))
-            item_representation = Distribution(distr_type='binom', p=.3, n=1,
-                                    size=(num_attributes, num_items)).compute()
+            item_representation = Generator().binomial(n=.3, p=1,
+                                                      size=(num_attributes, num_items))
 
         assert(num_attributes is not None)
         assert(item_representation is not None)

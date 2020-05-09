@@ -4,7 +4,6 @@ from .social import SocialFiltering
 from .bass import BassModel
 #from .popularity import PopularityRecommender
 from .debug import VerboseMode, DebugLogger
-from .user_scores import Users, ActualUserScores
+from .users import Users
 #from .items import Items
-from .stats import Distribution
 from .distribution import Generator

@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
 from .measurement import MSEMeasurement
-from .user_scores import Users#ActualUserScores
+from .users import Users
 from .utils import normalize_matrix, toDataFrame
 from .debug import VerboseMode
 
