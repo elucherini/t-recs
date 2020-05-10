@@ -60,7 +60,6 @@ def get_first_valid(*args):
     return None
 
 def is_equal_dim_or_none(*args):
-    print(args)
     for i, arg in enumerate(args):
         if arg is None:
             return True
