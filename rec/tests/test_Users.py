@@ -1,5 +1,5 @@
 import numpy as np
-from rec import Users, ContentFiltering, SocialFiltering, BassModel
+from rec import Users, ContentFiltering
 import test_utils
 import pytest
 

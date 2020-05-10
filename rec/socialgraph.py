@@ -1,11 +1,24 @@
 import numpy as np
+import networkx as nx
 
 from .debug import VerboseMode
+
+class SocialGraph():
+    @staticmethod
+    def generate_random_graph(*args, **kwargs):
+        """Thin wrapper around networkx's random graph generators"""
+        graph_type = kwargs.pop('graph_type', None)
+        if graph_type is None:
+            default = kwargs.pop('default', None)
+            graph_type = default if default is not None else nx.fast_gnp_random_graph
+        graph = graph_type(*args, **kwargs)
+        return nx.convert_matrix.to_numpy_array(graph)
 
 class BinarySocialGraph(VerboseMode):
     """A mixin for classes with an :attr:`~Recommender.user_profiles` attribute
     to gain the basic functionality of a binary social graph.
     """
+
     def follow(self, user_index, following_index):
         # TODO allow for multiple indices
         if (user_index >= self.num_users or following_index >= self.num_users):

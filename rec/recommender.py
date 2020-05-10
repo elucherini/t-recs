@@ -7,7 +7,16 @@ from .debug import VerboseMode
 from .items import Items
 from tqdm import tqdm
 
-class Recommender(VerboseMode, ABC):
+
+class MeasurementModule():
+    def __init__(self, measurements=None):
+        if not is_valid_or_none(measurements, list):
+            raise("Wrong type for measurements, must be list")
+        if measurements is None:
+            measurements = list()
+        self.measurements = measurements
+
+class Recommender(MeasurementModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
         All attributes and methods in this class are generic to all recommendation systems
@@ -62,9 +71,12 @@ class Recommender(VerboseMode, ABC):
     @abstractmethod
     def __init__(self, user_representation, item_representation,
                  actual_user_representation, num_users, num_items,
-                 num_items_per_iter, num_new_items, verbose=False):
+                 num_items_per_iter, num_new_items, measurements=None,
+                 verbose=False):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
+        # measurement modules
+        MeasurementModule.__init__(self, measurements)
         # init users and items
         self.user_profiles = user_representation
         self.item_attributes = Items(item_representation)
@@ -88,6 +100,8 @@ class Recommender(VerboseMode, ABC):
             raise ValueError("num_items_per_iter must be an int")
         if not is_valid_or_none(num_new_items, int):
             raise ValueError("num_new_items must be an int")
+        if not hasattr(self, 'measurements'):
+            raise ValueError("You must define at least one measurement module")
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
@@ -102,15 +116,20 @@ class Recommender(VerboseMode, ABC):
         self.log('Items per iter: %d' % self.num_items_per_iter)
 
 
-    def train(self, user_profiles, item_attributes, normalize=True):
+    def train(self, user_profiles=None, item_attributes=None, normalize=True):
         """ Updates recommender based on past interactions for better user predictions.
 
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
                     False otherwise.
         """
+        if user_profiles is None:
+            user_profiles = self.user_profiles
+        if item_attributes is None:
+            item_attributes = self.item_attributes
         if normalize:
             user_profiles = normalize_matrix(user_profiles, axis=1)
+        assert(user_profiles.shape[1] == item_attributes.shape[0])
         predicted_scores = np.dot(user_profiles, item_attributes)
         self.log('System updates predicted scores given by users (rows) ' + \
             'to items (columns):\n' + str(predicted_scores))

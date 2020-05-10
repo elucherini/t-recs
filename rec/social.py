@@ -1,7 +1,8 @@
 from .recommender import Recommender
 import numpy as np
-from .measurement import DiffusionTreeMeasurement
-from .socialgraph import BinarySocialGraph
+from .measurement import MSEMeasurement
+from .socialgraph import BinarySocialGraph, SocialGraph
+from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 
 class SocialFiltering(Recommender, BinarySocialGraph):
     """A customizable social-filtering recommendation system.
@@ -94,38 +95,57 @@ class SocialFiltering(Recommender, BinarySocialGraph):
         item_representation=None, user_representation=None, actual_user_scores=None,
         verbose=False, num_items_per_iter=10, num_new_items=30):
         # Give precedence to user_representation, otherwise build empty one
-        if user_representation is None:
-            if item_representation is not None:
-                num_users = item_representation.shape[0]
-            elif num_users is None:
-                raise ValueError("num_users and user_representation can't be both None")
-            user_representation = np.diag(np.diag(np.ones((num_users, num_users), dtype=int)))
-        elif (item_representation is not None
-            and item_representation.shape[0] != user_representation.shape[0]):
-            raise ValueError("It should be user_representation.shape[0] (or shape[1])" + \
-                                " == item_representation.shape[0]")
-        elif (user_representation.shape[0] != user_representation.shape[1]):
-            raise ValueError("It should be user_representation.shape[0]" + \
-                                " == user_representation.shape[1]")
-        else:
-            num_users = user_representation.shape[0]
-        assert(num_users is not None)
-        assert(user_representation is not None)
-        if user_representation is not None:
-            assert(num_users == user_representation.shape[0] == user_representation.shape[1])
-        # Give precedence to item_representation, otherwise build random one
-        if item_representation is not None:
-            num_items = item_representation.shape[1]
-        else:
-            if num_items is None:
-                raise ValueError("num_items and item_representation can't be both None")
-            else:
-                item_representation = np.zeros((num_users, num_items), dtype=int)
 
-        assert(num_items is not None)
-        assert(item_representation is not None)
+        if all_none(user_representation, num_users):
+            raise ValueError("user_representation and num_users can't be all None")
+        if all_none(item_representation, num_items):
+            raise ValueError("item_representation and num_items can't be all None")
+
+        if not is_array_valid_or_none(user_representation, ndim=2):
+            raise ValueError("user_representation is invalid")
+        if not is_array_valid_or_none(item_representation, ndim=2):
+            raise ValueError("item_representation is not valid")
+        num_items = get_first_valid(getattr(item_representation, 'shape',
+                                            [None, None])[1],
+                                    num_items)
+
+        num_users = get_first_valid(getattr(user_representation,
+                                            'shape', [None])[0],
+                                    getattr(item_representation,
+                                            'shape', [None])[0],
+                                             num_users)
+
+        if user_representation is None:
+            import networkx as nx
+            user_representation = SocialGraph.generate_random_graph(n=num_users, p=0.3,
+                                                    graph_type=nx.fast_gnp_random_graph)
+            #np.diag(np.diag(np.ones((num_users, num_users),
+            #                                              dtype=int)))
+        if item_representation is None:
+            item_representation = np.zeros((num_users, num_items), dtype=int)
+
+        if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
+                                getattr(user_representation, 'shape', [None, None])[1],
+                                num_users):
+            raise ValueError("user_representation must be a square matrix")
+        if not is_equal_dim_or_none(getattr(user_representation, 'shape',
+                                            [None, None])[1],
+                                getattr(item_representation, 'shape', [None])[0],
+                                num_users):
+            raise ValueError("user_representation.shape[1] should be the same as " + \
+                             "item_representation.shape[0]")
+        if not is_equal_dim_or_none(getattr(item_representation, 'shape',
+                                            [None, None])[1],
+                                    num_items):
+            raise ValueError("item_representation.shape[1] should be the same as " + \
+                             "num_items")
+
+        measurements = [MSEMeasurement()]
         # Initialize recommender system
-        Recommender.__init__(self, user_representation, item_representation, actual_user_scores, num_users, num_items, num_items_per_iter, num_new_items, verbose=verbose)
+        Recommender.__init__(self, user_representation, item_representation,
+                             actual_user_scores, num_users, num_items,
+                             num_items_per_iter, num_new_items,
+                             measurements=measurements, verbose=verbose)
 
 
     def _update_user_profiles(self, interactions):
@@ -140,23 +160,8 @@ class SocialFiltering(Recommender, BinarySocialGraph):
             interactions (numpy.ndarray): An array of item indices that users have
                 interacted with in the latest step. Namely, interactions_u represents
                 the index of the item that the user has interacted with.
-
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
         interactions_per_user[self.user_vector, interactions] = 1
         assert(interactions_per_user.shape == self.item_attributes.shape)
         self.item_attributes = np.add(self.item_attributes, interactions_per_user)
-
-    def train(self, user_profiles=None, item_attributes=None, normalize=True):
-        """ Calls train method of parent class :class:`Recommender`.
-
-            Args:
-                normalize (bool, optional): set to True if the scores should be normalized,
-            False otherwise.
-        """
-        if user_profiles is None:
-            user_profiles = self.user_profiles
-        if item_attributes is None:
-            item_attributes = self.item_attributes
-        assert(user_profiles.shape[1] == item_attributes.shape[0])
-        return Recommender.train(self, user_profiles, item_attributes, normalize=normalize)

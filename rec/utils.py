@@ -24,7 +24,7 @@ def toDataFrame(data, index=None):
 
 """Common input validation functions"""
 
-def is_array_valid_or_none(array, ndim=2, square=False):
+def is_array_valid_or_none(array, ndim=2):
     # check if array_like
     if not is_valid_or_none(array, (np.ndarray, list)):
         return False
@@ -36,12 +36,6 @@ def is_array_valid_or_none(array, ndim=2, square=False):
     # check ndim
     if array.ndim != ndim:
         return False
-    # check if square (if square is True)
-    if square and ndim == 2:
-        if array.shape[0] != array.shape[1]:
-            return False
-    elif square and ndim != 2:
-        raise ValueError("Invalid query: square=True implies ndim=2")
     # all good
     return True
 

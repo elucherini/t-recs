@@ -108,8 +108,11 @@ class TestBassModel:
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])
 
-    def test_social_graph(self, user1=None, user2=None):
-        s = BassModel()
+    def test_social_graph(self, user_repr=None, user1=None, user2=None):
+        if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
+            users = np.random.randint(100)
+            user_repr = np.zeros((users, users))
+        s = BassModel(user_representation=user_repr)
         if user1 is None:
             user1 = np.random.randint(s.num_users)
         if user2 is None:

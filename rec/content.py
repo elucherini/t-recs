@@ -106,18 +106,13 @@ class ContentFiltering(Recommender):
                 raise ValueError("item_representation, user_representation, and " + \
                                  "num_attributes can't be all None")
 
-        if not is_array_valid_or_none(item_representation, ndim=2, square=False):
+        if not is_array_valid_or_none(item_representation, ndim=2):
             raise ValueError("item_representation is not valid")
-        if not is_array_valid_or_none(user_representation, ndim=2, square=False):
+        if not is_array_valid_or_none(user_representation, ndim=2):
             raise ValueError("item_representation is not valid")
         if not is_valid_or_none(num_attributes, int):
             raise TypeError("num_attributes must be an int")
-        if not is_equal_dim_or_none(getattr(user_representation,
-                                            'shape', [None, None])[1],
-                                    getattr(item_representation,
-                                            'shape', [None])[0]):
-            raise ValueError("user_representation.shape[1] should be the same as " + \
-                             "item_representation.shape[0]")
+
         num_items = get_first_valid(getattr(item_representation, 'shape',
                                             [None, None])[1],
                                     num_items)
@@ -126,26 +121,42 @@ class ContentFiltering(Recommender):
                                         getattr(user_representation, 'shape',
                                                 [None, None])[1],
                                         num_attributes)
+
+        num_users = get_first_valid(getattr(user_representation, 'shape', [None])[0],
+                                    num_users)
+
+        if user_representation is None:
+            user_representation = np.zeros((num_users, num_attributes))
         if item_representation is None:
             item_representation = Generator().binomial(n=.3, p=1,
                                                       size=(num_attributes, num_items))
 
-        assert(num_attributes is not None)
-        assert(item_representation is not None)
-        self.num_attributes = num_attributes
-        # Give precedence to user_representation, otherwise build random one
-        num_users = get_first_valid(getattr(user_representation, 'shape', [None])[0],
-                                    num_users)
-        if user_representation is None:
-            user_representation = np.zeros((num_users, num_attributes))
+        if not is_equal_dim_or_none(getattr(user_representation,
+                                            'shape', [None, None])[1],
+                                    getattr(item_representation,
+                                            'shape', [None])[0],
+                                    num_attributes):
+            raise ValueError("user_representation.shape[1] should be the same as " + \
+                             "item_representation.shape[0]")
+        if not is_equal_dim_or_none(getattr(user_representation,
+                                            'shape', [None])[0],
+                                    num_users):
+            raise ValueError("user_representation.shape[0] should be the same as " + \
+                             "num_users")
+        if not is_equal_dim_or_none(getattr(item_representation,
+                                            'shape', [None, None])[1],
+                                    num_items):
+            raise ValueError("item_representation.shape[1] should be the same as " + \
+                             "num_items")
 
-        assert(user_representation is not None)
-        self.measurements = [MSEMeasurement(), HomogeneityMeasurement()]
+        self.num_attributes = num_attributes
+        measurements = [MSEMeasurement(), HomogeneityMeasurement()]
 
         # Initialize recommender system
         Recommender.__init__(self, user_representation, item_representation,
                              actual_user_representation, num_users, num_items,
-                             num_items_per_iter, num_new_items, verbose=verbose)
+                             num_items_per_iter, num_new_items,
+                             measurements=measurements, verbose=verbose)
 
     def _update_user_profiles(self, interactions):
         """ Private function that updates user profiles with data from
@@ -166,18 +177,3 @@ class ContentFiltering(Recommender):
         interactions_per_user[self.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, self.item_attributes.T)
         self.user_profiles = np.add(self.user_profiles, user_attributes)
-
-    def train(self, user_profiles=None, item_attributes=None, normalize=True):
-        """ Calls train method of parent class :class:`Recommender`.
-
-            Args:
-                normalize (bool, optional): set to True if the scores should be normalized,
-            False otherwise.
-        """
-        if user_profiles is None:
-            user_profiles = self.user_profiles
-        if item_attributes is None:
-            item_attributes = self.item_attributes
-        assert(self.user_profiles.shape[1] == self.item_attributes.shape[0])
-        return Recommender.train(self, user_profiles, item_attributes, normalize=normalize)
-
