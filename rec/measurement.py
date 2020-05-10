@@ -28,10 +28,9 @@ class Measurement(VerboseMode, ABC):
         return histogram
 
     def get_measurement(self):
-        if self.name is not None and len(self.measurement_data) > 0:
-            return {self.name: self.measurement_data}
         if len(self.measurement_data) > 0:
-            return self.measurement_data
+            name = getattr(self, 'name', 'Unnamed')
+            return {name: self.measurement_data}
         else:
             return None
 
@@ -100,7 +99,7 @@ class MSEMeasurement(Measurement):
 
 class DiffusionTreeMeasurement(Measurement):
     def __init__(self, infection_state, verbose=False):
-        self.name = 'Infections'
+        self.name = '# Infected'
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, np.copy(infection_state))
