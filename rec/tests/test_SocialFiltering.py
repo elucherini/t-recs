@@ -1,6 +1,6 @@
 import test_utils
 import numpy as np
-from rec import SocialFiltering
+from rec.models import SocialFiltering
 import pytest
 
 class TestSocialFiltering:

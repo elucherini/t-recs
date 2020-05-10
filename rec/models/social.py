@@ -1,10 +1,11 @@
-from .recommender import Recommender
+from rec.models import BaseRecommender
 import numpy as np
-from .measurement import MSEMeasurement
-from .socialgraph import BinarySocialGraph, SocialGraph
-from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
+from rec.measurements import MSEMeasurement
+from rec.components import BinarySocialGraph
+from rec.random import SocialGraphGenerator
+from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 
-class SocialFiltering(Recommender, BinarySocialGraph):
+class SocialFiltering(BaseRecommender, BinarySocialGraph):
     """A customizable social-filtering recommendation system.
 
         With social filtering, users are presented items that were previously liked by other users in their
@@ -117,7 +118,7 @@ class SocialFiltering(Recommender, BinarySocialGraph):
 
         if user_representation is None:
             import networkx as nx
-            user_representation = SocialGraph.generate_random_graph(n=num_users, p=0.3,
+            user_representation = SocialGraphGenerator.generate_random_graph(n=num_users, p=0.3,
                                                     graph_type=nx.fast_gnp_random_graph)
             #np.diag(np.diag(np.ones((num_users, num_users),
             #                                              dtype=int)))
@@ -142,7 +143,7 @@ class SocialFiltering(Recommender, BinarySocialGraph):
 
         measurements = [MSEMeasurement()]
         # Initialize recommender system
-        Recommender.__init__(self, user_representation, item_representation,
+        BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
                              num_items_per_iter, num_new_items,
                              measurements=measurements, verbose=verbose)

@@ -1,8 +1,7 @@
 import numpy as np
 
-from .debug import VerboseMode
-from .utils import normalize_matrix
-from .distribution import Generator
+from rec.utils import VerboseMode, normalize_matrix
+from rec.random import Generator
 
 class Users(VerboseMode):
     """Class representing the scores assigned to each item by the users.

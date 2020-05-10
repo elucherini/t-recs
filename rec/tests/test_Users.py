@@ -1,5 +1,6 @@
 import numpy as np
-from rec import Users, ContentFiltering
+from rec.components import Users
+from rec.models import ContentFiltering
 import test_utils
 import pytest
 

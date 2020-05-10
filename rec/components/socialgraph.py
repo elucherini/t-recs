@@ -1,18 +1,6 @@
 import numpy as np
-import networkx as nx
 
-from .debug import VerboseMode
-
-class SocialGraph():
-    @staticmethod
-    def generate_random_graph(*args, **kwargs):
-        """Thin wrapper around networkx's random graph generators"""
-        graph_type = kwargs.pop('graph_type', None)
-        if graph_type is None:
-            default = kwargs.pop('default', None)
-            graph_type = default if default is not None else nx.fast_gnp_random_graph
-        graph = graph_type(*args, **kwargs)
-        return nx.convert_matrix.to_numpy_array(graph)
+from rec.utils import VerboseMode
 
 class BinarySocialGraph(VerboseMode):
     """A mixin for classes with an :attr:`~Recommender.user_profiles` attribute

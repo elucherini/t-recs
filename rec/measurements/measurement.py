@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from .debug import VerboseMode
+from rec.utils import VerboseMode
 import numpy as np
-import networkx as nx
 
 class Measurement(VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
@@ -99,6 +98,7 @@ class MSEMeasurement(Measurement):
 
 class DiffusionTreeMeasurement(Measurement):
     def __init__(self, infection_state, verbose=False):
+        import networkx as nx
         self.name = '# Infected'
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
@@ -152,6 +152,7 @@ class DiffusionTreeMeasurement(Measurement):
 
 
 class StructuralVirality(DiffusionTreeMeasurement):
+    import networkx as nx
     from networkx.algorithms.wiener import wiener_index
     def __init__(self, infection_state, verbose=False):
         DiffusionTreeMeasurement.__init__(self, infection_state, verbose)

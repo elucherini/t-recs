@@ -1,4 +1,4 @@
-from rec import ContentFiltering
+from rec.models import ContentFiltering
 import numpy as np
 import pytest
 import test_utils

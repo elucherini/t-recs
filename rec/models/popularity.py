@@ -1,8 +1,8 @@
 import numpy as np
-from .recommender import Recommender
-from .measurements import Measurements
+from rec.models import BaseRecommender
+from rec.measurements import Measurements
 
-class PopularityRecommender(Recommender):
+class PopularityRecommender(BaseRecommender):
     def __init__(self, num_users, num_items, num_items_per_iter=10,
         randomize_recommended=True, num_recommended=None, num_new_items=None,
         actual_user_scores=True, debug_user_preferences=False):

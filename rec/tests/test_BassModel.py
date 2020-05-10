@@ -1,6 +1,6 @@
 import test_utils
 import numpy as np
-from rec import BassModel
+from rec.models import BassModel
 import pytest
 
 class TestBassModel:

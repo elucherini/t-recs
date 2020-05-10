@@ -1,12 +1,12 @@
-from .recommender import Recommender
-from .socialgraph import BinarySocialGraph, SocialGraph
-from .distribution import Generator
-from .measurement import StructuralVirality
-from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
+from rec.models import BaseRecommender
+from rec.components import BinarySocialGraph
+from rec.random import Generator, SocialGraphGenerator
+from rec.measurements import StructuralVirality
+from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 import numpy as np
 import math
 
-class BassModel(Recommender, BinarySocialGraph):
+class BassModel(BaseRecommender, BinarySocialGraph):
     """Bass model that, for now, only supports one item at a time"""
     def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
@@ -46,8 +46,8 @@ class BassModel(Recommender, BinarySocialGraph):
             item_representation = Generator().uniform(size=(1,num_items))
         if user_representation is None:
             import networkx as nx
-            user_representation = SocialGraph.generate_random_graph(n=num_users, p=0.3,
-                                                    graph_type=nx.fast_gnp_random_graph)
+            user_representation = SocialGraphGenerator.generate_random_graph(n=num_users,
+                                            p=0.3, graph_type=nx.fast_gnp_random_graph)
         # Define infection_state
         if infection_state is None:
         # TODO change parameters
@@ -80,7 +80,7 @@ class BassModel(Recommender, BinarySocialGraph):
         # Initialize recommender system
         # NOTE: Forcing to 1 item per iteration
         num_items_per_iter = 1
-        Recommender.__init__(self, user_representation, item_representation,
+        BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
                              num_items_per_iter, num_new_items,
                              measurements=measurements, verbose=verbose)

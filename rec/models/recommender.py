@@ -1,22 +1,27 @@
 import numpy as np
 from abc import ABC, abstractmethod
-from .measurement import MSEMeasurement
-from .users import Users
-from .utils import normalize_matrix, is_valid_or_none
-from .debug import VerboseMode
-from .items import Items
 from tqdm import tqdm
+import rec
+from rec import utils
+from rec.measurements import MSEMeasurement
+from rec.components import Users, Items
+from rec.utils import VerboseMode
 
 
 class MeasurementModule():
     def __init__(self, measurements=None):
-        if not is_valid_or_none(measurements, list):
-            raise("Wrong type for measurements, must be list")
+        if not utils.is_valid_or_none(measurements, list):
+            raise TypeError("Wrong type for measurements, must be list")
         if measurements is None:
             measurements = list()
+        # check class
+        if len(measurements) > 0:
+            for metric in measurements:
+                if not utils.is_valid_or_none(metric, (rec.measurements.Measurement)):
+                    raise ValueError("measurements in the list must inherit from Measurement")
         self.measurements = measurements
 
-class Recommender(MeasurementModule, VerboseMode, ABC):
+class BaseRecommender(MeasurementModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
         All attributes and methods in this class are generic to all recommendation systems
@@ -75,7 +80,7 @@ class Recommender(MeasurementModule, VerboseMode, ABC):
                  verbose=False):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
-        # measurement modules
+        # measurements
         MeasurementModule.__init__(self, measurements)
         # init users and items
         self.user_profiles = user_representation
@@ -92,13 +97,13 @@ class Recommender(MeasurementModule, VerboseMode, ABC):
 
         self.actual_users.compute_user_scores(self.train)
 
-        if not is_valid_or_none(num_users, int):
+        if not utils.is_valid_or_none(num_users, int):
             raise ValueError("num_users must be an int")
-        if not is_valid_or_none(num_items, int):
+        if not utils.is_valid_or_none(num_items, int):
             raise ValueError("num_items must be an int")
-        if not is_valid_or_none(num_items_per_iter, int):
+        if not utils.is_valid_or_none(num_items_per_iter, int):
             raise ValueError("num_items_per_iter must be an int")
-        if not is_valid_or_none(num_new_items, int):
+        if not utils.is_valid_or_none(num_new_items, int):
             raise ValueError("num_new_items must be an int")
         if not hasattr(self, 'measurements'):
             raise ValueError("You must define at least one measurement module")
@@ -128,7 +133,7 @@ class Recommender(MeasurementModule, VerboseMode, ABC):
         if item_attributes is None:
             item_attributes = self.item_attributes
         if normalize:
-            user_profiles = normalize_matrix(user_profiles, axis=1)
+            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
         assert(user_profiles.shape[1] == item_attributes.shape[0])
         predicted_scores = np.dot(user_profiles, item_attributes)
         self.log('System updates predicted scores given by users (rows) ' + \

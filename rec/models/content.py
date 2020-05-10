@@ -1,11 +1,11 @@
 
-from .measurement import MSEMeasurement, HomogeneityMeasurement
+from rec.measurements import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
-from .recommender import Recommender
-from .distribution import Generator
-from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
+from rec.models import BaseRecommender
+from rec.random import Generator
+from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 
-class ContentFiltering(Recommender):
+class ContentFiltering(BaseRecommender):
     """A customizable content-filtering recommendation system.
 
     With content filtering, items and users are represented by a set of attributes A. This class
@@ -153,7 +153,7 @@ class ContentFiltering(Recommender):
         measurements = [MSEMeasurement(), HomogeneityMeasurement()]
 
         # Initialize recommender system
-        Recommender.__init__(self, user_representation, item_representation,
+        BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_representation, num_users, num_items,
                              num_items_per_iter, num_new_items,
                              measurements=measurements, verbose=verbose)

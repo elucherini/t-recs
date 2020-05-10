@@ -1,6 +1,6 @@
-from .debug import VerboseMode
-from .distribution import Generator
-from .utils import normalize_matrix
+from rec.utils import VerboseMode, normalize_matrix
+from rec.random import Generator
+#from .utils import normalize_matrix
 import numpy as np
 
 # subclass ndarray
