@@ -1,10 +1,10 @@
 import logging
 import sys
 import numpy as np
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 # Abstract class for verbose mode
-class VerboseMode(metaclass=ABCMeta):
+class VerboseMode(ABC):
 
     def __init__(self, name, verbose=False):
         self._logger = DebugLogger(name, verbose)

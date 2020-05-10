@@ -1,12 +1,12 @@
 import numpy as np
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from .measurement import MSEMeasurement
 from .users import Users
 from .utils import normalize_matrix, is_valid_or_none
 from .debug import VerboseMode
 from .items import Items
 
-class Recommender(VerboseMode, metaclass=ABCMeta):
+class Recommender(VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
         All attributes and methods in this class are generic to all recommendation systems

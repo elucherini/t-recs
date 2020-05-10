@@ -1,9 +1,9 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from .debug import VerboseMode
 import numpy as np
 import networkx as nx
 
-class Measurement(VerboseMode, metaclass=ABCMeta):
+class Measurement(VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_data = list()

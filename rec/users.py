@@ -1,5 +1,4 @@
 import numpy as np
-from abc import ABCMeta, abstractmethod
 
 from .debug import VerboseMode
 from .utils import normalize_matrix
