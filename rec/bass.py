@@ -2,60 +2,85 @@ from .recommender import Recommender
 from .social import SocialFiltering
 from .distribution import Generator
 from .measurement import StructuralVirality
+from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 import numpy as np
 import math
 
 class BassModel(SocialFiltering, Recommender):
-    '''SIR model that, for now, only supports one item at a time'''
+    """Bass model that, for now, only supports one item at a time"""
     def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
         actual_user_scores=None, verbose=False, num_items_per_iter=10, num_new_items=30):
-        # Give precedence to user_representation, otherwise build empty one
+        # these are not allowed to be None at the same time
+        if all_none(user_representation, num_users, infection_state):
+            raise ValueError("user_representation, num_users, and infection_state can't be all None")
+        if all_none(item_representation, num_items, infection_state):
+            raise ValueError("item_representation, num_items, and infection_state can't be all None")
+        if not is_array_valid_or_none(user_representation, ndim=2, square=True):
+            raise ValueError("user_representation is invalid")
+        if not is_array_valid_or_none(infection_state, ndim=2, square=False):
+            raise TypeError("infection_state is invalid")
+        if not is_valid_or_none(num_users, int):
+            raise TypeError("num_users must be an integer")
+        if not is_valid_or_none(num_items, int):
+            raise TypeError("num_items must be an integer")
+
+        if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
+                                  getattr(infection_state, 'shape', [None])[0]):
+            raise ValueError("user_representation and infection_state should be of " + \
+                             "same size on dimension 0")
+
+        # Determine num_users, give priority to user_representation
+        # At the end of this, user_representation and num_users should not be None
+        # In the arguments, I either get shape[0], or None if the matrix is None
+        num_users = get_first_valid(getattr(user_representation,
+                                                     'shape', [None])[0],
+                                             getattr(infection_state,
+                                                     'shape', [None])[0],
+                                             num_users)
         if user_representation is None:
-            if num_users is None and infection_state is None:
-                raise ValueError("num_users, infection_state, and user_representation can't be all None")
-            if infection_state is not None:
-                num_users = infection_state.shape[0]
+            # TODO SocialGraph module
             user_representation = np.diag(np.diag(np.ones((num_users, num_users),
                                                           dtype=int)))
-        elif (user_representation.shape[0] != user_representation.shape[1]):
-            raise ValueError("user_representation should be a square matrix but it's %s" % (
-                            str(user_representation.shape)))
-        elif (infection_state is not None and
-            user_representation.shape[0] != infection_state.shape[0]):
-            raise ValueError("user_representation and infection_state should have same size on dim 0" + \
-                            "but they are sized %s and %s" % (str(user_representation.shape),
-                                str(infection_state.shape)))
-        else:
-            num_users = user_representation.shape[0]
+
         assert(num_users is not None)
         assert(user_representation is not None)
         assert(num_users == user_representation.shape[0] == user_representation.shape[1])
-        # Give precedence to item_representation, otherwise build random one
-        if item_representation is not None:
-            if (infection_state is not None
-                and infection_state.shape[1] != item_representation.shape[1]):
-                raise ValueError("item_representation and infection_state should have same size on dim 1" + \
-                            "but they are sized %s and %s" % (str(item_representation.shape),
-                                str(infection_state.shape)))
-            num_items = item_representation.shape[1]
-        elif infection_state is not None:
-            num_items = infection_state.shape[1]
-        elif num_items is None:
-            raise ValueError("num_items, infection_state, and item_representation can't be all None")
-        else:
+        # Determine num_items, give priority to item_representation
+        # At the end of this, item_representation should not be None
+        if not is_array_valid_or_none(item_representation, ndim=2, square=False):
+            raise ValueError("item_representation is invalid")
+        if not is_equal_dim_or_none(getattr(item_representation,
+                                             'shape', [None, None])[1],
+                                  getattr(infection_state,
+                                          'shape', [None, None])[1]):
+            raise ValueError("item_representation and infection_state should be of" + \
+                             "same size on dimension 1")
+
+        # Define number of users based on input
+        # In the arguments, I either get shape[0] (or shape[1]),
+        #                   or None if the matrix is None
+        num_items = get_first_valid(getattr(item_representation,
+                                            'shape', [None, None])[1],
+                                    getattr(infection_state,
+                                            'shape', [None, None])[1],
+                                             num_items)
+        if item_representation is None:
             item_representation = Generator().uniform(size=(1,num_items))
 
         assert(num_items is not None)
         assert(item_representation is not None)
+        # Define infection_state
         if infection_state is None:
         # TODO change parameters
             infection_state = np.zeros((num_users, num_items))
-            infection_state[np.random.randint(num_users), :] = 1
+            random_infections = (np.random.randint(num_users),
+                                 np.random.randint(num_items))
+            infection_state[random_infections] = 1
         assert(infection_state is not None)
         self.infection_state = infection_state
         # TODO support separate threshold for each user
-        if infection_threshold is None or infection_threshold >= 1:
+        if not infection_threshold or infection_threshold >= 1:
             infection_threshold = np.random.random()
         assert(infection_threshold is not None)
         assert(infection_threshold < 1 and infection_threshold > 0)
@@ -81,17 +106,9 @@ class BassModel(SocialFiltering, Recommender):
 
         """
         infection_probabilities = self.predicted_scores[self.user_vector, interactions]
-        #print("Interactions:\n", infection_probabilities)
         newly_infected = np.where(infection_probabilities > self.infection_threshold)
-        #print("Newly infected:\n", newly_infected)
         if newly_infected[0].shape[0] > 0:
-            assert(newly_infected[0].shape == interactions[newly_infected].shape)
-            # this might not be true since now some users don't get infected at all and self.indices
-            # assumes that *all* users are infected once per iteration. Needs to be tested and
-            # be updated accordingly.
-            #assert(self.infection_state[newly_infected, interactions[newly_infected]].all() == 0)
             self.infection_state[newly_infected, interactions[newly_infected]] = 1
-            #print("New infection state:\n", self.infection_state)
 
 
     def train(self, user_profiles=None, item_attributes=None, normalize=False):
@@ -100,9 +117,6 @@ class BassModel(SocialFiltering, Recommender):
             Args:
                 normalize (bool, optional): set to True if the scores should be normalized,
             False otherwise.
-
-            TODO: Rewrite so super().train() takes the arguments of the dot product (AKA turns out
-                    normalizing is not the only thing I might want to do)
         """
         # normalizing the user profiles is meaningless here
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
@@ -111,10 +125,8 @@ class BassModel(SocialFiltering, Recommender):
             user_profiles = self.user_profiles
         dot_product = np.dot(user_profiles,
             self.infection_state*np.log(1-self.item_attributes))
-        #print("Dot product (1-e^(dot_product)):\n", dot_product)
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
-        #print('Predicted scores:\n', self.predicted_scores)
         self.log('System updates predicted scores given by users (rows) ' + \
             'to items (columns):\n' + str(predicted_scores))
         return predicted_scores
