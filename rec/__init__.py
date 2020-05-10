@@ -7,3 +7,4 @@ from .debug import VerboseMode, DebugLogger
 from .users import Users
 from .items import Items
 from .distribution import Generator
+from .socialgraph import BinarySocialGraph

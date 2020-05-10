@@ -1,12 +1,12 @@
 from .recommender import Recommender
-from .social import SocialFiltering
+from .socialgraph import BinarySocialGraph
 from .distribution import Generator
 from .measurement import StructuralVirality
 from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 import numpy as np
 import math
 
-class BassModel(SocialFiltering, Recommender):
+class BassModel(BinarySocialGraph, Recommender):
     """Bass model that, for now, only supports one item at a time"""
     def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
