@@ -5,6 +5,7 @@ from .users import Users
 from .utils import normalize_matrix, is_valid_or_none
 from .debug import VerboseMode
 from .items import Items
+from tqdm import tqdm
 
 class Recommender(VerboseMode, ABC):
     """Abstract class representing a recommender system.
@@ -250,7 +251,7 @@ class Recommender(VerboseMode, ABC):
         if not startup:
             self.log('Run -- interleave recommendations and random items ' + \
                 'from now on')
-        for t in range(timesteps):
+        for t in tqdm(range(timesteps)):
             self.log('Step %d' % t)
             items = self.recommend(startup=startup)
             interactions = self.actual_users.get_user_feedback(items,
@@ -312,15 +313,12 @@ class Recommender(VerboseMode, ABC):
 
             Returns: Pandas dataframe of all available measurements.
         """
-        measurements = {'Timesteps': None}
+        if len(self.measurements) < 1:
+            raise ValueError("No measurement module defined")
+        measurements = dict()
         for metric in self.measurements:
-
             measurements = {**measurements, **metric.get_measurement()}
-        #for name, measure in measurements.items():
-            #self.debugger.pyplot_plot(measure['x'], measure['y'],
-            #    title=str(name.capitalize()), xlabel='Timestep',
-            #    ylabel=str(name))
-        if measurements['Timesteps'] == None:
+        if 'Timesteps' not in measurements:
             # pick first measurement's length for # of timesteps since they're going to be the same
             elapsed = np.arange(self.measurements[0].get_timesteps())
             measurements['Timesteps'] = elapsed
