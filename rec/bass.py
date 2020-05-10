@@ -129,8 +129,7 @@ class BassModel(BinarySocialGraph, Recommender):
 
     def run(self, timesteps=50, startup=False, train_between_steps=True,
             repeated_items=True):
-        """ Overrides run method of parent class :class:`Recommender`, so that repeated_items
-            defaults to True in SIR models.
+        """ Overrides run method of parent class :class:`Recommender`, so that repeated_items defaults to True in Bass models.
 
             Args:
                 timestep (int, optional): number of timesteps for simulation
@@ -151,7 +150,12 @@ class BassModel(BinarySocialGraph, Recommender):
 
 
     def draw_diffusion_tree(self):
-        self.measurements[0].draw_tree()
+        for metric in self.measurements:
+            if hasattr(metric, 'draw_tree'):
+                metric.draw_tree()
 
     def get_structural_virality(self):
-        return self.measurements[0].get_structural_virality()
+        for metric in self.measurements:
+            if hasattr(metric, 'get_structural_virality'):
+                return metric.get_structural_virality()
+        raise ValueError("Structural virality metric undefined")
