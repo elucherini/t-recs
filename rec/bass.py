@@ -20,10 +20,6 @@ class BassModel(SocialFiltering, Recommender):
             raise ValueError("user_representation is invalid")
         if not is_array_valid_or_none(infection_state, ndim=2, square=False):
             raise TypeError("infection_state is invalid")
-        if not is_valid_or_none(num_users, int):
-            raise TypeError("num_users must be an integer")
-        if not is_valid_or_none(num_items, int):
-            raise TypeError("num_items must be an integer")
 
         if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
                                   getattr(infection_state, 'shape', [None])[0]):

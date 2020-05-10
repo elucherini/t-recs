@@ -2,7 +2,7 @@ import numpy as np
 from abc import ABCMeta, abstractmethod
 from .measurement import MSEMeasurement
 from .users import Users
-from .utils import normalize_matrix, toDataFrame
+from .utils import normalize_matrix, is_valid_or_none
 from .debug import VerboseMode
 from .items import Items
 
@@ -79,6 +79,14 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
 
         self.actual_users.compute_user_scores(self.train)
 
+        if not is_valid_or_none(num_users, int):
+            raise ValueError("num_users must be an int")
+        if not is_valid_or_none(num_items, int):
+            raise ValueError("num_items must be an int")
+        if not is_valid_or_none(num_items_per_iter, int):
+            raise ValueError("num_items_per_iter must be an int")
+        if not is_valid_or_none(num_new_items, int):
+            raise ValueError("num_new_items must be an int")
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
@@ -316,7 +324,7 @@ class Recommender(VerboseMode, metaclass=ABCMeta):
             # pick first measurement's length for # of timesteps since they're going to be the same
             elapsed = np.arange(self.measurements[0].get_timesteps())
             measurements['Timesteps'] = elapsed
-        return measurements#toDataFrame(measurements, index='Timestep')
+        return measurements
 
     def measure_content(self, interactions, step):
         """ Calls method in the :class:`Measurements` module to record metrics.

@@ -3,6 +3,7 @@ from .measurement import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from .recommender import Recommender
 from .distribution import Generator
+from .utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 
 class ContentFiltering(Recommender):
     """A customizable content-filtering recommendation system.
@@ -91,22 +92,41 @@ class ContentFiltering(Recommender):
         (100, 100) # <-- 100 users (default), 100 attributes (as implicitly specified by item_representation)
 
     """
-    def __init__(self, num_users=100, num_items=1250, num_attributes=None,
-        item_representation=None, user_representation=None, actual_user_representation=None,
+    def __init__(self, num_users=100, num_items=1250, num_attributes=1000,
+        item_representation=None, user_representation=None,
+        actual_user_representation=None,
         verbose=False, num_items_per_iter=10, num_new_items=30):
 
         # Give precedence to item_representation, otherwise build random one
-        if item_representation is not None:
-            #self.item_attributes = item_representation
-            num_attributes = item_representation.shape[0]
-            num_items = item_representation.shape[1]
-        else:
-            if num_items is None:
-                raise ValueError("num_items and item_representation can't be both None")
-            if user_representation is not None:
-                num_attributes = user_representation.shape[1]
-            elif num_attributes is None:
-                num_attributes = np.random.randint(2, max(3, int(num_items - num_items / 10)))
+        if all_none(item_representation, num_items):
+                raise ValueError("num_items and item_representation can't be all None")
+        if all_none(user_representation, num_users):
+                raise ValueError("num_users and user_representation can't be all None")
+        if all_none(user_representation, item_representation, num_attributes):
+                raise ValueError("item_representation, user_representation, and " + \
+                                 "num_attributes can't be all None")
+
+        if not is_array_valid_or_none(item_representation, ndim=2, square=False):
+            raise ValueError("item_representation is not valid")
+        if not is_array_valid_or_none(user_representation, ndim=2, square=False):
+            raise ValueError("item_representation is not valid")
+        if not is_valid_or_none(num_attributes, int):
+            raise TypeError("num_attributes must be an int")
+        if not is_equal_dim_or_none(getattr(user_representation,
+                                            'shape', [None, None])[1],
+                                    getattr(item_representation,
+                                            'shape', [None])[0]):
+            raise ValueError("user_representation.shape[1] should be the same as " + \
+                             "item_representation.shape[0]")
+        num_items = get_first_valid(getattr(item_representation, 'shape',
+                                            [None, None])[1],
+                                    num_items)
+        num_attributes = get_first_valid(getattr(item_representation, 'shape',
+                                                 [None])[0],
+                                        getattr(user_representation, 'shape',
+                                                [None, None])[1],
+                                        num_attributes)
+        if item_representation is None:
             item_representation = Generator().binomial(n=.3, p=1,
                                                       size=(num_attributes, num_items))
 
@@ -114,15 +134,11 @@ class ContentFiltering(Recommender):
         assert(item_representation is not None)
         self.num_attributes = num_attributes
         # Give precedence to user_representation, otherwise build random one
+        num_users = get_first_valid(getattr(user_representation, 'shape', [None])[0],
+                                    num_users)
         if user_representation is None:
-            if num_users is None:
-                raise ValueError("num_users and user_representation can't be both None")
             user_representation = np.zeros((num_users, num_attributes))
-        elif user_representation.shape[1] == item_representation.shape[0]:
-            num_users = user_representation.shape[0]
-        else:
-            raise ValueError("It should be user_representation.shape[1]" + \
-                                " == item_representation.shape[0]")
+
         assert(user_representation is not None)
         self.measurements = [MSEMeasurement(), HomogeneityMeasurement()]
 
