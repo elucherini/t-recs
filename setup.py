@@ -18,5 +18,6 @@ setup(name='rec',
             'scipy>=1.4.1',
             'pandas>=0.25.0',
             'networkx>=2.4',
+            'tqdm>=4.46.0',
         ],
         zip_safe=False)
