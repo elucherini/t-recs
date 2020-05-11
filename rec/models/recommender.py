@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from tqdm import tqdm
 import rec
 from rec import utils
-from rec.measurements import MSEMeasurement
+from rec.metrics import MSEMeasurement
 from rec.components import Users, Items
 from rec.utils import VerboseMode
 
@@ -17,9 +17,18 @@ class MeasurementModule():
         # check class
         if len(measurements) > 0:
             for metric in measurements:
-                if not utils.is_valid_or_none(metric, (rec.measurements.Measurement)):
-                    raise ValueError("measurements in the list must inherit from Measurement")
+                if not isinstance(metric, (rec.metrics.Measurement)):
+                    raise ValueError("Measurements must inherit from class Measurement")
         self.measurements = measurements
+
+    def add_measurements(self, *args):
+        if len(args) < 1:
+            raise ValueError("Measurements must inherit from class Measurement")
+        for arg in args:
+            if isinstance(arg, rec.metrics.Measurement):
+                self.measurements.append(arg)
+            else:
+                raise ValueError("Measurements must inherit from class Measurement")
 
 class BaseRecommender(MeasurementModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
@@ -93,7 +102,8 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         if actual_user_representation is not None:
             self.actual_users = actual_user_representation
         else:
-            self.actual_users = Users(size=self.user_profiles.shape)
+            self.actual_users = Users(size=self.user_profiles.shape,
+                                      num_users=num_users)
 
         self.actual_users.compute_user_scores(self.train)
 
@@ -114,8 +124,6 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
         self.log('Recommender system ready')
-        self.user_vector = np.arange(num_users, dtype=int)
-        self.item_vector = np.arange(2, num_items_per_iter + 2, dtype=int)
         self.log('Num items: %d' % self.num_items)
         self.log('Users: %d' % self.num_users)
         self.log('Items per iter: %d' % self.num_items_per_iter)
@@ -278,8 +286,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         for t in tqdm(range(timesteps)):
             self.log('Step %d' % t)
             items = self.recommend(startup=startup)
-            interactions = self.actual_users.get_user_feedback(items,
-                                                        self.user_vector)
+            interactions = self.actual_users.get_user_feedback(items=items)
             if not repeated_items:
                 self.indices[self.user_vector, interactions] = -1
             self._update_user_profiles(interactions)

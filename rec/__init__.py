@@ -1,2 +1,2 @@
-from rec import models, components, measurements, random
+from rec import models, components, metrics, random
 from .utils import VerboseMode

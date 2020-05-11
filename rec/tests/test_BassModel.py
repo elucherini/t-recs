@@ -120,7 +120,6 @@ class TestBassModel:
         # users must be different
         while(user1 == user2):
             user1 = np.random.randint(s.num_users)
-            user2 = np.random.randint(s.num_users)
         # test current graph
         test_utils.assert_social_graph_not_following(s.user_profiles, user1, user2)
         test_utils.assert_social_graph_not_following(s.user_profiles, user2, user1)

@@ -49,7 +49,7 @@ class Users(VerboseMode):
         >>> scores = ActualUserScores(item_representation=item_representation)
     """
     def __init__(self, actual_user_profiles=None, interact_with_items=None,
-                 size=None, verbose=False):
+                 size=None, num_users=None, verbose=False):
         super().__init__(__name__.upper(), verbose)
         # general input checks
         if actual_user_profiles is not None:
@@ -64,8 +64,11 @@ class Users(VerboseMode):
         if actual_user_profiles is None and size is not None:
             actual_user_profiles = Generator().normal(size=size)
         self.actual_user_profiles = np.asarray(actual_user_profiles)
+        self.interact_with_items = interact_with_items
         # this will be initialized by the system
         self.actual_user_scores = None
+        if num_users is not None:
+            self._user_vector = np.arange(num_users, dtype=int)
 
 
     def compute_user_scores(self, train_function, *args, **kwargs):
@@ -94,23 +97,27 @@ class Users(VerboseMode):
         else:
             return self.actual_user_scores[user, :]
 
-    def get_user_feedback(self, items, user_vector):
+    def get_user_feedback(self, *args, **kwargs):
         """Generates user interactions at a given timestep.
 
             Args:
                 items (:obj:`numpy.ndarray`): A |U|x|num_items_per_iter| matrix with recommendations and
                     new items.
-                user_vector (:obj:`numpy.ndarray`): An array of length |U| s.t. user_vector_u = u
-                    for u in U.
 
             Returns:
                 Array of interactions s.t. element interactions_u(t) represents the
                 index of the item selected by user u at time t. Shape: |U|
         """
-        m = self.actual_user_scores[user_vector.reshape((items.shape[0], 1)), items]
-        self.log('User scores for given items are:\n' + str(m))
-        sorted_user_preferences = m.argsort()[:,::-1][:,0]
-        interactions = items[user_vector, sorted_user_preferences]
+        if interact_with_items is not None:
+            return interact_with_items(*args, **kwargs)
+        items = kwargs.pop('items', None)
+        if items is None:
+            raise ValueError("Items can't be None")
+        reshaped_user_vector = self._user_vector.reshape((items.shape[0], 1))
+        user_interactions = self.actual_user_scores[reshaped_user_vector, items]
+        self.log('User scores for given items are:\n' + str(user_interactions))
+        sorted_user_preferences = user_interactions.argsort()[:,::-1][:,0]
+        interactions = items[self._user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + \
             str(interactions))
         return interactions

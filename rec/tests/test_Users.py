@@ -49,12 +49,6 @@ class TestUsers:
                                        model.train(s.actual_user_profiles,
                                                    normalize=True))
 
-    def test_content_expand(self, items=10, attr=5, users=6, expand_items_by=2):
-        model = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
-        scores = Users(size=(users, attr))
-        # I'm not supposed to call this directly, but it's the fastest way to test
-        model._expand_items(num_new_items=expand_items_by)
-
 
 
 if __name__ == '__main__':

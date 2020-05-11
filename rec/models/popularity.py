@@ -1,6 +1,6 @@
 import numpy as np
 from rec.models import BaseRecommender
-from rec.measurements import Measurements
+from rec.metrics import Measurement
 
 class PopularityRecommender(BaseRecommender):
     def __init__(self, num_users, num_items, num_items_per_iter=10,

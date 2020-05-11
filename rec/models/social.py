@@ -1,6 +1,6 @@
 from rec.models import BaseRecommender
 import numpy as np
-from rec.measurements import MSEMeasurement
+from rec.metrics import MSEMeasurement
 from rec.components import BinarySocialGraph
 from rec.random import SocialGraphGenerator
 from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none

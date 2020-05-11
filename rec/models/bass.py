@@ -1,7 +1,7 @@
 from rec.models import BaseRecommender
 from rec.components import BinarySocialGraph
 from rec.random import Generator, SocialGraphGenerator
-from rec.measurements import StructuralVirality
+from rec.metrics import StructuralVirality
 from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 import numpy as np
 import math

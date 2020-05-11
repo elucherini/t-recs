@@ -1,5 +1,5 @@
 
-from rec.measurements import MSEMeasurement, HomogeneityMeasurement
+from rec.metrics import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from rec.models import BaseRecommender
 from rec.random import Generator
