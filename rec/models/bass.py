@@ -52,9 +52,9 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if infection_state is None:
         # TODO change parameters
             infection_state = np.zeros((num_users, num_items))
-            random_infections = (np.random.randint(num_users),
-                                 np.random.randint(num_items))
-            infection_state[random_infections] = 1
+            infected_users = np.random.randint(num_users)
+            infectious_items = np.random.randint(num_items)
+            infection_state[infected_users, infectious_items] = 1
 
         if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
                                 getattr(user_representation, 'shape', [None, None])[1]):
