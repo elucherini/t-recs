@@ -1,12 +1,12 @@
 # algo-segregation
-Simulator for recommender systems
+Simulator for sociotechnical systems
 
 Example usage:
 
 ```
 import rec
 
-recsys = rec.ContentFiltering()
+recsys = rec.models.ContentFiltering()
 recsys.run(timesteps=10)
 measurements = recsys.get_measurements()
 ```
