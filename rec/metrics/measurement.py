@@ -65,8 +65,9 @@ class HomogeneityMeasurement(Measurement):
             Returns: :obj:`numpy.array` with homogeneity.
         '''
         assert(interactions.size == recommender.num_users)
-        histogram = self._generate_interaction_histogram(recommender.interactions, recommender.num_users,
-            recommender.num_items)
+        histogram = self._generate_interaction_histogram(interactions,
+                                                         recommender.num_users,
+                                                         recommender.num_items)
         histogram[::-1].sort()
         if self._old_histogram is None:
             self._old_histogram = np.zeros(recommender.num_items)
@@ -93,7 +94,7 @@ class MSEMeasurement(Measurement):
                     unknown to the system.
         """
         self.measurement_data.append(((recommender.predicted_scores -
-            recommender.actual_user_scores.actual_scores)**2).mean())
+            recommender.actual_users.actual_user_scores)**2).mean())
 
 
 class DiffusionTreeMeasurement(Measurement):

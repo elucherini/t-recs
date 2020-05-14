@@ -108,8 +108,8 @@ class Users(VerboseMode):
                 Array of interactions s.t. element interactions_u(t) represents the
                 index of the item selected by user u at time t. Shape: |U|
         """
-        if interact_with_items is not None:
-            return interact_with_items(*args, **kwargs)
+        if self.interact_with_items is not None:
+            return self.interact_with_items(*args, **kwargs)
         items = kwargs.pop('items', None)
         if items is None:
             raise ValueError("Items can't be None")

@@ -41,10 +41,10 @@ class TestBassModel:
 
     def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
-            items = np.random.randint(1000)
+            items = np.random.randint(1,1000)
             item_repr = np.random.random(size=(1,1))
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
-            users = np.random.randint(100)
+            users = np.random.randint(1,100)
             user_repr = np.random.randint(2, size=(users, users))
         # test item representation
         s = BassModel(item_representation=item_repr)

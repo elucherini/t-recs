@@ -24,11 +24,14 @@ class MeasurementModule():
     def add_measurements(self, *args):
         if len(args) < 1:
             raise ValueError("Measurements must inherit from class Measurement")
+        # add only if all correct
+        new_measurements = list()
         for arg in args:
             if isinstance(arg, rec.metrics.Measurement):
-                self.measurements.append(arg)
+                new_measurements.append(arg)
             else:
                 raise ValueError("Measurements must inherit from class Measurement")
+        self.measurements.extend(new_measurements)
 
 class BaseRecommender(MeasurementModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
@@ -173,7 +176,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
             #self._expand_items()
             indices_prime = self.indices[np.where(self.indices>=0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
-        row = np.repeat(self.user_vector, indices_prime.shape[1])
+        row = np.repeat(self.actual_users._user_vector, indices_prime.shape[1])
         row = row.reshape((self.num_users, -1))
         #self.log('row:\n' + str(row))
         self.log('Row:\n' + str(row))
@@ -189,7 +192,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
         #self.log('recommendations\n' + str(rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]))
         #print(self.predicted_scores.argsort()[:,::-1][:,0:5])
-        return rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]
+        return rec[np.repeat(self.actual_users._user_vector, k).reshape((self.num_users, -1)), picks]
         #return self.predicted_scores.argsort()[:,::-1][:,0:k]
 
     def recommend(self, startup=False):
@@ -240,7 +243,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
 
         if num_new_items:
             col = np.random.randint(indices_prime.shape[1], size=(self.num_users, num_new_items))
-            row = np.repeat(self.user_vector, num_new_items).reshape((self.num_users, -1))
+            row = np.repeat(self.actual_users._user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = indices_prime[row, col]
             self.log('System picked these items (cols) randomly for each user ' + \
                 '(rows):\n' + str(new_items))
@@ -288,7 +291,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
             items = self.recommend(startup=startup)
             interactions = self.actual_users.get_user_feedback(items=items)
             if not repeated_items:
-                self.indices[self.user_vector, interactions] = -1
+                self.indices[self.actual_users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
             self.log("System updates user profiles based on last interaction:\n" + \
                 str(self.user_profiles.astype(int)))
