@@ -128,7 +128,7 @@ class ContentFiltering(BaseRecommender):
         if user_representation is None:
             user_representation = np.zeros((num_users, num_attributes))
         if item_representation is None:
-            item_representation = Generator(seed=seed).binomial(n=.3, p=1,
+            item_representation = Generator(seed=seed).binomial(n=1, p=.5,
                                                       size=(num_attributes, num_items))
 
         if not is_equal_dim_or_none(getattr(user_representation,

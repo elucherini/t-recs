@@ -103,7 +103,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
 
         """
-        infection_probabilities = self.predicted_scores[self.user_vector, interactions]
+        infection_probabilities = self.predicted_scores[self.actual_users._user_vector,
+                                                        interactions]
         newly_infected = np.where(infection_probabilities > self.infection_threshold)
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected, interactions[newly_infected]] = 1
@@ -148,7 +149,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """
         # NOTE: force repeated_items to True
         repeated_items = True
-        Recommender.run(self, timesteps=timesteps, startup=startup,
+        BaseRecommender.run(self, timesteps=timesteps, startup=startup,
                         train_between_steps=train_between_steps,
                         repeated_items=repeated_items)
 
