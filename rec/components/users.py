@@ -48,8 +48,9 @@ class Users(VerboseMode):
         >>> item_representation = ...
         >>> scores = ActualUserScores(item_representation=item_representation)
     """
-    def __init__(self, actual_user_profiles=None, interact_with_items=None,
-                 size=None, num_users=None, verbose=False):
+    def __init__(self, actual_user_profiles=None, actual_user_scores=None,
+                 interact_with_items=None, size=None, num_users=None,
+                 verbose=False, seed=None):
         super().__init__(__name__.upper(), verbose)
         # general input checks
         if actual_user_profiles is not None:
@@ -61,8 +62,11 @@ class Users(VerboseMode):
             raise ValueError("actual_user_profiles and size can't both be None")
         if actual_user_profiles is None and not isinstance(size, tuple):
             raise TypeError("size must be a tuple, is %s" % type(size))
+        if actual_user_scores is not None:
+            if not isinstance(actual_user_scores, (list, np.ndarray)):
+                raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
-            actual_user_profiles = Generator().normal(size=size)
+            actual_user_profiles = Generator(seed=seed).normal(size=size)
         self.actual_user_profiles = np.asarray(actual_user_profiles)
         self.interact_with_items = interact_with_items
         # this will be initialized by the system

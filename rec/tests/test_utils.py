@@ -26,3 +26,11 @@ def assert_social_graph_not_following(graph, user, not_following):
 
 def assert_not_none(repr):
     assert(repr is not None)
+
+def assert_equal_measurements(meas1, meas2):
+    for key, val in meas1.items():
+        assert(key in meas2)
+        assert_equal_arrays(val, meas2[key])
+    for key, val in meas2.items():
+        assert(key in meas1)
+        assert_equal_arrays(val, meas1[key])

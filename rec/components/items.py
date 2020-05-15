@@ -20,7 +20,7 @@ class FromNdArray(np.ndarray, VerboseMode):
 
 
 class Items(FromNdArray):
-    def __init__(self, item_attributes=None, size=None, verbose=False):
+    def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
         # Initialize verbose mode
         VerboseMode.__init__(self, __name__.upper(), self.verbose)
         # general input checks
@@ -32,7 +32,7 @@ class Items(FromNdArray):
         if item_attributes is None and not isinstance(size, tuple):
             raise TypeError("size must be a tuple, is %s" % type(size))
         if item_attributes is None and size is not None:
-            item_attributes = Generator().binomial(n=.3, p=1, size=size)
+            item_attributes = Generator(seed).binomial(n=.3, p=1, size=size)
         self.item_attributes = item_attributes
 
     '''

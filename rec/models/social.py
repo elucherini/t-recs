@@ -94,7 +94,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         """
     def __init__(self, num_users=100, num_items=1250,
         item_representation=None, user_representation=None, actual_user_scores=None,
-        verbose=False, num_items_per_iter=10, num_new_items=30):
+        verbose=False, num_items_per_iter=10, num_new_items=30, seed=None):
         # Give precedence to user_representation, otherwise build empty one
 
         if all_none(user_representation, num_users):
@@ -118,7 +118,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         if user_representation is None:
             import networkx as nx
-            user_representation = SocialGraphGenerator.generate_random_graph(n=num_users, p=0.3,
+            user_representation = SocialGraphGenerator.generate_random_graph(n=num_users,
+                                                                        p=0.3, seed=seed,
                                                     graph_type=nx.fast_gnp_random_graph)
             #np.diag(np.diag(np.ones((num_users, num_users),
             #                                              dtype=int)))
@@ -145,7 +146,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         # Initialize recommender system
         BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
-                             num_items_per_iter, num_new_items,
+                             num_items_per_iter, num_new_items, seed=seed,
                              measurements=measurements, verbose=verbose)
 
 
@@ -163,6 +164,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.user_vector, interactions] = 1
+        interactions_per_user[self.actual_users._user_vector, interactions] = 1
         assert(interactions_per_user.shape == self.item_attributes.shape)
         self.item_attributes = np.add(self.item_attributes, interactions_per_user)

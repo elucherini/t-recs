@@ -94,7 +94,7 @@ class ContentFiltering(BaseRecommender):
     """
     def __init__(self, num_users=100, num_items=1250, num_attributes=1000,
         item_representation=None, user_representation=None,
-        actual_user_representation=None,
+        actual_user_representation=None, seed=None,
         verbose=False, num_items_per_iter=10, num_new_items=30):
 
         # Give precedence to item_representation, otherwise build random one
@@ -128,7 +128,7 @@ class ContentFiltering(BaseRecommender):
         if user_representation is None:
             user_representation = np.zeros((num_users, num_attributes))
         if item_representation is None:
-            item_representation = Generator().binomial(n=.3, p=1,
+            item_representation = Generator(seed=seed).binomial(n=.3, p=1,
                                                       size=(num_attributes, num_items))
 
         if not is_equal_dim_or_none(getattr(user_representation,
@@ -156,7 +156,7 @@ class ContentFiltering(BaseRecommender):
         BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_representation, num_users, num_items,
                              num_items_per_iter, num_new_items,
-                             measurements=measurements, verbose=verbose)
+                             measurements=measurements, verbose=verbose, seed=seed)
 
     def _update_user_profiles(self, interactions):
         """ Private function that updates user profiles with data from

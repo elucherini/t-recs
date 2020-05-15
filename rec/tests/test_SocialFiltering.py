@@ -22,6 +22,32 @@ class TestSocialFiltering:
         test_utils.assert_correct_num_items(items, s, s.item_attributes.shape[1])
         test_utils.assert_not_none(s.predicted_scores)
 
+    def test_seeding(self, seed=None):
+        if seed is None:
+            seed = np.random.randint(100000)
+        s1 = SocialFiltering(seed=seed)
+        s2 = SocialFiltering(seed=seed)
+        test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
+        test_utils.assert_equal_arrays(s1.user_profiles, s2.user_profiles)
+        s1.run(timesteps=5)
+        s2.run(timesteps=5)
+        # check that measurements are the same
+        meas1 = s1.get_measurements()
+        meas2 = s2.get_measurements()
+        test_utils.assert_equal_measurements(meas1, meas2)
+
+        seed = None
+        s3 = SocialFiltering(seed=seed)
+        s4 = SocialFiltering(seed=seed)
+        # item_attributes initialized to all zeros, so this is still true
+        test_utils.assert_equal_arrays(s3.item_attributes, s4.item_attributes)
+        with pytest.raises(AssertionError):
+            test_utils.assert_equal_arrays(s3.user_profiles, s4.user_profiles)
+        #with pytest.raises(AssertionError):
+        test_utils.assert_equal_measurements(s3.get_measurements(),
+                                            s4.get_measurements())
+
+
     def test_partial_arguments(self, items=10, users=5):
         if items is None:
             items = np.random.randint(1000)

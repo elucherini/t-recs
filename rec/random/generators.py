@@ -3,9 +3,9 @@ import numpy as np
 
 class Generator(np.random.Generator):
     """Wrapper around numpy.random.Generator"""
-    def __init__(self, bitgenerator=None):
+    def __init__(self, seed=None, bitgenerator=None):
         if bitgenerator is None:
-            bitgenerator = np.random.PCG64()
+            bitgenerator = np.random.PCG64(np.random.SeedSequence(seed))
         np.random.Generator.__init__(self, bitgenerator)
 
 

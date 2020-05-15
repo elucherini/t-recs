@@ -6,6 +6,7 @@ from rec import utils
 from rec.metrics import MSEMeasurement
 from rec.components import Users, Items
 from rec.utils import VerboseMode
+from rec.random import Generator
 
 
 class MeasurementModule():
@@ -89,7 +90,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
     def __init__(self, user_representation, item_representation,
                  actual_user_representation, num_users, num_items,
                  num_items_per_iter, num_new_items, measurements=None,
-                 verbose=False):
+                 verbose=False, seed=None):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
         # measurements
@@ -102,34 +103,47 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
                                            normalize=True)
         assert(self.predicted_scores is not None)
 
-        if actual_user_representation is not None:
-            self.actual_users = actual_user_representation
-        else:
+        if not utils.is_valid_or_none(num_users, int):
+            raise TypeError("num_users must be an int")
+        if not utils.is_valid_or_none(num_items, int):
+            raise TypeError("num_items must be an int")
+        if not utils.is_valid_or_none(num_items_per_iter, int):
+            raise TypeError("num_items_per_iter must be an int")
+        if not utils.is_valid_or_none(num_new_items, int):
+            raise TypeError("num_new_items must be an int")
+        if not hasattr(self, 'measurements'):
+            raise ValueError("You must define at least one measurement module")
+
+        if not utils.is_valid_or_none(actual_user_representation, (list, np.ndarray,
+                                                                    Users)):
+            raise TypeError("actual_user_representation must be array_like or Users")
+        if actual_user_representation is None:
             self.actual_users = Users(size=self.user_profiles.shape,
+                                      num_users=num_users, seed=seed)
+        if isinstance(actual_user_representation, (list, np.ndarray)):
+            self.actual_users = Users(actual_user_scores=actual_user_representation,
                                       num_users=num_users)
+        if isinstance(actual_user_representation, Users):
+            self.actual_users = actual_user_representation
 
         self.actual_users.compute_user_scores(self.train)
 
-        if not utils.is_valid_or_none(num_users, int):
-            raise ValueError("num_users must be an int")
-        if not utils.is_valid_or_none(num_items, int):
-            raise ValueError("num_items must be an int")
-        if not utils.is_valid_or_none(num_items_per_iter, int):
-            raise ValueError("num_items_per_iter must be an int")
-        if not utils.is_valid_or_none(num_new_items, int):
-            raise ValueError("num_new_items must be an int")
-        if not hasattr(self, 'measurements'):
-            raise ValueError("You must define at least one measurement module")
+        assert(self.actual_users and isinstance(self.actual_users, Users))
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
         self.num_new_items = num_new_items
+        self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
         self.log('Recommender system ready')
         self.log('Num items: %d' % self.num_items)
         self.log('Users: %d' % self.num_users)
         self.log('Items per iter: %d' % self.num_items_per_iter)
+        if seed is not None:
+            self.log('Set seed to %d' % seed)
+        else:
+            self.log('Seed was not set.')
 
 
     def train(self, user_profiles=None, item_attributes=None, normalize=True):
@@ -189,7 +203,8 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         probabilities = np.logspace(0.0, rec.shape[1]/10.0, num=rec.shape[1], base=2)
         probabilities = probabilities/probabilities.sum()
         self.log('Items ordered by preference for each user:\n' + str(rec))
-        picks = np.random.choice(permutation.shape[1], p=probabilities, size=(self.num_users, k))
+        picks = self.random_state.choice(permutation.shape[1], p=probabilities,
+                                         size=(self.num_users, k))
         #self.log('recommendations\n' + str(rec[np.repeat(self.user_vector, k).reshape((self.num_users, -1)), picks]))
         #print(self.predicted_scores.argsort()[:,::-1][:,0:5])
         return rec[np.repeat(self.actual_users._user_vector, k).reshape((self.num_users, -1)), picks]
@@ -211,7 +226,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
             num_new_items = self.num_items_per_iter
             num_recommended = 0
         else:
-            num_new_items = np.random.randint(0, self.num_items_per_iter)
+            num_new_items = self.random_state.integers(0, self.num_items_per_iter)
             num_recommended = self.num_items_per_iter - num_new_items
 
         if num_recommended == 0 and num_new_items == 0:
@@ -242,7 +257,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
             indices_prime = indices_prime.reshape((self.num_users, -1))
 
         if num_new_items:
-            col = np.random.randint(indices_prime.shape[1], size=(self.num_users, num_new_items))
+            col = self.random_state.integers(indices_prime.shape[1], size=(self.num_users, num_new_items))
             row = np.repeat(self.actual_users._user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = indices_prime[row, col]
             self.log('System picked these items (cols) randomly for each user ' + \
@@ -254,7 +269,7 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
             items = new_items
         else:
             items = recommended
-        np.random.shuffle(items.T)
+        self.random_state.shuffle(items.T)
         return items
 
     @abstractmethod

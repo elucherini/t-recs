@@ -10,7 +10,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     """Bass model that, for now, only supports one item at a time"""
     def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
-        actual_user_scores=None, verbose=False, num_items_per_iter=1, num_new_items=30):
+        actual_user_scores=None, verbose=False, num_items_per_iter=1, num_new_items=30,
+        seed=None):
         # these are not allowed to be None at the same time
         if all_none(user_representation, num_users, infection_state):
             raise ValueError("user_representation, num_users, and infection_state can't be all None")
@@ -42,19 +43,21 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                                     getattr(infection_state,
                                             'shape', [None, None])[1],
                                              num_items)
+        generator = Generator(seed)
         if item_representation is None:
-            item_representation = Generator().uniform(size=(1,num_items))
+            item_representation = Generator(seed).uniform(size=(1,num_items))
         if user_representation is None:
             import networkx as nx
             user_representation = SocialGraphGenerator.generate_random_graph(n=num_users,
-                                            p=0.3, graph_type=nx.fast_gnp_random_graph)
+                                                                        p=0.3, seed=seed,
+                                                    graph_type=nx.fast_gnp_random_graph)
         # Define infection_state
         if infection_state is None:
         # TODO change parameters
             infection_state = np.zeros((num_users, num_items))
             assert(num_users > 0)
-            infected_users = np.random.randint(num_users)
-            infectious_items = np.random.randint(num_items)
+            infected_users = generator.integers(num_users)
+            infectious_items = generator.integers(num_items)
             infection_state[infected_users, infectious_items] = 1
 
         if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
@@ -73,7 +76,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
         # TODO support separate threshold for each user
         if not infection_threshold or infection_threshold >= 1:
-            infection_threshold = np.random.random()
+            infection_threshold = generator.uniform()
 
         self.infection_state = infection_state
         self.infection_threshold = abs(infection_threshold)
@@ -84,7 +87,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
                              num_items_per_iter, num_new_items,
-                             measurements=measurements, verbose=verbose)
+                             measurements=measurements, verbose=verbose, seed=seed)
 
     def _update_user_profiles(self, interactions):
         """ Private function that updates user profiles with data from

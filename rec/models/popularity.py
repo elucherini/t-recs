@@ -5,7 +5,7 @@ from rec.metrics import Measurement
 class PopularityRecommender(BaseRecommender):
     def __init__(self, num_users, num_items, num_items_per_iter=10,
         randomize_recommended=True, num_recommended=None, num_new_items=None,
-        actual_user_scores=True, debug_user_preferences=False):
+        actual_user_scores=True, debug_user_preferences=False, seed=None):
         # TODO: check on invalid parameters
         self.user_profiles = np.ones((num_users, 1), dtype=int)
         self.item_attributes = np.zeros((1, num_items), dtype=int)

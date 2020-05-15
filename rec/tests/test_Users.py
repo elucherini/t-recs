@@ -49,6 +49,22 @@ class TestUsers:
                                        model.train(s.actual_user_profiles,
                                                    normalize=True))
 
+    def test_seeding(self, users=15, attr=15, seed=None):
+        actual_user_repr = np.random.randint(15, size=(users, attr))
+        if seed is None:
+            seed = np.random.randint(1000)
+        users1 = Users(size=(users, attr), seed=seed)
+        users2 = Users(size=(users, attr), seed=seed)
+        test_utils.assert_equal_arrays(users1.actual_user_profiles,
+                                       users2.actual_user_profiles)
+        # no seeding
+        users3 = Users(size=(users, attr))
+        users4 = Users(size=(users, attr))
+        # very low chances of this passing
+        with pytest.raises(AssertionError):
+            test_utils.assert_equal_arrays(users3.actual_user_profiles,
+                                           users4.actual_user_profiles)
+
 
 
 if __name__ == '__main__':
