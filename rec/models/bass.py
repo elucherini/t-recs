@@ -7,7 +7,8 @@ import numpy as np
 import math
 
 class BassModel(BaseRecommender, BinarySocialGraph):
-    """Bass model that, for now, only supports one item at a time"""
+    """Bass model that, for now, only supports one item at a time
+    """
     def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_threshold=None,
         actual_user_scores=None, verbose=False, num_items_per_iter=1, num_new_items=30,
@@ -114,8 +115,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """ Overrides train method of parent class :class:`Recommender`.
 
             Args:
-                normalize (bool, optional): set to True if the scores should be normalized,
-            False otherwise.
+                normalize (bool, optional): set to True if the scores should be normalized, False otherwise.
         """
         # normalizing the user profiles is meaningless here
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
@@ -137,15 +137,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             Args:
                 timestep (int, optional): number of timesteps for simulation
                 startup (bool, optional): if True, it runs the simulation in
-                    startup mode (see recommend() and startup_and_train())
+                startup mode (see recommend() and startup_and_train())
                 train_between_steps (bool, optional): if True, the model is
-                    retrained after each step with the information gathered
-                    in the previous step.
+                retrained after each step with the information gathered
+                in the previous step.
                 repeated_items (bool, optional): if True, repeated items are allowed
-                    in the system -- that is, users can interact with the same
-                    item more than once. Examples of common instances in which
-                    this is useful: infection and network propagation models.
-                    Default is False.
+                in the system -- that is, users can interact with the same item more than once. Examples of common instances in which
+                this is useful: infection and network propagation models. Default is False.
         """
         # NOTE: force repeated_items to True
         repeated_items = True

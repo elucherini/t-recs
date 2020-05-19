@@ -25,7 +25,7 @@ class TestMeasurementModule:
 class TestMSEMeasurement:
     """Test base class Measurement"""
     def test_generic(self, timesteps=None):
-        # We do this through SocialFiltering again
+        # We do this through ContentFiltering
         c = ContentFiltering()
         c.add_measurements(MSEMeasurement())
         assert(len(c.measurements) > 0)

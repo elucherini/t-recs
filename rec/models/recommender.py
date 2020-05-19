@@ -3,13 +3,21 @@ from abc import ABC, abstractmethod
 from tqdm import tqdm
 import rec
 from rec import utils
-from rec.metrics import MSEMeasurement
-from rec.components import Users, Items
+from rec.metrics import MSEMeasurement, Measurement
+from rec.components import Users, Items, BaseObserver, BaseComponent
 from rec.utils import VerboseMode
 from rec.random import Generator
 
 
-class MeasurementModule():
+class MeasurementModule(BaseObserver):
+    def __init__(self):
+        self.measurements = list()
+
+    def add_measurements(self, *args):
+        self.register_observables(observer=self.measurements, observables=list(args),
+                                  observable_type=Measurement)
+
+    '''
     def __init__(self, measurements=None):
         if not utils.is_valid_or_none(measurements, list):
             raise TypeError("Wrong type for measurements, must be list")
@@ -18,7 +26,7 @@ class MeasurementModule():
         # check class
         if len(measurements) > 0:
             for metric in measurements:
-                if not isinstance(metric, (rec.metrics.Measurement)):
+                if not isinstance(metric, (Measurement)):
                     raise ValueError("Measurements must inherit from class Measurement")
         self.measurements = measurements
 
@@ -28,11 +36,20 @@ class MeasurementModule():
         # add only if all correct
         new_measurements = list()
         for arg in args:
-            if isinstance(arg, rec.metrics.Measurement):
+            if isinstance(arg, Measurement):
                 new_measurements.append(arg)
             else:
                 raise ValueError("Measurements must inherit from class Measurement")
         self.measurements.extend(new_measurements)
+    '''
+
+class SystemStateModule(BaseObserver):
+    def __init__(self, components=None):
+        self._system_state = list()
+
+    def add_state_variable(self, *args):
+        self.register_observables(observer=self.measurements, observables=list(args),
+                                  observable_type=BaseComponent)
 
 class BaseRecommender(MeasurementModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
@@ -94,7 +111,9 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
         # measurements
-        MeasurementModule.__init__(self, measurements)
+        MeasurementModule.__init__(self)
+        if measurements is not None:
+            self.add_measurements(*measurements)
         # init users and items
         self.user_profiles = user_representation
         self.item_attributes = Items(item_representation)
@@ -373,6 +392,10 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
             measurements['Timesteps'] = elapsed
         return measurements
 
+    def get_system_state(self):
+        pass
+
+
     def measure_content(self, interactions, step):
         """ Calls method in the :class:`Measurements` module to record metrics.
             For more details, see the :class:`Measurements` class and its measure
@@ -385,3 +408,5 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         """
         for metric in self.measurements:
             metric.measure(step, interactions, self)
+        #for component in self._system_state:
+        #    component.register(step, interactions, self)

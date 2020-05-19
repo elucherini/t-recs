@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from rec.utils import VerboseMode
+from rec.components import BaseObservable
 import numpy as np
 
-class Measurement(VerboseMode, ABC):
+class Measurement(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_data = list()
@@ -27,11 +28,7 @@ class Measurement(VerboseMode, ABC):
         return histogram
 
     def get_measurement(self):
-        if len(self.measurement_data) > 0:
-            name = getattr(self, 'name', 'Unnamed')
-            return {name: self.measurement_data}
-        else:
-            return None
+        return self.get_observable(data=self.measurement_data)
 
     @abstractmethod
     def measure(self, step, interactions, recommender):
