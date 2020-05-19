@@ -6,8 +6,8 @@ import numpy as np
 class Measurement(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
-        self.measurement_data = list()
-        self.measurement_data.append(init_value)
+        self.measurement_history = list()
+        self.measurement_history.append(init_value)
 
     def _generate_interaction_histogram(self, interactions, num_users, num_items):
         ''' Internal function that returns a histogram of the number
@@ -28,14 +28,34 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         return histogram
 
     def get_measurement(self):
-        return self.get_observable(data=self.measurement_data)
+        return self.get_observable(data=self.measurement_history)
+
+    def observe(self, observation, copy=True):
+        if copy:
+            to_append = np.copy(observation)
+        else:
+            to_append = observation
+        self.measurement_history.append(to_append)
 
     @abstractmethod
     def measure(self, step, interactions, recommender):
         pass
 
     def get_timesteps(self):
-        return len(self.measurement_data)
+        return len(self.measurement_history)
+
+
+class InteractionHistogram(Measurement):
+    def __init__(self, verbose=False):
+        self.name = 'interaction histogram'
+        Measurement.__init__(self, verbose, init_value=None)
+
+    def measure(self, step, interactions, recommender):
+        histogram = self._generate_interaction_histogram(interactions,
+                                                         recommender.num_users,
+                                                         recommender.num_items)
+        histogram[::-1].sort()
+        self.observe(histogram, copy=True)
 
 
 class HomogeneityMeasurement(Measurement):
@@ -68,8 +88,8 @@ class HomogeneityMeasurement(Measurement):
         histogram[::-1].sort()
         if self._old_histogram is None:
             self._old_histogram = np.zeros(recommender.num_items)
-        self.measurement_data.append(np.trapz(self._old_histogram, dx=1) - \
-                                    np.trapz(histogram, dx=1))
+        self.observe(np.trapz(self._old_histogram, dx=1) - np.trapz(histogram, dx=1),
+                     copy=False)
         self._old_histogram = np.copy(histogram)
         self.histogram = histogram
 
@@ -90,8 +110,8 @@ class MSEMeasurement(Measurement):
                 actual (:obj:`numpy.array`): actual user preferences,
                     unknown to the system.
         """
-        self.measurement_data.append(((recommender.predicted_scores -
-            recommender.actual_users.actual_user_scores)**2).mean())
+        self.observe(((recommender.predicted_scores -
+            recommender.actual_users.actual_user_scores)**2).mean(), copy=False)
 
 
 class DiffusionTreeMeasurement(Measurement):
@@ -141,20 +161,21 @@ class DiffusionTreeMeasurement(Measurement):
     def measure(self, step, interactions, recommender):
         num_new_infections = self._manage_new_infections(recommender.user_profiles,
             recommender.infection_state)
-        self.measurement_data.append(self.diffusion_tree.number_of_nodes())
+        self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
         self._old_infection_state = np.copy(recommender.infection_state)
 
     def draw_tree(self):
         import matplotlib.pyplot as plt
+        import networkx as nx
         nx.draw(self.diffusion_tree, with_labels=True)
 
 
 class StructuralVirality(DiffusionTreeMeasurement):
-    import networkx as nx
-    from networkx.algorithms.wiener import wiener_index
     def __init__(self, infection_state, verbose=False):
         DiffusionTreeMeasurement.__init__(self, infection_state, verbose)
 
     def get_structural_virality(self):
+        import networkx as nx
+        from networkx.algorithms.wiener import wiener_index
         n = self.diffusion_tree.number_of_nodes()
         return nx.wiener_index(self.diffusion_tree) / (n * (n - 1))
