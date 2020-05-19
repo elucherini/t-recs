@@ -148,7 +148,7 @@ class TestSocialFiltering:
 
     def test_social_graph(self, user_repr=None, user1=None, user2=None):
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
-            users = np.random.randint(100)
+            users = np.random.randint(1, 100)
             user_repr = np.zeros((users, users))
         s = SocialFiltering(user_representation=user_repr)
         if user1 is None:
