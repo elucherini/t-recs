@@ -18,7 +18,7 @@ class MeasurementModule(BaseObserver):
         self.register_observables(observer=self.measurements, observables=list(args),
                                   observable_type=Measurement)
 
-class ComponentModule(BaseObserver):
+class SystemStateModule(BaseObserver):
     """Mixin gor observers of "SystemState" observables
     """
     def __init__(self, components=None):
@@ -28,7 +28,7 @@ class ComponentModule(BaseObserver):
         self.register_observables(observer=self._system_state, observables=list(args),
                                   observable_type=BaseComponent)
 
-class BaseRecommender(MeasurementModule, ComponentModule, VerboseMode, ABC):
+class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
         All attributes and methods in this class are generic to all recommendation systems
@@ -124,7 +124,7 @@ class BaseRecommender(MeasurementModule, ComponentModule, VerboseMode, ABC):
             self.actual_users = actual_user_representation
 
         # system state
-        ComponentModule.__init__(self)
+        SystemStateModule.__init__(self)
         self.add_state_variable(self.actual_users, self.item_attributes,
                                 self.predicted_scores)
 
@@ -362,7 +362,7 @@ class BaseRecommender(MeasurementModule, ComponentModule, VerboseMode, ABC):
         """ Returns all available measurements. For more details,
             please see the :class:`Measurements` class.
 
-            Returns: Pandas dataframe of all available measurements.
+            Returns: Dictionary of all available measurements.
         """
         if len(self.measurements) < 1:
             raise ValueError("No measurement module defined")
@@ -376,7 +376,22 @@ class BaseRecommender(MeasurementModule, ComponentModule, VerboseMode, ABC):
         return measurements
 
     def get_system_state(self):
-        pass
+        """Return history of system state. For more details, please see
+        :class:`Component` classes.
+
+            Returns: Dictionary of system state.
+        """
+        if len(self.measurements) < 1:
+            raise ValueError("No measurement module defined")
+        measurements = dict()
+        for metric in self.measurements:
+            measurements = {**measurements, **metric.get_measurement()}
+        if 'Timesteps' not in measurements:
+            # pick first measurement's length for # of timesteps since they're going to be the same
+            elapsed = np.arange(self.measurements[0].get_timesteps())
+            measurements['Timesteps'] = elapsed
+        return measurements
+
 
 
     def measure_content(self, interactions, step):

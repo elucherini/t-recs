@@ -1,6 +1,6 @@
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_component import Component, FromNdArray
+from .base_components import Component, FromNdArray
 import numpy as np
 
 class Items(Component):
