@@ -1,10 +1,30 @@
 from rec.models import BaseRecommender
 from rec.components import BinarySocialGraph
+from rec.components import BaseComponent, FromNdArray
 from rec.random import Generator, SocialGraphGenerator
 from rec.metrics import StructuralVirality
 from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 import numpy as np
-import math
+
+'''
+class InfectionState(FromNdArray, BaseComponent):
+    """User profiles as predicted by the system
+    """
+    def __init__(self, infection_state=None, size=None, verbose=False, seed=None):
+        # general input checks
+        if infection_state is not None:
+            if not isinstance(infection_state, (list, np.ndarray)):
+                raise TypeError("infection_state must be a list or numpy.ndarray")
+        if infection_state is None and size is None:
+            raise ValueError("infection_state and size can't both be None")
+        if infection_state is None and not isinstance(size, tuple):
+            raise TypeError("size must be a tuple, is %s" % type(size))
+        # Initialize component state
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.user_profiles)
+
+    def store_state(self):
+        self.component_data.append(np.copy(self.user_profiles))
+'''
 
 class BassModel(BaseRecommender, BinarySocialGraph):
     """Bass model that, for now, only supports one item at a time
@@ -53,13 +73,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                                                                         p=0.3, seed=seed,
                                                     graph_type=nx.fast_gnp_random_graph)
         # Define infection_state
+
         if infection_state is None:
-        # TODO change parameters
             infection_state = np.zeros((num_users, num_items))
-            assert(num_users > 0)
             infected_users = generator.integers(num_users)
             infectious_items = generator.integers(num_items)
             infection_state[infected_users, infectious_items] = 1
+        self.infection_state = infection_state
 
         if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
                                 getattr(user_representation, 'shape', [None, None])[1]):
@@ -72,7 +92,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                                              'shape', [None, None])[1],
                                   getattr(infection_state,
                                           'shape', [None, None])[1]):
-            raise ValueError("item_representation and infection_state should be of" + \
+            raise ValueError("item_representation and infection_state should be of " + \
                              "same size on dimension 1")
 
         # TODO support separate threshold for each user

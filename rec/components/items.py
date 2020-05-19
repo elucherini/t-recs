@@ -1,26 +1,12 @@
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_component import BaseComponent, FromNdArray
+from .base_component import Component, FromNdArray
 import numpy as np
 
-class Items(FromNdArray, BaseComponent):
+class Items(Component):
     def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
-        # general input checks
-        if item_attributes is not None:
-            if not isinstance(item_attributes, (list, np.ndarray)):
-                raise TypeError("item_attributes must be a list or numpy.ndarray")
-        if item_attributes is None and size is None:
-            raise ValueError("item_attributes and size can't both be None")
-        if item_attributes is None and not isinstance(size, tuple):
-            raise TypeError("size must be a tuple, is %s" % type(size))
-        if item_attributes is None and size is not None:
-            item_attributes = Generator(seed).binomial(n=.3, p=1, size=size)
-        self.item_attributes = item_attributes
-        # Initialize component state
-        BaseComponent.__init__(self, verbose=verbose, init_value=self.item_attributes)
-
-    def store_state(self):
-        self.component_data.append(np.copy(self.item_attributes))
+        Component.__init__(self, current_state=item_attributes, size=size,
+                           verbose=verbose, seed=seed)
 
     '''
     def _compute_item_attributes(self, num_items, num_attributes, normalize=False):

@@ -9,6 +9,8 @@ from rec.utils import VerboseMode
 from rec.random import Generator
 
 class MeasurementModule(BaseObserver):
+    """Mixin for observers of "Measurement" observables
+    """
     def __init__(self):
         self.measurements = list()
 
@@ -16,7 +18,9 @@ class MeasurementModule(BaseObserver):
         self.register_observables(observer=self.measurements, observables=list(args),
                                   observable_type=Measurement)
 
-class SystemStateModule(BaseObserver):
+class ComponentModule(BaseObserver):
+    """Mixin gor observers of "SystemState" observables
+    """
     def __init__(self, components=None):
         self._system_state = list()
 
@@ -24,7 +28,7 @@ class SystemStateModule(BaseObserver):
         self.register_observables(observer=self._system_state, observables=list(args),
                                   observable_type=BaseComponent)
 
-class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
+class BaseRecommender(MeasurementModule, ComponentModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
         All attributes and methods in this class are generic to all recommendation systems
@@ -120,7 +124,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.actual_users = actual_user_representation
 
         # system state
-        SystemStateModule.__init__(self)
+        ComponentModule.__init__(self)
         self.add_state_variable(self.actual_users, self.item_attributes,
                                 self.predicted_scores)
 

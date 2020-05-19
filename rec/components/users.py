@@ -2,29 +2,26 @@ import numpy as np
 
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_component import BaseComponent, FromNdArray
+from .base_component import Component, FromNdArray, BaseComponent
 
-class PredictedUserProfiles(FromNdArray, BaseComponent):
+
+class PredictedScores(Component):
+    def __init__(self, predicted_scores=None, verbose=False):
+        Component.__init__(self, current_state=predicted_scores, size=None,
+                           verbose=verbose, seed=None)
+
+
+class PredictedUserProfiles(Component):
     """User profiles as predicted by the system
     """
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
-        # general input checks
-        if user_profiles is not None:
-            if not isinstance(user_profiles, (list, np.ndarray)):
-                raise TypeError("user_profiles must be a list or numpy.ndarray")
-        if user_profiles is None and size is None:
-            raise ValueError("user_profiles and size can't both be None")
-        if user_profiles is None and not isinstance(size, tuple):
-            raise TypeError("size must be a tuple, is %s" % type(size))
-        if user_profiles is None and size is not None:
-            user_profiles = Generator(seed).binomial(n=.3, p=1, size=size)
-        self.user_profiles = user_profiles
-        # Initialize component state
-        BaseComponent.__init__(self, verbose=verbose, init_value=self.user_profiles)
+        Component.__init__(self, current_state=user_profiles, size=size,
+                           verbose=verbose, seed=seed)
 
-    def store_state(self):
-        self.component_data.append(np.copy(self.user_profiles))
-
+class ActualUserProfiles(Component):
+    def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
+        Component.__init__(self, current_state=user_profiles, size=size,
+                           verbose=verbose, seed=seed)
 
 class Users(BaseComponent):
     """Class representing the scores assigned to each item by the users.
@@ -89,7 +86,7 @@ class Users(BaseComponent):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
             actual_user_profiles = Generator(seed=seed).normal(size=size)
-        self.actual_user_profiles = np.asarray(actual_user_profiles)
+        self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         # this will be initialized by the system
         self.actual_user_scores = None
@@ -152,7 +149,7 @@ class Users(BaseComponent):
         return interactions
 
     def store_state(self):
-        self.component_data.append(np.copy(self.actual_user_scores))
+        self.state_history.append(np.copy(self.actual_user_scores))
 
 
         #def compute_actual_scores(self, item_representation, num_users, distribution=None):

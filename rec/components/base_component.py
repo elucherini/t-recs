@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 from rec.utils import VerboseMode
 import inspect
 
-# subclass Numpy ndarray
 class FromNdArray(np.ndarray, VerboseMode):
+    """Subclass for Numpy's ndarrays
+    """
     def __new__(cls, input_array, num_items=None, verbose=False):
         obj = np.asarray(input_array).view(cls)
         obj.verbose = verbose
@@ -20,7 +21,7 @@ class FromNdArray(np.ndarray, VerboseMode):
 
 
 class BaseObserver(ABC):
-    """Observer class for the observer design pattern
+    """Observer mixin for the observer design pattern
     """
     def register_observables(self, **kwargs):
         observables = kwargs.pop("observables", None)
@@ -51,7 +52,7 @@ class BaseObserver(ABC):
 
 
 class BaseObservable(ABC):
-    """Observable class for the observer design patter
+    """Observable mixin for the observer design patter
     """
     def get_observable(self, **kwargs):
         data = kwargs.pop("data", None)
@@ -72,15 +73,35 @@ class BaseObservable(ABC):
 class BaseComponent(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
-        self.component_data = list()
-        self.component_data.append(init_value)
+        self.state_history = list()
+        self.state_history.append(init_value)
 
     def get_component_state(self):
-        return get_observable(data=self.component_data)
+        return get_observable(data=self.state_history)
 
     @abstractmethod
     def store_state(self):
         pass
 
     def get_timesteps(self):
-        return len(self.component_data)
+        return len(self.state_history)
+
+
+class Component(FromNdArray, BaseComponent):
+    def __init__(self, current_state=None, size=None, verbose=False, seed=None):
+        # general input checks
+        if current_state is not None:
+            if not isinstance(current_state, (list, np.ndarray)):
+                raise TypeError("current_state must be a list or numpy.ndarray")
+        if current_state is None and size is None:
+            raise ValueError("current_state and size can't both be None")
+        if current_state is None and not isinstance(size, tuple):
+            raise TypeError("size must be a tuple, is %s" % type(size))
+        if current_state is None and size is not None:
+            current_state = Generator(seed).binomial(n=.3, p=1, size=size)
+        self.current_state = current_state
+        # Initialize component state
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
+
+    def store_state(self):
+        self.state_history.append(np.copy(self.current_state))
