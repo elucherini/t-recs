@@ -6,6 +6,7 @@ import pytest
 
 class TestMeasurementModule:
     """Test basic functionalities of MeasurementModule"""
+    '''
     def test_measurement_module(self):
         # Create model, e.g., SocialFiltering
         s = SocialFiltering()
@@ -21,9 +22,11 @@ class TestMeasurementModule:
         with pytest.raises(ValueError):
             s.add_measurements()
         assert(len(old_metrics) + 1 == len(s.measurements))
+    '''
 
 class TestMSEMeasurement:
     """Test base class Measurement"""
+    '''
     def test_generic(self, timesteps=None):
         # We do this through ContentFiltering
         c = ContentFiltering()
@@ -42,3 +45,4 @@ class TestMSEMeasurement:
         # Non-increasing starting from second element
         print(meas['MSE'])
         #assert(all(x>=y for x, y in zip(meas['MSE'][1:], meas['MSE'][2:])))
+    '''

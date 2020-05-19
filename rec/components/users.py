@@ -2,7 +2,29 @@ import numpy as np
 
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_component import BaseComponent
+from .base_component import BaseComponent, FromNdArray
+
+class PredictedUserProfiles(FromNdArray, BaseComponent):
+    """User profiles as predicted by the system
+    """
+    def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
+        # general input checks
+        if user_profiles is not None:
+            if not isinstance(user_profiles, (list, np.ndarray)):
+                raise TypeError("user_profiles must be a list or numpy.ndarray")
+        if user_profiles is None and size is None:
+            raise ValueError("user_profiles and size can't both be None")
+        if user_profiles is None and not isinstance(size, tuple):
+            raise TypeError("size must be a tuple, is %s" % type(size))
+        if user_profiles is None and size is not None:
+            user_profiles = Generator(seed).binomial(n=.3, p=1, size=size)
+        self.user_profiles = user_profiles
+        # Initialize component state
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.user_profiles)
+
+    def store_state(self):
+        self.component_data.append(np.copy(self.user_profiles))
+
 
 class Users(BaseComponent):
     """Class representing the scores assigned to each item by the users.

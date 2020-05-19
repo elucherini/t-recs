@@ -3,11 +3,10 @@ from abc import ABC, abstractmethod
 from tqdm import tqdm
 from rec import utils
 from rec.metrics import MSEMeasurement, Measurement
-from rec.components import Users, Items, PredictedScores
-from rec.components import BaseObserver, BaseComponent
+from rec.components import Users, Items, PredictedScores, PredictedUserProfiles
+from rec.components import BaseObserver, BaseComponent, FromNdArray
 from rec.utils import VerboseMode
 from rec.random import Generator
-
 
 class MeasurementModule(BaseObserver):
     def __init__(self):
@@ -89,7 +88,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if measurements is not None:
             self.add_measurements(*measurements)
         # init users and items
-        self.user_profiles = user_representation
+        self.user_profiles = PredictedUserProfiles(user_representation)
         self.item_attributes = Items(item_representation)
         # set predicted scores
         self.predicted_scores = PredictedScores(self.train(self.user_profiles,
