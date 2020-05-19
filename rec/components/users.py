@@ -2,8 +2,9 @@ import numpy as np
 
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
+from .base_component import BaseComponent
 
-class Users(VerboseMode):
+class Users(BaseComponent):
     """Class representing the scores assigned to each item by the users.
         These scores are unknown to the system.
 
@@ -51,7 +52,6 @@ class Users(VerboseMode):
     def __init__(self, actual_user_profiles=None, actual_user_scores=None,
                  interact_with_items=None, size=None, num_users=None,
                  verbose=False, seed=None):
-        super().__init__(__name__.upper(), verbose)
         # general input checks
         if actual_user_profiles is not None:
             if not isinstance(actual_user_profiles, (list, np.ndarray)):
@@ -73,6 +73,8 @@ class Users(VerboseMode):
         self.actual_user_scores = None
         if num_users is not None:
             self._user_vector = np.arange(num_users, dtype=int)
+        self.name = 'Actual Users'
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 
 
     def compute_user_scores(self, train_function, *args, **kwargs):
@@ -81,6 +83,7 @@ class Users(VerboseMode):
             raise TypeError("train_function must be callable")
         self.actual_user_scores = train_function(user_profiles=self.actual_user_profiles,
                                                  *args, **kwargs)
+        self.store_state()
 
     def get_actual_user_scores(self, user=None):
         """Returns the actual user scores matrix.
@@ -125,6 +128,9 @@ class Users(VerboseMode):
         self.log("Users interact with the following items respectively:\n" + \
             str(interactions))
         return interactions
+
+    def store_state(self):
+        self.component_data.append(np.copy(self.actual_user_scores))
 
 
         #def compute_actual_scores(self, item_representation, num_users, distribution=None):

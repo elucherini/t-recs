@@ -53,5 +53,17 @@ class BaseObservable(ABC):
         pass
 
 class BaseComponent(BaseObservable, VerboseMode, ABC):
-    def __init__(self):
+    def __init__(self, verbose=False, init_value=None):
+        VerboseMode.__init__(self, __name__.upper(), verbose)
+        self.component_data = list()
+        self.component_data.append(init_value)
+
+    def get_component_state(self):
+        return get_observable(data=self.component_data)
+
+    @abstractmethod
+    def store_state(self):
         pass
+
+    def get_timesteps(self):
+        return len(self.component_data)

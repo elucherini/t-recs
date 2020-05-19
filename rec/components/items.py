@@ -1,6 +1,6 @@
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-#from .utils import normalize_matrix
+from .base_component import BaseComponent
 import numpy as np
 
 # subclass ndarray
@@ -19,10 +19,8 @@ class FromNdArray(np.ndarray, VerboseMode):
         self.verbose = getattr(obj, 'verbose', False)
 
 
-class Items(FromNdArray):
+class Items(FromNdArray, BaseComponent):
     def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
-        # Initialize verbose mode
-        VerboseMode.__init__(self, __name__.upper(), self.verbose)
         # general input checks
         if item_attributes is not None:
             if not isinstance(item_attributes, (list, np.ndarray)):
@@ -34,6 +32,11 @@ class Items(FromNdArray):
         if item_attributes is None and size is not None:
             item_attributes = Generator(seed).binomial(n=.3, p=1, size=size)
         self.item_attributes = item_attributes
+        # Initialize component state
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.item_attributes)
+
+    def store_state(self):
+        self.component_data.append(np.copy(self.item_attributes))
 
     '''
     def _compute_item_attributes(self, num_items, num_attributes, normalize=False):

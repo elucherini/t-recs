@@ -17,41 +17,15 @@ class MeasurementModule(BaseObserver):
         self.register_observables(observer=self.measurements, observables=list(args),
                                   observable_type=Measurement)
 
-    '''
-    def __init__(self, measurements=None):
-        if not utils.is_valid_or_none(measurements, list):
-            raise TypeError("Wrong type for measurements, must be list")
-        if measurements is None:
-            measurements = list()
-        # check class
-        if len(measurements) > 0:
-            for metric in measurements:
-                if not isinstance(metric, (Measurement)):
-                    raise ValueError("Measurements must inherit from class Measurement")
-        self.measurements = measurements
-
-    def add_measurements(self, *args):
-        if len(args) < 1:
-            raise ValueError("Measurements must inherit from class Measurement")
-        # add only if all correct
-        new_measurements = list()
-        for arg in args:
-            if isinstance(arg, Measurement):
-                new_measurements.append(arg)
-            else:
-                raise ValueError("Measurements must inherit from class Measurement")
-        self.measurements.extend(new_measurements)
-    '''
-
 class SystemStateModule(BaseObserver):
     def __init__(self, components=None):
         self._system_state = list()
 
     def add_state_variable(self, *args):
-        self.register_observables(observer=self.measurements, observables=list(args),
+        self.register_observables(observer=self._system_state, observables=list(args),
                                   observable_type=BaseComponent)
 
-class BaseRecommender(MeasurementModule, VerboseMode, ABC):
+class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
         All attributes and methods in this class are generic to all recommendation systems
@@ -144,6 +118,10 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
                                       num_users=num_users)
         if isinstance(actual_user_representation, Users):
             self.actual_users = actual_user_representation
+
+        # system state
+        SystemStateModule.__init__(self)
+        self.add_state_variable(self.actual_users, self.item_attributes)
 
         self.actual_users.compute_user_scores(self.train)
 
@@ -408,5 +386,5 @@ class BaseRecommender(MeasurementModule, VerboseMode, ABC):
         """
         for metric in self.measurements:
             metric.measure(step, interactions, self)
-        #for component in self._system_state:
-        #    component.register(step, interactions, self)
+        for component in self._system_state:
+            component.store_state()
