@@ -3,6 +3,22 @@ from abc import ABC, abstractmethod
 from rec.utils import VerboseMode
 import inspect
 
+# subclass Numpy ndarray
+class FromNdArray(np.ndarray, VerboseMode):
+    def __new__(cls, input_array, num_items=None, verbose=False):
+        obj = np.asarray(input_array).view(cls)
+        obj.verbose = verbose
+        return obj
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+        self.verbose = getattr(obj, 'verbose', False)
+
+
 class BaseObserver(ABC):
     """Observer class for the observer design pattern
     """
@@ -51,6 +67,7 @@ class BaseObservable(ABC):
 
     def observe(self, *args, **kwargs):
         pass
+
 
 class BaseComponent(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):

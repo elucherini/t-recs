@@ -1,23 +1,7 @@
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_component import BaseComponent
+from .base_component import BaseComponent, FromNdArray
 import numpy as np
-
-# subclass ndarray
-class FromNdArray(np.ndarray, VerboseMode):
-    def __new__(cls, input_array, num_items=None, verbose=False):
-        obj = np.asarray(input_array).view(cls)
-        obj.verbose = verbose
-        return obj
-
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __array_finalize__(self, obj):
-        if obj is None:
-            return
-        self.verbose = getattr(obj, 'verbose', False)
-
 
 class Items(FromNdArray, BaseComponent):
     def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):

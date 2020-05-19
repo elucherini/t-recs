@@ -1,10 +1,10 @@
 import numpy as np
 from abc import ABC, abstractmethod
 from tqdm import tqdm
-import rec
 from rec import utils
 from rec.metrics import MSEMeasurement, Measurement
-from rec.components import Users, Items, BaseObserver, BaseComponent
+from rec.components import Users, Items, PredictedScores
+from rec.components import BaseObserver, BaseComponent
 from rec.utils import VerboseMode
 from rec.random import Generator
 
@@ -92,8 +92,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.user_profiles = user_representation
         self.item_attributes = Items(item_representation)
         # set predicted scores
-        self.predicted_scores = self.train(self.user_profiles, self.item_attributes,
-                                           normalize=True)
+        self.predicted_scores = PredictedScores(self.train(self.user_profiles,
+                                                           self.item_attributes,
+                                                           normalize=True))
         assert(self.predicted_scores is not None)
 
         if not utils.is_valid_or_none(num_users, int):
@@ -121,7 +122,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         # system state
         SystemStateModule.__init__(self)
-        self.add_state_variable(self.actual_users, self.item_attributes)
+        self.add_state_variable(self.actual_users, self.item_attributes,
+                                self.predicted_scores)
 
         self.actual_users.compute_user_scores(self.train)
 
