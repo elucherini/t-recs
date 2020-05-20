@@ -34,3 +34,23 @@ def assert_equal_measurements(meas1, meas2):
     for key, val in meas2.items():
         assert(key in meas1)
         assert_equal_arrays(val, meas1[key])
+
+def assert_equal_system_state(systate1, systate2):
+    for key, val in systate1.items():
+        assert(key in systate2)
+        if isinstance(val, list):
+            for i, item in enumerate(val):
+                assert_equal_arrays(item, systate2[key][i])
+        if val is None:
+            assert(val == systate2[key] == None)
+        if isinstance(val, np.ndarray):
+            assert_equal_arrays(val, systate2[key])
+    for key, val in systate2.items():
+        assert(key in systate1)
+        if isinstance(val, list):
+            for i, item in enumerate(val):
+                assert_equal_arrays(item, systate1[key][i])
+        if val is None:
+            assert(val == systate1[key] == None)
+        if isinstance(val, np.ndarray):
+            assert_equal_arrays(val, systate1[key])

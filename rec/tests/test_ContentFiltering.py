@@ -21,7 +21,7 @@ class TestContentFiltering:
 
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
-'''
+
     def test_arguments(self, items=None, attr=None, users=None):
         if items is None:
             items = np.random.randint(1,1000)
@@ -42,8 +42,6 @@ class TestContentFiltering:
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
 
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
 
@@ -69,11 +67,7 @@ class TestContentFiltering:
         c1 = ContentFiltering(num_users=users)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
-        with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
 
         c = ContentFiltering(num_items=items)
         test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
@@ -88,11 +82,7 @@ class TestContentFiltering:
         c1 = ContentFiltering(num_items=items)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
-        with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
 
         c = ContentFiltering(num_attributes=attr)
         test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
@@ -106,8 +96,6 @@ class TestContentFiltering:
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_attributes=attr)
 
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
 
@@ -124,11 +112,7 @@ class TestContentFiltering:
         c1 = ContentFiltering(num_users=users, num_items=items)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
-        with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
 
         c = ContentFiltering(num_users=users, num_attributes=attr)
         test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
@@ -142,8 +126,6 @@ class TestContentFiltering:
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_users=users, num_attributes=attr)
 
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
 
@@ -159,8 +141,6 @@ class TestContentFiltering:
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_attributes=attr, num_items=items)
 
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
 
@@ -185,16 +165,6 @@ class TestContentFiltering:
         test_utils.assert_equal_arrays(item_repr, c.item_attributes)
         test_utils.assert_not_none(c.predicted_scores)
 
-        # did not set seed, show random behavior
-        c1 = ContentFiltering(item_representation=item_repr)
-
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
-
 
         c = ContentFiltering(user_representation=user_repr)
         test_utils.assert_correct_num_users(user_repr.shape[0], c,
@@ -211,12 +181,12 @@ class TestContentFiltering:
         # did not set seed, show random behavior
         c1 = ContentFiltering(user_representation=user_repr)
 
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
+        #with pytest.raises(AssertionError):
+        #    test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
-        with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
+        #with pytest.raises(AssertionError):
+        #    test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
 
 
         c = ContentFiltering(user_representation=user_repr,
@@ -296,6 +266,9 @@ class TestContentFiltering:
         meas1 = s1.get_measurements()
         meas2 = s2.get_measurements()
         test_utils.assert_equal_measurements(meas1, meas2)
+        systate1 = s1.get_system_state()
+        systate2 = s2.get_system_state()
+        test_utils.assert_equal_system_state(systate1, systate2)
 
         if items is None:
             items = np.random.randint(1,1000)
@@ -311,4 +284,7 @@ class TestContentFiltering:
         meas1 = s1.get_measurements()
         meas2 = s2.get_measurements()
         test_utils.assert_equal_measurements(meas1, meas2)
-'''
+        systate1 = s1.get_system_state()
+        systate2 = s2.get_system_state()
+        test_utils.assert_equal_system_state(systate1, systate2)
+

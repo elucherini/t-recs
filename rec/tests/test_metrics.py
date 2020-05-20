@@ -6,7 +6,6 @@ import pytest
 
 class TestMeasurementModule:
     """Test basic functionalities of MeasurementModule"""
-    '''
     def test_measurement_module(self):
         # Create model, e.g., SocialFiltering
         s = SocialFiltering()
@@ -22,7 +21,6 @@ class TestMeasurementModule:
         with pytest.raises(ValueError):
             s.add_measurements()
         assert(len(old_metrics) + 1 == len(s.measurements))
-    '''
 
 class TestMSEMeasurement:
     """Test base class Measurement"""
