@@ -77,7 +77,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         self.state_history.append(init_value)
 
     def get_component_state(self):
-        return get_observable(data=self.state_history)
+        return self.get_observable(data=self.state_history)
 
     @abstractmethod
     def store_state(self):

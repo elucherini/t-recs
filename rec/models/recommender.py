@@ -381,16 +381,16 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
             Returns: Dictionary of system state.
         """
-        if len(self.measurements) < 1:
+        if len(self._system_state) < 1:
             raise ValueError("No measurement module defined")
-        measurements = dict()
-        for metric in self.measurements:
-            measurements = {**measurements, **metric.get_measurement()}
-        if 'Timesteps' not in measurements:
+        state = dict()
+        for component in self._system_state:
+            state = {**state, **component.get_component_state()}
+        if 'Timesteps' not in state:
             # pick first measurement's length for # of timesteps since they're going to be the same
-            elapsed = np.arange(self.measurements[0].get_timesteps())
-            measurements['Timesteps'] = elapsed
-        return measurements
+            elapsed = np.arange(self._system_state[0].get_timesteps())
+            state['Timesteps'] = elapsed
+        return state
 
 
 
