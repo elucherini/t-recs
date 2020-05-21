@@ -7,6 +7,7 @@ from .base_components import Component, FromNdArray, BaseComponent
 
 class PredictedScores(Component):
     def __init__(self, predicted_scores=None, verbose=False):
+        self.name = 'Predicted scores'
         Component.__init__(self, current_state=predicted_scores, size=None,
                            verbose=verbose, seed=None)
 
@@ -15,11 +16,13 @@ class PredictedUserProfiles(Component):
     """User profiles as predicted by the system
     """
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
+        self.name = 'Predicted user profiles'
         Component.__init__(self, current_state=user_profiles, size=size,
                            verbose=verbose, seed=seed)
 
 class ActualUserProfiles(Component):
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
+        self.name = 'Actual user profiles'
         Component.__init__(self, current_state=user_profiles, size=size,
                            verbose=verbose, seed=seed)
 
@@ -92,7 +95,7 @@ class Users(BaseComponent):
         self.actual_user_scores = None
         if num_users is not None:
             self._user_vector = np.arange(num_users, dtype=int)
-        self.name = 'Actual Users'
+        self.name = 'Actual user scores'
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 
 

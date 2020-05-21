@@ -12,10 +12,10 @@ class MeasurementModule(BaseObserver):
     """Mixin for observers of "Measurement" observables
     """
     def __init__(self):
-        self.measurements = list()
+        self.metrics = list()
 
-    def add_measurements(self, *args):
-        self.register_observables(observer=self.measurements, observables=list(args),
+    def add_metrics(self, *args):
+        self.register_observables(observer=self.metrics, observables=list(args),
                                   observable_type=Measurement)
 
 class SystemStateModule(BaseObserver):
@@ -90,7 +90,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # measurements
         MeasurementModule.__init__(self)
         if measurements is not None:
-            self.add_measurements(*measurements)
+            self.add_metrics(*measurements)
         # init users and items
         self.user_profiles = PredictedUserProfiles(user_representation)
         self.item_attributes = Items(item_representation)
@@ -108,7 +108,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_items_per_iter must be an int")
         if not utils.is_valid_or_none(num_new_items, int):
             raise TypeError("num_new_items must be an int")
-        if not hasattr(self, 'measurements'):
+        if not hasattr(self, 'metrics'):
             raise ValueError("You must define at least one measurement module")
 
         if not utils.is_valid_or_none(actual_user_representation, (list, np.ndarray,
@@ -284,7 +284,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
 
     def run(self, timesteps=50, startup=False, train_between_steps=True,
-            repeated_items=False):
+            repeated_items=True):
         """ Runs simulation for the given timesteps.
 
             Args:
@@ -364,14 +364,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
             Returns: Dictionary of all available measurements.
         """
-        if len(self.measurements) < 1:
+        if len(self.metrics) < 1:
             raise ValueError("No measurement module defined")
         measurements = dict()
-        for metric in self.measurements:
+        for metric in self.metrics:
             measurements = {**measurements, **metric.get_measurement()}
         if 'Timesteps' not in measurements:
             # pick first measurement's length for # of timesteps since they're going to be the same
-            elapsed = np.arange(self.measurements[0].get_timesteps())
+            elapsed = np.arange(self.metrics[0].get_timesteps())
             measurements['Timesteps'] = elapsed
         return measurements
 
@@ -404,7 +404,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                     per users at a given time step.
                 step (int): step on which the recorded interactions refers to.
         """
-        for metric in self.measurements:
+        for metric in self.metrics:
             metric.measure(step, interactions, self)
         for component in self._system_state:
             component.store_state()

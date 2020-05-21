@@ -184,6 +184,8 @@ class TestContentFiltering:
         #with pytest.raises(AssertionError):
         #    test_utils.assert_equal_arrays(c.user_profiles, c1.user_profiles)
         with pytest.raises(AssertionError):
+            # FIXME this fails from time to time because
+            # it might happen that these two are in fact equal
             test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
         #with pytest.raises(AssertionError):
         #    test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)

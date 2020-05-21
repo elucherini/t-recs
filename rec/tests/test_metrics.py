@@ -10,17 +10,17 @@ class TestMeasurementModule:
         # Create model, e.g., SocialFiltering
         s = SocialFiltering()
         # Add HomogeneityMeasurement
-        old_metrics = s.measurements.copy()
-        s.add_measurements(HomogeneityMeasurement())
-        assert(len(old_metrics) + 1 == len(s.measurements))
+        old_metrics = s.metrics.copy()
+        s.add_metrics(HomogeneityMeasurement())
+        assert(len(old_metrics) + 1 == len(s.metrics))
 
         with pytest.raises(ValueError):
-            s.add_measurements("wrong type")
+            s.add_metrics("wrong type")
         with pytest.raises(ValueError):
-            s.add_measurements(MSEMeasurement(), print)
+            s.add_metrics(MSEMeasurement(), print)
         with pytest.raises(ValueError):
-            s.add_measurements()
-        assert(len(old_metrics) + 1 == len(s.measurements))
+            s.add_metrics()
+        assert(len(old_metrics) + 1 == len(s.metrics))
 
 class TestMSEMeasurement:
     """Test base class Measurement"""
@@ -29,7 +29,7 @@ class TestMSEMeasurement:
         # We do this through ContentFiltering
         c = ContentFiltering()
         c.add_measurements(MSEMeasurement())
-        assert(len(c.measurements) > 0)
+        assert(len(c.metrics) > 0)
 
         # Run for some time
         if timesteps is None:

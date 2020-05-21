@@ -150,7 +150,7 @@ class ContentFiltering(BaseRecommender):
                              "num_items")
 
         self.num_attributes = num_attributes
-        measurements = [MSEMeasurement(), HomogeneityMeasurement()]
+        measurements = [MSEMeasurement()]#, HomogeneityMeasurement()]
 
         # Initialize recommender system
         BaseRecommender.__init__(self, user_representation, item_representation,

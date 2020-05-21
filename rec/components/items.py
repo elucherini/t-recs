@@ -5,6 +5,7 @@ import numpy as np
 
 class Items(Component):
     def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
+        self.name = 'Items'
         Component.__init__(self, current_state=item_attributes, size=size,
                            verbose=verbose, seed=seed)
 
