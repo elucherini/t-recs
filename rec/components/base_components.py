@@ -36,10 +36,21 @@ class BaseObserver(ABC):
         if not inspect.isclass(observable_type):
             raise TypeError("Argument `observable_type` must be a class")
 
-        self._add_observable(observer=observer, observables=observables,
+        self._add_observables(observer=observer, observables=observables,
                             observable_type=observable_type)
 
-    def _add_observable(self, observer, observables, observable_type):
+    def unregister_observables(self, **kwargs):
+        observables = kwargs.pop("observables", None)
+
+        observer = kwargs.pop("observer", None)
+        if observer is None:
+            raise ValueError("Argument `observer` cannot be None")
+        elif not isinstance(observer, list):
+            raise TypeError("Argument `observer` must be a list")
+
+        self._remove_observables(observer=observer, observables=observables)
+
+    def _add_observables(self, observer, observables, observable_type):
         if len(observables) < 1:
             raise ValueError("Can't add fewer than one observable!")
         new_observables = list()
@@ -49,6 +60,17 @@ class BaseObserver(ABC):
             else:
                 raise ValueError("Observables must be of type %s" % observable_type)
         observer.extend(new_observables)
+
+    def _remove_observables(self, observer, observables_to_remove):
+        if len(observables) < 1:
+            raise ValueError("Can't remove fewer than one observable!")
+        observables_copy = observer.copy()
+        for observable in observables_to_remove:
+            if observable in observables_copy:
+                observables_copy.remove(observable)
+            else:
+                raise ValueError("Cannot find %s!" % observable)
+        observer = observables_copy
 
 
 class BaseObservable(ABC):
