@@ -11,24 +11,6 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             init_value = np.copy(init_value)
         self.measurement_history.append(init_value)
 
-    def _generate_interaction_histogram(self, interactions, num_users, num_items):
-        ''' Internal function that returns a histogram of the number
-            of interactions per item at the given timestep.
-
-            Args:
-                interactions (:obj:`numpy.array`): array of user interactions.
-                num_users (int): number of users in the system
-                num_items (int): number of items in the system
-
-            Returns: :obj:`numpy.array` histogram of the number of interactions
-                aggregated by items at the given timestep.
-        '''
-        histogram = np.zeros(num_items)
-        np.add.at(histogram, interactions, 1)
-        # Check that there's one interaction per user
-        assert(histogram.sum() == num_users)
-        return histogram
-
     def get_measurement(self):
         return self.get_observable(data=self.measurement_history)
 
@@ -47,10 +29,28 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         return len(self.measurement_history)
 
 
-class InteractionHistogram(Measurement):
+class InteractionMeasurement(Measurement):
     def __init__(self, verbose=False):
         self.name = 'interaction_histogram'
         Measurement.__init__(self, verbose, init_value=None)
+
+    def _generate_interaction_histogram(self, interactions, num_users, num_items):
+        ''' Internal function that returns a histogram of the number
+            of interactions per item at the given timestep.
+
+            Args:
+                interactions (:obj:`numpy.array`): array of user interactions.
+                num_users (int): number of users in the system
+                num_items (int): number of items in the system
+
+            Returns: :obj:`numpy.array` histogram of the number of interactions
+                aggregated by items at the given timestep.
+        '''
+        histogram = np.zeros(num_items)
+        np.add.at(histogram, interactions, 1)
+        # Check that there's one interaction per user
+        assert(histogram.sum() == num_users)
+        return histogram
 
     def measure(self, step, interactions, recommender):
         histogram = self._generate_interaction_histogram(interactions,
@@ -60,7 +60,7 @@ class InteractionHistogram(Measurement):
         self.observe(histogram, copy=True)
 
 
-class HomogeneityMeasurement(Measurement):
+class HomogeneityMeasurement(InteractionMeasurement):
     def __init__(self, verbose=False):
         self.histogram = None
         self._old_histogram = None

@@ -1,1 +1,1 @@
-from .measurement import Measurement, HomogeneityMeasurement, MSEMeasurement, DiffusionTreeMeasurement, StructuralVirality
+from .measurement import Measurement, HomogeneityMeasurement, MSEMeasurement, DiffusionTreeMeasurement, StructuralVirality, InteractionMeasurement
