@@ -84,7 +84,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def __init__(self, user_representation, item_representation,
                  actual_user_representation, num_users, num_items,
                  num_items_per_iter, num_new_items, measurements=None,
-                 verbose=False, seed=None):
+                 system_state=None, verbose=False, seed=None):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
         # measurements
@@ -127,6 +127,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         SystemStateModule.__init__(self)
         self.add_state_variable(self.user_profiles, self.actual_users,
                                 self.item_attributes, self.predicted_scores)
+        if system_state is not None:
+            self.add_state_variable(*system_state)
 
         self.actual_users.compute_user_scores(self.train)
 

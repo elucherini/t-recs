@@ -1,30 +1,17 @@
 from rec.models import BaseRecommender
 from rec.components import BinarySocialGraph
-from rec.components import BaseComponent, FromNdArray
+from rec.components import Component
 from rec.random import Generator, SocialGraphGenerator
 from rec.metrics import StructuralVirality
 from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 import numpy as np
 
-'''
-class InfectionState(FromNdArray, BaseComponent):
-    """User profiles as predicted by the system
-    """
-    def __init__(self, infection_state=None, size=None, verbose=False, seed=None):
-        # general input checks
-        if infection_state is not None:
-            if not isinstance(infection_state, (list, np.ndarray)):
-                raise TypeError("infection_state must be a list or numpy.ndarray")
-        if infection_state is None and size is None:
-            raise ValueError("infection_state and size can't both be None")
-        if infection_state is None and not isinstance(size, tuple):
-            raise TypeError("size must be a tuple, is %s" % type(size))
-        # Initialize component state
-        BaseComponent.__init__(self, verbose=verbose, init_value=self.user_profiles)
 
-    def store_state(self):
-        self.component_data.append(np.copy(self.user_profiles))
-'''
+class InfectionState(Component):
+    def __init__(self, infection_state=None, verbose=False):
+        self.name = 'infection_state'
+        Component.__init__(self, current_state=infection_state, size=None,
+                           verbose=verbose, seed=None)
 
 class BassModel(BaseRecommender, BinarySocialGraph):
     """Bass model that, for now, only supports one item at a time
@@ -99,16 +86,18 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if not infection_threshold or infection_threshold >= 1:
             infection_threshold = generator.uniform()
 
-        self.infection_state = infection_state
+        self.infection_state = InfectionState(infection_state)
         self.infection_threshold = abs(infection_threshold)
         measurements = [StructuralVirality(np.copy(infection_state))]
+        system_state = [self.infection_state]
         # Initialize recommender system
         # NOTE: Forcing to 1 item per iteration
         num_items_per_iter = 1
         BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
                              num_items_per_iter, num_new_items,
-                             measurements=measurements, verbose=verbose, seed=seed)
+                             measurements=measurements, system_state=system_state,
+                             verbose=verbose, seed=seed)
 
     def _update_user_profiles(self, interactions):
         """ Private function that updates user profiles with data from
