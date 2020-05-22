@@ -167,4 +167,4 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         interactions_per_user = np.zeros((self.num_users, self.num_items))
         interactions_per_user[self.actual_users._user_vector, interactions] = 1
         assert(interactions_per_user.shape == self.item_attributes.shape)
-        self.item_attributes = np.add(self.item_attributes, interactions_per_user)
+        self.item_attributes[:,:] = np.add(self.item_attributes, interactions_per_user)

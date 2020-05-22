@@ -7,6 +7,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
+        if isinstance(init_value, np.ndarray):
+            init_value = np.copy(init_value)
         self.measurement_history.append(init_value)
 
     def _generate_interaction_histogram(self, interactions, num_users, num_items):
@@ -47,7 +49,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
 class InteractionHistogram(Measurement):
     def __init__(self, verbose=False):
-        self.name = 'interaction histogram'
+        self.name = 'interaction_histogram'
         Measurement.__init__(self, verbose, init_value=None)
 
     def measure(self, step, interactions, recommender):
@@ -96,7 +98,7 @@ class HomogeneityMeasurement(Measurement):
 
 class MSEMeasurement(Measurement):
     def __init__(self, verbose=False):
-        self.name = 'MSE'
+        self.name = 'mse'
         Measurement.__init__(self, verbose, init_value=None)
 
     def measure(self, step, interactions, recommender):
@@ -117,7 +119,7 @@ class MSEMeasurement(Measurement):
 class DiffusionTreeMeasurement(Measurement):
     def __init__(self, infection_state, verbose=False):
         import networkx as nx
-        self.name = '# Infected'
+        self.name = 'num_infected'
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, np.copy(infection_state))

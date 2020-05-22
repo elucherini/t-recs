@@ -7,7 +7,7 @@ from .base_components import Component, FromNdArray, BaseComponent
 
 class PredictedScores(Component):
     def __init__(self, predicted_scores=None, verbose=False):
-        self.name = 'Predicted scores'
+        self.name = 'predicted_user_scores'
         Component.__init__(self, current_state=predicted_scores, size=None,
                            verbose=verbose, seed=None)
 
@@ -16,13 +16,13 @@ class PredictedUserProfiles(Component):
     """User profiles as predicted by the system
     """
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
-        self.name = 'Predicted user profiles'
+        self.name = 'predicted_user_profiles'
         Component.__init__(self, current_state=user_profiles, size=size,
                            verbose=verbose, seed=seed)
 
 class ActualUserProfiles(Component):
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
-        self.name = 'Actual user profiles'
+        self.name = 'actual_user_profiles'
         Component.__init__(self, current_state=user_profiles, size=size,
                            verbose=verbose, seed=seed)
 
@@ -95,7 +95,7 @@ class Users(BaseComponent):
         self.actual_user_scores = None
         if num_users is not None:
             self._user_vector = np.arange(num_users, dtype=int)
-        self.name = 'Actual user scores'
+        self.name = 'actual_user_scores'
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 
 
@@ -103,8 +103,13 @@ class Users(BaseComponent):
         # TODO: this must be called by expand_items
         if not callable(train_function):
             raise TypeError("train_function must be callable")
-        self.actual_user_scores = train_function(user_profiles=self.actual_user_profiles,
-                                                 *args, **kwargs)
+        actual_scores = train_function(user_profiles=self.actual_user_profiles,
+                                       *args, **kwargs)
+        if self.actual_user_scores is None:
+            self.actual_user_scores = actual_scores
+        else:
+            self.actual_user_scores[:,:] = actual_scores
+
         self.store_state()
 
     def get_actual_user_scores(self, user=None):

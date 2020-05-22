@@ -147,11 +147,11 @@ class TestContentFiltering:
 
     def test_representations(self, item_repr=None, user_repr=None, bad_user_repr=None):
         if item_repr is None:
-            items = np.random.randint(1000)
-            attr = np.random.randint(10)
+            items = np.random.randint(5,1000)
+            attr = np.random.randint(5,100)
             item_repr = np.random.random(size=(attr,items))
         if user_repr is None or user_repr.shape[1] != item_repr.shape[0]:
-            users = np.random.randint(100)
+            users = np.random.randint(5,100)
             user_repr = np.random.randint(10, size=(users, item_repr.shape[0]))
 
         c = ContentFiltering(item_representation=item_repr)

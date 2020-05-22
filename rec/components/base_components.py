@@ -66,6 +66,7 @@ class BaseObservable(ABC):
         else:
             return None
 
+    @abstractmethod
     def observe(self, *args, **kwargs):
         pass
 
@@ -74,14 +75,19 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
+        if isinstance(init_value, np.ndarray):
+            init_value = np.copy(init_value)
         self.state_history.append(init_value)
 
     def get_component_state(self):
         return self.get_observable(data=self.state_history)
 
-    @abstractmethod
-    def store_state(self):
-        pass
+    def observe(self, state, copy=True):
+        if copy:
+            to_append = np.copy(state)
+        else:
+            to_append = state
+        self.state_history.append(to_append)
 
     def get_timesteps(self):
         return len(self.state_history)
@@ -104,4 +110,36 @@ class Component(FromNdArray, BaseComponent):
         BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
 
     def store_state(self):
-        self.state_history.append(np.copy(self.current_state))
+        self.observe(self, copy=True)
+
+if __name__ == "__main__":
+    from rec.models.recommender import SystemStateModule
+    from rec.components import PredictedUserProfiles
+    import numpy as np
+
+    class Test(SystemStateModule):
+        def __init__(self, user_profiles):
+            self.user_profiles = PredictedUserProfiles(user_profiles)
+            SystemStateModule.__init__(self)
+            self.add_state_variable(self.user_profiles)
+
+        def run(self, to_add=1):
+            self.user_profiles += 1
+            print("Adding %d to user profiles. Result:\n%s\n\n" % (to_add,
+                                                                   self.user_profiles))
+            self.measure_content()
+
+        def measure_content(self):
+            for component in self._system_state:
+                component.store_state(np.asarray(component))
+
+
+    profiles = np.zeros((5,5))
+    test = Test(profiles)
+    test.run()
+    test.run()
+    print("State history:")
+    print(test.user_profiles.state_history)
+    print("Final user profiles")
+    print(test.user_profiles)
+    print(test.user_profiles.name)

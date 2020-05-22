@@ -125,8 +125,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         # system state
         SystemStateModule.__init__(self)
-        self.add_state_variable(self.actual_users, self.item_attributes,
-                                self.predicted_scores)
+        self.add_state_variable(self.user_profiles, self.actual_users,
+                                self.item_attributes, self.predicted_scores)
 
         self.actual_users.compute_user_scores(self.train)
 
@@ -311,17 +311,18 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.indices[self.actual_users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
             self.log("System updates user profiles based on last interaction:\n" + \
-                str(self.user_profiles.astype(int)))
-            self.measure_content(interactions, step=t)
+                str(self.user_profiles))
             #self.get_user_feedback()
             # train between steps:
             if train_between_steps:
-                self.predicted_scores = self.train(self.user_profiles,
+                self.predicted_scores[:,:] = self.train(self.user_profiles,
                                                    self.item_attributes)
+            self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.predicted_scores = self.train(self.user_profiles,
+            self.predicted_scores[:,:] = self.train(self.user_profiles,
                                                self.item_attributes)
+            self.measure_content(interactions, step=t)
 
 
     def startup_and_train(self, timesteps=50):
@@ -369,10 +370,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         measurements = dict()
         for metric in self.metrics:
             measurements = {**measurements, **metric.get_measurement()}
-        if 'Timesteps' not in measurements:
+        if 'timesteps' not in measurements:
             # pick first measurement's length for # of timesteps since they're going to be the same
             elapsed = np.arange(self.metrics[0].get_timesteps())
-            measurements['Timesteps'] = elapsed
+            measurements['timesteps'] = elapsed
         return measurements
 
     def get_system_state(self):
@@ -386,10 +387,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         state = dict()
         for component in self._system_state:
             state = {**state, **component.get_component_state()}
-        if 'Timesteps' not in state:
+        if 'timesteps' not in state:
             # pick first measurement's length for # of timesteps since they're going to be the same
             elapsed = np.arange(self._system_state[0].get_timesteps())
-            state['Timesteps'] = elapsed
+            state['timesteps'] = elapsed
+        # FIXME: this is needed because Users.actual_user_scores is initialized to None
+        if ('actual_user_scores' in state and 'timesteps' in state
+            and len(state['actual_user_scores']) > len(state['timesteps'])):
+            state['actual_user_scores'].pop(0)
         return state
 
 
