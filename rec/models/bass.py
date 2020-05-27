@@ -13,6 +13,13 @@ class InfectionState(Component):
         Component.__init__(self, current_state=infection_state, size=None,
                            verbose=verbose, seed=None)
 
+class InfectionThresholds(Component):
+    def __init__(self, infection_thresholds=None, verbose=False):
+        self.name = 'infection_thresholds'
+        Component.__init__(self, current_state=infection_thresholds, size=None,
+                           verbose=verbose, seed=None)
+
+
 class BassModel(BaseRecommender, BinarySocialGraph):
     """Bass model that, for now, only supports one item at a time
     """
@@ -90,7 +97,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             infection_thresholds = abs(generator.uniform(size=(1, num_users)))
 
         self.infection_state = InfectionState(infection_state)
-        self.infection_thresholds = infection_thresholds
+        self.infection_thresholds = InfectionThresholds(infection_thresholds)
         measurements = [StructuralVirality(np.copy(infection_state))]
         system_state = [self.infection_state]
         # Initialize recommender system
