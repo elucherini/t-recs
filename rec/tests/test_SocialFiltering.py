@@ -65,9 +65,9 @@ class TestSocialFiltering:
     def test_representations(self, item_repr=None,
                              user_repr=None):
         if item_repr is None:
-            items = np.random.randint(1, 1000)
+            items = np.random.randint(20, 1000)
             users = (user_repr.shape[0] if user_repr is not None
-                     else np.random.randint(1, 100))
+                     else np.random.randint(20, 100))
             item_repr = np.random.random(size=(users,items))
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
             users = item_repr.shape[0]
