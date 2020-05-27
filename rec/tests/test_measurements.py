@@ -1,7 +1,7 @@
 import test_utils
 import numpy as np
 from rec.models import SocialFiltering, ContentFiltering
-from rec.metrics import Measurement, HomogeneityMeasurement, MSEMeasurement, DiffusionTreeMeasurement, StructuralVirality
+from rec.metrics import Measurement, HomogeneityMeasurement, MSEMeasurement, DiffusionTreeMeasurement, StructuralVirality, InteractionMeasurement
 import pytest
 
 class MeasurementUtils:
