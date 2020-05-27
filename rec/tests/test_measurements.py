@@ -1,6 +1,6 @@
 import test_utils
 import numpy as np
-from rec.models import SocialFiltering, ContentFiltering
+from rec.models import SocialFiltering, ContentFiltering, BassModel
 from rec.metrics import Measurement, HomogeneityMeasurement, MSEMeasurement, DiffusionTreeMeasurement, StructuralVirality, InteractionMeasurement
 import pytest
 
@@ -149,6 +149,7 @@ class TestDiffusionTreeMeasurement():
     def test_generic(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
-        MeasurementUtils.test_generic_metric(SocialFiltering(),
-                                             DiffusionTreeMeasurement(),
+        b = BassModel()
+        MeasurementUtils.test_generic_metric(b,
+                                             DiffusionTreeMeasurement(b.infection_state),
                                              timesteps)
