@@ -144,3 +144,11 @@ class TestInteractionMeasurement():
         MeasurementUtils.test_generic_metric(ContentFiltering(),
                                              InteractionMeasurement(),
                                              timesteps)
+
+class TestDiffusionTreeMeasurement():
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        MeasurementUtils.test_generic_metric(SocialFiltering(),
+                                             DiffusionTreeMeasurement(),
+                                             timesteps)
