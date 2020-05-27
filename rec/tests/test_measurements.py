@@ -91,6 +91,7 @@ class TestMeasurementModule:
             measurements = s.get_measurements()
             MeasurementUtils.assert_valid_length(measurements, t)
 
+
 class TestHomogeneityMeasurement():
     def test_generic(self, timesteps=None):
         if timesteps is None:
@@ -101,6 +102,7 @@ class TestHomogeneityMeasurement():
         MeasurementUtils.test_generic_metric(ContentFiltering(),
                                              HomogeneityMeasurement(),
                                              timesteps)
+
 
 class TestMSEMeasurement():
     def test_generic(self, timesteps=None):
@@ -134,6 +136,7 @@ class TestMSEMeasurement():
         #assert(all(x>=y for x, y in zip(meas['MSE'][1:], meas['MSE'][2:])))
     '''
 
+
 class TestInteractionMeasurement():
     def test_generic(self, timesteps=None):
         if timesteps is None:
@@ -145,6 +148,7 @@ class TestInteractionMeasurement():
                                              InteractionMeasurement(),
                                              timesteps)
 
+
 class TestDiffusionTreeMeasurement():
     def test_generic(self, timesteps=None):
         if timesteps is None:
@@ -152,4 +156,14 @@ class TestDiffusionTreeMeasurement():
         b = BassModel()
         MeasurementUtils.test_generic_metric(b,
                                              DiffusionTreeMeasurement(b.infection_state),
+                                             timesteps)
+
+
+class TestStructuralVirality():
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        b = BassModel()
+        MeasurementUtils.test_generic_metric(b,
+                                             StructuralVirality(b.infection_state),
                                              timesteps)
