@@ -133,3 +133,14 @@ class TestMSEMeasurement():
         print(meas['MSE'])
         #assert(all(x>=y for x, y in zip(meas['MSE'][1:], meas['MSE'][2:])))
     '''
+
+class TestInteractionMeasurement():
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        MeasurementUtils.test_generic_metric(SocialFiltering(),
+                                             InteractionMeasurement(),
+                                             timesteps)
+        MeasurementUtils.test_generic_metric(ContentFiltering(),
+                                             InteractionMeasurement(),
+                                             timesteps)
