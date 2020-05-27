@@ -114,27 +114,6 @@ class TestMSEMeasurement():
         MeasurementUtils.test_generic_metric(ContentFiltering(),
                                              MSEMeasurement(),
                                              timesteps)
-    """Test base class Measurement"""
-    '''
-    def test_generic(self, timesteps=None):
-        # We do this through ContentFiltering
-        c = ContentFiltering()
-        c.add_measurements(MSEMeasurement())
-        assert(len(c.metrics) > 0)
-
-        # Run for some time
-        if timesteps is None:
-            timesteps = np.random.randint(100)
-        c.run(timesteps=timesteps)
-        meas = c.get_measurements()
-        assert(meas is not None)
-        assert(len(meas['MSE']) == timesteps + 1)
-        # First element equal to NaN:
-        assert(meas['MSE'][0] is None)
-        # Non-increasing starting from second element
-        print(meas['MSE'])
-        #assert(all(x>=y for x, y in zip(meas['MSE'][1:], meas['MSE'][2:])))
-    '''
 
 
 class TestInteractionMeasurement():
@@ -147,6 +126,22 @@ class TestInteractionMeasurement():
         MeasurementUtils.test_generic_metric(ContentFiltering(),
                                              InteractionMeasurement(),
                                              timesteps)
+
+    def test_interactions(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+
+        s = SocialFiltering()
+        s.add_metrics(InteractionMeasurement())
+
+        for t in range(1, timesteps + 1):
+            s.run(timesteps=1)
+            measurements = s.get_measurements()
+            histogram = measurements[InteractionMeasurement().name]
+            if t > 1:
+                # Check that there's one interaction per user
+                assert(np.array_equal(histogram[-1], histogram[t]))
+                assert(histogram[-1].sum() == s.num_users)
 
 
 class TestDiffusionTreeMeasurement():
