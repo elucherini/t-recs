@@ -17,7 +17,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     """Bass model that, for now, only supports one item at a time
     """
     def __init__(self, num_users=100, num_items=1, infection_state=None,
-        item_representation=None, user_representation=None, infection_threshold=None,
+        item_representation=None, user_representation=None, infection_thresholds=None,
         actual_user_scores=None, verbose=False, num_items_per_iter=1, num_new_items=30,
         seed=None):
         # these are not allowed to be None at the same time
@@ -31,6 +31,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             raise TypeError("infection_state is invalid")
         if not is_array_valid_or_none(item_representation, ndim=2):
             raise ValueError("item_representation is invalid")
+        if not is_array_valid_or_none(infection_thresholds, ndim=2):
+            raise ValueError("infection_thresholds is invalid")
 
         # Determine num_users, give priority to user_representation
         # At the end of this, user_representation and num_users should not be None
@@ -53,7 +55,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                                              num_items)
         generator = Generator(seed)
         if item_representation is None:
-            item_representation = Generator(seed).uniform(size=(1,num_items))
+            item_representation = generator.uniform(size=(1,num_items))
         if user_representation is None:
             import networkx as nx
             user_representation = SocialGraphGenerator.generate_random_graph(n=num_users,
@@ -82,12 +84,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             raise ValueError("item_representation and infection_state should be of " + \
                              "same size on dimension 1")
 
+
         # TODO support separate threshold for each user
-        if not infection_threshold or infection_threshold >= 1:
-            infection_threshold = generator.uniform()
+        if infection_thresholds is None:
+            infection_thresholds = abs(generator.uniform(size=(1, num_users)))
 
         self.infection_state = InfectionState(infection_state)
-        self.infection_threshold = abs(infection_threshold)
+        self.infection_thresholds = infection_thresholds
         measurements = [StructuralVirality(np.copy(infection_state))]
         system_state = [self.infection_state]
         # Initialize recommender system
@@ -115,9 +118,12 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """
         infection_probabilities = self.predicted_scores[self.actual_users._user_vector,
                                                         interactions]
-        newly_infected = np.where(infection_probabilities > self.infection_threshold)
+        newly_infected = np.where(infection_probabilities > self.infection_thresholds)
+        print(newly_infected)
+        print(infection_probabilities.shape)
+        print(self.infection_state.shape)
         if newly_infected[0].shape[0] > 0:
-            self.infection_state[newly_infected, interactions[newly_infected]] = 1
+            self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
 
     def train(self, user_profiles=None, item_attributes=None, normalize=False):
