@@ -18,9 +18,9 @@ class TestSocialFiltering:
 
     def test_arguments(self, items=10, users=5):
         if items is None:
-            items = np.random.randint(1, 1000)
+            items = np.random.randint(10, 1000)
         if users is None:
-            users = np.random.randint(1, 100)
+            users = np.random.randint(10, 100)
         s = SocialFiltering(num_users=users, num_items=items)
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[1])
@@ -34,9 +34,9 @@ class TestSocialFiltering:
 
     def test_partial_arguments(self, items=10, users=5):
         if items is None:
-            items = np.random.randint(1, 1000)
+            items = np.random.randint(10, 1000)
         if users is None:
-            users = np.random.randint(1, 100)
+            users = np.random.randint(10, 100)
         # init with partially given arguments
         s = SocialFiltering(num_users=users)
         test_utils.assert_correct_num_users(users, s, s.user_profiles.shape[0])
@@ -118,7 +118,7 @@ class TestSocialFiltering:
     def test_wrong_representations(self, bad_user_repr=None):
         if bad_user_repr is None or bad_user_repr.shape[0] == bad_user_repr.shape[1]:
             # bad_user_repr should not be a square matrix
-            users = np.random.randint(1, 100)
+            users = np.random.randint(10, 100)
             bad_user_repr = np.random.randint(2, size=(users + 2, users))
         # this should throw an exception
         with pytest.raises(ValueError):
@@ -148,7 +148,7 @@ class TestSocialFiltering:
 
     def test_social_graph(self, user_repr=None, user1=None, user2=None):
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
-            users = np.random.randint(2, 100)
+            users = np.random.randint(20, 100)
             user_repr = np.zeros((users, users))
         s = SocialFiltering(user_representation=user_repr)
         if user1 is None:
