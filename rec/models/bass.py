@@ -119,9 +119,6 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         infection_probabilities = self.predicted_scores[self.actual_users._user_vector,
                                                         interactions]
         newly_infected = np.where(infection_probabilities > self.infection_thresholds)
-        print(newly_infected)
-        print(infection_probabilities.shape)
-        print(self.infection_state.shape)
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
@@ -168,12 +165,12 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
 
     def draw_diffusion_tree(self):
-        for metric in self.measurements:
+        for metric in self.metrics:
             if hasattr(metric, 'draw_tree'):
                 metric.draw_tree()
 
     def get_structural_virality(self):
-        for metric in self.measurements:
+        for metric in self.metrics:
             if hasattr(metric, 'get_structural_virality'):
                 return metric.get_structural_virality()
         raise ValueError("Structural virality metric undefined")
