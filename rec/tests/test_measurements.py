@@ -20,6 +20,18 @@ class MeasurementUtils:
             else:
                 assert(value not in s._system_state)
 
+    @classmethod
+    def test_generic_metric(self, model, metric, timesteps):
+        if metric not in model.metrics:
+            model.add_metrics(metric)
+        assert(metric in model.metrics)
+
+        for t in range(1, timesteps + 1):
+            model.run(timesteps=1)
+            measurements = model.get_measurements()
+            self.assert_valid_length(measurements, t)
+
+
 class TestMeasurementModule:
     """Test basic functionalities of MeasurementModule"""
     def test_measurement_module(self):
@@ -50,12 +62,12 @@ class TestMeasurementModule:
         with pytest.raises(ValueError):
             s.add_state_variable()
 
-    def test_run_and_measure(self, timesteps=None):
+    def test_default_measurements(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
 
         s = SocialFiltering()
-        # TODO: this should be automated a bit
+        # TODO: this mapping should be automated a bit
         state_mappings = {'predicted_user_profiles': s.user_profiles,
                         'actual_user_scores': s.actual_users.actual_user_scores,
                         'items': s.item_attributes,
@@ -80,9 +92,15 @@ class TestMeasurementModule:
             MeasurementUtils.assert_valid_length(measurements, t)
 
 class TestHomogeneityMeasurement():
-    # TODO
-    def test_generic(self):
-        pass
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        MeasurementUtils.test_generic_metric(SocialFiltering(),
+                                             HomogeneityMeasurement(),
+                                             timesteps)
+        MeasurementUtils.test_generic_metric(ContentFiltering(),
+                                             HomogeneityMeasurement(),
+                                             timesteps)
 
 class TestMSEMeasurement():
     # TODO
