@@ -29,12 +29,12 @@ Examples of how to use the simulator can be found in the notebooks below:
 - `Quick start`_: start here for a brief introduction.
 - `Complete guide`_: an overview of the main concepts of the system.
 - Advanced guide - `building a model`_: an introduction to adding your own models on top of the system.
-- Advanced guide - `metrics`_: an example of how to add new metrics to a model.
+- Advanced guide - `adding metrics`_: an example of how to add new metrics to a model.
 
 .. _Quick start: examples/quick-start.ipynb
 .. _Complete guide: examples/complete-guide.ipynb
 .. _building a model: examples/advanced-models.ipynb
-.. _metrics: examples/advanced-metrics.ipynb
+.. _adding metrics: examples/advanced-metrics.ipynb
 
 Example usage
 -------------
