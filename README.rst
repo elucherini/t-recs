@@ -34,6 +34,10 @@ Examples of how to use the simulator can be found in the notebooks below:
 .. _building a model: examples/advanced-models.ipynb
 .. _adding metrics: examples/advanced-metrics.ipynb
 
+Please check the examples_ directory for more notebooks.
+
+.. _examples: examples/
+
 Example usage
 -------------
 
