@@ -14,7 +14,7 @@ To install the simulator, you will need the Python package manager, pip. After a
 ..  code-block:: bash
   git clone https://github.com/elucherini/algo-segregation.git
   cd algo-segregation
-  python3 -m pip install -e rec
+  pip install -e .
 
 
 The command should automatically install all dependencies.
