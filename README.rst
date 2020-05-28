@@ -40,6 +40,7 @@ Example usage
 -------------
 
 ..  code-block:: bash
+
   import rec
 
   recsys = rec.models.ContentFiltering()
