@@ -12,6 +12,7 @@ Currently, the simulator has only been tested extensively on MacOS 10.15.
 To install the simulator, you will need the Python package manager, pip. After activating your virtual environment, run the following commands in a terminal:
 
 ..  code-block:: bash
+
   git clone https://github.com/elucherini/algo-segregation.git
   cd algo-segregation
   pip install -e .
@@ -27,8 +28,8 @@ Examples of how to use the simulator can be found in the notebooks below:
 
 - `Quick start`_: start here for a brief introduction.
 - `Complete guide`_: an overview of the main concepts of the system.
-- Advanced guide: `building a model`_: an introduction to adding your own models on top of the system.
-- Advanced guide: `metrics`_: an example of how to add new metrics to a model.
+- Advanced guide - `building a model`_: an introduction to adding your own models on top of the system.
+- Advanced guide - `metrics`_: an example of how to add new metrics to a model.
 
 .. _Quick start: examples/quick-start.ipynb
 .. _Complete guide: examples/complete-guide.ipynb
