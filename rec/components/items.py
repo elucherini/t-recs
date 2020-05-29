@@ -9,9 +9,9 @@ class Items(Component):
 
     Items are the objects with which users interact with models and with each other.
 
-    This class is essentially a container of Numpy's ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from :class:`~.base_component.Component` and it contains all the attributes of that class.
+    This class is essentially a container of Numpy's ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from :class:`~.base_components.Component` and it contains all the attributes of that class.
 
-    The Items class does not specify any constraints on items. It is used internally in :class:`~rec.models.recommender.BaseRecommender`.
+    The Items class does not specify any constraints on items. It is used internally in :class:`~models.recommender.BaseRecommender`.
 
     Parameters
     -------------
@@ -27,6 +27,16 @@ class Items(Component):
 
     seed: int, None (optional, default: None)
         Seed for underlying random generator.
+
+    Attributes
+    ------------
+
+    Attributes from Component
+        Inherited by :class:`~.base_components.Component`
+
+    name: str
+        Name of the component
+
     """
     def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
         self.name = 'items'

@@ -4,10 +4,10 @@ from rec.utils import VerboseMode
 
 class BinarySocialGraph(VerboseMode):
     """
-     A mixin for classes with an :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute
+     A mixin for classes with a :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute
     to gain the basic functionality of a binary social graph.
 
-    It assumes a network adjacency matrix.
+    It assumes a network adjacency matrix of size `|U|x|U|`.
     """
 
     def follow(self, user_index, following_index):

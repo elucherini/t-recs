@@ -43,7 +43,7 @@ class Users(BaseComponent):
 
     Models determine the size constraints of objects representing users. Requirements vary across models and, unless specified, this class does not make assumptions on the real user components.
 
-    This class inherits from :class:`~rec.components.base_components.BaseComponent`.
+    This class inherits from :class:`~components.base_components.BaseComponent`.
 
     Parameters
     ------------
@@ -72,7 +72,8 @@ class Users(BaseComponent):
     Attributes
     ------------
 
-        Attributes inherited by :class:`~rec.components.base_components.BaseComponent`, plus:
+        Attributes from BaseComponent
+            Inherited by :class:`~rec.components.base_components.BaseComponent`
 
         actual_user_profiles: :obj:`numpy.ndarray`
             A matrix representing the *real* similarity between each item and attribute.
