@@ -14,7 +14,8 @@ class Items(Component):
     The Items class does not specify any constraints on items. It is used internally in :class:`~rec.models.recommender.BaseRecommender`.
 
     Parameters
-    ----------
+    -------------
+
     item_attributes: array_like, None (optional, default: None)
         Representation of items. It expects an array_like object. If None, the representation is generated randomly.
 

@@ -46,54 +46,54 @@ class Users(BaseComponent):
     This class inherits from :class:`~rec.components.base_components.BaseComponent`.
 
     Parameters
-    ----------
+    ------------
 
-    actual_user_profiles: array_like or None (optional, default: None)
-        Representation of the real user profiles.
+        actual_user_profiles: array_like or None (optional, default: None)
+            Representation of the real user profiles.
 
-    actual_user_scores: array_like or None (optional, default: None)
-        Representation of the real scores that users assign to items.
+        actual_user_scores: array_like or None (optional, default: None)
+            Representation of the real scores that users assign to items.
 
-    interact_with_items: callable or None (optional, default: None)
-        Function that specifies the behavior of users when interacting with items. If None, users follow the behavior specified in :meth:`get_user_feedback()`.
+        interact_with_items: callable or None (optional, default: None)
+            Function that specifies the behavior of users when interacting with items. If None, users follow the behavior specified in :meth:`get_user_feedback()`.
 
-    num_users: int or None, (optional, default: None)
-        The number of users in the system.
+        num_users: int or None, (optional, default: None)
+            The number of users in the system.
 
-    size: tuple, None (optional, default: None)
-        Size of the user representation. It expects a tuple. If None, it is chosen randomly.
+        size: tuple, None (optional, default: None)
+            Size of the user representation. It expects a tuple. If None, it is chosen randomly.
 
-    verbose: bool (optional, default: False)
-        If True, enables verbose mode. Disabled by default.
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
 
-    seed: int, None (optional, default: None)
-        Seed for random generator.
+        seed: int, None (optional, default: None)
+            Seed for random generator.
 
     Attributes
-    -----------
+    ------------
 
-    Attributes inherited by :class:`~rec.components.base_components.BaseComponent`, plus:
+        Attributes inherited by :class:`~rec.components.base_components.BaseComponent`, plus:
 
-    actual_user_profiles: :obj:`numpy.ndarray`
-        A matrix representing the *real* similarity between each item and attribute.
+        actual_user_profiles: :obj:`numpy.ndarray`
+            A matrix representing the *real* similarity between each item and attribute.
 
-    actual_user_scores: :obj:`numpy.ndarray`
-         A ```|U|x|I|``` matrix representing the *real* scores assigned by each user to each item, where ```|U|``` is the number of users and ```|I|``` is the number of items in the system. Item `[u, i]` is the scores assigned by user `u` to item `i`.
+        actual_user_scores: :obj:`numpy.ndarray`
+             A ```|U|x|I|``` matrix representing the *real* scores assigned by each user to each item, where ```|U|``` is the number of users and ```|I|``` is the number of items in the system. Item `[u, i]` is the scores assigned by user `u` to item `i`.
 
-    interact_with_items: callable
-        A function that defines user behaviors when interacting with items. If None, users follow the behavior in :meth:`get_user_feedback()`.
+        interact_with_items: callable
+            A function that defines user behaviors when interacting with items. If None, users follow the behavior in :meth:`get_user_feedback()`.
 
-    _user_vector: **private** :obj:`numpy.ndarray`
-        A ```|U|``` array of user indices, used internally.
+        _user_vector: **private** :obj:`numpy.ndarray`
+            A ```|U|``` array of user indices, used internally.
 
     Raises
-    -------
+    --------
 
-    TypeError
-        If parameters are of the wrong type.
+        TypeError
+            If parameters are of the wrong type.
 
-    ValueError
-        If both actual_user_profiles and size are None.
+        ValueError
+            If both actual_user_profiles and size are None.
     """
     def __init__(self, actual_user_profiles=None, actual_user_scores=None,
                  interact_with_items=None, size=None, num_users=None,
@@ -128,7 +128,7 @@ class Users(BaseComponent):
         Computes and stores the actual scores that users assign to items compatible with the system. It does so by using the model's train function.
 
         Parameters
-        ----------
+        ------------
 
         train_function: callable
             Function that is used to train the model. Since training the model corresponds to generating user scores starting from user profiles, as predicted by the model, the same function can be used to compute the real scores using the real user preferences.
@@ -158,16 +158,19 @@ class Users(BaseComponent):
         Returns an array of actual user scores.
 
         Parameters
-        ----------
+        -----------
+
             user: int or numpy.ndarray or list (optional, default: None)
                 Specifies the user index (or indices) for which to return the actual user scores. If None, the function returns the whole matrix.
 
         Returns
         --------
+
             An array of actual user scores for each item.
 
         Todo
         -------
+
         * Raise exceptions
 
         """
@@ -181,7 +184,7 @@ class Users(BaseComponent):
         Generates user interactions at a given timestep, generally called by a model.
 
         Parameters
-        ----------
+        ------------
 
         args, kwargs:
             Parameters needed by the model's train function.
@@ -196,6 +199,7 @@ class Users(BaseComponent):
 
         Raises
         -------
+
         ValueError
             If :attr:`interact_with_items` is None and there is not `item` parameter.
         """
@@ -215,29 +219,3 @@ class Users(BaseComponent):
 
     def store_state(self):
         self.state_history.append(np.copy(self.actual_user_scores))
-
-
-        #def compute_actual_scores(self, item_representation, num_users, distribution=None):
-        """Computes actual user profiles unknown to system and actual user scores based
-            on those profiles.
-
-            Args:
-                item_representation (:obj:`numpy.ndarray`): A |A|x|I| matrix representing
-                    the similarity between each item and attribute.
-                num_users (int, optional): The number of users in the system.
-                distribution (:class:`Distribution`, optional): Distribution instance for
-                    random sampling of user profiles. If None, the function uses the
-                    distribution attribute.
-
-            Returns:
-                A |U|x|I| matrix of scores representing the real user preferences on each
-                item.
-
-            Raises:
-                TypeError: If item_representation is not a 2-dimensional :obj:`numpy.ndarray`.
-        """
-        # Error if item_representation is invalid
-        #if item_representation.ndim != 2:
-        #    item_representation = np.tile(item_representation, (num_users, 1))
-
-
