@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(name='rec',
-        version='0.1',
+        version='0.1.0b',
         url='https://github.com/elucherini/algo-segregation',
         license='GPL-3.0',
         author='Elena Lucherini',
