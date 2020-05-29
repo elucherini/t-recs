@@ -15,19 +15,19 @@
 import os
 import sys
 import sphinx_rtd_theme
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../rec/'))
 sys.setrecursionlimit(1500)
 
 # -- Project information -----------------------------------------------------
 
 project = 'Algo-segregation'
-copyright = '2020, Elena Lucherini, Arvind Narayanan'
-author = 'Elena Lucherini, Arvind Narayanan'
+copyright = '2020, Elena Lucherini'
+author = 'Elena Lucherini'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = '0.1.0b'
 
 
 # -- General configuration ---------------------------------------------------
@@ -46,6 +46,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     "sphinx_rtd_theme",
+    'sphinx.ext.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -136,7 +137,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Algo-segregation.tex', 'Algo-segregation Documentation',
-     'Elena Lucherini, Arvind Narayanan', 'manual'),
+     'Elena Lucherini', 'manual'),
 ]
 
 
