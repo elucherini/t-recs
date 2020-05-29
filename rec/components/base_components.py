@@ -94,6 +94,8 @@ class BaseObservable(ABC):
 
 
 class BaseComponent(BaseObservable, VerboseMode, ABC):
+    """Observable that stores a history of its state
+    """
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
@@ -116,6 +118,8 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
 
 
 class Component(FromNdArray, BaseComponent):
+    """Class for components that make up the system state
+    """
     def __init__(self, current_state=None, size=None, verbose=False, seed=None):
         # general input checks
         if current_state is not None:
