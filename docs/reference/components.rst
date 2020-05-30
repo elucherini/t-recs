@@ -19,5 +19,15 @@ Items
 Binary Social Graph
 ---------------------
 
+This mixin helps define the behavior of agents (such as models) that implement a social network.
+
 .. automodule:: components.socialgraph
+  :members:
+
+Base Components
+------------------
+
+These are mainly abstract classes that are not supposed to be instantiated.
+
+.. automodule:: components.base_components
   :members:
