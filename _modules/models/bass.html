@@ -172,7 +172,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_users</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_items</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infection_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infection_thresholds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">actual_user_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_new_items</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">actual_user_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># these are not allowed to be None at the same time</span>
         <span class="k">if</span> <span class="n">all_none</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">):</span>
@@ -252,7 +252,7 @@
         <span class="n">num_items_per_iter</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_representation</span><span class="p">,</span> <span class="n">item_representation</span><span class="p">,</span>
                              <span class="n">actual_user_scores</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">,</span>
-                             <span class="n">num_items_per_iter</span><span class="p">,</span> <span class="n">num_new_items</span><span class="p">,</span>
+                             <span class="n">num_items_per_iter</span><span class="p">,</span>
                              <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span> <span class="n">system_state</span><span class="o">=</span><span class="n">system_state</span><span class="p">,</span>
                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
 
@@ -281,7 +281,15 @@
         <span class="sd">&quot;&quot;&quot; Overrides train method of parent class :class:`Recommender`.</span>
 
 <span class="sd">            Args:</span>
-<span class="sd">                normalize (bool, optional): set to True if the scores should be normalized, False otherwise.</span>
+
+<span class="sd">            user_profiles: :obj:`array_like` or None (optional, default: None)</span>
+<span class="sd">                First factor of the dot product, which should provide a representation of users. If None, the first factor defaults to :attr:`user_profiles`.</span>
+
+<span class="sd">            item_attributes: :obj:`array_like` or None (optional, default: None)</span>
+<span class="sd">                Second factor of the dot product, which should provide a representation of items. If None, the second factor defaults to :attr:`item_attributes`. (Kept for compatibility, currently ignored in this model)</span>
+
+<span class="sd">            normalize: bool (optional, default: False)</span>
+<span class="sd">                Set to True if the scores should be normalized, False otherwise (kept for compatibility but ignored in this model)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># normalizing the user profiles is meaningless here</span>
         <span class="c1"># This formula comes from Goel et al., The Structural Virality of Online Diffusion</span>

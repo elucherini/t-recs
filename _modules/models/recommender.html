@@ -163,7 +163,7 @@
 
 <span class="sd">    This mixin allows the system to monitor metrics. That is, at each timestep an element will be added to the :attr:`~metrics.measurement.Measurement.measurement_history` lists of each metrics that the system is monitoring.</span>
 
-<span class="sd">    Attributes:</span>
+<span class="sd">    Attributes</span>
 <span class="sd">    ------------</span>
 
 <span class="sd">        metrics: list</span>
@@ -194,7 +194,7 @@
 
 <span class="sd">    This mixin allows the system to monitor the system state. That is, at each timestep an element will be added to the :attr:`~components.base_components.BaseComponent.state_history` lists of each component that the system is monitoring.</span>
 
-<span class="sd">    Attributes:</span>
+<span class="sd">    Attributes</span>
 <span class="sd">    ------------</span>
 
 <span class="sd">        _system_state: list</span>
@@ -243,9 +243,6 @@
 <span class="sd">            num_items_per_iter: int</span>
 <span class="sd">                Number of items presented to the user at each iteration.</span>
 
-<span class="sd">            num_new_items: int</span>
-<span class="sd">                Number of new items that the systems add if it runs out of items that the user can interact with.</span>
-
 <span class="sd">            measurements: list</span>
 <span class="sd">                List of metrics to monitor.</span>
 
@@ -282,9 +279,6 @@
 <span class="sd">            num_items_per_iter: int</span>
 <span class="sd">                Number of items presented to the user per iteration.</span>
 
-<span class="sd">            num_new_items: int</span>
-<span class="sd">                Number of new items that the systems add if it runs out of items that the user can interact with.</span>
-
 <span class="sd">            random_state: :class:`rec.random.generators.Generator`</span>
 
 <span class="sd">            indices: :obj:`numpy.ndarray`</span>
@@ -293,7 +287,7 @@
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_representation</span><span class="p">,</span> <span class="n">item_representation</span><span class="p">,</span>
                  <span class="n">actual_user_representation</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">,</span>
-                 <span class="n">num_items_per_iter</span><span class="p">,</span> <span class="n">num_new_items</span><span class="p">,</span> <span class="n">measurements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">num_items_per_iter</span><span class="p">,</span> <span class="n">measurements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">system_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Init logger</span>
         <span class="n">VerboseMode</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">verbose</span><span class="p">)</span>
@@ -316,8 +310,6 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_items must be an int&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_valid_or_none</span><span class="p">(</span><span class="n">num_items_per_iter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_items_per_iter must be an int&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_valid_or_none</span><span class="p">(</span><span class="n">num_new_items</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_new_items must be an int&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;metrics&#39;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must define at least one measurement module&quot;</span><span class="p">)</span>
 
@@ -346,7 +338,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="o">=</span> <span class="n">num_users</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span> <span class="o">=</span> <span class="n">num_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_items_per_iter</span> <span class="o">=</span> <span class="n">num_items_per_iter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">num_new_items</span> <span class="o">=</span> <span class="n">num_new_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="c1"># Matrix keeping track of the items consumed by each user</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_items</span><span class="p">),</span> <span class="p">(</span><span class="n">num_users</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
