@@ -117,17 +117,13 @@ class TestBassModel:
         with pytest.raises(ValueError):
             s = BassModel(user_representation=bad_user_repr)
 
-    def test_additional_params(self, num_items_per_iter=None, num_new_items=None):
+    def test_additional_params(self, num_items_per_iter=None):
         # these are currently meaningless but at least it should not break
         if num_items_per_iter is None:
             # TODO vary parameter
             num_items_per_iter = 1#np.random.randint(5, 100)
-        if num_new_items is None:
-            num_new_items = np.random.randint(20, 400)
-        s = BassModel(verbose=False, num_items_per_iter=num_items_per_iter,
-                      num_new_items=num_new_items)
+        s = BassModel(verbose=False, num_items_per_iter=num_items_per_iter)
         assert(num_items_per_iter == s.num_items_per_iter)
-        assert(num_new_items == s.num_new_items)
         # also check other params
         test_utils.assert_not_none(s.predicted_scores)
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])

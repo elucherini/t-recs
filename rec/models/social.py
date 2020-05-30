@@ -42,9 +42,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
-        num_new_items: int (optional, default: 30)
-            Number of new items that the systems add if it runs out of items that the user can interact with.
-
         seed: int, None (optional, default: None)
             Seed for random generator.
 
@@ -100,7 +97,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         """
     def __init__(self, num_users=100, num_items=1250,
         item_representation=None, user_representation=None, actual_user_scores=None,
-        verbose=False, num_items_per_iter=10, num_new_items=30, seed=None):
+        verbose=False, num_items_per_iter=10, seed=None):
         # Give precedence to user_representation, otherwise build empty one
 
         if all_none(user_representation, num_users):
@@ -153,7 +150,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         # Initialize recommender system
         BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
-                             num_items_per_iter, num_new_items, seed=seed,
+                             num_items_per_iter, seed=seed,
                              measurements=measurements, verbose=verbose)
 
 

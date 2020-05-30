@@ -124,15 +124,11 @@ class TestSocialFiltering:
         with pytest.raises(ValueError):
             s = SocialFiltering(user_representation=bad_user_repr)
 
-    def test_additional_params(self, num_items_per_iter=None, num_new_items=None):
+    def test_additional_params(self, num_items_per_iter=None):
         if num_items_per_iter is None:
             num_items_per_iter = np.random.randint(5, 100)
-        if num_new_items is None:
-            num_new_items = np.random.randint(20, 400)
-        s = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter,
-                      num_new_items=num_new_items)
+        s = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter)
         assert(num_items_per_iter == s.num_items_per_iter)
-        assert(num_new_items == s.num_new_items)
         # also check other params
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
@@ -140,8 +136,7 @@ class TestSocialFiltering:
         test_utils.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
-        s1 = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter,
-                      num_new_items=num_new_items)
+        s1 = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter)
 
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(s.user_profiles, s1.user_profiles)

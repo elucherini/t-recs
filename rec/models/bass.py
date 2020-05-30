@@ -25,7 +25,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     """
     def __init__(self, num_users=100, num_items=1, infection_state=None,
         item_representation=None, user_representation=None, infection_thresholds=None,
-        actual_user_scores=None, verbose=False, num_items_per_iter=1, num_new_items=30,
+        actual_user_scores=None, verbose=False, num_items_per_iter=1,
         seed=None):
         # these are not allowed to be None at the same time
         if all_none(user_representation, num_users, infection_state):
@@ -105,7 +105,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         num_items_per_iter = 1
         BaseRecommender.__init__(self, user_representation, item_representation,
                              actual_user_scores, num_users, num_items,
-                             num_items_per_iter, num_new_items,
+                             num_items_per_iter,
                              measurements=measurements, system_state=system_state,
                              verbose=verbose, seed=seed)
 
@@ -134,7 +134,15 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """ Overrides train method of parent class :class:`Recommender`.
 
             Args:
-                normalize (bool, optional): set to True if the scores should be normalized, False otherwise.
+
+            user_profiles: :obj:`array_like` or None (optional, default: None)
+                First factor of the dot product, which should provide a representation of users. If None, the first factor defaults to :attr:`user_profiles`.
+
+            item_attributes: :obj:`array_like` or None (optional, default: None)
+                Second factor of the dot product, which should provide a representation of items. If None, the second factor defaults to :attr:`item_attributes`. (Kept for compatibility, currently ignored in this model)
+
+            normalize: bool (optional, default: False)
+                Set to True if the scores should be normalized, False otherwise (kept for compatibility but ignored in this model)
         """
         # normalizing the user profiles is meaningless here
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion

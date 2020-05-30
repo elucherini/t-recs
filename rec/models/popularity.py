@@ -37,9 +37,6 @@ class PopularityRecommender(BaseRecommender):
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
-        num_new_items: int (optional, default: 30)
-            Number of new items that the systems add if it runs out of items that the user can interact with.
-
         seed: int, None (optional, default: None)
             Seed for random generator.
 
@@ -87,7 +84,7 @@ class PopularityRecommender(BaseRecommender):
     def __init__(self, num_users=100, num_items=1250,
                  item_representation=None, user_representation=None,
                  actual_user_representation=None,seed=None,
-                verbose=False, num_items_per_iter=10, num_new_items=30):
+                verbose=False, num_items_per_iter=10):
 
         if all_none(item_representation, num_items):
                 raise ValueError("num_items and item_representation can't be all None")
@@ -133,7 +130,7 @@ class PopularityRecommender(BaseRecommender):
 
         super().__init__(user_representation, item_representation,
                          actual_user_representation, num_users, num_items,
-                         num_items_per_iter, num_new_items,
+                         num_items_per_iter,
                          measurements=measurements, verbose=verbose, seed=seed)
 
     def _update_user_profiles(self, interactions):

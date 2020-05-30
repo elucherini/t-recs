@@ -104,16 +104,12 @@ class TestPopularityRecommender:
             c = PopularityRecommender(user_representation=user_repr,
                                  item_representation=bad_item_repr)
 
-    def test_additional_params(self, num_items_per_iter=None, num_new_items=None):
+    def test_additional_params(self, num_items_per_iter=None):
         if num_items_per_iter is None:
             num_items_per_iter = np.random.randint(5, 100)
-        if num_new_items is None:
-            num_new_items = np.random.randint(20, 400)
 
-        c = PopularityRecommender(verbose=False, num_items_per_iter=num_items_per_iter,
-                             num_new_items=num_new_items)
+        c = PopularityRecommender(verbose=False, num_items_per_iter=num_items_per_iter)
         assert(num_items_per_iter == c.num_items_per_iter)
-        assert(num_new_items == c.num_new_items)
         # also check other params
         test_utils.assert_correct_num_users(c.num_users, c,
                                             c.user_profiles.shape[0])

@@ -16,7 +16,7 @@ class MeasurementModule(BaseObserver):
 
     This mixin allows the system to monitor metrics. That is, at each timestep an element will be added to the :attr:`~metrics.measurement.Measurement.measurement_history` lists of each metrics that the system is monitoring.
 
-    Attributes:
+    Attributes
     ------------
 
         metrics: list
@@ -47,7 +47,7 @@ class SystemStateModule(BaseObserver):
 
     This mixin allows the system to monitor the system state. That is, at each timestep an element will be added to the :attr:`~components.base_components.BaseComponent.state_history` lists of each component that the system is monitoring.
 
-    Attributes:
+    Attributes
     ------------
 
         _system_state: list
@@ -96,9 +96,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             num_items_per_iter: int
                 Number of items presented to the user at each iteration.
 
-            num_new_items: int
-                Number of new items that the systems add if it runs out of items that the user can interact with.
-
             measurements: list
                 List of metrics to monitor.
 
@@ -135,9 +132,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             num_items_per_iter: int
                 Number of items presented to the user per iteration.
 
-            num_new_items: int
-                Number of new items that the systems add if it runs out of items that the user can interact with.
-
             random_state: :class:`rec.random.generators.Generator`
 
             indices: :obj:`numpy.ndarray`
@@ -146,7 +140,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     @abstractmethod
     def __init__(self, user_representation, item_representation,
                  actual_user_representation, num_users, num_items,
-                 num_items_per_iter, num_new_items, measurements=None,
+                 num_items_per_iter, measurements=None,
                  system_state=None, verbose=False, seed=None):
         # Init logger
         VerboseMode.__init__(self, __name__.upper(), verbose)
@@ -169,8 +163,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_items must be an int")
         if not utils.is_valid_or_none(num_items_per_iter, int):
             raise TypeError("num_items_per_iter must be an int")
-        if not utils.is_valid_or_none(num_new_items, int):
-            raise TypeError("num_new_items must be an int")
         if not hasattr(self, 'metrics'):
             raise ValueError("You must define at least one measurement module")
 
@@ -199,7 +191,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
-        self.num_new_items = num_new_items
         self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
