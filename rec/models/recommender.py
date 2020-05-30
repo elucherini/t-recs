@@ -9,76 +9,139 @@ from rec.utils import VerboseMode
 from rec.random import Generator
 
 class MeasurementModule(BaseObserver):
-    """Mixin for observers of "Measurement" observables
+    """
+    Mixin for observers of :class:`Measurement` observables. Implements the `Observer design pattern`_.
+
+    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
+
+    This mixin allows the system to monitor metrics. That is, at each timestep an element will be added to the :attr:`~metrics.measurement.Measurement.measurement_history` lists of each metrics that the system is monitoring.
+
+    Attributes:
+    ------------
+
+        metrics: list
+            List of metrics that the system will monitor.
+
     """
     def __init__(self):
         self.metrics = list()
 
     def add_metrics(self, *args):
+        """
+        Adds metrics to the :attr:`metrics` list. This allows the system to monitor these metrics.
+
+        Parameters
+        -----------
+
+            args: :class:`~metrics.measurement.Measurement`
+                Accepts a variable number of metrics that inherits from :class:`~metrics.measurement.Measurement`
+        """
         self.register_observables(observer=self.metrics, observables=list(args),
                                   observable_type=Measurement)
 
 class SystemStateModule(BaseObserver):
-    """Mixin gor observers of "SystemState" observables
+    """
+    Mixin for observers of :class:`Component` observables. Implements the `Observer design pattern`_.
+
+    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
+
+    This mixin allows the system to monitor the system state. That is, at each timestep an element will be added to the :attr:`~components.base_components.BaseComponent.state_history` lists of each component that the system is monitoring.
+
+    Attributes:
+    ------------
+
+        _system_state: list
+            List of system state components that the system will monitor.
+
     """
     def __init__(self, components=None):
         self._system_state = list()
 
     def add_state_variable(self, *args):
+        """
+        Adds metrics to the :attr:`_system_state` list. This allows the system to monitor these system state components.
+
+        Parameters
+        -----------
+
+            args: :class:`~components.base_components.BaseComponent`
+                Accepts a variable number of components that inherit from class :class:`~components.base_components.BaseComponent`
+        """
         self.register_observables(observer=self._system_state, observables=list(args),
                                   observable_type=BaseComponent)
 
 class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
-        All attributes and methods in this class are generic to all recommendation systems
-        implemented.
+        The attributes and methods in this class can be generalized beyond recommender systems and are currently common to all pre-loaded models.
 
-        Args:
-            user_representation (:obj:`numpy.ndarray`): An array representing users. The
-                shape and meaning depends on the implementation of the concrete class.
-            item_representation (:obj:`numpy.ndarray`): An array representing items. The
-                shape and meaning depends on the implementation of the concrete class.
-            actual_user_representation (:obj:`numpy.ndarray`): An array representing real user
-                preferences unknown to the system. The shape and meaning depends on the
-                implementation of the concrete class.
-            num_users (int): The number of users in the system.
-            num_items (int): The number of items in the system.
-            num_items_per_iter (int): Number of items presented to the user at each
-                iteration.
-            num_new_items (int): Number of new items that the systems add if it runs out
-                of items that the user can interact with.
-            verbose (bool, optional): If True, enables verbose mode. Disabled by default.
+        Parameters
+        -----------
 
-        Attributes:
-            Attributes inherited by :class:`VerboseMode`, plus:
-            user_profiles (:obj:`numpy.ndarray`): An array representing users, matching
-                user_representation. The shape and meaning depends on the implementation
-                of the concrete class.
-            item_attributes (:obj:`numpy.ndarray`): An array representing items, matching
-                item_representation. The shape and meaning depends on the implementation
-                of the concrete class.
-            actual_users (:obj:`numpy.ndarray`): An array representing real user
-                preferences, matching actual_users. The shape and meaning depends
-                on the implementation of the concrete class.
-            predicted_scores (:obj:`numpy.ndarray`): An array representing the user
-                preferences as perceived by the system. The shape is always |U|x|I|,
-                where |U| is the number of users in the system and |I| is the number of
-                items in the system. The scores are calculated with the dot product of
-                user_profiles and item_attributes.
-            measurements (:class:`Measurements`): Measurement module. See :class:`Measurements`.
-            num_users (int): The number of users in the system.
-            num_items (int): The number of items in the system.
-            num_items_per_iter (int): Number of items presented to the user per iteration.
-            num_new_items (int): Number of new items that the systems add if it runs out
-                of items that the user can interact with.
-            indices (:obj:`numpy.ndarray`): A |U|x|I| array representing the past
-                interactions of each user. This keeps track of which items each user
-                has interacted with, so that it won't be presented to the user again.
-            user_vector (:obj:`numpy.ndarray`): An array of length |U| s.t. user_vector_u = u
-                for u in U.
-            item_vector (:obj:`numpy.ndarray`): An array of length |I| s.t. item_vector_i = i
-                for i in I.
+            user_representation: :obj:`numpy.ndarray`
+                An array representing users. The shape and meaning depends on the implementation of the concrete class.
+
+            item_representation: :obj:`numpy.ndarray`
+                An array representing items. The shape and meaning depends on the implementation of the concrete class.
+
+            actual_user_representation: :obj:`numpy.ndarray`
+                An array representing real user preferences unknown to the system. The shape and meaning depends on the implementation of the concrete class.
+
+            num_users: int
+                The number of users in the system.
+
+            num_items: int
+                The number of items in the system.
+
+            num_items_per_iter: int
+                Number of items presented to the user at each iteration.
+
+            num_new_items: int
+                Number of new items that the systems add if it runs out of items that the user can interact with.
+
+            measurements: list
+                List of metrics to monitor.
+
+            system_state: list
+                List of system state components to monitor.
+
+            verbose: bool (optional, default: False)
+                If True, it enables verbose mode.
+
+            seed: int, None (optional, default: None)
+                Seed for random generator used
+
+        Attributes
+        -----------
+
+            user_profiles: :class:`~components.users.PredictedUserProfiles`
+                An array representing users, matching user_representation. The shape and meaning depends on the implementation of the concrete class.
+
+            item_attributes: :class:`~components.items.Items`
+                An array representing items, matching item_representation. The shape and meaning depends on the implementation of the concrete class.
+
+            actual_users: :class:`~components.users.Users`
+                An array representing real user preferences, matching actual_users. The shape and meaning depends on the implementation of the concrete class.
+
+            predicted_scores: :class:`~components.users.PredictedScores`
+                An array representing the user preferences as perceived by the system. The shape is always `|U|x|I|`, where `|U|` is the number of users in the system and `|I|` is the number of items in the system. The scores are calculated with the dot product of :attr:`user_profiles` and :attr:`item_attributes`.
+
+            num_users: int
+                The number of users in the system.
+
+            num_items: int
+                The number of items in the system.
+
+            num_items_per_iter: int
+                Number of items presented to the user per iteration.
+
+            num_new_items: int
+                Number of new items that the systems add if it runs out of items that the user can interact with.
+
+            random_state: :class:`rec.random.generators.Generator`
+
+            indices: :obj:`numpy.ndarray`
+                A `|U|x|I|` array representing the past interactions of each user. This keeps track of which items each user has interacted with, so that it won't be presented to the user again if `repeated_items` are not allowed.
     """
     @abstractmethod
     def __init__(self, user_representation, item_representation,
@@ -151,11 +214,24 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
 
     def train(self, user_profiles=None, item_attributes=None, normalize=True):
-        """ Updates recommender based on past interactions for better user predictions.
+        """
+        Updates scores predicted by the system based on past interactions for better user predictions. Specifically, it updates :attr:`predicted_scores` with a dot product.
 
-            Args:
-                normalize (bool, optional): set to True if the scores should be normalized,
-                    False otherwise.
+        Parameters
+        -----------
+
+            user_profiles: :obj:`array_like` or None (optional, default: None)
+                First factor of the dot product, which should provide a representation of users. If None, the first factor defaults to :attr:`user_profiles`.
+
+            item_attributes: :obj:`array_like` or None (optional, default: None)
+                Second factor of the dot product, which should provide a representation of items. If None, the second factor defaults to :attr:`item_attributes`.
+
+            normalize: bool (optional, default: True)
+                Set to True if the scores should be normalized, False otherwise.
+
+        Returns
+        --------
+            predicted_scores: :class:`~components.users.PredictedScores`
         """
         if user_profiles is None:
             user_profiles = self.user_profiles
@@ -171,20 +247,25 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         return predicted_scores
 
     def generate_recommendations(self, k=1, indices_prime=None):
-        """ Generate recommendations
+        """
+        Generate recommendations
 
-            Args:
-                k (int, optional): number of items to recommend.
-                indices_prime (:obj:numpy.ndarray, optional): a matrix containing the
-                    indices of the items each user has interacted with. It is used to
-                    ensure that the user is presented with items they have already
-                    interacted with.
+        Parameters
+        -----------
 
-            Returns:
-                An array of k recommendations.
+            k : int (optional, default: 1)
+                Number of items to recommend.
 
-            Todo:
-                * Group matrix manipulations into util functions
+            indices_prime : :obj:`numpy.ndarray` or None (optional, default: None)
+                A matrix containing the indices of the items each user has interacted with. It is used to ensure that the user is presented with items they have already interacted with.
+
+        Returns
+        ---------
+            Recommendations: :obj:`numpy.ndarray`
+
+        Notes
+        ------
+            * **(TODO)** Group matrix manipulations into util functions
         """
         if indices_prime is None:
             indices_prime = self.indices[np.where(self.indices>=0)]
@@ -215,16 +296,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         #return self.predicted_scores.argsort()[:,::-1][:,0:k]
 
     def recommend(self, startup=False):
-        """Implements the recommendation process by combining recommendations and
-            new (random) items.
+        """
+        Implements the recommendation process by combining recommendations and new (random) items.
 
-            Args:
-                startup (bool, optional): If True, the system is in "startup" (exploration) mode
-                    and only presents the user with new randomly-chosen items. This is to maximize
-                    exploration.
+        Parameters
+        -----------
+            startup (bool, optional): If True, the system is in "startup" (exploration) mode and only presents the user with new randomly chosen items. This is to maximize exploration.
 
-            Returns:
-                New and recommended items in random order.
+        Returns
+        --------
+            Items: :obj:`numpy.ndarray`
+            New and recommended items in random order.
         """
         if startup:
             num_new_items = self.num_items_per_iter
@@ -278,29 +360,33 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
     @abstractmethod
     def _update_user_profiles(self):
-        """ Updates user profiles based on last interaction.
+        """
+        Updates user profiles based on last interaction.
 
-            It must be defined in the concrete class.
+        It must be defined in the concrete class.
         """
         pass
 
 
     def run(self, timesteps=50, startup=False, train_between_steps=True,
             repeated_items=True):
-        """ Runs simulation for the given timesteps.
+        """
+        Runs simulation for the given timesteps.
 
-            Args:
-                timestep (int, optional): number of timesteps for simulation
-                startup (bool, optional): if True, it runs the simulation in
-                    startup mode (see recommend() and startup_and_train())
-                train_between_steps (bool, optional): if True, the model is
-                    retrained after each step with the information gathered
-                    in the previous step.
-                repeated_items (bool, optional): if True, repeated items are allowed
-                    in the system -- that is, users can interact with the same
-                    item more than once. Examples of common instances in which
-                    this is useful: infection and network propagation models.
-                    Default is False.
+        Parameters
+        -----------
+
+            timestep : int (optional, default: 50)
+                Number of timesteps for simulation.
+
+            startup : bool (optional, default: False)
+                If True, it runs the simulation in startup mode (see :func:`recommend` and :func:`startup_and_train`)
+
+            train_between_steps : bool (optional, default: True)
+                If True, the model is retrained after each timestep with the information gathered in the previous step.
+
+            repeated_items : bool (optional, default: True)
+                If True, repeated items are allowed in the system -- that is, users can interact with the same item more than once.
         """
         if not startup:
             self.log('Run -- interleave recommendations and random items ' + \
@@ -328,22 +414,27 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
 
     def startup_and_train(self, timesteps=50):
-        """ Runs simulation in startup mode by calling run() with startup=True.
-            For more information about startup mode, see run() and recommend().
+        """
+        Runs simulation in startup mode by calling :func:`run` with startup=True. For more information about startup mode, see :func:`run` and :func:`recommend`.
 
-            Args:
-                timestep (int, optional): number of timesteps for simulation
+        Parameters
+        -----------
+
+            timestep : int (optional, default: 50)
+                Number of timesteps for simulation
         """
         self.log('Startup -- recommend random items')
         return self.run(timesteps, startup=True, train_between_steps=False)
 
     def _expand_items(self, num_new_items=None):
-        """ Increases number of items in the system.
+        """
+        Increases number of items in the system.
 
-            Args:
-                num_new_items (int, optional): number of new items to add to the system.
-                    If None, it is equal to twice the number of items presented to the user
-                    in one iteration.
+        Parameters
+        -----------
+            num_new_items (int, optional): number of new items to add to the system.
+                If None, it is equal to twice the number of items presented to the user
+                in one iteration.
         """
         '''
         if num_new_items is None:
@@ -362,10 +453,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         pass
 
     def get_measurements(self):
-        """ Returns all available measurements. For more details,
-            please see the :class:`Measurements` class.
+        """
+        Returns all available measurements. For more details, please see the :class:`~metrics.measurement.Measurement` class.
 
-            Returns: Dictionary of all available measurements.
+        Returns
+        --------
+        Monitored measurements: dict
         """
         if len(self.metrics) < 1:
             raise ValueError("No measurement module defined")
@@ -379,10 +472,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         return measurements
 
     def get_system_state(self):
-        """Return history of system state. For more details, please see
-        :class:`Component` classes.
+        """
+        Return history of system state components stored in the :attr:`~components.base_components.BaseComponent.state_history` of the components stored in :attr:`.SystemStateModule._system_state`.
 
-            Returns: Dictionary of system state.
+        Returns
+        --------
+            System state: dict
         """
         if len(self._system_state) < 1:
             raise ValueError("No measurement module defined")
@@ -402,14 +497,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
 
     def measure_content(self, interactions, step):
-        """ Calls method in the :class:`Measurements` module to record metrics.
-            For more details, see the :class:`Measurements` class and its measure
-            method.
+        """
+        Calls method in the :class:`Measurements` module to record metrics. For more details, see the :class:`Measurements` class and its measure method.
 
-            Args:
-                interactions (:obj:`numpy.ndarray`): matrix of interactions
-                    per users at a given time step.
-                step (int): step on which the recorded interactions refers to.
+        Parameters
+        -----------
+            interactions (:obj:`numpy.ndarray`): matrix of interactions
+                per users at a given time step.
+
+            step (int): step on which the recorded interactions refers to.
         """
         for metric in self.metrics:
             metric.measure(step, interactions, self)

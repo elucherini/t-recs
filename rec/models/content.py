@@ -6,40 +6,54 @@ from rec.random import Generator
 from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 
 class ContentFiltering(BaseRecommender):
-    """A customizable content-filtering recommendation system.
+    """
+    A customizable content-filtering recommendation system.
 
-    With content filtering, items and users are represented by a set of attributes A. This class
-    assumes that the attributes used for items and users are the same. The recommendation system
-    matches users to items with similar attributes.
+    With content filtering, items and users are represented by a set of attributes A. This class assumes that the attributes used for items and users are the same. The recommendation system matches users to items with similar attributes.
 
-    Item attributes are represented by a |A|x|I| matrix, where |I| is the number of items in the system.
-    For each item, we define the similarity to each attribute.
+    Item attributes are represented by a `|A|x|I|` matrix, where `|I|` is the number of items in the system. For each item, we define the similarity to each attribute.
 
-    User profiles are represented by a |U|x|A| matrix, where |U| is the number of users in the system.
-    For each user, we define the similarity to each attribute.
+    User profiles are represented by a `|U|x|A|` matrix, where `|U|` is the number of users in the system. For each user, we define the similarity to each attribute.
 
-    Args:
-        num_users (int, optional): The number of users |U| in the system.
-        num_items (int, optiona;): The number of items |I| in the system.
-        num_attributes (int, optional): The number of attributes |A| in the system.
-        item_representation (:obj:`numpy.ndarray`, optional): A |A|x|I| matrix representing the similarity
-            between each item and attribute. If this is not None, num_items is
-            ignored.
-        user_representation (:obj:`numpy.ndarray`, optional): A |U|x|A| matrix representing the similarity
-            between each item and attribute, as interpreted by the system. If this
-            is not None, num_users is ignored.
-        actual_user_representation (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the real
-            user scores. This matrix is *not* used for recommendations. This is
-            only kept for measurements and the system is unaware of it.
-        verbose (bool, optional): If True, enables verbose mode. Disabled by default.
-        num_items_per_iter (int, optional): Number of items presented to the user per iteration.
-        num_new_items (int, optional): Number of new items that the systems add if it runs out
-            of items that the user can interact with.
+    Parameters
+    -----------
 
-    Attributes:
-        Inherited by :class:`Recommender`
+        num_users: int (optional, default: 100)
+            The number of users `|U|` in the system.
 
-    Examples:
+        num_items: int (optional, default: 1250)
+            The number of items `|I|` in the system.
+
+        num_attributes: int (optional, default: 1000)
+            The number of attributes `|A|` in the system.
+
+        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|A|x|I|` matrix representing the similarity between each item and attribute. If this is not None, num_items is ignored.
+
+        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|U|x|A|` matrix representing the similarity between each item and attribute, as interpreted by the system. If this is not None, num_users is ignored.
+
+        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|U|x|I|` matrix representing the real user scores. This matrix is **not** used for recommendations. This is only kept for measurements and the system is unaware of it.
+
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
+
+        num_items_per_iter: int (optional, default: 10)
+            Number of items presented to the user per iteration.
+
+        num_new_items: int (optional, default: 30)
+            Number of new items that the systems add if it runs out of items that the user can interact with.
+
+        seed: int, None (optional, default: None)
+            Seed for random generator.
+
+    Attributes
+    -----------
+        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+
+    Examples
+    ---------
         ContentFiltering can be instantiated with no arguments -- in which case, it will
         be initialized with the default parameters and the number of attributes and the
         item/user representations will be assigned randomly.
@@ -65,19 +79,20 @@ class ContentFiltering(BaseRecommender):
         >>> cf.user_profiles.shape
         (1200, 2000) # <-- 1200 users, 2000 attributes
 
-        Or by generating representations for items and/or users:
-        # Items are uniformly distributed. We indirectly define 100 attributes.
-        >>> item_representation = np.random.randint(0, 1, size=(100, 200))
-        # Users are represented by a power law distribution. This representation also uses 100 attributes.
-        >>> user_representation = Distribution(distr_type='powerlaw').compute(a=1.16, size=(30, 100)).compute()
-        >>> cf = ContentFiltering(item_representation=item_representation, user_representation=user_representation)
-        >>> cf.item_attributes.shape
-        (100, 200)
-        >>> cf.user_profiles.shape
-        (30, 100)
+        Or by generating representations for items and/or users. In the example below, items are uniformly distributed. We indirectly define 100 attributes by defining the following `item_representation`:
+
+            >>> item_representation = np.random.randint(0, 1, size=(100, 200))
+            # Users are represented by a power law distribution. This representation also uses 100 attributes.
+            >>> user_representation = Distribution(distr_type='powerlaw').compute(a=1.16, size=(30, 100)).compute()
+            >>> cf = ContentFiltering(item_representation=item_representation, user_representation=user_representation)
+            >>> cf.item_attributes.shape
+            (100, 200)
+            >>> cf.user_profiles.shape
+            (30, 100)
 
         Note that user and item representations have the precedence over the number of
         users/items/attributes specified at initialization. For example:
+
         >>> cf = ContentFiltering(num_users=50, user_representation=user_representation)
         >>> cf.user_profiles.shape
         (30, 100) # <-- 30 users, 100 attributes. num_users was ignored because user_representation was specified.
@@ -159,18 +174,15 @@ class ContentFiltering(BaseRecommender):
                              measurements=measurements, verbose=verbose, seed=seed)
 
     def _update_user_profiles(self, interactions):
-        """ Private function that updates user profiles with data from
-            latest interactions.
+        """
+        Private function that updates user profiles with data from latest interactions.
 
-            Specifically, this function converts interactions into attributes.
-            For example, if user u has interacted with an item that has attributes
-            a1 and a2, user u's profile will be updated by increasing the similarity
-            to attributes a1 and a2.
+        Specifically, this function converts interactions into attributes. For example, if user `u` has interacted with an item that has attributes `a1` and `a2`, user `u`'s profile will be updated by increasing the similarity to attributes `a1` and `a2`.
 
-        Args:
-            interactions (numpy.ndarray): An array of item indices that users have
-                interacted with in the latest step. Namely, interactions_u represents
-                the index of the item that the user has interacted with.
+        Parameters:
+        ------------
+            interactions: numpy.ndarray
+                An array of item indices that users have interacted with in the latest step. Namely, `interactions[u]` represents the index of the item that the user has interacted with.
 
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))

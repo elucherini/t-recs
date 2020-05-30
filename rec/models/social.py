@@ -6,56 +6,64 @@ from rec.random import SocialGraphGenerator
 from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
 
 class SocialFiltering(BaseRecommender, BinarySocialGraph):
-    """A customizable social-filtering recommendation system.
+    """
+    A customizable social filtering recommendation system.
 
-        With social filtering, users are presented items that were previously liked by other users in their
-        social networks.
+    With social filtering, users are presented items that were previously liked by other users in their social networks.
 
-        The social network is represented by a |U|x|U| matrix, where |U| is the number of users in the system.
-        For each pair of users u and v, entry (u,v) defines whether u "follows"/is connected with v. This
-        can be a binary relationship or a score that measures how likely u is to engage with content that
-        v has previously interacted with.
+    The social network is represented by a `|U|x|U|` matrix, where `|U|` is the number of users in the system. For each pair of users `u` and `v`, entry `[u,v]` defines whether `u` "follows"/is connected to `v`. This can be a binary relationship or a score that measures how likely `u` is to engage with content that `v` has previously interacted with.
 
-        Please note that the follow/unfollow and add_friends/remove_friends methods assume a binary social graph.
+    Please note that, in this class, the follow/unfollow and add_friends/remove_friends methods assume a binary social graph (see :class:`~components.socialgraph.BinarySocialGraph`).
 
-        Item attributes are represented by a |U|x|I| matrix, where |I| is the number of items in the system.
-        For each item i and user u, we define a score that determines the interactions u had with i. Again, this
-        could just be a binary relationship.
+    Item attributes are represented by a `|U|x|I|` matrix, where `|I|` is the number of items in the system. For each item `i` and user `u`, we define a score that determines the interactions `u` had with `i`. Again, this could just be a binary relationship.
 
-        Args:
-            num_users (int, optional): The number of users |U| in the system.
-            num_items (int, optiona;): The number of items |I| in the system.
-            item_representation (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the similarity
-                between each item and attribute. If this is not None, num_items is
-                ignored.
-            user_representation (:obj:`numpy.ndarray`, optional): A |U|x|U| matrix representing each user's
-                social network: if user_representation[u,v] > 0, then user u "follows" user v. If this
-                is not None, num_users is ignored.
-            actual_user_scores (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the real
-                user scores. This matrix is *not* used for recommendations. This is
-                only kept for measurements and the system is unaware of it.
-            verbose (bool, optional): If True, enables verbose mode. Disabled by default.
-            num_items_per_iter (int, optional): Number of items presented to the user per iteration.
-            num_new_items (int, optional): Number of new items that the systems add if it runs out
-                of items that the user can interact with.
 
-        Attributes:
-            Inherited by :class:`Recommender`
+    Parameters
+    -----------
 
-        Examples:
-            SocialFiltering can be instantiated with no arguments -- in which case, it will
-            be initialized with the default parameters and the item/user representation will be
-            initialized to zero. This means that a user starts with no followers/users they follow,
-            and that there have been no previous interactions for this set of users.
+        num_users: int (optional, default: 100)
+            The number of users `|U|` in the system.
+
+        num_items: int (optional, default: 1250)
+            The number of items `|I|` in the system.
+
+        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|U|x|I|` matrix representing the past user interactions. If this is not None, `num_items` is ignored.
+
+        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|U|x|U|` adjacency matrix representing each users' social network. If this is not None, num_users is ignored.
+
+        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|U|x|I|` matrix representing the real user scores. This matrix is **not** used for recommendations. This is only kept for measurements and the system is unaware of it.
+
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
+
+        num_items_per_iter: int (optional, default: 10)
+            Number of items presented to the user per iteration.
+
+        num_new_items: int (optional, default: 30)
+            Number of new items that the systems add if it runs out of items that the user can interact with.
+
+        seed: int, None (optional, default: None)
+            Seed for random generator.
+
+        Attributes
+        -----------
+
+            Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`
+
+        Examples
+        ----------
+            SocialFiltering can be instantiated with no arguments -- in which case, it will be initialized with the default parameters and the item/user representation will be initialized to zero. This means that a user starts with no followers/users they follow, and that there have been no previous interactions for this set of users.
 
             >>> sf = SocialFiltering()
             >>> sf.user_profiles.shape
             (100, 100)   # <-- 100 users (default)
             >>> sf.item_attributes.shape
-            (99, 1250) # <-- 100 users (default), 1250 items (default)
+            (100, 1250) # <-- 100 users (default), 1250 items (default)
 
-            This class can be customized either by defining the number of users/items
-            in the system:
+            This class can be customized either by defining the number of users and/or items in the system:
 
             >>> sf = SocialFiltering(num_users=1200, num_items=5000)
             >>> sf.item_attributes.shape
@@ -65,25 +73,23 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             >>> sf.item_attributes.shape
             (50, 1250) # <-- 50 users, 1250 items (default)
 
-            Or by generating representations for items and/or users:
-            # Items are uniformly distributed. We "indirectly" define 100 users.
-            >>> item_representation = np.random.randint(0, 1, size=(100, 200))
+            Or by generating representations for items and/or users. In the example below, items are uniformly distributed. We "indirectly" define 100 users by defining a `100x200` item representation.
+
+            >>> item_representation = np.random.randint(2, size=(100, 200))
             # Social networks are drawn from a binomial distribution. This representation also uses 100 users.
-            # Note: For this to be meaningful, make sure that the diagonal is all set to 1.
-            >>> sf = istribution(distr_type='powerlaw').compute(a=1.16, size=(100, 100)).compute())
-            >>> sf = SocialFiltering(item_representation=item_representation, user_representation=user_representation)
+            >>> sf = SocialFiltering(item_representation=item_representation)
             >>> sf.item_attributes.shape
             (100, 200)
             >>> sf.user_profiles.shape
             (100, 100)
 
-            Note that user and item representations have the precedence over the number of
-            users/items specified at initialization. For example:
+            Note that user and item representations have the precedence over the number of users/items specified at initialization. For example:
+
             >>> sf = SocialFiltering(num_users=50, user_representation=user_representation)
             >>> sf.item_attributes.shape
             (100, 200) # <-- 100 users, 200 items. num_users was ignored because user_representation was specified.
 
-            The same happens with the number of items or users and item representations.
+            The same is true about the number of items or users and item representations.
 
             >>> sf = SocialFiltering(num_users=1400, item_representation=item_representation)
             >>> sf.item_attributes.shape
