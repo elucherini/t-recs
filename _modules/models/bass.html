@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rec.models.bass &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>models.bass &mdash; Algo-segregation 0.1.0b documentation</title>
   
 
   
@@ -17,24 +17,24 @@
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> Algo-segregation
           
 
           
@@ -61,7 +61,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -80,8 +80,8 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
 </ul>
 
             
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Algo-segregation</a>
+          <a href="../../index.html">Algo-segregation</a>
         
       </nav>
 
@@ -125,11 +125,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>rec.models.bass</li>
+      <li>models.bass</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -144,7 +144,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for rec.models.bass</h1><div class="highlight"><pre>
+  <h1>Source code for models.bass</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">rec.models</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
 <span class="kn">from</span> <span class="nn">rec.components</span> <span class="kn">import</span> <span class="n">BinarySocialGraph</span>
 <span class="kn">from</span> <span class="nn">rec.components</span> <span class="kn">import</span> <span class="n">Component</span>
@@ -154,20 +154,20 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="InfectionState"><a class="viewcode-back" href="../../../index.html#rec.models.bass.InfectionState">[docs]</a><span class="k">class</span> <span class="nc">InfectionState</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<div class="viewcode-block" id="InfectionState"><a class="viewcode-back" href="../../reference/models.html#models.bass.InfectionState">[docs]</a><span class="k">class</span> <span class="nc">InfectionState</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;infection_state&#39;</span>
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">infection_state</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="InfectionThresholds"><a class="viewcode-back" href="../../../index.html#rec.models.bass.InfectionThresholds">[docs]</a><span class="k">class</span> <span class="nc">InfectionThresholds</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<div class="viewcode-block" id="InfectionThresholds"><a class="viewcode-back" href="../../reference/models.html#models.bass.InfectionThresholds">[docs]</a><span class="k">class</span> <span class="nc">InfectionThresholds</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_thresholds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;infection_thresholds&#39;</span>
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">infection_thresholds</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BassModel"><a class="viewcode-back" href="../../../index.html#rec.models.bass.BassModel">[docs]</a><span class="k">class</span> <span class="nc">BassModel</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">,</span> <span class="n">BinarySocialGraph</span><span class="p">):</span>
+<div class="viewcode-block" id="BassModel"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel">[docs]</a><span class="k">class</span> <span class="nc">BassModel</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">,</span> <span class="n">BinarySocialGraph</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Bass model that, for now, only supports one item at a time</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_users</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_items</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">infection_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -277,7 +277,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="p">[</span><span class="n">newly_infected</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interactions</span><span class="p">[</span><span class="n">newly_infected</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span> <span class="o">=</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="BassModel.train"><a class="viewcode-back" href="../../../index.html#rec.models.bass.BassModel.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BassModel.train"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Overrides train method of parent class :class:`Recommender`.</span>
 
 <span class="sd">            Args:</span>
@@ -296,7 +296,7 @@
             <span class="s1">&#39;to items (columns):</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">predicted_scores</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">predicted_scores</span></div>
 
-<div class="viewcode-block" id="BassModel.run"><a class="viewcode-back" href="../../../index.html#rec.models.bass.BassModel.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="BassModel.run"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Overrides run method of parent class :class:`Recommender`, so that repeated_items defaults to True in Bass models.</span>
 

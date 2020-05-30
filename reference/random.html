@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Random Generators &mdash; Algo-segregation 0.1.0b documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Metrics" href="metrics.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Algo-segregation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Simulator</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Random Generators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#random-number-generator">Random Number Generator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#social-graph-generator">Social Graph Generator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Algo-segregation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="reference.html">Reference</a> &raquo;</li>
+        
+      <li>Random Generators</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/random.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="random-generators">
+<h1>Random Generators<a class="headerlink" href="#random-generators" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="random-number-generator">
+<h2>Random Number Generator<a class="headerlink" href="#random-number-generator" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="rec.random.generators.Generator">
+<em class="property">class </em><code class="sig-prename descclassname">rec.random.generators.</code><code class="sig-name descname">Generator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bit_generator</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rec/random/generators.html#Generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rec.random.generators.Generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code>. Please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html">Numpy documentation</a> for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – </p></li>
+<li><p><strong>bit_generator</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.BitGenerator</span></code> or None (optional, default: None)) – <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.BitGenerator</span></code>. Please see Numpy’s <a class="reference external" href="https://numpy.org/doc/stable/reference/random/bit_generators/index.html">BitGenerator documentation</a> for more details.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="social-graph-generator">
+<h2>Social Graph Generator<a class="headerlink" href="#social-graph-generator" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="rec.random.generators.SocialGraphGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">rec.random.generators.</code><code class="sig-name descname">SocialGraphGenerator</code><a class="reference internal" href="../_modules/rec/random/generators.html#SocialGraphGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rec.random.generators.SocialGraphGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Thin wrapper around the <a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generators.html#module-networkx.generators.random_graphs">Networkx random graph generators</a>. We use this static class to generate random network adjacency matrices.</p>
+<p>By default, it generates a <a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.fast_gnp_random_graph.html#networkx.generators.random_graphs.fast_gnp_random_graph">binomial graph</a>, but it can generate any other random graph included in the Networkx API. Please refer to the Networkx documentation.</p>
+<dl class="py method">
+<dt id="rec.random.generators.SocialGraphGenerator.generate_random_graph">
+<em class="property">static </em><code class="sig-name descname">generate_random_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rec/random/generators.html#SocialGraphGenerator.generate_random_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rec.random.generators.SocialGraphGenerator.generate_random_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Note:</strong> to change type of graph, please include the <cite>graph_type</cite> parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of nodes in the graph. This is equivalent to the number of users in the system.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Adjacency matrix</strong> – Size <cite>|U|x|U|</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If <cite>n</cite> is not an integer.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>A minimal use case:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">SocialGraphGenerator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># &lt;-- number of nodes (users)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="c1"># &lt;-- 1000x1000 binomial adjacency matrix</span>
+</pre></div>
+</div>
+<p>Changing random graph generator (e.g., with the <a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.random_regular_graph.html#networkx.generators.random_graphs.random_regular_graph">random_regular_graph</a>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">networkx.generators.random_graphs</span> <span class="kn">import</span> <span class="n">random_regular_graph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rrg</span> <span class="o">=</span> <span class="n">random_regular_graph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># &lt;-- degree, also required by random_regular_graph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="n">rrg</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="metrics.html" class="btn btn-neutral float-left" title="Metrics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Elena Lucherini
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+algo-segregation-docs
+=====================
+
+.. toctree::
+   :maxdepth: 4
+

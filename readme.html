@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simulator &mdash; Algo-segregation 0.0.1 documentation</title>
+  <title>Simulator &mdash; Algo-segregation 0.1.0b documentation</title>
   
 
   
@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference/reference.html" />
+    <link rel="prev" title="Simulator Version 0.1.0 Documentation" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,8 +81,14 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-usage">Example usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/reference.html">Reference</a></li>
 </ul>
 
             
@@ -153,21 +161,33 @@
 <p>This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy’s [instructions for installing a scientific Python distribution](<a class="reference external" href="https://scipy.org/install.html">https://scipy.org/install.html</a>).</p>
 <p>Currently, the simulator has only been tested extensively on MacOS 10.15.</p>
 <p>To install the simulator, you will need the Python package manager, pip. After activating your virtual environment, run the following commands in a terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/elucherini/algo-segregation.git
+<span class="nb">cd</span> algo-segregation
+pip install -e .
+</pre></div>
+</div>
 <p>The command should automatically install all dependencies.</p>
 </div>
 <div class="section" id="tutorials">
 <h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
 <p>Examples of how to use the simulator can be found in the notebooks below:</p>
-<p>Examples of how to use the simulator can be found in the notebooks below:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="examples/quick-start.ipynb">Quick start</a>: start here for a brief introduction.</p></li>
 <li><p><a class="reference external" href="examples/complete-guide.ipynb">Complete guide</a>: an overview of the main concepts of the system.</p></li>
-<li><p>Advanced guide: <a class="reference external" href="examples/advanced-models.ipynb">building a model</a>: an introduction to adding your own models on top of the system.</p></li>
-<li><p>Advanced guide: <a class="reference external" href="examples/advanced-metrics.ipynb">metrics</a>: an example of how to add new metrics to a model.</p></li>
+<li><p>Advanced guide - <a class="reference external" href="examples/advanced-models.ipynb">building a model</a>: an introduction to adding your own models on top of the system.</p></li>
+<li><p>Advanced guide - <a class="reference external" href="examples/advanced-metrics.ipynb">adding metrics</a>: an example of how to add new metrics to a model.</p></li>
 </ul>
+<p>Please check the <a class="reference external" href="examples/">examples</a> directory for more notebooks.</p>
 </div>
 <div class="section" id="example-usage">
 <h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import rec
+
+<span class="nv">recsys</span> <span class="o">=</span> rec.models.ContentFiltering<span class="o">()</span>
+recsys.run<span class="o">(</span><span class="nv">timesteps</span><span class="o">=</span><span class="m">10</span><span class="o">)</span>
+<span class="nv">measurements</span> <span class="o">=</span> recsys.get_measurements<span class="o">()</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -177,12 +197,21 @@
           </div>
           <footer>
   
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference/reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Simulator Version 0.1.0 Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Elena Lucherini, Arvind Narayanan
+        &copy; Copyright 2020, Elena Lucherini
 
     </p>
   </div>

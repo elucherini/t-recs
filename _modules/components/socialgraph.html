@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>components.socialgraph &mdash; Algo-segregation 0.1.0b documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Algo-segregation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Algo-segregation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>components.socialgraph</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for components.socialgraph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">VerboseMode</span>
+
+<div class="viewcode-block" id="BinarySocialGraph"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph">[docs]</a><span class="k">class</span> <span class="nc">BinarySocialGraph</span><span class="p">(</span><span class="n">VerboseMode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     A mixin for classes with a :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute</span>
+<span class="sd">    to gain the basic functionality of a binary social graph.</span>
+
+<span class="sd">    It assumes a network adjacency matrix of size `|U|x|U|`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BinarySocialGraph.follow"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.follow">[docs]</a>    <span class="k">def</span> <span class="nf">follow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to follow another user -- that is, to create a unidirectional link from one user to the other.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        user_index: int</span>
+<span class="sd">            Index of the user initiating the follow.</span>
+
+<span class="sd">        following_index: int</span>
+<span class="sd">            Index of the user to be followed.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        ValueError</span>
+<span class="sd">            If either of the user indices does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO allow for multiple indices</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">user_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">following_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">+</span> \
+                            <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">following_index</span><span class="p">,</span>
+                                                                <span class="n">user_index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BinarySocialGraph.unfollow"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.unfollow">[docs]</a>    <span class="k">def</span> <span class="nf">unfollow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to unfollow another user -- that is, to delete the unidirectional link that goes from one user to the other.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        user_index: int</span>
+<span class="sd">            Index of the user initiating the unfollow.</span>
+
+<span class="sd">        following_index: int</span>
+<span class="sd">            Index of the user to be unfollowed.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        ValueError</span>
+<span class="sd">            If either of the user indices does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO allow for multiple indices</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">user_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">following_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">+</span> \
+                            <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BinarySocialGraph.add_friends"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.add_friends">[docs]</a>    <span class="k">def</span> <span class="nf">add_friends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to add a user as *friends* -- that is, to create a bidirectional link that connects the two users.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        user1_index: int</span>
+<span class="sd">            Index of one user to establish the connection.</span>
+
+<span class="sd">        user2_index: int</span>
+<span class="sd">            Index of the other user to establish the connection.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        ValueError</span>
+<span class="sd">            If either of the user indices does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO allow for multiple indices</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">user1_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">user2_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">+</span> \
+                            <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BinarySocialGraph.remove_friends"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.remove_friends">[docs]</a>    <span class="k">def</span> <span class="nf">remove_friends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to remove a user from *friends* -- that is, to remove a bidirectional link that connects the two users.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        user1_index: int</span>
+<span class="sd">            Index of one user for which to remove the connection.</span>
+
+<span class="sd">        user2_index: int</span>
+<span class="sd">            Index of the other user for which to remove the connection.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        ValueError</span>
+<span class="sd">            If either of the user indices does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO allow for multiple indices</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">user1_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">user2_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">+</span> \
+                            <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Elena Lucherini
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

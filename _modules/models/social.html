@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rec.models.social &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>models.social &mdash; Algo-segregation 0.1.0b documentation</title>
   
 
   
@@ -17,24 +17,24 @@
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> Algo-segregation
           
 
           
@@ -61,7 +61,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -80,8 +80,8 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
 </ul>
 
             
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Algo-segregation</a>
+          <a href="../../index.html">Algo-segregation</a>
         
       </nav>
 
@@ -125,11 +125,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>rec.models.social</li>
+      <li>models.social</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -144,7 +144,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for rec.models.social</h1><div class="highlight"><pre>
+  <h1>Source code for models.social</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">rec.models</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">rec.metrics</span> <span class="kn">import</span> <span class="n">MSEMeasurement</span>
@@ -152,57 +152,65 @@
 <span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">SocialGraphGenerator</span>
 <span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">get_first_valid</span><span class="p">,</span> <span class="n">is_array_valid_or_none</span><span class="p">,</span> <span class="n">is_equal_dim_or_none</span><span class="p">,</span> <span class="n">all_none</span><span class="p">,</span> <span class="n">is_valid_or_none</span>
 
-<div class="viewcode-block" id="SocialFiltering"><a class="viewcode-back" href="../../../index.html#rec.models.social.SocialFiltering">[docs]</a><span class="k">class</span> <span class="nc">SocialFiltering</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">,</span> <span class="n">BinarySocialGraph</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A customizable social-filtering recommendation system.</span>
+<div class="viewcode-block" id="SocialFiltering"><a class="viewcode-back" href="../../reference/models.html#models.social.SocialFiltering">[docs]</a><span class="k">class</span> <span class="nc">SocialFiltering</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">,</span> <span class="n">BinarySocialGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A customizable social filtering recommendation system.</span>
 
-<span class="sd">        With social filtering, users are presented items that were previously liked by other users in their</span>
-<span class="sd">        social networks.</span>
+<span class="sd">    With social filtering, users are presented items that were previously liked by other users in their social networks.</span>
 
-<span class="sd">        The social network is represented by a |U|x|U| matrix, where |U| is the number of users in the system.</span>
-<span class="sd">        For each pair of users u and v, entry (u,v) defines whether u &quot;follows&quot;/is connected with v. This</span>
-<span class="sd">        can be a binary relationship or a score that measures how likely u is to engage with content that</span>
-<span class="sd">        v has previously interacted with.</span>
+<span class="sd">    The social network is represented by a `|U|x|U|` matrix, where `|U|` is the number of users in the system. For each pair of users `u` and `v`, entry `[u,v]` defines whether `u` &quot;follows&quot;/is connected to `v`. This can be a binary relationship or a score that measures how likely `u` is to engage with content that `v` has previously interacted with.</span>
 
-<span class="sd">        Please note that the follow/unfollow and add_friends/remove_friends methods assume a binary social graph.</span>
+<span class="sd">    Please note that, in this class, the follow/unfollow and add_friends/remove_friends methods assume a binary social graph (see :class:`~components.socialgraph.BinarySocialGraph`).</span>
 
-<span class="sd">        Item attributes are represented by a |U|x|I| matrix, where |I| is the number of items in the system.</span>
-<span class="sd">        For each item i and user u, we define a score that determines the interactions u had with i. Again, this</span>
-<span class="sd">        could just be a binary relationship.</span>
+<span class="sd">    Item attributes are represented by a `|U|x|I|` matrix, where `|I|` is the number of items in the system. For each item `i` and user `u`, we define a score that determines the interactions `u` had with `i`. Again, this could just be a binary relationship.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            num_users (int, optional): The number of users |U| in the system.</span>
-<span class="sd">            num_items (int, optiona;): The number of items |I| in the system.</span>
-<span class="sd">            item_representation (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the similarity</span>
-<span class="sd">                between each item and attribute. If this is not None, num_items is</span>
-<span class="sd">                ignored.</span>
-<span class="sd">            user_representation (:obj:`numpy.ndarray`, optional): A |U|x|U| matrix representing each user&#39;s</span>
-<span class="sd">                social network: if user_representation[u,v] &gt; 0, then user u &quot;follows&quot; user v. If this</span>
-<span class="sd">                is not None, num_users is ignored.</span>
-<span class="sd">            actual_user_scores (:obj:`numpy.ndarray`, optional): A |U|x|I| matrix representing the real</span>
-<span class="sd">                user scores. This matrix is *not* used for recommendations. This is</span>
-<span class="sd">                only kept for measurements and the system is unaware of it.</span>
-<span class="sd">            verbose (bool, optional): If True, enables verbose mode. Disabled by default.</span>
-<span class="sd">            num_items_per_iter (int, optional): Number of items presented to the user per iteration.</span>
-<span class="sd">            num_new_items (int, optional): Number of new items that the systems add if it runs out</span>
-<span class="sd">                of items that the user can interact with.</span>
 
-<span class="sd">        Attributes:</span>
-<span class="sd">            Inherited by :class:`Recommender`</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
 
-<span class="sd">        Examples:</span>
-<span class="sd">            SocialFiltering can be instantiated with no arguments -- in which case, it will</span>
-<span class="sd">            be initialized with the default parameters and the item/user representation will be</span>
-<span class="sd">            initialized to zero. This means that a user starts with no followers/users they follow,</span>
-<span class="sd">            and that there have been no previous interactions for this set of users.</span>
+<span class="sd">        num_users: int (optional, default: 100)</span>
+<span class="sd">            The number of users `|U|` in the system.</span>
+
+<span class="sd">        num_items: int (optional, default: 1250)</span>
+<span class="sd">            The number of items `|I|` in the system.</span>
+
+<span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">            A `|U|x|I|` matrix representing the past user interactions. If this is not None, `num_items` is ignored.</span>
+
+<span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">            A `|U|x|U|` adjacency matrix representing each users&#39; social network. If this is not None, num_users is ignored.</span>
+
+<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">            A `|U|x|I|` matrix representing the real user scores. This matrix is **not** used for recommendations. This is only kept for measurements and the system is unaware of it.</span>
+
+<span class="sd">        verbose: bool (optional, default: False)</span>
+<span class="sd">            If True, enables verbose mode. Disabled by default.</span>
+
+<span class="sd">        num_items_per_iter: int (optional, default: 10)</span>
+<span class="sd">            Number of items presented to the user per iteration.</span>
+
+<span class="sd">        num_new_items: int (optional, default: 30)</span>
+<span class="sd">            Number of new items that the systems add if it runs out of items that the user can interact with.</span>
+
+<span class="sd">        seed: int, None (optional, default: None)</span>
+<span class="sd">            Seed for random generator.</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        ----------</span>
+<span class="sd">            SocialFiltering can be instantiated with no arguments -- in which case, it will be initialized with the default parameters and the item/user representation will be initialized to zero. This means that a user starts with no followers/users they follow, and that there have been no previous interactions for this set of users.</span>
 
 <span class="sd">            &gt;&gt;&gt; sf = SocialFiltering()</span>
 <span class="sd">            &gt;&gt;&gt; sf.user_profiles.shape</span>
 <span class="sd">            (100, 100)   # &lt;-- 100 users (default)</span>
 <span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (99, 1250) # &lt;-- 100 users (default), 1250 items (default)</span>
+<span class="sd">            (100, 1250) # &lt;-- 100 users (default), 1250 items (default)</span>
 
-<span class="sd">            This class can be customized either by defining the number of users/items</span>
-<span class="sd">            in the system:</span>
+<span class="sd">            This class can be customized either by defining the number of users and/or items in the system:</span>
 
 <span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(num_users=1200, num_items=5000)</span>
 <span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
@@ -212,25 +220,23 @@
 <span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
 <span class="sd">            (50, 1250) # &lt;-- 50 users, 1250 items (default)</span>
 
-<span class="sd">            Or by generating representations for items and/or users:</span>
-<span class="sd">            # Items are uniformly distributed. We &quot;indirectly&quot; define 100 users.</span>
-<span class="sd">            &gt;&gt;&gt; item_representation = np.random.randint(0, 1, size=(100, 200))</span>
+<span class="sd">            Or by generating representations for items and/or users. In the example below, items are uniformly distributed. We &quot;indirectly&quot; define 100 users by defining a `100x200` item representation.</span>
+
+<span class="sd">            &gt;&gt;&gt; item_representation = np.random.randint(2, size=(100, 200))</span>
 <span class="sd">            # Social networks are drawn from a binomial distribution. This representation also uses 100 users.</span>
-<span class="sd">            # Note: For this to be meaningful, make sure that the diagonal is all set to 1.</span>
-<span class="sd">            &gt;&gt;&gt; sf = istribution(distr_type=&#39;powerlaw&#39;).compute(a=1.16, size=(100, 100)).compute())</span>
-<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(item_representation=item_representation, user_representation=user_representation)</span>
+<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(item_representation=item_representation)</span>
 <span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
 <span class="sd">            (100, 200)</span>
 <span class="sd">            &gt;&gt;&gt; sf.user_profiles.shape</span>
 <span class="sd">            (100, 100)</span>
 
-<span class="sd">            Note that user and item representations have the precedence over the number of</span>
-<span class="sd">            users/items specified at initialization. For example:</span>
+<span class="sd">            Note that user and item representations have the precedence over the number of users/items specified at initialization. For example:</span>
+
 <span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(num_users=50, user_representation=user_representation)</span>
 <span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
 <span class="sd">            (100, 200) # &lt;-- 100 users, 200 items. num_users was ignored because user_representation was specified.</span>
 
-<span class="sd">            The same happens with the number of items or users and item representations.</span>
+<span class="sd">            The same is true about the number of items or users and item representations.</span>
 
 <span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(num_users=1400, item_representation=item_representation)</span>
 <span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>

@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Components &mdash; Algo-segregation 0.1.0b documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Models" href="models.html" />
+    <link rel="prev" title="Reference" href="reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Algo-segregation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Simulator</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-components.users">Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-components.items">Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#binary-social-graph">Binary Social Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#base-components">Base Components</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random.html">Random Generators</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Algo-segregation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="reference.html">Reference</a> &raquo;</li>
+        
+      <li>Components</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/components.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="components">
+<h1>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h1>
+<p>This modules contains essential classes, such as Users and Items, as well as mixins that can be used to enhance the functionality of a model.</p>
+<div class="section" id="module-components.users">
+<span id="users"></span><h2>Users<a class="headerlink" href="#module-components.users" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="components.users.ActualUserProfiles">
+<em class="property">class </em><code class="sig-prename descclassname">components.users.</code><code class="sig-name descname">ActualUserProfiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_profiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserProfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.ActualUserProfiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Real user profiles, unknown to the model. This class is a container compatible with Numpy operations and it does not make assumptions on the size of the representation.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.users.PredictedScores">
+<em class="property">class </em><code class="sig-prename descclassname">components.users.</code><code class="sig-name descname">PredictedScores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">predicted_scores</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedScores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.PredictedScores" title="Permalink to this definition">¶</a></dt>
+<dd><p>User scores about items generated by the model. This class is a container compatible with Numpy operations and it does not make assumptions on the size of the representation.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.users.PredictedUserProfiles">
+<em class="property">class </em><code class="sig-prename descclassname">components.users.</code><code class="sig-name descname">PredictedUserProfiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_profiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedUserProfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.PredictedUserProfiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>User profiles as predicted by the model. This class is a container compatible with Numpy operations and it does not make assumptions on the size of the representation.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.users.Users">
+<em class="property">class </em><code class="sig-prename descclassname">components.users.</code><code class="sig-name descname">Users</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">actual_user_profiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_user_scores</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">interact_with_items</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_users</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing users in the system.</p>
+<p>This class contains the real user preferences, which are unknown to the system, and the behavior of users when interacting with items.</p>
+<p>In general, users are represented with single <em>array_like</em> objects that contain all the users’ preferences and characteristics. For example, real user preferences can be represented by a Numpy ndarray of size <cite>(number_of_users, number_of_items)</cite> where element <cite>[u,i]</cite> is the score assigned by user u to item i.</p>
+<p>Models determine the size constraints of objects representing users. Requirements vary across models and, unless specified, this class does not make assumptions on the real user components.</p>
+<p>This class inherits from <a class="reference internal" href="#components.base_components.BaseComponent" title="components.base_components.BaseComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actual_user_profiles</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of the real user profiles.</p></li>
+<li><p><strong>actual_user_scores</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of the real scores that users assign to items.</p></li>
+<li><p><strong>interact_with_items</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Function that specifies the behavior of users when interacting with items. If None, users follow the behavior specified in <a class="reference internal" href="#components.users.Users.get_user_feedback" title="components.users.Users.get_user_feedback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_user_feedback()</span></code></a>.</p></li>
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em>, </em><em>(</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – The number of users in the system.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the user representation. It expects a tuple. If None, it is chosen randomly.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">Attributes from BaseComponent</code></dt>
+<dd><p>Inherited by <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="components.users.Users.actual_user_profiles">
+<code class="sig-name descname">actual_user_profiles</code><a class="headerlink" href="#components.users.Users.actual_user_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>A matrix representing the <em>real</em> similarity between each item and attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="components.users.Users.actual_user_scores">
+<code class="sig-name descname">actual_user_scores</code><a class="headerlink" href="#components.users.Users.actual_user_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="docutils literal notranslate"><span class="pre">`|U|x|I|`</span></code> matrix representing the <em>real</em> scores assigned by each user to each item, where <code class="docutils literal notranslate"><span class="pre">`|U|`</span></code> is the number of users and <code class="docutils literal notranslate"><span class="pre">`|I|`</span></code> is the number of items in the system. Item <cite>[u, i]</cite> is the scores assigned by user <cite>u</cite> to item <cite>i</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="components.users.Users.interact_with_items">
+<code class="sig-name descname">interact_with_items</code><a class="headerlink" href="#components.users.Users.interact_with_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that defines user behaviors when interacting with items. If None, users follow the behavior in <a class="reference internal" href="#components.users.Users.get_user_feedback" title="components.users.Users.get_user_feedback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_user_feedback()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="components.users.Users._user_vector">
+<code class="sig-name descname">_user_vector</code><a class="headerlink" href="#components.users.Users._user_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="docutils literal notranslate"><span class="pre">`|U|`</span></code> array of user indices, used internally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><strong>private</strong> <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – If parameters are of the wrong type.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If both actual_user_profiles and size are None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="components.users.Users.compute_user_scores">
+<code class="sig-name descname">compute_user_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">train_function</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.compute_user_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users.compute_user_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes and stores the actual scores that users assign to items compatible with the system. It does so by using the model’s train function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_function</strong> (<em>callable</em>) – Function that is used to train the model. Since training the model corresponds to generating user scores starting from user profiles, as predicted by the model, the same function can be used to compute the real scores using the real user preferences.</p></li>
+<li><p><strong>kwargs</strong> (<em>args</em><em>,</em>) – Parameters needed by the model’s train function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – If train_function is not callable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.Users.get_actual_user_scores">
+<code class="sig-name descname">get_actual_user_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.get_actual_user_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users.get_actual_user_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of actual user scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em> or </em><em>numpy.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Specifies the user index (or indices) for which to return the actual user scores. If None, the function returns the whole matrix.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An array of actual user scores for each item.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.Users.get_user_feedback">
+<code class="sig-name descname">get_user_feedback</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.get_user_feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users.get_user_feedback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates user interactions at a given timestep, generally called by a model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>args</em><em>,</em>) – <p>Parameters needed by the model’s train function.</p>
+<dl class="simple">
+<dt>items: <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>): A <a href="#id1"><span class="problematic" id="id2">|U|x|num_items_per_iter|</span></a> matrix with recommendations and</dt><dd><p>new items.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Array of interactions s.t. element interactions_u(t) represents the</em></p></li>
+<li><p><strong>index of the item selected by user u at time t. Shape</strong> (<em>|U|</em>)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If <a class="reference internal" href="#components.users.Users.interact_with_items" title="components.users.Users.interact_with_items"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interact_with_items</span></code></a> is None and there is not <cite>item</cite> parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-components.items">
+<span id="items"></span><h2>Items<a class="headerlink" href="#module-components.items" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="components.items.Items">
+<em class="property">class </em><code class="sig-prename descclassname">components.items.</code><code class="sig-name descname">Items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/items.html#Items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.items.Items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Items components in the system.</p>
+<p>Items are the objects with which users interact with models and with each other.</p>
+<p>This class is essentially a container of Numpy’s ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from <a class="reference internal" href="#components.base_components.Component" title="components.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> and it contains all the attributes of that class.</p>
+<p>The Items class does not specify any constraints on items. It is used internally in <a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of items. It expects an array_like object. If None, the representation is generated randomly.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the item representation. It expects a tuple. If None, it is chosen randomly.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for underlying random generator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">Attributes from Component</code></dt>
+<dd><p>Inherited by <a class="reference internal" href="#components.base_components.Component" title="components.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="components.items.Items.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#components.items.Items.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="binary-social-graph">
+<h2>Binary Social Graph<a class="headerlink" href="#binary-social-graph" title="Permalink to this headline">¶</a></h2>
+<p>This mixin helps define the behavior of agents (such as models) that implement a social network.</p>
+<span class="target" id="module-components.socialgraph"></span><dl class="py class">
+<dt id="components.socialgraph.BinarySocialGraph">
+<em class="property">class </em><code class="sig-prename descclassname">components.socialgraph.</code><code class="sig-name descname">BinarySocialGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A mixin for classes with a <code class="xref py py-attr docutils literal notranslate"><span class="pre">user_profiles</span></code> attribute</p>
+</div></blockquote>
+<p>to gain the basic functionality of a binary social graph.</p>
+<p>It assumes a network adjacency matrix of size <cite>|U|x|U|</cite>.</p>
+<dl class="py method">
+<dt id="components.socialgraph.BinarySocialGraph.add_friends">
+<code class="sig-name descname">add_friends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user1_index</span></em>, <em class="sig-param"><span class="n">user2_index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph.add_friends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph.add_friends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to add a user as <em>friends</em> – that is, to create a bidirectional link that connects the two users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user1_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of one user to establish the connection.</p></li>
+<li><p><strong>user2_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the other user to establish the connection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If either of the user indices does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.socialgraph.BinarySocialGraph.follow">
+<code class="sig-name descname">follow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_index</span></em>, <em class="sig-param"><span class="n">following_index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph.follow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph.follow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to follow another user – that is, to create a unidirectional link from one user to the other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the user initiating the follow.</p></li>
+<li><p><strong>following_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the user to be followed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If either of the user indices does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.socialgraph.BinarySocialGraph.remove_friends">
+<code class="sig-name descname">remove_friends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user1_index</span></em>, <em class="sig-param"><span class="n">user2_index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph.remove_friends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph.remove_friends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to remove a user from <em>friends</em> – that is, to remove a bidirectional link that connects the two users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user1_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of one user for which to remove the connection.</p></li>
+<li><p><strong>user2_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the other user for which to remove the connection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If either of the user indices does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.socialgraph.BinarySocialGraph.unfollow">
+<code class="sig-name descname">unfollow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_index</span></em>, <em class="sig-param"><span class="n">following_index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph.unfollow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph.unfollow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to unfollow another user – that is, to delete the unidirectional link that goes from one user to the other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the user initiating the unfollow.</p></li>
+<li><p><strong>following_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the user to be unfollowed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If either of the user indices does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="base-components">
+<h2>Base Components<a class="headerlink" href="#base-components" title="Permalink to this headline">¶</a></h2>
+<p>These are mainly abstract classes that are not supposed to be instantiated.</p>
+<span class="target" id="module-components.base_components"></span><dl class="py class">
+<dt id="components.base_components.BaseComponent">
+<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">BaseComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">init_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.BaseComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Observable that stores a history of its state.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.base_components.BaseObservable">
+<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">BaseObservable</code><a class="reference internal" href="../_modules/components/base_components.html#BaseObservable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.BaseObservable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Observable mixin for the observer design pattern.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.base_components.BaseObserver">
+<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">BaseObserver</code><a class="reference internal" href="../_modules/components/base_components.html#BaseObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.BaseObserver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Observer mixin for the observer design pattern.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.base_components.Component">
+<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">Component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">current_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#Component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.Component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for components that make up the system state.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.base_components.FromNdArray">
+<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">FromNdArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#FromNdArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.FromNdArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subclass for Numpy’s ndarrays.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="models.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="reference.html" class="btn btn-neutral float-left" title="Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Elena Lucherini
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

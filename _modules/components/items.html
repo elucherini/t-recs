@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rec.components.items &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>components.items &mdash; Algo-segregation 0.1.0b documentation</title>
   
 
   
@@ -17,24 +17,24 @@
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> Algo-segregation
           
 
           
@@ -61,7 +61,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -80,8 +80,8 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
 </ul>
 
             
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Algo-segregation</a>
+          <a href="../../index.html">Algo-segregation</a>
         
       </nav>
 
@@ -125,11 +125,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>rec.components.items</li>
+      <li>components.items</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -144,21 +144,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for rec.components.items</h1><div class="highlight"><pre>
+  <h1>Source code for components.items</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">VerboseMode</span><span class="p">,</span> <span class="n">normalize_matrix</span>
 <span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">FromNdArray</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../../reference/components.html#rec.components.items.Items">[docs]</a><span class="k">class</span> <span class="nc">Items</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../reference/components.html#components.items.Items">[docs]</a><span class="k">class</span> <span class="nc">Items</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Items components in the system.</span>
 
 <span class="sd">    Items are the objects with which users interact with models and with each other.</span>
 
-<span class="sd">    This class is essentially a container of Numpy&#39;s ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from :class:`~.base_component.Component` and it contains all the attributes of that class.</span>
+<span class="sd">    This class is essentially a container of Numpy&#39;s ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from :class:`~.base_components.Component` and it contains all the attributes of that class.</span>
 
-<span class="sd">    The Items class does not specify any constraints on items. It is used internally in :class:`~rec.models.recommender.BaseRecommender`.</span>
+<span class="sd">    The Items class does not specify any constraints on items. It is used internally in :class:`~models.recommender.BaseRecommender`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -------------</span>
@@ -174,6 +174,16 @@
 
 <span class="sd">    seed: int, None (optional, default: None)</span>
 <span class="sd">        Seed for underlying random generator.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ------------</span>
+
+<span class="sd">    Attributes from Component</span>
+<span class="sd">        Inherited by :class:`~.base_components.Component`</span>
+
+<span class="sd">    name: str</span>
+<span class="sd">        Name of the component</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;items&#39;</span>

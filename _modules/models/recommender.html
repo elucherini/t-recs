@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rec.models.recommender &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>models.recommender &mdash; Algo-segregation 0.1.0b documentation</title>
   
 
   
@@ -17,24 +17,24 @@
   
 
   
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> Algo-segregation
           
 
           
@@ -61,7 +61,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -80,8 +80,8 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference/reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
 </ul>
 
             
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Algo-segregation</a>
+          <a href="../../index.html">Algo-segregation</a>
         
       </nav>
 
@@ -125,11 +125,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>rec.models.recommender</li>
+      <li>models.recommender</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -144,7 +144,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for rec.models.recommender</h1><div class="highlight"><pre>
+  <h1>Source code for models.recommender</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -155,77 +155,140 @@
 <span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">VerboseMode</span>
 <span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">Generator</span>
 
-<div class="viewcode-block" id="MeasurementModule"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.MeasurementModule">[docs]</a><span class="k">class</span> <span class="nc">MeasurementModule</span><span class="p">(</span><span class="n">BaseObserver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mixin for observers of &quot;Measurement&quot; observables</span>
+<div class="viewcode-block" id="MeasurementModule"><a class="viewcode-back" href="../../reference/models.html#models.recommender.MeasurementModule">[docs]</a><span class="k">class</span> <span class="nc">MeasurementModule</span><span class="p">(</span><span class="n">BaseObserver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for observers of :class:`Measurement` observables. Implements the `Observer design pattern`_.</span>
+
+<span class="sd">    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern</span>
+
+<span class="sd">    This mixin allows the system to monitor metrics. That is, at each timestep an element will be added to the :attr:`~metrics.measurement.Measurement.measurement_history` lists of each metrics that the system is monitoring.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    ------------</span>
+
+<span class="sd">        metrics: list</span>
+<span class="sd">            List of metrics that the system will monitor.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">add_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_observables</span><span class="p">(</span><span class="n">observer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
-                                  <span class="n">observable_type</span><span class="o">=</span><span class="n">Measurement</span><span class="p">)</span></div>
+<div class="viewcode-block" id="MeasurementModule.add_metrics"><a class="viewcode-back" href="../../reference/models.html#models.recommender.MeasurementModule.add_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">add_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds metrics to the :attr:`metrics` list. This allows the system to monitor these metrics.</span>
 
-<div class="viewcode-block" id="SystemStateModule"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.SystemStateModule">[docs]</a><span class="k">class</span> <span class="nc">SystemStateModule</span><span class="p">(</span><span class="n">BaseObserver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mixin gor observers of &quot;SystemState&quot; observables</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            args: :class:`~metrics.measurement.Measurement`</span>
+<span class="sd">                Accepts a variable number of metrics that inherits from :class:`~metrics.measurement.Measurement`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_observables</span><span class="p">(</span><span class="n">observer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
+                                  <span class="n">observable_type</span><span class="o">=</span><span class="n">Measurement</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="SystemStateModule"><a class="viewcode-back" href="../../reference/models.html#models.recommender.SystemStateModule">[docs]</a><span class="k">class</span> <span class="nc">SystemStateModule</span><span class="p">(</span><span class="n">BaseObserver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for observers of :class:`Component` observables. Implements the `Observer design pattern`_.</span>
+
+<span class="sd">    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern</span>
+
+<span class="sd">    This mixin allows the system to monitor the system state. That is, at each timestep an element will be added to the :attr:`~components.base_components.BaseComponent.state_history` lists of each component that the system is monitoring.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    ------------</span>
+
+<span class="sd">        _system_state: list</span>
+<span class="sd">            List of system state components that the system will monitor.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_system_state</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">add_state_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_observables</span><span class="p">(</span><span class="n">observer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_system_state</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
-                                  <span class="n">observable_type</span><span class="o">=</span><span class="n">BaseComponent</span><span class="p">)</span></div>
+<div class="viewcode-block" id="SystemStateModule.add_state_variable"><a class="viewcode-back" href="../../reference/models.html#models.recommender.SystemStateModule.add_state_variable">[docs]</a>    <span class="k">def</span> <span class="nf">add_state_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds metrics to the :attr:`_system_state` list. This allows the system to monitor these system state components.</span>
 
-<div class="viewcode-block" id="BaseRecommender"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender">[docs]</a><span class="k">class</span> <span class="nc">BaseRecommender</span><span class="p">(</span><span class="n">MeasurementModule</span><span class="p">,</span> <span class="n">SystemStateModule</span><span class="p">,</span> <span class="n">VerboseMode</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            args: :class:`~components.base_components.BaseComponent`</span>
+<span class="sd">                Accepts a variable number of components that inherit from class :class:`~components.base_components.BaseComponent`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_observables</span><span class="p">(</span><span class="n">observer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_system_state</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
+                                  <span class="n">observable_type</span><span class="o">=</span><span class="n">BaseComponent</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="BaseRecommender"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender">[docs]</a><span class="k">class</span> <span class="nc">BaseRecommender</span><span class="p">(</span><span class="n">MeasurementModule</span><span class="p">,</span> <span class="n">SystemStateModule</span><span class="p">,</span> <span class="n">VerboseMode</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Abstract class representing a recommender system.</span>
 
-<span class="sd">        All attributes and methods in this class are generic to all recommendation systems</span>
-<span class="sd">        implemented.</span>
+<span class="sd">        The attributes and methods in this class can be generalized beyond recommender systems and are currently common to all pre-loaded models.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            user_representation (:obj:`numpy.ndarray`): An array representing users. The</span>
-<span class="sd">                shape and meaning depends on the implementation of the concrete class.</span>
-<span class="sd">            item_representation (:obj:`numpy.ndarray`): An array representing items. The</span>
-<span class="sd">                shape and meaning depends on the implementation of the concrete class.</span>
-<span class="sd">            actual_user_representation (:obj:`numpy.ndarray`): An array representing real user</span>
-<span class="sd">                preferences unknown to the system. The shape and meaning depends on the</span>
-<span class="sd">                implementation of the concrete class.</span>
-<span class="sd">            num_users (int): The number of users in the system.</span>
-<span class="sd">            num_items (int): The number of items in the system.</span>
-<span class="sd">            num_items_per_iter (int): Number of items presented to the user at each</span>
-<span class="sd">                iteration.</span>
-<span class="sd">            num_new_items (int): Number of new items that the systems add if it runs out</span>
-<span class="sd">                of items that the user can interact with.</span>
-<span class="sd">            verbose (bool, optional): If True, enables verbose mode. Disabled by default.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
 
-<span class="sd">        Attributes:</span>
-<span class="sd">            Attributes inherited by :class:`VerboseMode`, plus:</span>
-<span class="sd">            user_profiles (:obj:`numpy.ndarray`): An array representing users, matching</span>
-<span class="sd">                user_representation. The shape and meaning depends on the implementation</span>
-<span class="sd">                of the concrete class.</span>
-<span class="sd">            item_attributes (:obj:`numpy.ndarray`): An array representing items, matching</span>
-<span class="sd">                item_representation. The shape and meaning depends on the implementation</span>
-<span class="sd">                of the concrete class.</span>
-<span class="sd">            actual_users (:obj:`numpy.ndarray`): An array representing real user</span>
-<span class="sd">                preferences, matching actual_users. The shape and meaning depends</span>
-<span class="sd">                on the implementation of the concrete class.</span>
-<span class="sd">            predicted_scores (:obj:`numpy.ndarray`): An array representing the user</span>
-<span class="sd">                preferences as perceived by the system. The shape is always |U|x|I|,</span>
-<span class="sd">                where |U| is the number of users in the system and |I| is the number of</span>
-<span class="sd">                items in the system. The scores are calculated with the dot product of</span>
-<span class="sd">                user_profiles and item_attributes.</span>
-<span class="sd">            measurements (:class:`Measurements`): Measurement module. See :class:`Measurements`.</span>
-<span class="sd">            num_users (int): The number of users in the system.</span>
-<span class="sd">            num_items (int): The number of items in the system.</span>
-<span class="sd">            num_items_per_iter (int): Number of items presented to the user per iteration.</span>
-<span class="sd">            num_new_items (int): Number of new items that the systems add if it runs out</span>
-<span class="sd">                of items that the user can interact with.</span>
-<span class="sd">            indices (:obj:`numpy.ndarray`): A |U|x|I| array representing the past</span>
-<span class="sd">                interactions of each user. This keeps track of which items each user</span>
-<span class="sd">                has interacted with, so that it won&#39;t be presented to the user again.</span>
-<span class="sd">            user_vector (:obj:`numpy.ndarray`): An array of length |U| s.t. user_vector_u = u</span>
-<span class="sd">                for u in U.</span>
-<span class="sd">            item_vector (:obj:`numpy.ndarray`): An array of length |I| s.t. item_vector_i = i</span>
-<span class="sd">                for i in I.</span>
+<span class="sd">            user_representation: :obj:`numpy.ndarray`</span>
+<span class="sd">                An array representing users. The shape and meaning depends on the implementation of the concrete class.</span>
+
+<span class="sd">            item_representation: :obj:`numpy.ndarray`</span>
+<span class="sd">                An array representing items. The shape and meaning depends on the implementation of the concrete class.</span>
+
+<span class="sd">            actual_user_representation: :obj:`numpy.ndarray`</span>
+<span class="sd">                An array representing real user preferences unknown to the system. The shape and meaning depends on the implementation of the concrete class.</span>
+
+<span class="sd">            num_users: int</span>
+<span class="sd">                The number of users in the system.</span>
+
+<span class="sd">            num_items: int</span>
+<span class="sd">                The number of items in the system.</span>
+
+<span class="sd">            num_items_per_iter: int</span>
+<span class="sd">                Number of items presented to the user at each iteration.</span>
+
+<span class="sd">            num_new_items: int</span>
+<span class="sd">                Number of new items that the systems add if it runs out of items that the user can interact with.</span>
+
+<span class="sd">            measurements: list</span>
+<span class="sd">                List of metrics to monitor.</span>
+
+<span class="sd">            system_state: list</span>
+<span class="sd">                List of system state components to monitor.</span>
+
+<span class="sd">            verbose: bool (optional, default: False)</span>
+<span class="sd">                If True, it enables verbose mode.</span>
+
+<span class="sd">            seed: int, None (optional, default: None)</span>
+<span class="sd">                Seed for random generator used</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            user_profiles: :class:`~components.users.PredictedUserProfiles`</span>
+<span class="sd">                An array representing users, matching user_representation. The shape and meaning depends on the implementation of the concrete class.</span>
+
+<span class="sd">            item_attributes: :class:`~components.items.Items`</span>
+<span class="sd">                An array representing items, matching item_representation. The shape and meaning depends on the implementation of the concrete class.</span>
+
+<span class="sd">            actual_users: :class:`~components.users.Users`</span>
+<span class="sd">                An array representing real user preferences, matching actual_users. The shape and meaning depends on the implementation of the concrete class.</span>
+
+<span class="sd">            predicted_scores: :class:`~components.users.PredictedScores`</span>
+<span class="sd">                An array representing the user preferences as perceived by the system. The shape is always `|U|x|I|`, where `|U|` is the number of users in the system and `|I|` is the number of items in the system. The scores are calculated with the dot product of :attr:`user_profiles` and :attr:`item_attributes`.</span>
+
+<span class="sd">            num_users: int</span>
+<span class="sd">                The number of users in the system.</span>
+
+<span class="sd">            num_items: int</span>
+<span class="sd">                The number of items in the system.</span>
+
+<span class="sd">            num_items_per_iter: int</span>
+<span class="sd">                Number of items presented to the user per iteration.</span>
+
+<span class="sd">            num_new_items: int</span>
+<span class="sd">                Number of new items that the systems add if it runs out of items that the user can interact with.</span>
+
+<span class="sd">            random_state: :class:`rec.random.generators.Generator`</span>
+
+<span class="sd">            indices: :obj:`numpy.ndarray`</span>
+<span class="sd">                A `|U|x|I|` array representing the past interactions of each user. This keeps track of which items each user has interacted with, so that it won&#39;t be presented to the user again if `repeated_items` are not allowed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_representation</span><span class="p">,</span> <span class="n">item_representation</span><span class="p">,</span>
@@ -297,12 +360,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Seed was not set.&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="BaseRecommender.train"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Updates recommender based on past interactions for better user predictions.</span>
+<div class="viewcode-block" id="BaseRecommender.train"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates scores predicted by the system based on past interactions for better user predictions. Specifically, it updates :attr:`predicted_scores` with a dot product.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                normalize (bool, optional): set to True if the scores should be normalized,</span>
-<span class="sd">                    False otherwise.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            user_profiles: :obj:`array_like` or None (optional, default: None)</span>
+<span class="sd">                First factor of the dot product, which should provide a representation of users. If None, the first factor defaults to :attr:`user_profiles`.</span>
+
+<span class="sd">            item_attributes: :obj:`array_like` or None (optional, default: None)</span>
+<span class="sd">                Second factor of the dot product, which should provide a representation of items. If None, the second factor defaults to :attr:`item_attributes`.</span>
+
+<span class="sd">            normalize: bool (optional, default: True)</span>
+<span class="sd">                Set to True if the scores should be normalized, False otherwise.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            predicted_scores: :class:`~components.users.PredictedScores`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user_profiles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">user_profiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span>
@@ -317,21 +393,26 @@
         <span class="k">assert</span><span class="p">(</span><span class="n">predicted_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">predicted_scores</span></div>
 
-<div class="viewcode-block" id="BaseRecommender.generate_recommendations"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.generate_recommendations">[docs]</a>    <span class="k">def</span> <span class="nf">generate_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices_prime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Generate recommendations</span>
+<div class="viewcode-block" id="BaseRecommender.generate_recommendations"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.generate_recommendations">[docs]</a>    <span class="k">def</span> <span class="nf">generate_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices_prime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate recommendations</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                k (int, optional): number of items to recommend.</span>
-<span class="sd">                indices_prime (:obj:numpy.ndarray, optional): a matrix containing the</span>
-<span class="sd">                    indices of the items each user has interacted with. It is used to</span>
-<span class="sd">                    ensure that the user is presented with items they have already</span>
-<span class="sd">                    interacted with.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
 
-<span class="sd">            Returns:</span>
-<span class="sd">                An array of k recommendations.</span>
+<span class="sd">            k : int (optional, default: 1)</span>
+<span class="sd">                Number of items to recommend.</span>
 
-<span class="sd">            Todo:</span>
-<span class="sd">                * Group matrix manipulations into util functions</span>
+<span class="sd">            indices_prime : :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">                A matrix containing the indices of the items each user has interacted with. It is used to ensure that the user is presented with items they have already interacted with.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">            Recommendations: :obj:`numpy.ndarray`</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ------</span>
+<span class="sd">            * **(TODO)** Group matrix manipulations into util functions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">indices_prime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">indices_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)]</span>
@@ -361,17 +442,18 @@
         <span class="k">return</span> <span class="n">rec</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_users</span><span class="o">.</span><span class="n">_user_vector</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">picks</span><span class="p">]</span></div>
         <span class="c1">#return self.predicted_scores.argsort()[:,::-1][:,0:k]</span>
 
-<div class="viewcode-block" id="BaseRecommender.recommend"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements the recommendation process by combining recommendations and</span>
-<span class="sd">            new (random) items.</span>
+<div class="viewcode-block" id="BaseRecommender.recommend"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements the recommendation process by combining recommendations and new (random) items.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                startup (bool, optional): If True, the system is in &quot;startup&quot; (exploration) mode</span>
-<span class="sd">                    and only presents the user with new randomly-chosen items. This is to maximize</span>
-<span class="sd">                    exploration.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">            startup (bool, optional): If True, the system is in &quot;startup&quot; (exploration) mode and only presents the user with new randomly chosen items. This is to maximize exploration.</span>
 
-<span class="sd">            Returns:</span>
-<span class="sd">                New and recommended items in random order.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            Items: :obj:`numpy.ndarray`</span>
+<span class="sd">            New and recommended items in random order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">startup</span><span class="p">:</span>
             <span class="n">num_new_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items_per_iter</span>
@@ -425,29 +507,33 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Updates user profiles based on last interaction.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates user profiles based on last interaction.</span>
 
-<span class="sd">            It must be defined in the concrete class.</span>
+<span class="sd">        It must be defined in the concrete class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="BaseRecommender.run"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="BaseRecommender.run"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Runs simulation for the given timesteps.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs simulation for the given timesteps.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                timestep (int, optional): number of timesteps for simulation</span>
-<span class="sd">                startup (bool, optional): if True, it runs the simulation in</span>
-<span class="sd">                    startup mode (see recommend() and startup_and_train())</span>
-<span class="sd">                train_between_steps (bool, optional): if True, the model is</span>
-<span class="sd">                    retrained after each step with the information gathered</span>
-<span class="sd">                    in the previous step.</span>
-<span class="sd">                repeated_items (bool, optional): if True, repeated items are allowed</span>
-<span class="sd">                    in the system -- that is, users can interact with the same</span>
-<span class="sd">                    item more than once. Examples of common instances in which</span>
-<span class="sd">                    this is useful: infection and network propagation models.</span>
-<span class="sd">                    Default is False.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            timestep : int (optional, default: 50)</span>
+<span class="sd">                Number of timesteps for simulation.</span>
+
+<span class="sd">            startup : bool (optional, default: False)</span>
+<span class="sd">                If True, it runs the simulation in startup mode (see :func:`recommend` and :func:`startup_and_train`)</span>
+
+<span class="sd">            train_between_steps : bool (optional, default: True)</span>
+<span class="sd">                If True, the model is retrained after each timestep with the information gathered in the previous step.</span>
+
+<span class="sd">            repeated_items : bool (optional, default: True)</span>
+<span class="sd">                If True, repeated items are allowed in the system -- that is, users can interact with the same item more than once.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">startup</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Run -- interleave recommendations and random items &#39;</span> <span class="o">+</span> \
@@ -474,23 +560,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">t</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BaseRecommender.startup_and_train"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.startup_and_train">[docs]</a>    <span class="k">def</span> <span class="nf">startup_and_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Runs simulation in startup mode by calling run() with startup=True.</span>
-<span class="sd">            For more information about startup mode, see run() and recommend().</span>
+<div class="viewcode-block" id="BaseRecommender.startup_and_train"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.startup_and_train">[docs]</a>    <span class="k">def</span> <span class="nf">startup_and_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs simulation in startup mode by calling :func:`run` with startup=True. For more information about startup mode, see :func:`run` and :func:`recommend`.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                timestep (int, optional): number of timesteps for simulation</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">            timestep : int (optional, default: 50)</span>
+<span class="sd">                Number of timesteps for simulation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Startup -- recommend random items&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_expand_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_new_items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Increases number of items in the system.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Increases number of items in the system.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                num_new_items (int, optional): number of new items to add to the system.</span>
-<span class="sd">                    If None, it is equal to twice the number of items presented to the user</span>
-<span class="sd">                    in one iteration.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">            num_new_items (int, optional): number of new items to add to the system.</span>
+<span class="sd">                If None, it is equal to twice the number of items presented to the user</span>
+<span class="sd">                in one iteration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        if num_new_items is None:</span>
@@ -508,11 +599,13 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="BaseRecommender.get_measurements"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.get_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">get_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns all available measurements. For more details,</span>
-<span class="sd">            please see the :class:`Measurements` class.</span>
+<div class="viewcode-block" id="BaseRecommender.get_measurements"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.get_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">get_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all available measurements. For more details, please see the :class:`~metrics.measurement.Measurement` class.</span>
 
-<span class="sd">            Returns: Dictionary of all available measurements.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        Monitored measurements: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No measurement module defined&quot;</span><span class="p">)</span>
@@ -525,11 +618,13 @@
             <span class="n">measurements</span><span class="p">[</span><span class="s1">&#39;timesteps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elapsed</span>
         <span class="k">return</span> <span class="n">measurements</span></div>
 
-<div class="viewcode-block" id="BaseRecommender.get_system_state"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.get_system_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_system_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return history of system state. For more details, please see</span>
-<span class="sd">        :class:`Component` classes.</span>
+<div class="viewcode-block" id="BaseRecommender.get_system_state"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.get_system_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_system_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return history of system state components stored in the :attr:`~components.base_components.BaseComponent.state_history` of the components stored in :attr:`.SystemStateModule._system_state`.</span>
 
-<span class="sd">            Returns: Dictionary of system state.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            System state: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_system_state</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No measurement module defined&quot;</span><span class="p">)</span>
@@ -548,15 +643,16 @@
 
 
 
-<div class="viewcode-block" id="BaseRecommender.measure_content"><a class="viewcode-back" href="../../../index.html#rec.models.recommender.BaseRecommender.measure_content">[docs]</a>    <span class="k">def</span> <span class="nf">measure_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Calls method in the :class:`Measurements` module to record metrics.</span>
-<span class="sd">            For more details, see the :class:`Measurements` class and its measure</span>
-<span class="sd">            method.</span>
+<div class="viewcode-block" id="BaseRecommender.measure_content"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.measure_content">[docs]</a>    <span class="k">def</span> <span class="nf">measure_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calls method in the :class:`Measurements` module to record metrics. For more details, see the :class:`Measurements` class and its measure method.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                interactions (:obj:`numpy.ndarray`): matrix of interactions</span>
-<span class="sd">                    per users at a given time step.</span>
-<span class="sd">                step (int): step on which the recorded interactions refers to.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">            interactions (:obj:`numpy.ndarray`): matrix of interactions</span>
+<span class="sd">                per users at a given time step.</span>
+
+<span class="sd">            step (int): step on which the recorded interactions refers to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
             <span class="n">metric</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
