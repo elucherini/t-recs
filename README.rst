@@ -5,7 +5,9 @@ A simulator for sociotechnical systems. More details coming soon.
 Install
 -------
 
-This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy's [instructions for installing a scientific Python distribution](https://scipy.org/install.html).
+This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy's `instructions for installing a scientific Python distribution`_.
+
+.. _instructions for installing a scientific Python distribution: https://scipy.org/install.html
 
 Currently, the simulator has only been tested extensively on MacOS 10.15.
 
@@ -48,3 +50,13 @@ Example usage
   recsys = rec.models.ContentFiltering()
   recsys.run(timesteps=10)
   measurements = recsys.get_measurements()
+  
+Documentation
+--------------
+
+A first draft of the documentation is available `here`_. In its current version, the documentation can be used as a supplement to exploring details in the code. Currently, the tutorials in examples_ might be a more useful and centralized resource to learn how to use the system.
+
+.. _here: https://elucherini.github.io/algo-segregation/index.html
+.. _examples: examples/
+
+
