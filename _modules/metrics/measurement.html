@@ -252,16 +252,19 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            interactions (:obj:`numpy.ndarray`): array of user interactions.</span>
+<span class="sd">            interactions : :obj:`numpy.ndarray`</span>
+<span class="sd">                Array of user interactions.</span>
 
-<span class="sd">            num_users (int): number of users in the system</span>
+<span class="sd">            num_users : int</span>
+<span class="sd">                Number of users in the system</span>
 
-<span class="sd">            num_items (int): number of items in the system</span>
+<span class="sd">            num_items : int</span>
+<span class="sd">                Number of items in the system</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ---------</span>
-<span class="sd">            :obj:`numpy.array` histogram of the number of interactions</span>
-<span class="sd">            aggregated by items at the given timestep.</span>
+<span class="sd">            Histogram : :obj:`numpy.ndarray`</span>
+<span class="sd">                Histogram of the number of interactions aggregated by items at the given timestep.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">histogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_items</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -289,7 +292,7 @@
         <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span>
                                                          <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span>
                                                          <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span><span class="p">)</span>
-        <span class="n">histogram</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1">#histogram[::-1].sort()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 

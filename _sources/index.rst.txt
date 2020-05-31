@@ -14,6 +14,25 @@ Simulator Documentation
 
    reference/reference
 
+Known bugs and inconsistencies
+================================
+Please check the `First Round`_ milestone for issues signaling bugs and limitation.
+
+.. _First Round: https://github.com/elucherini/algo-segregation/milestone/3
+
+Feedback and contributions
+===========================
+Feedback of any form is welcome. I especially encourage:
+
+- Contributions to the code -- bug fixes, improvements, new features, etc. Feel free to send in `pull requests`_.
+- "Bug reports" through the `GitHub issues`_ feature. Please try to explain the issue in as much detail as possible and I'll respond asap.
+- Questions regarding the use of the tool.
+- Corrections and fixes to these docs.
+- General feedback about the tool. Is it useful to you? Is it easy to use? What would improve it?
+
+.. _pull requests: https://github.com/elucherini/algo-segregation/pulls
+.. _GitHub issues: https://github.com/elucherini/algo-segregation/milestone/3
+
 Indices and tables
 ==================
 

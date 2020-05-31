@@ -268,7 +268,6 @@
 
         <span class="k">if</span> <span class="n">user_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">num_users</span><span class="p">)</span>
             <span class="n">user_representation</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">num_users</span><span class="p">,</span>
                                                                         <span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
                                                     <span class="n">graph_type</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">fast_gnp_random_graph</span><span class="p">)</span>
