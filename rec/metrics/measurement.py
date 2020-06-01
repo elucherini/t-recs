@@ -105,16 +105,19 @@ class InteractionMeasurement(Measurement):
         Parameters
         -----------
 
-            interactions (:obj:`numpy.ndarray`): array of user interactions.
+            interactions : :obj:`numpy.ndarray`
+                Array of user interactions.
 
-            num_users (int): number of users in the system
+            num_users : int
+                Number of users in the system
 
-            num_items (int): number of items in the system
+            num_items : int
+                Number of items in the system
 
         Returns
         ---------
-            :obj:`numpy.array` histogram of the number of interactions
-            aggregated by items at the given timestep.
+            Histogram : :obj:`numpy.ndarray`
+                Histogram of the number of interactions aggregated by items at the given timestep.
         """
         histogram = np.zeros(num_items)
         np.add.at(histogram, interactions, 1)
@@ -142,7 +145,7 @@ class InteractionMeasurement(Measurement):
         histogram = self._generate_interaction_histogram(interactions,
                                                          recommender.num_users,
                                                          recommender.num_items)
-        histogram[::-1].sort()
+        #histogram[::-1].sort()
         self.observe(histogram, copy=True)
 
 
