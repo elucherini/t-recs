@@ -39,6 +39,13 @@ def is_array_valid_or_none(array, ndim=2):
     # all good
     return True
 
+def array_dimensions_match(array1, array2):
+    """ Assuming that both arrays are defined,
+        we test whether they have matching dimensions.
+    """
+    array1, array2 = np.asarray(array1), np.asarray(array2)
+    return array1.shape == array2.shape
+
 def is_valid_or_none(value, type):
     """Returns true if either None or of the specified type"""
     return value is None or isinstance(value, type)

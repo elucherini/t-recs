@@ -233,7 +233,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         assert(user_profiles.shape[1] == item_attributes.shape[0])
         predicted_scores = np.dot(user_profiles, item_attributes)
         self.log('System updates predicted scores given by users (rows) ' + \
-            'to items (columns):\n' + str(predicted_scores))
+                 'to items (columns):\n' + str(predicted_scores))
         assert(predicted_scores is not None)
         return predicted_scores
 
@@ -395,7 +395,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # train between steps:
             if train_between_steps:
                 self.predicted_scores[:,:] = self.train(self.user_profiles,
-                                                   self.item_attributes)
+                                                        self.item_attributes)
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:

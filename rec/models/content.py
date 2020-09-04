@@ -3,7 +3,7 @@ from rec.metrics import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from rec.models import BaseRecommender
 from rec.random import Generator
-from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none
+from rec.utils import get_first_valid, is_array_valid_or_none, is_equal_dim_or_none, all_none, is_valid_or_none, array_dimensions_match
 
 class ContentFiltering(BaseRecommender):
     """
@@ -121,20 +121,34 @@ class ContentFiltering(BaseRecommender):
         if not is_array_valid_or_none(item_representation, ndim=2):
             raise ValueError("item_representation is not valid")
         if not is_array_valid_or_none(user_representation, ndim=2):
-            raise ValueError("item_representation is not valid")
+            raise ValueError("user_representation is not valid")
         if not is_valid_or_none(num_attributes, int):
             raise TypeError("num_attributes must be an int")
+        # if user_representation and actual_user_representation are both
+        # passed in, they must have matching dimensions
+        if user_representation is not None and actual_user_representation is not None:
+            if not array_dimensions_match(user_representation, actual_user_representation):
+                raise ValueError(("Dimensions of user_representation and "
+                                  "actual_user_representation do not align."))
 
         num_items = get_first_valid(getattr(item_representation, 'shape',
                                             [None, None])[1],
                                     num_items)
-        num_attributes = get_first_valid(getattr(item_representation, 'shape',
-                                                 [None])[0],
-                                        getattr(user_representation, 'shape',
-                                                [None, None])[1],
-                                        num_attributes)
+        attribute_values = [
+            getattr(item_representation, 'shape', [None])[0],
+            getattr(actual_user_representation, 'shape', [None, None])[1],
+            getattr(
+                getattr(actual_user_representation, 'actual_user_profiles', None),
+                'shape', 
+                [None, None]
+            )[1],
+            getattr(user_representation, 'shape', [None, None])[1],
+            num_attributes
+        ]
+        num_attributes = get_first_valid(*attribute_values)
 
-        num_users = get_first_valid(getattr(user_representation, 'shape', [None])[0],
+        num_users = get_first_valid(getattr(actual_user_representation, 'shape', [None])[0],
+                                    getattr(user_representation, 'shape', [None])[0],
                                     num_users)
 
         if user_representation is None:
@@ -166,9 +180,9 @@ class ContentFiltering(BaseRecommender):
 
         # Initialize recommender system
         BaseRecommender.__init__(self, user_representation, item_representation,
-                             actual_user_representation, num_users, num_items,
-                             num_items_per_iter,
-                             measurements=measurements, verbose=verbose, seed=seed)
+                                 actual_user_representation, num_users, num_items,
+                                 num_items_per_iter,
+                                 measurements=measurements, verbose=verbose, seed=seed)
 
     def _update_user_profiles(self, interactions):
         """
