@@ -232,6 +232,12 @@ class TestContentFiltering:
         with pytest.raises(ValueError):
             c = ContentFiltering(user_representation=user_repr,
                                  item_representation=bad_item_repr)
+        with pytest.raises(ValueError):
+            # actual user prefs and system's representation of user's prefs
+            # must be the same dimension 
+            c = ContentFiltering(user_representation=user_repr,
+                                 actual_user_representation=bad_user_repr,
+                                 item_representation=bad_item_repr)
 
     def test_additional_params(self, num_items_per_iter=None):
         if num_items_per_iter is None:
