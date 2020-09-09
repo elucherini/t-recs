@@ -174,7 +174,8 @@
 <dt id="metrics.measurement.InteractionMeasurement">
 <em class="property">class </em><code class="sig-prename descclassname">metrics.measurement.</code><code class="sig-name descname">InteractionMeasurement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Keeps track of the interactions between users and items.</p>
-<p>Specifically, at each timestep, it stores a histogram of length <cite>|I|</cite>, where element <cite>i</cite> is the number of interactions received by item <cite>i</cite>.</p>
+<p>Specifically, at each timestep, it stores a histogram of length <cite>|I|</cite>, where
+element <cite>i</cite> is the number of interactions received by item <cite>i</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p>
@@ -204,12 +205,15 @@
 <dl class="py method">
 <dt id="metrics.measurement.InteractionMeasurement.measure">
 <code class="sig-name descname">measure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">interactions</span></em>, <em class="sig-param"><span class="n">recommender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement.measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement.measure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Measures and stores a histogram of the number of interactions per item at the given timestep.</p>
+<dd><p>Measures and stores a histogram of the number of interactions per
+item at the given timestep.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Current time step</p></li>
-<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with which user <cite>u</cite> interacted.</p></li>
+<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of
+length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with
+which user <cite>u</cite> interacted.</p></li>
 <li><p><strong>recommender</strong> (<a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>) – Model that inherits from <a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p></li>
 </ul>
 </dd>
@@ -225,7 +229,8 @@
 <dt id="metrics.measurement.HomogeneityMeasurement">
 <em class="property">class </em><code class="sig-prename descclassname">metrics.measurement.</code><code class="sig-name descname">HomogeneityMeasurement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#HomogeneityMeasurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.HomogeneityMeasurement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Measures the homogeneity of the interactions between users and items.</p>
-<p>Specifically, at each timestep, it measures whether interactions are spread among many items or only a few items.</p>
+<p>Specifically, at each timestep, it measures whether interactions are spread
+among many items or only a few items.</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.InteractionMeasurement" title="metrics.measurement.InteractionMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">InteractionMeasurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -267,13 +272,17 @@
 <dl class="py method">
 <dt id="metrics.measurement.HomogeneityMeasurement.measure">
 <code class="sig-name descname">measure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">interactions</span></em>, <em class="sig-param"><span class="n">recommender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#HomogeneityMeasurement.measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.HomogeneityMeasurement.measure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Measures the homogeneity of user interactions – that is, whether interactions are spread among many items or only a few items.</p>
+<dd><p>Measures the homogeneity of user interactions – that is, whether
+interactions are spread among many items or only a few items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Current time step</p></li>
-<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with which user <cite>u</cite> interacted.</p></li>
-<li><p><strong>recommender</strong> (<a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>) – Model that inherits from <a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p></li>
+<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of
+length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with
+which user <cite>u</cite> interacted.</p></li>
+<li><p><strong>recommender</strong> (<a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>) – Model that inherits from
+<a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -319,12 +328,15 @@
 <dl class="py method">
 <dt id="metrics.measurement.MSEMeasurement.measure">
 <code class="sig-name descname">measure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">interactions</span></em>, <em class="sig-param"><span class="n">recommender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#MSEMeasurement.measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.MSEMeasurement.measure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Measures and records the mean squared error between the user preferences predicted by the system and the users’ actual preferences.</p>
+<dd><p>Measures and records the mean squared error between the user preferences
+predicted by the system and the users’ actual preferences.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Current time step</p></li>
-<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with which user <cite>u</cite> interacted.</p></li>
+<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of
+length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with
+which user <cite>u</cite> interacted.</p></li>
 <li><p><strong>recommender</strong> (<a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>) – Model that inherits from <a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p></li>
 </ul>
 </dd>
@@ -339,9 +351,15 @@
 <dl class="py class">
 <dt id="metrics.measurement.DiffusionTreeMeasurement">
 <em class="property">class </em><code class="sig-prename descclassname">metrics.measurement.</code><code class="sig-name descname">DiffusionTreeMeasurement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infection_state</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class that implements an information diffusion tree. The current implementation assumes that agents using this class (i.e., a model) implement an <code class="xref py py-attr docutils literal notranslate"><span class="pre">infection_state</span></code> matrix that denotes the initial state of information.</p>
-<p>In this implementation, the nodes represent users and are labeled with the user indices. A branch between nodes <cite>u</cite> and <cite>v</cite> indicates that user <cite>u</cite> passed information onto user <cite>v</cite> – that is, <cite>u</cite> “infected” <cite>v</cite>.</p>
-<p>Trees are implemented using the <a class="reference external" href="http://networkx.github.io">Networkx library</a>. Please refer to Networkx’s <a class="reference external" href="https://networkx.github.io/documentation/stable/">documentation</a> for more details.</p>
+<dd><p>Class that implements an information diffusion tree. The current
+implementation assumes that agents using this class (i.e., a model)
+implement an <code class="xref py py-attr docutils literal notranslate"><span class="pre">infection_state</span></code> matrix that
+denotes the initial state of information.</p>
+<p>In this implementation, the nodes represent users and are labeled with the
+user indices. A branch between nodes <cite>u</cite> and <cite>v</cite> indicates that user <cite>u</cite>
+passed information onto user <cite>v</cite> – that is, <cite>u</cite> “infected” <cite>v</cite>.</p>
+<p>Trees are implemented using the <a class="reference external" href="http://networkx.github.io">Networkx library</a>. Please refer to
+Networkx’s <a class="reference external" href="https://networkx.github.io/documentation/stable/">documentation</a> for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -363,7 +381,11 @@
 <dl class="py attribute">
 <dt id="metrics.measurement.DiffusionTreeMeasurement.name">
 <code class="sig-name descname">name</code><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of the metric that is recorded at each time step. Note that, in this case, the metric stored in <a class="reference internal" href="#metrics.measurement.Measurement.measurement_history" title="metrics.measurement.Measurement.measurement_history"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurement_history</span></code></a> is actually the <strong>number of infected users</strong>. The diffusion tree itself is kept in the <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement.diffusion_tree" title="metrics.measurement.DiffusionTreeMeasurement.diffusion_tree"><code class="xref py py-attr docutils literal notranslate"><span class="pre">diffusion_tree</span></code></a> data structure.</p>
+<dd><p>Name of the metric that is recorded at each time step. Note that,
+in this case, the metric stored in
+<a class="reference internal" href="#metrics.measurement.Measurement.measurement_history" title="metrics.measurement.Measurement.measurement_history"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurement_history</span></code></a> is actually the
+<strong>number of infected users</strong>. The diffusion tree itself is kept in
+the <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement.diffusion_tree" title="metrics.measurement.DiffusionTreeMeasurement.diffusion_tree"><code class="xref py py-attr docutils literal notranslate"><span class="pre">diffusion_tree</span></code></a> data structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
@@ -402,12 +424,17 @@
 <dl class="py method">
 <dt id="metrics.measurement.DiffusionTreeMeasurement.measure">
 <code class="sig-name descname">measure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">interactions</span></em>, <em class="sig-param"><span class="n">recommender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement.measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.measure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates tree with new infections and stores information about new infections. In <a class="reference internal" href="#metrics.measurement.Measurement.measurement_history" title="metrics.measurement.Measurement.measurement_history"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurement_history</span></code></a>, it stores the total number of infected users in the system – that is, the number of nodes in the tree.</p>
+<dd><p>Updates tree with new infections and stores information about new
+infections. In <a class="reference internal" href="#metrics.measurement.Measurement.measurement_history" title="metrics.measurement.Measurement.measurement_history"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurement_history</span></code></a>, it stores the
+total number of infected users in the system – that is, the number of
+nodes in the tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Current time step</p></li>
-<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with which user <cite>u</cite> interacted.</p></li>
+<li><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) – Non-aggregated array of interactions – that is, an array of
+length <cite>|U|</cite> s.t. element <cite>u</cite> is the index of the item with
+which user <cite>u</cite> interacted.</p></li>
 <li><p><strong>recommender</strong> (<a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>) – Model that inherits from <a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p></li>
 </ul>
 </dd>
@@ -422,7 +449,10 @@
 <dl class="py class">
 <dt id="metrics.measurement.StructuralVirality">
 <em class="property">class </em><code class="sig-prename descclassname">metrics.measurement.</code><code class="sig-name descname">StructuralVirality</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infection_state</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class extends <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a> with the concept of structural virality developed by Goel, Anderson, Hofman, and Watts in <a class="reference external" href="https://5harad.com/papers/twiral.pdf">The Structural Virality of Online Diffusion</a>. It is used in <a class="reference internal" href="models.html#models.bass.BassModel" title="models.bass.BassModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BassModel</span></code></a>.</p>
+<dd><p>This class extends <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a> with the concept of
+structural virality developed by Goel, Anderson, Hofman, and Watts in
+<a class="reference external" href="https://5harad.com/papers/twiral.pdf">The Structural Virality of Online Diffusion</a>. It is used in
+<a class="reference internal" href="models.html#models.bass.BassModel" title="models.bass.BassModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BassModel</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>infection_state</strong> (<em>array_like</em>) – The initial “infection state” (see <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a>).</p>
@@ -473,7 +503,9 @@
 <dl class="py method">
 <dt id="metrics.measurement.Measurement.get_measurement">
 <code class="sig-name descname">get_measurement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_measurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_measurement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns measurements. See <code class="xref py py-func docutils literal notranslate"><span class="pre">get_observable()</span></code> for more details.</p>
+<dd><p>Returns measurements. See
+<code class="xref py py-func docutils literal notranslate"><span class="pre">get_observable()</span></code>
+for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>Measurements</strong></p>
@@ -487,7 +519,8 @@
 <dl class="py method">
 <dt id="metrics.measurement.Measurement.get_timesteps">
 <code class="sig-name descname">get_timesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_timesteps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_timesteps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of measurements stored (which is equivalent to the number of timesteps that the system has been measuring).</p>
+<dd><p>Returns the number of measurements stored (which is equivalent to the
+number of timesteps that the system has been measuring).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>Length of measurement_history</strong></p>
@@ -501,12 +534,14 @@
 <dl class="py method">
 <dt id="metrics.measurement.Measurement.observe">
 <code class="sig-name descname">observe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">observation</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.observe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#metrics.measurement.Measurement.observe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stores measurements. It can be called by implementations to ensure consistency when storing different measurements.</p>
+<dd><p>Stores measurements. It can be called by implementations to ensure
+consistency when storing different measurements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>observation</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Element that will be stored</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, the function stores a copy of observation. Useful for <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, the function stores a copy of observation. Useful for
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p></li>
 </ul>
 </dd>
 </dl>

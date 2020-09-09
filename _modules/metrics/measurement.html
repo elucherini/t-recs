@@ -150,6 +150,7 @@
 <span class="kn">from</span> <span class="nn">rec.components</span> <span class="kn">import</span> <span class="n">BaseObservable</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+
 <div class="viewcode-block" id="Measurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement">[docs]</a><span class="k">class</span> <span class="nc">Measurement</span><span class="p">(</span><span class="n">BaseObservable</span><span class="p">,</span> <span class="n">VerboseMode</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract observable class to store measurements.</span>
@@ -169,6 +170,7 @@
 <span class="sd">        measurement_history: list</span>
 <span class="sd">            List of measurements. A new element is added at each timestep.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">VerboseMode</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measurement_history</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -178,7 +180,9 @@
 
 <div class="viewcode-block" id="Measurement.get_measurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement.get_measurement">[docs]</a>    <span class="k">def</span> <span class="nf">get_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns measurements. See :func:`~components.base_components.BaseObservable.get_observable` for more details.</span>
+<span class="sd">        Returns measurements. See</span>
+<span class="sd">        :func:`~components.base_components.BaseObservable.get_observable`</span>
+<span class="sd">        for more details.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
@@ -188,7 +192,8 @@
 
 <div class="viewcode-block" id="Measurement.observe"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement.observe">[docs]</a>    <span class="k">def</span> <span class="nf">observe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Stores measurements. It can be called by implementations to ensure consistency when storing different measurements.</span>
+<span class="sd">        Stores measurements. It can be called by implementations to ensure</span>
+<span class="sd">        consistency when storing different measurements.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
@@ -197,7 +202,8 @@
 <span class="sd">            Element that will be stored</span>
 
 <span class="sd">        copy: bool (optional, default: True)</span>
-<span class="sd">            If True, the function stores a copy of observation. Useful for :obj:`numpy.ndarray`.</span>
+<span class="sd">            If True, the function stores a copy of observation. Useful for</span>
+<span class="sd">            :obj:`numpy.ndarray`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
@@ -212,7 +218,8 @@
 
 <div class="viewcode-block" id="Measurement.get_timesteps"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement.get_timesteps">[docs]</a>    <span class="k">def</span> <span class="nf">get_timesteps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the number of measurements stored (which is equivalent to the number of timesteps that the system has been measuring).</span>
+<span class="sd">        Returns the number of measurements stored (which is equivalent to the</span>
+<span class="sd">        number of timesteps that the system has been measuring).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
@@ -226,7 +233,8 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keeps track of the interactions between users and items.</span>
 
-<span class="sd">    Specifically, at each timestep, it stores a histogram of length `|I|`, where element `i` is the number of interactions received by item `i`.</span>
+<span class="sd">    Specifically, at each timestep, it stores a histogram of length `|I|`, where</span>
+<span class="sd">    element `i` is the number of interactions received by item `i`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
@@ -241,13 +249,15 @@
 <span class="sd">        name: str</span>
 <span class="sd">            Name of the measurement component.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;interaction_histogram&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;interaction_histogram&quot;</span>
         <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_generate_interaction_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a histogram of the number of interactions per item at the given timestep.</span>
+<span class="sd">        Generates a histogram of the number of interactions per item at the</span>
+<span class="sd">        given timestep.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
@@ -269,12 +279,13 @@
         <span class="n">histogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_items</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Check that there&#39;s one interaction per user</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">histogram</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">num_users</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">histogram</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">num_users</span>
         <span class="k">return</span> <span class="n">histogram</span>
 
 <div class="viewcode-block" id="InteractionMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Measures and stores a histogram of the number of interactions per item at the given timestep.</span>
+<span class="sd">            Measures and stores a histogram of the number of interactions per</span>
+<span class="sd">            item at the given timestep.</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ------------</span>
@@ -283,16 +294,18 @@
 <span class="sd">                    Current time step</span>
 
 <span class="sd">                interactions: :obj:`numpy.array`</span>
-<span class="sd">                    Non-aggregated array of interactions -- that is, an array of length `|U|` s.t. element `u` is the index of the item with which user `u` interacted.</span>
+<span class="sd">                    Non-aggregated array of interactions -- that is, an array of</span>
+<span class="sd">                    length `|U|` s.t. element `u` is the index of the item with</span>
+<span class="sd">                    which user `u` interacted.</span>
 
 <span class="sd">                recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                    Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span>
-                                                         <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span>
-                                                         <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span><span class="p">)</span>
-        <span class="c1">#histogram[::-1].sort()</span>
+        <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span>
+            <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span>
+        <span class="p">)</span>
+        <span class="c1"># histogram[::-1].sort()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
@@ -300,7 +313,8 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Measures the homogeneity of the interactions between users and items.</span>
 
-<span class="sd">    Specifically, at each timestep, it measures whether interactions are spread among many items or only a few items.</span>
+<span class="sd">    Specifically, at each timestep, it measures whether interactions are spread</span>
+<span class="sd">    among many items or only a few items.</span>
 
 <span class="sd">    This class inherits from :class:`.InteractionMeasurement`.</span>
 
@@ -320,15 +334,17 @@
 <span class="sd">        _old_histogram: None, list, array_like</span>
 <span class="sd">            A copy of the histogram at the previous timestep.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">histogram</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;homogeneity&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;homogeneity&quot;</span>
         <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HomogeneityMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.HomogeneityMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Measures the homogeneity of user interactions -- that is, whether interactions are spread among many items or only a few items.</span>
+<span class="sd">            Measures the homogeneity of user interactions -- that is, whether</span>
+<span class="sd">            interactions are spread among many items or only a few items.</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ------------</span>
@@ -337,20 +353,24 @@
 <span class="sd">                    Current time step</span>
 
 <span class="sd">                interactions: :obj:`numpy.array`</span>
-<span class="sd">                    Non-aggregated array of interactions -- that is, an array of length `|U|` s.t. element `u` is the index of the item with which user `u` interacted.</span>
+<span class="sd">                    Non-aggregated array of interactions -- that is, an array of</span>
+<span class="sd">                    length `|U|` s.t. element `u` is the index of the item with</span>
+<span class="sd">                    which user `u` interacted.</span>
 
 <span class="sd">                recommender: :class:`~models.recommender.BaseRecommender`</span>
-<span class="sd">                    Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
+<span class="sd">                    Model that inherits from</span>
+<span class="sd">                    :class:`~models.recommender.BaseRecommender`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">)</span>
-        <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span>
-                                                         <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span>
-                                                         <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span>
+        <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span>
+            <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span>
+        <span class="p">)</span>
         <span class="n">histogram</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-                     <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">histogram</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">histogram</span> <span class="o">=</span> <span class="n">histogram</span></div></div>
 
@@ -376,13 +396,15 @@
 <span class="sd">        name: str</span>
 <span class="sd">            Name of the measurement component.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;mse&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;mse&quot;</span>
         <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MSEMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.MSEMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Measures and records the mean squared error between the user preferences predicted by the system and the users&#39; actual preferences.</span>
+<span class="sd">        Measures and records the mean squared error between the user preferences</span>
+<span class="sd">        predicted by the system and the users&#39; actual preferences.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
@@ -391,22 +413,32 @@
 <span class="sd">                Current time step</span>
 
 <span class="sd">            interactions: :obj:`numpy.array`</span>
-<span class="sd">                Non-aggregated array of interactions -- that is, an array of length `|U|` s.t. element `u` is the index of the item with which user `u` interacted.</span>
+<span class="sd">                Non-aggregated array of interactions -- that is, an array of</span>
+<span class="sd">                length `|U|` s.t. element `u` is the index of the item with</span>
+<span class="sd">                which user `u` interacted.</span>
 
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(((</span><span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="o">-</span>
-            <span class="n">recommender</span><span class="o">.</span><span class="n">actual_users</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="o">-</span> <span class="n">recommender</span><span class="o">.</span><span class="n">actual_users</span><span class="o">.</span><span class="n">actual_user_scores</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">((</span><span class="n">diff</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DiffusionTreeMeasurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement">[docs]</a><span class="k">class</span> <span class="nc">DiffusionTreeMeasurement</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class that implements an information diffusion tree. The current implementation assumes that agents using this class (i.e., a model) implement an :attr:`~models.bass.BassModel.infection_state` matrix that denotes the initial state of information.</span>
+<span class="sd">    Class that implements an information diffusion tree. The current</span>
+<span class="sd">    implementation assumes that agents using this class (i.e., a model)</span>
+<span class="sd">    implement an :attr:`~models.bass.BassModel.infection_state` matrix that</span>
+<span class="sd">    denotes the initial state of information.</span>
 
-<span class="sd">    In this implementation, the nodes represent users and are labeled with the user indices. A branch between nodes `u` and `v` indicates that user `u` passed information onto user `v` -- that is, `u` &quot;infected&quot; `v`.</span>
+<span class="sd">    In this implementation, the nodes represent users and are labeled with the</span>
+<span class="sd">    user indices. A branch between nodes `u` and `v` indicates that user `u`</span>
+<span class="sd">    passed information onto user `v` -- that is, `u` &quot;infected&quot; `v`.</span>
 
-<span class="sd">    Trees are implemented using the `Networkx library`_. Please refer to Networkx&#39;s `documentation`_ for more details.</span>
+<span class="sd">    Trees are implemented using the `Networkx library`_. Please refer to</span>
+<span class="sd">    Networkx&#39;s `documentation`_ for more details.</span>
 
 <span class="sd">    .. _Networkx library: http://networkx.github.io</span>
 <span class="sd">    .. _documentation: https://networkx.github.io/documentation/stable/</span>
@@ -425,7 +457,11 @@
 <span class="sd">        Inherited by Measurement: :class:`.Measurement`</span>
 
 <span class="sd">        name: str</span>
-<span class="sd">            Name of the metric that is recorded at each time step. Note that, in this case, the metric stored in :attr:`~.Measurement.measurement_history` is actually the **number of infected users**. The diffusion tree itself is kept in the :attr:`.diffusion_tree` data structure.</span>
+<span class="sd">            Name of the metric that is recorded at each time step. Note that,</span>
+<span class="sd">            in this case, the metric stored in</span>
+<span class="sd">            :attr:`~.Measurement.measurement_history` is actually the</span>
+<span class="sd">            **number of infected users**. The diffusion tree itself is kept in</span>
+<span class="sd">            the :attr:`.diffusion_tree` data structure.</span>
 
 <span class="sd">        diffusion_tree: :obj:`networkx.Graph`</span>
 <span class="sd">            Diffusion tree.</span>
@@ -433,15 +469,18 @@
 <span class="sd">        _old_infection_state: array_like</span>
 <span class="sd">            Infection state at the previous timestep.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;num_infected&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;num_infected&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">infection_state</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">infection_state</span><span class="p">)</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
-            <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">())</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_find_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infected_users</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
@@ -451,8 +490,8 @@
         <span class="c1"># candidates must have been previously infected</span>
         <span class="n">prev_infected_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># candidates must be connected to newly infected users</span>
-        <span class="n">candidate_parents</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="p">[:,</span><span class="n">prev_infected_users</span><span class="p">][</span><span class="n">new_infected_users</span><span class="p">]</span>
-        <span class="n">parents</span> <span class="o">=</span> <span class="n">prev_infected_users</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">candidate_parents</span><span class="p">)[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">candidate_parents</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="p">[:,</span> <span class="n">prev_infected_users</span><span class="p">][</span><span class="n">new_infected_users</span><span class="p">]</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">prev_infected_users</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">candidate_parents</span><span class="p">)[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">parents</span>
 
     <span class="k">def</span> <span class="nf">_add_to_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infected_users</span><span class="p">):</span>
@@ -466,19 +505,21 @@
     <span class="k">def</span> <span class="nf">_manage_new_infections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">current_infection_state</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">current_infection_state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">new_infections</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_infection_state</span> <span class="o">-</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span><span class="p">)</span>
+        <span class="n">new_infections</span> <span class="o">=</span> <span class="n">current_infection_state</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">new_infections</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="c1"># no new infections</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">new_infected_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_infections</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># only the rows</span>
+        <span class="n">new_infected_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_infections</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># only the rows</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_graph</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infected_users</span><span class="p">)</span>
         <span class="c1"># return number of new infections</span>
         <span class="k">return</span> <span class="n">new_infected_users</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <div class="viewcode-block" id="DiffusionTreeMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Updates tree with new infections and stores information about new infections. In :attr:`~.Measurement.measurement_history`, it stores the total number of infected users in the system -- that is, the number of nodes in the tree.</span>
+<span class="sd">        Updates tree with new infections and stores information about new</span>
+<span class="sd">        infections. In :attr:`~.Measurement.measurement_history`, it stores the</span>
+<span class="sd">        total number of infected users in the system -- that is, the number of</span>
+<span class="sd">        nodes in the tree.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
@@ -487,13 +528,16 @@
 <span class="sd">                Current time step</span>
 
 <span class="sd">            interactions: :obj:`numpy.array`</span>
-<span class="sd">                Non-aggregated array of interactions -- that is, an array of length `|U|` s.t. element `u` is the index of the item with which user `u` interacted.</span>
+<span class="sd">                Non-aggregated array of interactions -- that is, an array of</span>
+<span class="sd">                length `|U|` s.t. element `u` is the index of the item with</span>
+<span class="sd">                which user `u` interacted.</span>
 
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">num_new_infections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">,</span>
-            <span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)</span>
+        <span class="n">num_new_infections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span>
+            <span class="n">recommender</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)</span></div>
 
@@ -503,12 +547,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
         <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="StructuralVirality"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.StructuralVirality">[docs]</a><span class="k">class</span> <span class="nc">StructuralVirality</span><span class="p">(</span><span class="n">DiffusionTreeMeasurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This class extends :class:`DiffusionTreeMeasurement` with the concept of structural virality developed by Goel, Anderson, Hofman, and Watts in `The Structural Virality of Online Diffusion`_. It is used in :class:`~models.bass.BassModel`.</span>
+<span class="sd">    This class extends :class:`DiffusionTreeMeasurement` with the concept of</span>
+<span class="sd">    structural virality developed by Goel, Anderson, Hofman, and Watts in</span>
+<span class="sd">    `The Structural Virality of Online Diffusion`_. It is used in</span>
+<span class="sd">    :class:`~models.bass.BassModel`.</span>
 
 <span class="sd">    .. _The Structural Virality of Online Diffusion: https://5harad.com/papers/twiral.pdf</span>
 
@@ -519,6 +567,7 @@
 <span class="sd">            The initial &quot;infection state&quot; (see :class:`DiffusionTreeMeasurement`).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">DiffusionTreeMeasurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
@@ -532,6 +581,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
         <span class="kn">from</span> <span class="nn">networkx.algorithms.wiener</span> <span class="kn">import</span> <span class="n">wiener_index</span>
+
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">wiener_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div></div>
 </pre></div>

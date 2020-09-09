@@ -150,7 +150,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">rec.models</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
 <span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">get_first_valid</span><span class="p">,</span> <span class="n">is_array_valid_or_none</span><span class="p">,</span> <span class="n">is_equal_dim_or_none</span><span class="p">,</span> <span class="n">all_none</span><span class="p">,</span> <span class="n">is_valid_or_none</span>
+<span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">get_first_valid</span><span class="p">,</span> <span class="n">is_array_valid_or_none</span><span class="p">,</span> <span class="n">is_equal_dim_or_none</span><span class="p">,</span> <span class="n">all_none</span><span class="p">,</span> <span class="n">is_valid_or_none</span><span class="p">,</span> <span class="n">array_dimensions_match</span>
 
 <div class="viewcode-block" id="ContentFiltering"><a class="viewcode-back" href="../../reference/models.html#models.content.ContentFiltering">[docs]</a><span class="k">class</span> <span class="nc">ContentFiltering</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -268,20 +268,34 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_array_valid_or_none</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;item_representation is not valid&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_array_valid_or_none</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;item_representation is not valid&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;user_representation is not valid&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_or_none</span><span class="p">(</span><span class="n">num_attributes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_attributes must be an int&quot;</span><span class="p">)</span>
+        <span class="c1"># if user_representation and actual_user_representation are both</span>
+        <span class="c1"># passed in, they must have matching dimensions</span>
+        <span class="k">if</span> <span class="n">user_representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">actual_user_representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">array_dimensions_match</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="n">actual_user_representation</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s2">&quot;Dimensions of user_representation and &quot;</span>
+                                  <span class="s2">&quot;actual_user_representation do not align.&quot;</span><span class="p">))</span>
 
         <span class="n">num_items</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span>
                                             <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
                                     <span class="n">num_items</span><span class="p">)</span>
-        <span class="n">num_attributes</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span>
-                                                 <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
-                                        <span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span>
-                                                <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
-                                        <span class="n">num_attributes</span><span class="p">)</span>
+        <span class="n">attribute_values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">actual_user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="nb">getattr</span><span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">actual_user_representation</span><span class="p">,</span> <span class="s1">&#39;actual_user_profiles&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="s1">&#39;shape&#39;</span><span class="p">,</span> 
+                <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">num_attributes</span>
+        <span class="p">]</span>
+        <span class="n">num_attributes</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="o">*</span><span class="n">attribute_values</span><span class="p">)</span>
 
-        <span class="n">num_users</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">num_users</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">actual_user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                                    <span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
                                     <span class="n">num_users</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">user_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -313,9 +327,9 @@
 
         <span class="c1"># Initialize recommender system</span>
         <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_representation</span><span class="p">,</span> <span class="n">item_representation</span><span class="p">,</span>
-                             <span class="n">actual_user_representation</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">,</span>
-                             <span class="n">num_items_per_iter</span><span class="p">,</span>
-                             <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+                                 <span class="n">actual_user_representation</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">,</span>
+                                 <span class="n">num_items_per_iter</span><span class="p">,</span>
+                                 <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

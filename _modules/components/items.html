@@ -150,24 +150,31 @@
 <span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">FromNdArray</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+
 <div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../reference/components.html#components.items.Items">[docs]</a><span class="k">class</span> <span class="nc">Items</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Items components in the system.</span>
 
 <span class="sd">    Items are the objects with which users interact with models and with each other.</span>
 
-<span class="sd">    This class is essentially a container of Numpy&#39;s ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from :class:`~.base_components.Component` and it contains all the attributes of that class.</span>
+<span class="sd">    This class is essentially a container of Numpy&#39;s ndarray. Therefore, it</span>
+<span class="sd">    supports all the operations supported by ndarray. It inherits from </span>
+<span class="sd">    :class:`~.base_components.Component` and it contains all the attributes of</span>
+<span class="sd">    that class.</span>
 
-<span class="sd">    The Items class does not specify any constraints on items. It is used internally in :class:`~models.recommender.BaseRecommender`.</span>
+<span class="sd">    The Items class does not specify any constraints on items. It is used</span>
+<span class="sd">    internally in :class:`~models.recommender.BaseRecommender`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -------------</span>
 
 <span class="sd">    item_attributes: array_like, None (optional, default: None)</span>
-<span class="sd">        Representation of items. It expects an array_like object. If None, the representation is generated randomly.</span>
+<span class="sd">        Representation of items. It expects an array_like object. If None, the</span>
+<span class="sd">        representation is generated randomly.</span>
 
 <span class="sd">    size: tuple, None (optional, default: None)</span>
-<span class="sd">        Size of the item representation. It expects a tuple. If None, it is chosen randomly.</span>
+<span class="sd">        Size of the item representation. It expects a tuple. If None, it is</span>
+<span class="sd">        chosen randomly.</span>
 
 <span class="sd">    verbose: bool (optional, default: False)</span>
 <span class="sd">        If True, it enables verbose mode.</span>
@@ -185,60 +192,20 @@
 <span class="sd">        Name of the component</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;items&#39;</span>
-        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">item_attributes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                           <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    def _compute_item_attributes(self, num_items, num_attributes, normalize=False):</span>
-<span class="sd">        # Compute item attributes (|A|x|I|)</span>
-<span class="sd">        assert(num_items is not None and num_attributes is not None)</span>
-<span class="sd">        item_attributes = self.distribution.compute(size=(self.num_attributes, self.num_items))</span>
-<span class="sd">        # Normalize</span>
-<span class="sd">        if normalize:</span>
-<span class="sd">            item_attributes = normalize_matrix(item_attributes, axis=1)</span>
-<span class="sd">        return item_attributes</span>
-
-<span class="sd">    def compute_item_attributes(self, num_items=1250, num_attributes=None, distribution=None,</span>
-<span class="sd">                                            normalize=False):</span>
-<span class="sd">        # Error if num_items or num_attributes not valid</span>
-<span class="sd">        if self.num_items is None and not isinstance(num_items, int):</span>
-<span class="sd">            raise TypeError(&quot;num_items must be int or None&quot;)</span>
-<span class="sd">        else:</span>
-<span class="sd">            self.num_items = num_items</span>
-<span class="sd">        # Default num_attributes if not specified or not valid (9/10th of num_items)</span>
-<span class="sd">        if self.num_attributes is None and not isinstance(num_attributes, int):</span>
-<span class="sd">            self.num_attributes = int(self.num_items - self.num_items / 10)</span>
-<span class="sd">        else:</span>
-<span class="sd">            self.num_attributes = num_attributes</span>
-<span class="sd">        # Use specified distribution if specified, otherwise default to self.distribution</span>
-<span class="sd">        if distribution is not None and isinstance(distribution, Generator):</span>
-<span class="sd">            self.distribution = distribution</span>
-<span class="sd">        self.item_attributes = self._compute_item_attributes(self.num_attributes,</span>
-<span class="sd">            self.num_items, normalize=normalize)</span>
-<span class="sd">        return self.item_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;items&quot;</span>
+        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">item_attributes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span>
+        <span class="p">)</span></div>
 
 
-<span class="sd">    def expand_items(self, num_new_items, normalize=False):</span>
-<span class="sd">        new_indices = np.arange(self.num_items, self.num_items + num_new_items)</span>
-<span class="sd">        self.num_items += num_new_items</span>
-<span class="sd">        self.log(&#39;Successfully added %d new items&#39; % num_new_items)</span>
-<span class="sd">        new_item_attributes = self._compute_item_attributes(num_new_items, num_attributes,</span>
-<span class="sd">            normalize=normalize)</span>
-<span class="sd">        self.item_attributes = np.concatenate((self.item_attributes, new_item_attributes),</span>
-<span class="sd">            axis=1)</span>
-<span class="sd">        return new_indices</span>
-<span class="sd">    &#39;&#39;&#39;</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">Items</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Items</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
-    <span class="c1">#a.log(&quot;test Items&quot;)</span>
 </pre></div>
 
            </div>

@@ -380,7 +380,7 @@
         <span class="k">assert</span><span class="p">(</span><span class="n">user_profiles</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">item_attributes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">predicted_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;System updates predicted scores given by users (rows) &#39;</span> <span class="o">+</span> \
-            <span class="s1">&#39;to items (columns):</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">predicted_scores</span><span class="p">))</span>
+                 <span class="s1">&#39;to items (columns):</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">predicted_scores</span><span class="p">))</span>
         <span class="k">assert</span><span class="p">(</span><span class="n">predicted_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">predicted_scores</span></div>
 
@@ -542,7 +542,7 @@
             <span class="c1"># train between steps:</span>
             <span class="k">if</span> <span class="n">train_between_steps</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">,</span>
-                                                   <span class="bp">self</span><span class="o">.</span><span class="n">item_attributes</span><span class="p">)</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">item_attributes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
         <span class="c1"># If no training in between steps, train at the end:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">train_between_steps</span><span class="p">:</span>
