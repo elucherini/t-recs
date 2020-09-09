@@ -3,6 +3,7 @@ import numpy as np
 from rec.models import SocialFiltering
 import pytest
 
+
 class TestSocialFiltering:
     def test_default(self):
         s = SocialFiltering()
@@ -62,13 +63,15 @@ class TestSocialFiltering:
         with pytest.raises(AssertionError):
             test_utils.assert_equal_arrays(s.user_profiles, s1.user_profiles)
 
-    def test_representations(self, item_repr=None,
-                             user_repr=None):
+    def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
             items = np.random.randint(20, 1000)
-            users = (user_repr.shape[0] if user_repr is not None
-                     else np.random.randint(20, 100))
-            item_repr = np.random.random(size=(users,items))
+            users = (
+                user_repr.shape[0]
+                if user_repr is not None
+                else np.random.randint(20, 100)
+            )
+            item_repr = np.random.random(size=(users, items))
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
             users = item_repr.shape[0]
             user_repr = np.random.randint(2, size=(users, users))
@@ -76,7 +79,9 @@ class TestSocialFiltering:
         s = SocialFiltering(item_representation=item_repr)
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
-        test_utils.assert_correct_num_items(item_repr.shape[1], s, s.item_attributes.shape[1])
+        test_utils.assert_correct_num_items(
+            item_repr.shape[1], s, s.item_attributes.shape[1]
+        )
         test_utils.assert_equal_arrays(item_repr, s.item_attributes)
         test_utils.assert_not_none(s.predicted_scores)
 
@@ -88,29 +93,41 @@ class TestSocialFiltering:
 
         # test user representation
         s = SocialFiltering(user_representation=user_repr)
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                            s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                            s.user_profiles.shape[1])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                            s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                            s.user_profiles.shape[1])
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[1]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[1]
+        )
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])
         test_utils.assert_equal_arrays(user_repr, s.user_profiles)
         test_utils.assert_not_none(s.predicted_scores)
 
         # test item and user representations
-        s = SocialFiltering(user_representation=user_repr, item_representation=item_repr)
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                 s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                 s.user_profiles.shape[1])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                 s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                 s.user_profiles.shape[1])
-        test_utils.assert_correct_num_items(item_repr.shape[1], s, s.item_attributes.shape[1])
+        s = SocialFiltering(
+            user_representation=user_repr, item_representation=item_repr
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[1]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[1]
+        )
+        test_utils.assert_correct_num_items(
+            item_repr.shape[1], s, s.item_attributes.shape[1]
+        )
         test_utils.assert_equal_arrays(user_repr, s.user_profiles)
         test_utils.assert_equal_arrays(item_repr, s.item_attributes)
         test_utils.assert_not_none(s.predicted_scores)
@@ -128,7 +145,7 @@ class TestSocialFiltering:
         if num_items_per_iter is None:
             num_items_per_iter = np.random.randint(5, 100)
         s = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter)
-        assert(num_items_per_iter == s.num_items_per_iter)
+        assert num_items_per_iter == s.num_items_per_iter
         # also check other params
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
@@ -151,7 +168,7 @@ class TestSocialFiltering:
         if user2 is None:
             user2 = np.random.randint(1, s.num_users)
         # users must be different
-        while(user1 == user2):
+        while user1 == user2:
             user1 = np.random.randint(1, s.num_users)
         # test current graph
         test_utils.assert_social_graph_not_following(s.user_profiles, user1, user2)
@@ -190,7 +207,6 @@ class TestSocialFiltering:
         test_utils.assert_social_graph_not_following(s.user_profiles, user1, user2)
         test_utils.assert_social_graph_not_following(s.user_profiles, user2, user1)
 
-
     def test_seeding(self, seed=None, items=None, users=None):
         if seed is None:
             seed = np.random.randint(100000)
@@ -209,9 +225,9 @@ class TestSocialFiltering:
         test_utils.assert_equal_system_state(systate1, systate2)
 
         if items is None:
-            items = np.random.randint(1,1000)
+            items = np.random.randint(1, 1000)
         if users is None:
-            users = np.random.randint(1,100)
+            users = np.random.randint(1, 100)
         s1 = SocialFiltering(seed=seed, num_users=users, num_items=items)
         s2 = SocialFiltering(seed=seed, num_users=users, num_items=items)
         test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
