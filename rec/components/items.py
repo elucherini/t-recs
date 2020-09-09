@@ -10,18 +10,24 @@ class Items(Component):
 
     Items are the objects with which users interact with models and with each other.
 
-    This class is essentially a container of Numpy's ndarray. Therefore, it supports all the operations supported by ndarray. It inherits from :class:`~.base_components.Component` and it contains all the attributes of that class.
+    This class is essentially a container of Numpy's ndarray. Therefore, it
+    supports all the operations supported by ndarray. It inherits from 
+    :class:`~.base_components.Component` and it contains all the attributes of
+    that class.
 
-    The Items class does not specify any constraints on items. It is used internally in :class:`~models.recommender.BaseRecommender`.
+    The Items class does not specify any constraints on items. It is used
+    internally in :class:`~models.recommender.BaseRecommender`.
 
     Parameters
     -------------
 
     item_attributes: array_like, None (optional, default: None)
-        Representation of items. It expects an array_like object. If None, the representation is generated randomly.
+        Representation of items. It expects an array_like object. If None, the
+        representation is generated randomly.
 
     size: tuple, None (optional, default: None)
-        Size of the item representation. It expects a tuple. If None, it is chosen randomly.
+        Size of the item representation. It expects a tuple. If None, it is
+        chosen randomly.
 
     verbose: bool (optional, default: False)
         If True, it enables verbose mode.

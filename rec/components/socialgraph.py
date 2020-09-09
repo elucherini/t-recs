@@ -5,7 +5,8 @@ from rec.utils import VerboseMode
 
 class BinarySocialGraph(VerboseMode):
     """
-     A mixin for classes with a :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute
+    A mixin for classes with a 
+    :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute
     to gain the basic functionality of a binary social graph.
 
     It assumes a network adjacency matrix of size `|U|x|U|`.
@@ -13,7 +14,8 @@ class BinarySocialGraph(VerboseMode):
 
     def follow(self, user_index, following_index):
         """
-        Method to follow another user -- that is, to create a unidirectional link from one user to the other.
+        Method to follow another user -- that is, to create a unidirectional
+        link from one user to the other.
 
         Parameters
         ----------
@@ -44,7 +46,8 @@ class BinarySocialGraph(VerboseMode):
 
     def unfollow(self, user_index, following_index):
         """
-        Method to unfollow another user -- that is, to delete the unidirectional link that goes from one user to the other.
+        Method to unfollow another user -- that is, to delete the unidirectional
+        link that goes from one user to the other.
 
         Parameters
         ----------
@@ -75,7 +78,8 @@ class BinarySocialGraph(VerboseMode):
 
     def add_friends(self, user1_index, user2_index):
         """
-        Method to add a user as *friends* -- that is, to create a bidirectional link that connects the two users.
+        Method to add a user as *friends* -- that is, to create a bidirectional
+        link that connects the two users.
 
         Parameters
         ----------
@@ -112,7 +116,8 @@ class BinarySocialGraph(VerboseMode):
 
     def remove_friends(self, user1_index, user2_index):
         """
-        Method to remove a user from *friends* -- that is, to remove a bidirectional link that connects the two users.
+        Method to remove a user from *friends* -- that is, to remove a
+        bidirectional link that connects the two users.
 
         Parameters
         ----------
