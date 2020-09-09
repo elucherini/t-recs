@@ -3,6 +3,7 @@ from rec.random import Generator
 from .base_components import Component, FromNdArray
 import numpy as np
 
+
 class Items(Component):
     """
     Items components in the system.
@@ -38,12 +39,14 @@ class Items(Component):
         Name of the component
 
     """
-    def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
-        self.name = 'items'
-        Component.__init__(self, current_state=item_attributes, size=size,
-                           verbose=verbose, seed=seed)
 
-    '''
+    def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
+        self.name = "items"
+        Component.__init__(
+            self, current_state=item_attributes, size=size, verbose=verbose, seed=seed
+        )
+
+    """
     def _compute_item_attributes(self, num_items, num_attributes, normalize=False):
         # Compute item attributes (|A|x|I|)
         assert(num_items is not None and num_attributes is not None)
@@ -82,13 +85,13 @@ class Items(Component):
         self.item_attributes = np.concatenate((self.item_attributes, new_item_attributes),
             axis=1)
         return new_indices
-    '''
+    """
 
 
-if __name__ == '__main__':
-    a = Items([1,2,3], verbose=True)
+if __name__ == "__main__":
+    a = Items([1, 2, 3], verbose=True)
     print(a)
     print(type(a))
-    print(a+2)
+    print(a + 2)
     print(a.verbose)
-    #a.log("test Items")
+    
