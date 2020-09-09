@@ -2,6 +2,7 @@ import numpy as np
 
 from rec.utils import VerboseMode
 
+
 class BinarySocialGraph(VerboseMode):
     """
      A mixin for classes with a :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute
@@ -29,15 +30,17 @@ class BinarySocialGraph(VerboseMode):
         ValueError
             If either of the user indices does not exist.
         """
-        # TODO allow for multiple indices
-        if (user_index >= self.num_users or following_index >= self.num_users):
-            raise ValueError("Number of user is %d, but indices %d and %d" + \
-                            " were requested" % (self.num_users, user_index, following_index))
-        if (self.user_profiles[following_index, user_index] == 0):
+        if user_index >= self.num_users or following_index >= self.num_users:
+            raise ValueError(
+                "Number of users is %d, but indices %d and %d"
+                + " were requested" % (self.num_users, user_index, following_index)
+            )
+        if self.user_profiles[following_index, user_index] == 0:
             self.user_profiles[following_index, user_index] = 1
         else:
-            self.log("User %d was already following user %d" % (following_index,
-                                                                user_index))
+            self.log(
+                "User %d was already following user %d" % (following_index, user_index)
+            )
 
     def unfollow(self, user_index, following_index):
         """
@@ -58,14 +61,17 @@ class BinarySocialGraph(VerboseMode):
         ValueError
             If either of the user indices does not exist.
         """
-        # TODO allow for multiple indices
-        if (user_index >= self.num_users or following_index >= self.num_users):
-            raise ValueError("Number of user is %d, but indices %d and %d" + \
-                            " were requested" % (self.num_users, user_index, following_index))
-        if (self.user_profiles[following_index, user_index] == 1):
+        if user_index >= self.num_users or following_index >= self.num_users:
+            raise ValueError(
+                "Number of user is %d, but indices %d and %d"
+                + " were requested" % (self.num_users, user_index, following_index)
+            )
+        if self.user_profiles[following_index, user_index] == 1:
             self.user_profiles[following_index, user_index] = 0
         else:
-            self.log("User %d was not following user %d" % (following_index, user_index))
+            self.log(
+                "User %d was not following user %d" % (following_index, user_index)
+            )
 
     def add_friends(self, user1_index, user2_index):
         """
@@ -86,18 +92,23 @@ class BinarySocialGraph(VerboseMode):
         ValueError
             If either of the user indices does not exist.
         """
-        # TODO allow for multiple indices
-        if (user1_index >= self.num_users or user2_index >= self.num_users):
-            raise ValueError("Number of user is %d, but indices %d and %d" + \
-                            " were requested" % (self.num_users, user1_index, user2_index))
-        if (self.user_profiles[user1_index, user2_index] == 0):
+        if user1_index >= self.num_users or user2_index >= self.num_users:
+            raise ValueError(
+                "Number of user is %d, but indices %d and %d"
+                + " were requested" % (self.num_users, user1_index, user2_index)
+            )
+        if self.user_profiles[user1_index, user2_index] == 0:
             self.user_profiles[user1_index, user2_index] = 1
         else:
-            self.log("User %d was already following user %d" % (user2_index, user1_index))
-        if (self.user_profiles[user2_index, user1_index] == 0):
+            self.log(
+                "User %d was already following user %d" % (user2_index, user1_index)
+            )
+        if self.user_profiles[user2_index, user1_index] == 0:
             self.user_profiles[user2_index, user1_index] = 1
         else:
-            self.log("User %d was already following user %d" % (user1_index, user2_index))
+            self.log(
+                "User %d was already following user %d" % (user1_index, user2_index)
+            )
 
     def remove_friends(self, user1_index, user2_index):
         """
@@ -118,15 +129,16 @@ class BinarySocialGraph(VerboseMode):
         ValueError
             If either of the user indices does not exist.
         """
-        # TODO allow for multiple indices
-        if (user1_index >= self.num_users or user2_index >= self.num_users):
-            raise ValueError("Number of user is %d, but indices %d and %d" + \
-                            " were requested" % (self.num_users, user1_index, user2_index))
-        if (self.user_profiles[user1_index, user2_index] == 1):
+        if user1_index >= self.num_users or user2_index >= self.num_users:
+            raise ValueError(
+                "Number of user is %d, but indices %d and %d"
+                + " were requested" % (self.num_users, user1_index, user2_index)
+            )
+        if self.user_profiles[user1_index, user2_index] == 1:
             self.user_profiles[user1_index, user2_index] = 0
         else:
             self.log("User %d was not following user %d" % (user2_index, user1_index))
-        if (self.user_profiles[user2_index, user1_index] == 1):
+        if self.user_profiles[user2_index, user1_index] == 1:
             self.user_profiles[user2_index, user1_index] = 0
         else:
             self.log("User %d was not following user %d" % (user1_index, user2_index))
