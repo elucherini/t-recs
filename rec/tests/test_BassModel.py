@@ -3,6 +3,7 @@ import numpy as np
 from rec.models import BassModel
 import pytest
 
+
 class TestBassModel:
     def test_default(self):
         s = BassModel()
@@ -61,44 +62,56 @@ class TestBassModel:
 
     def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
-            items = np.random.randint(1,1000)
-            item_repr = np.random.random(size=(1,1))
+            items = np.random.randint(1, 1000)
+            item_repr = np.random.random(size=(1, 1))
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
-            users = np.random.randint(1,100)
+            users = np.random.randint(1, 100)
             user_repr = np.random.randint(2, size=(users, users))
         # test item representation
         s = BassModel(item_representation=item_repr)
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[1])
-        test_utils.assert_correct_num_items(item_repr.shape[1], s, s.item_attributes.shape[1])
+        test_utils.assert_correct_num_items(
+            item_repr.shape[1], s, s.item_attributes.shape[1]
+        )
         test_utils.assert_equal_arrays(item_repr, s.item_attributes)
         test_utils.assert_not_none(s.predicted_scores)
 
         # test user representation
         s = BassModel(user_representation=user_repr)
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                            s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                            s.user_profiles.shape[1])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                            s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                            s.user_profiles.shape[1])
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[1]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[1]
+        )
         test_utils.assert_correct_num_items(s.num_items, s, s.item_attributes.shape[1])
         test_utils.assert_equal_arrays(user_repr, s.user_profiles)
         test_utils.assert_not_none(s.predicted_scores)
 
         # test item and user representations
         s = BassModel(user_representation=user_repr, item_representation=item_repr)
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                 s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[0], s,
-                                 s.user_profiles.shape[1])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                 s.user_profiles.shape[0])
-        test_utils.assert_correct_num_users(user_repr.shape[1], s,
-                                 s.user_profiles.shape[1])
-        test_utils.assert_correct_num_items(item_repr.shape[1], s, s.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[0], s, s.user_profiles.shape[1]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[0]
+        )
+        test_utils.assert_correct_num_users(
+            user_repr.shape[1], s, s.user_profiles.shape[1]
+        )
+        test_utils.assert_correct_num_items(
+            item_repr.shape[1], s, s.item_attributes.shape[1]
+        )
         test_utils.assert_equal_arrays(user_repr, s.user_profiles)
         test_utils.assert_equal_arrays(item_repr, s.item_attributes)
         test_utils.assert_not_none(s.predicted_scores)
@@ -120,10 +133,9 @@ class TestBassModel:
     def test_additional_params(self, num_items_per_iter=None):
         # these are currently meaningless but at least it should not break
         if num_items_per_iter is None:
-            # TODO vary parameter
-            num_items_per_iter = 1#np.random.randint(5, 100)
+            num_items_per_iter = 1
         s = BassModel(verbose=False, num_items_per_iter=num_items_per_iter)
-        assert(num_items_per_iter == s.num_items_per_iter)
+        assert num_items_per_iter == s.num_items_per_iter
         # also check other params
         test_utils.assert_not_none(s.predicted_scores)
         test_utils.assert_correct_num_users(s.num_users, s, s.user_profiles.shape[0])
@@ -140,7 +152,7 @@ class TestBassModel:
         if user2 is None:
             user2 = np.random.randint(s.num_users)
         # users must be different
-        while(user1 == user2):
+        while user1 == user2:
             user1 = np.random.randint(s.num_users)
         # test current graph
         test_utils.assert_social_graph_not_following(s.user_profiles, user1, user2)
@@ -197,9 +209,9 @@ class TestBassModel:
         test_utils.assert_equal_system_state(systate1, systate2)
 
         if items is None:
-            items = np.random.randint(1,1000)
+            items = np.random.randint(1, 1000)
         if users is None:
-            users = np.random.randint(1,100)
+            users = np.random.randint(1, 100)
         s1 = BassModel(seed=seed, num_users=users, num_items=items)
         s2 = BassModel(seed=seed, num_users=users, num_items=items)
         test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
@@ -213,45 +225,3 @@ class TestBassModel:
         systate1 = s1.get_system_state()
         systate2 = s2.get_system_state()
         test_utils.assert_equal_system_state(systate1, systate2)
-
-'''
-
-'''
-# --------------------------------------------------------- #
-# --------------------------------------------------------- #
-'''
-if __name__ == '__main__':
-    items = 3
-    attr = 5
-    users = 6
-    logging.basicConfig(level=logging.INFO)
-
-    # Define modules and how they map to test functions
-    choices = ['content', 'user_scores', 'social', 'sir']
-    choice_mapping = {'content': ContentFiltering_test,
-                        'user_scores': ActualUserScores_test,
-                        'social': SocialFiltering_test,
-                        'sir': SIR_test}
-
-    # Initialize parser and parse arguments
-    parser = argparse.ArgumentParser(description='Test/debug recsys')
-    parser.add_argument('--debug', '-d', choices=choices, required=True,
-                        action='store', help='Decide on module to debug',
-                        nargs='+')
-
-    args = parser.parse_args()
-
-    # For each module to test
-    for module_name in args.debug:
-        logger.info("# ------------------ #")
-        logger.info('TESTING %s' % str(module_name.upper()))
-        logger.info('# ------------------ #\n')
-        try:
-            # Use argument to find and run test function
-            ret = choice_mapping[module_name](items, attr, users)
-        except Exception as E:
-            test_return(ret)
-            raise E
-        else:
-            test_return(ret)
-'''
