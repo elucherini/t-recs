@@ -5,8 +5,7 @@ import inspect
 
 
 class FromNdArray(np.ndarray, VerboseMode):
-    """Subclass for Numpy's ndarrays.
-    """
+    """Subclass for Numpy's ndarrays."""
 
     def __new__(cls, input_array, num_items=None, verbose=False):
         obj = np.asarray(input_array).view(cls)
@@ -23,19 +22,16 @@ class FromNdArray(np.ndarray, VerboseMode):
 
 
 class BaseObserver(ABC):
-    """Observer mixin for the observer design pattern.
-    """
+    """Observer mixin for the observer design pattern."""
 
-    def register_observables(self, **kwargs):
-        observables = kwargs.pop("observables", None)
-
-        observer = kwargs.pop("observer", None)
+    def register_observables(
+        self, observables=None, observer=None, observable_type=None
+    ):
         if observer is None:
             raise ValueError("Argument `observer` cannot be None")
         elif not isinstance(observer, list):
             raise TypeError("Argument `observer` must be a list")
 
-        observable_type = kwargs.pop("observable_type", None)
         if not inspect.isclass(observable_type):
             raise TypeError("Argument `observable_type` must be a class")
 
@@ -43,10 +39,7 @@ class BaseObserver(ABC):
             observer=observer, observables=observables, observable_type=observable_type
         )
 
-    def unregister_observables(self, **kwargs):
-        observables = kwargs.pop("observables", None)
-
-        observer = kwargs.pop("observer", None)
+    def unregister_observables(self, observables=None, observer=None):
         if observer is None:
             raise ValueError("Argument `observer` cannot be None")
         elif not isinstance(observer, list):
@@ -78,8 +71,7 @@ class BaseObserver(ABC):
 
 
 class BaseObservable(ABC):
-    """Observable mixin for the observer design pattern.
-    """
+    """Observable mixin for the observer design pattern."""
 
     def get_observable(self, **kwargs):
         data = kwargs.pop("data", None)
@@ -99,8 +91,7 @@ class BaseObservable(ABC):
 
 
 class BaseComponent(BaseObservable, VerboseMode, ABC):
-    """Observable that stores a history of its state.
-    """
+    """Observable that stores a history of its state."""
 
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
@@ -124,8 +115,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
 
 
 class Component(FromNdArray, BaseComponent):
-    """Class for components that make up the system state.
-    """
+    """Class for components that make up the system state."""
 
     def __init__(self, current_state=None, size=None, verbose=False, seed=None):
         # general input checks
