@@ -1,8 +1,10 @@
 import numpy as np
 from abc import ABC, abstractmethod
+import scipy.sparse as sparse
 import inspect
 
 from rec.utils import VerboseMode
+from rec.random import Generator
 
 class BaseObserver(ABC):
     """Observer mixin for the observer design pattern."""
@@ -79,7 +81,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
-        if isinstance(init_value, np.ndarray):
+        if isinstance(init_value, np.ndarray) or sparse.issparse(init_value):
             init_value = init_value.copy()
         self.state_history.append(init_value)
 
@@ -103,15 +105,18 @@ class Component(BaseComponent):
     def __init__(self, current_state=None, size=None, verbose=False, seed=None):
         # general input checks
         if current_state is not None:
-            if not isinstance(current_state, (list, np.ndarray)):
-                raise TypeError("current_state must be a list or numpy.ndarray")
+            if not isinstance(current_state, (list, np.ndarray)) and not sparse.issparse(current_state):
+                raise TypeError("current_state must be a list or numpy.ndarray or sparse matrix")
         if current_state is None and size is None:
             raise ValueError("current_state and size can't both be None")
         if current_state is None and not isinstance(size, tuple):
             raise TypeError("size must be a tuple, is %s" % type(size))
         if current_state is None and size is not None:
-            current_state = Generator(seed).binomial(n=0.3, p=1, size=size)
-        self.current_state = current_state
+            current_state = sparse.csr_matrix(Generator(seed).binomial(n=0.3, p=1, size=size))
+        if not sparse.issparse(current_state):
+            self.current_state = np.asarray(current_state)
+        else:
+            self.current_state = current_state
         # Initialize component state
         BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
 
