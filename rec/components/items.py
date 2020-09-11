@@ -51,11 +51,3 @@ class Items(Component):
         Component.__init__(
             self, current_state=item_attributes, size=size, verbose=verbose, seed=seed
         )
-
-
-if __name__ == "__main__":
-    a = Items([1, 2, 3], verbose=True)
-    print(a)
-    print(type(a))
-    print(a + 2)
-    print(a.verbose)
