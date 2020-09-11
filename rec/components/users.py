@@ -12,7 +12,7 @@ class PredictedScores(Component):
     size of the representation.
     """
 
-    def __init__(self, predicted_scores=None, verbose=False):
+    def __init__(self, predicted_scores=None, size=None, verbose=False):
         self.name = "predicted_user_scores"
         Component.__init__(
             self, current_state=predicted_scores, size=None, verbose=verbose, seed=None
