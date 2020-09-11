@@ -1,25 +1,8 @@
 import numpy as np
 from abc import ABC, abstractmethod
-from rec.utils import VerboseMode
 import inspect
 
-
-class FromNdArray(np.ndarray, VerboseMode):
-    """Subclass for Numpy's ndarrays."""
-
-    def __new__(cls, input_array, num_items=None, verbose=False):
-        obj = np.asarray(input_array).view(cls)
-        obj.verbose = verbose
-        return obj
-
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __array_finalize__(self, obj):
-        if obj is None:
-            return
-        self.verbose = getattr(obj, "verbose", False)
-
+from rec.utils import VerboseMode
 
 class BaseObserver(ABC):
     """Observer mixin for the observer design pattern."""
@@ -97,7 +80,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
         if isinstance(init_value, np.ndarray):
-            init_value = np.copy(init_value)
+            init_value = init_value.copy()
         self.state_history.append(init_value)
 
     def get_component_state(self):
@@ -105,7 +88,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
 
     def observe(self, state, copy=True):
         if copy:
-            to_append = np.copy(state)
+            to_append = state.copy()
         else:
             to_append = state
         self.state_history.append(to_append)
@@ -114,7 +97,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         return len(self.state_history)
 
 
-class Component(FromNdArray, BaseComponent):
+class Component(BaseComponent):
     """Class for components that make up the system state."""
 
     def __init__(self, current_state=None, size=None, verbose=False, seed=None):
@@ -134,37 +117,3 @@ class Component(FromNdArray, BaseComponent):
 
     def store_state(self):
         self.observe(self, copy=True)
-
-
-if __name__ == "__main__":
-    from rec.models.recommender import SystemStateModule
-    from rec.components import PredictedUserProfiles
-    import numpy as np
-
-    class Test(SystemStateModule):
-        def __init__(self, user_profiles):
-            self.user_profiles = PredictedUserProfiles(user_profiles)
-            SystemStateModule.__init__(self)
-            self.add_state_variable(self.user_profiles)
-
-        def run(self, to_add=1):
-            self.user_profiles += to_add
-            print(
-                "Adding %d to user profiles. Result:\n%s\n\n"
-                % (to_add, self.user_profiles)
-            )
-            self.measure_content()
-
-        def measure_content(self):
-            for component in self._system_state:
-                component.store_state(np.asarray(component))
-
-    profiles = np.zeros((5, 5))
-    test = Test(profiles)
-    test.run()
-    test.run()
-    print("State history:")
-    print(test.user_profiles.state_history)
-    print("Final user profiles")
-    print(test.user_profiles)
-    print(test.user_profiles.name)

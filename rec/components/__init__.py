@@ -6,5 +6,4 @@ from .base_components import (
     BaseComponent,
     BaseObservable,
     BaseObserver,
-    FromNdArray,
 )

@@ -2,7 +2,7 @@ import numpy as np
 
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_components import Component, FromNdArray, BaseComponent
+from .base_components import Component, BaseComponent
 
 
 class PredictedScores(Component):

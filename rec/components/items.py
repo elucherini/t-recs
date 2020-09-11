@@ -1,6 +1,6 @@
 from rec.utils import VerboseMode, normalize_matrix
 from rec.random import Generator
-from .base_components import Component, FromNdArray
+from .base_components import Component
 import numpy as np
 
 
@@ -11,7 +11,7 @@ class Items(Component):
     Items are the objects with which users interact with models and with each other.
 
     This class is essentially a container of Numpy's ndarray. Therefore, it
-    supports all the operations supported by ndarray. It inherits from 
+    supports all the operations supported by ndarray. It inherits from
     :class:`~.base_components.Component` and it contains all the attributes of
     that class.
 

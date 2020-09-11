@@ -4,7 +4,7 @@ from tqdm import tqdm
 from rec import utils
 from rec.metrics import MSEMeasurement, Measurement
 from rec.components import Users, Items, PredictedScores, PredictedUserProfiles
-from rec.components import BaseObserver, BaseComponent, FromNdArray
+from rec.components import BaseObserver, BaseComponent
 from rec.utils import VerboseMode
 from rec.random import Generator
 
