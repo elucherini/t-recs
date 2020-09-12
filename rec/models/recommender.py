@@ -11,7 +11,7 @@ from rec.random import Generator
 
 class MeasurementModule(BaseObserver):
     """
-    Mixin for observers of :class:`Measurement` observables.Implements the
+    Mixin for observers of :class:`Measurement` observables. Implements the
     `Observer design pattern`_.
 
     .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
