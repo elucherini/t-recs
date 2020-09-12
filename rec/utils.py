@@ -54,6 +54,7 @@ def slerp(mat1, mat2, t=0.05):
                 Parameter in [0,1] inclusive that specifies the percentage
                 of rotation.
     """
+    assert t >= 0.0 and t <= 1.0
     mat1_norm = np.linalg.norm(mat1, axis=1)[:, np.newaxis]
     mat2_norm = np.linalg.norm(mat2, axis=0)[:, np.newaxis]
     # dot every user profile with its corresponding item attributes
