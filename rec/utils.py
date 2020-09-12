@@ -10,7 +10,11 @@ import numpy as np
 
 def normalize_matrix(matrix, axis=1):
     """ Normalize a matrix so that each row vector has a Euclidean norm of 1.
+        If a vector is passed in, we treat it as a matrix with a single row.
     """
+    if len(matrix.shape) == 1:
+        # turn vector into matrix with one row
+        matrix = matrix[:, np.newaxis]
     divisor = np.linalg.norm(matrix, axis=1)[:, np.newaxis]
     # only normalize where divisor is not zero
     result = np.divide(matrix, divisor, out=np.zeros(matrix.shape), where=divisor != 0)

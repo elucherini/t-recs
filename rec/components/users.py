@@ -165,7 +165,7 @@ class Users(BaseComponent):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = Generator(seed=seed).normal(size=size)
         if normalize:
-            actual_user_profiles = normalize_matrix(actual_user_profiles)
+            actual_user_profiles = normalize_matrix(np.asarray(actual_user_profiles))
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         self.dynamic_profiles = dynamic_profiles
@@ -180,14 +180,33 @@ class Users(BaseComponent):
         )
 
     def set_score_function(self, score_fn):
-        """ TODO: write description
+        """ 
+        Users "score" items before "deciding" which item to interact with.
+        This function makes it possible to set an arbitrary function as the
+        score function. 
+
+        Parameters
+        ------------
+
+        score_fn: callable
+            Function that is used to calculate each user's scores for each
+            candidate item. Note that this function can be the same function
+            used by the recommender system to generate its predictions for
+            user-item scores. The score function should take as input
+            user_profiles and item_attributes.
+
+        Raises
+        --------
+
+        TypeError
+            If score_fn is not callable.
         """
         if not callable(score_fn):
-            raise TypeError("train_function must be callable")
+            raise TypeError("score function must be callable")
         self.score_fn = score_fn
 
     def compute_user_scores(self, item_attributes):
-        """ TODO: edit docstring
+        """
         Computes and stores the actual scores that users assign to items
         compatible with the system. Note that we expect that the score_fn
         attribute to be set to some callable function which takes item 
@@ -196,17 +215,8 @@ class Users(BaseComponent):
         Parameters
         ------------
 
-        train_function: callable
-            Function that is used to train the model. Since training the model
-            corresponds to generating user scores starting from user profiles,
-            as predicted by the model, the same function can be used to compute
-            the real scores using the real user preferences.
-
-        Raises
-        --------
-
-        TypeError
-            If train_function is not callable.
+        item_attributes: :obj:`array_like` or None (optional, default: None)
+            A matrix representation of item attributes.
         """
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
