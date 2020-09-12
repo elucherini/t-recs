@@ -201,9 +201,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.user_profiles = PredictedUserProfiles(user_representation)
         self.item_attributes = Items(item_representation)
         # set predicted scores
-        self.predicted_scores = PredictedScores(
-            self.predict_scores(self.user_profiles, self.item_attributes)
-        )
+        self.predicted_scores = None
+        self.update_predicted_scores(self.user_profiles, self.item_attributes)
         assert self.predicted_scores is not None
 
         if not utils.is_valid_or_none(num_users, int):
@@ -262,15 +261,35 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Seed was not set.")
 
     def score(self, user_profiles, item_attributes, normalize=True):
+        """
+        Performs a dot product multiplication between user profiles and 
+        item attributes to return the scores (utility) each item possesses
+        for each user.
+
+        Parameters
+        -----------
+
+            user_profiles: :obj:`array_like`
+                First factor of the dot product, which should provide a
+                representation of users.
+
+            item_attributes: :obj:`array_like`
+                Second factor of the dot product, which should provide a
+                representation of items.
+
+        Returns
+        --------
+            scores: :obj:`numpy.ndarray`
+        """
         if normalize:
             # this is purely an optimization that prevents numpy from having
             # to multiply huge numbers
             user_profiles = utils.normalize_matrix(user_profiles, axis=1)
         assert user_profiles.shape[1] == item_attributes.shape[0]
-        predicted_scores = np.dot(user_profiles, item_attributes)
-        return predicted_scores
+        scores = np.dot(user_profiles, item_attributes)
+        return scores
 
-    def predict_scores(self, user_profiles=None, item_attributes=None):
+    def update_predicted_scores(self, user_profiles=None, item_attributes=None):
         """
         Updates scores predicted by the system based on past interactions for
         better user predictions. Specifically, it updates :attr:`predicted_scores`
@@ -304,7 +323,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             + str(predicted_scores)
         )
         assert predicted_scores is not None
-        return predicted_scores
+        if self.predicted_scores is None:
+            self.predicted_scores = PredictedScores(predicted_scores)
+        else:
+            self.predicted_scores[:, :] = predicted_scores
 
     def generate_recommendations(self, k=1, indices_prime=None):
         """
@@ -476,13 +498,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # train between steps:
             if train_between_steps:
-                self.predicted_scores[:, :] = self.predict_scores(
+                 self.update_predicted_scores(
                     self.user_profiles, self.item_attributes
                 )
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.predicted_scores[:, :] = self.predict_scores(
+            self.update_predicted_scores(
                 self.user_profiles, self.item_attributes
             )
             self.measure_content(interactions, step=t)
