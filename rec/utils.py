@@ -24,6 +24,17 @@ def contains_row(matrix, row):
     return (matrix == row).all(1).any()
 
 
+def slerp(p0, p1, t=0.05):
+    """ TODO: write docstring
+    """
+    p0_norm = np.linalg.norm(p0, axis=1)[:, np.newaxis]
+    p1_norm = np.linalg.norm(p1, axis=0)[:, np.newaxis]
+    # dot every user profile with its corresponding item attributes
+    omega = np.arccos((p0/p0_norm) * (p1/p1_norm).sum(axis=1))
+    # uh oh, bad things happen if angles between vectors is exactly 180 deg
+    so = np.sin(omega)
+    return (np.sin((1.0-t)*omega) / so * p0.T + np.sin(t*omega)/so * p1.T).T
+
 def toDataFrame(data, index=None):
     import pandas as pd
 

@@ -202,7 +202,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.item_attributes = Items(item_representation)
         # set predicted scores
         self.predicted_scores = PredictedScores(
-            self.train(self.user_profiles, self.item_attributes, normalize=True)
+            self.predict_scores(self.user_profiles, self.item_attributes)
         )
         assert self.predicted_scores is not None
 
@@ -241,7 +241,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if system_state is not None:
             self.add_state_variable(*system_state)
 
-        self.actual_users.compute_user_scores(self.train)
+        # initialize actual user scores for items
+        self.actual_users.set_score_function(self.score)
+        self.actual_users.compute_user_scores(self.item_attributes)
 
         assert self.actual_users and isinstance(self.actual_users, Users)
         self.num_users = num_users
@@ -259,7 +261,18 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             self.log("Seed was not set.")
 
-    def train(self, user_profiles=None, item_attributes=None, normalize=True):
+    def score(self, user_profiles, item_attributes, normalize=True):
+        if normalize:
+            # TODO: figure out what is guaranteed to be normalized already
+            # user profiles should be normalized by row
+            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
+            # item attributes should be normalized by column
+            item_attributes = utils.normalize_matrix(item_attributes, axis=0)
+        assert user_profiles.shape[1] == item_attributes.shape[0]
+        predicted_scores = np.dot(user_profiles, item_attributes)
+        return predicted_scores
+
+    def predict_scores(self, user_profiles=None, item_attributes=None):
         """
         Updates scores predicted by the system based on past interactions for
         better user predictions. Specifically, it updates :attr:`predicted_scores`
@@ -278,9 +291,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 representation of items. If None, the second factor defaults to
                 :attr:`item_attributes`.
 
-            normalize: bool (optional, default: True)
-                Set to True if the scores should be normalized, False otherwise.
-
         Returns
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
@@ -289,10 +299,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             user_profiles = self.user_profiles
         if item_attributes is None:
             item_attributes = self.item_attributes
-        if normalize:
-            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
-        assert user_profiles.shape[1] == item_attributes.shape[0]
-        predicted_scores = np.dot(user_profiles, item_attributes)
+        predicted_scores = self.score(user_profiles, item_attributes)
         self.log(
             "System updates predicted scores given by users (rows) "
             + "to items (columns):\n"
@@ -471,13 +478,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # train between steps:
             if train_between_steps:
-                self.predicted_scores[:, :] = self.train(
+                self.predicted_scores[:, :] = self.predict_scores(
                     self.user_profiles, self.item_attributes
                 )
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.predicted_scores[:, :] = self.train(
+            self.predicted_scores[:, :] = self.predict_scores(
                 self.user_profiles, self.item_attributes
             )
             self.measure_content(interactions, step=t)

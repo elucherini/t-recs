@@ -168,8 +168,9 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
-    def train(self, user_profiles=None, item_attributes=None, normalize=False):
-        """ Overrides train method of parent class :class:`Recommender`.
+    def score(self, user_profiles, item_attributes):
+        """ Overrides score method of parent class :class:`Recommender`. 
+            TODO: update documentation
 
             Args:
 
@@ -189,18 +190,11 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """
         # normalizing the user profiles is meaningless here
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
-        if user_profiles is None:
-            user_profiles = self.user_profiles
         dot_product = np.dot(
             user_profiles, self.infection_state * np.log(1 - self.item_attributes)
         )
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
-        self.log(
-            "System updates predicted scores given by users (rows) "
-            + "to items (columns):\n"
-            + str(predicted_scores)
-        )
         return predicted_scores
 
     def run(

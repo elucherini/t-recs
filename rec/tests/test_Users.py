@@ -19,7 +19,7 @@ class TestUsers:
         assert s.actual_user_profiles.shape == (users, attr)
         s = Users(actual_user_profiles=np.random.randint(5, size=(users, attr)))
         assert s.actual_user_profiles.shape == (users, attr)
-        s = Users(actual_user_profiles=[1, 2, 3])
+        s = Users(actual_user_profiles=[1, 2, 3], normalize=False)
 
     def test_content(self, items=10, attr=5, users=6, expand_items_by=2):
         """WARNING Before running this, make sure ContentFiltering is working properly"""
@@ -27,14 +27,14 @@ class TestUsers:
         item_repr = np.random.randint(2, size=(attr, items))
         actual_user_repr = np.random.randint(15, size=(users, attr))
         model = ContentFiltering(
-            user_representation=actual_user_repr, item_representation=item_repr
+            user_representation=actual_user_repr, item_representation=item_repr,
         )
-
-        s = Users(actual_user_repr)
-
-        s.compute_user_scores(model.train)
+        # todo: uh oh, is this weird
+        s = Users(actual_user_repr, normalize=False)
+        s.set_score_function(model.score)
+        s.compute_user_scores(item_repr)
         test_utils.assert_equal_arrays(
-            s.actual_user_scores, model.train(s.actual_user_profiles, normalize=True)
+            s.actual_user_scores, model.predict_scores(s.actual_user_profiles)
         )
         test_utils.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
@@ -45,17 +45,18 @@ class TestUsers:
         )
         assert model.user_profiles.shape == actual_user_repr.shape
         s = Users(actual_user_repr)
-        s.compute_user_scores(model.train)
+        s.set_score_function(model.score)
+        s.compute_user_scores(item_repr)
         print(
             np.array_equal(
                 s.actual_user_scores,
-                model.train(
-                    s.actual_user_profiles, model.item_attributes, normalize=True
+                model.predict_scores(
+                    s.actual_user_profiles, model.item_attributes
                 ),
             )
         )
         test_utils.assert_equal_arrays(
-            s.actual_user_scores, model.train(s.actual_user_profiles, normalize=True)
+            s.actual_user_scores, model.predict_scores(s.actual_user_profiles)
         )
 
     def test_seeding(self, users=15, attr=15, seed=None):

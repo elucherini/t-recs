@@ -1,6 +1,6 @@
 import numpy as np
 
-from rec.utils import VerboseMode, normalize_matrix, contains_row
+from rec.utils import VerboseMode, normalize_matrix, contains_row, slerp
 from rec.random import Generator
 from .base_components import Component, FromNdArray, BaseComponent
 
@@ -86,6 +86,14 @@ class Users(BaseComponent):
         size: tuple, None (optional, default: None)
             Size of the user representation. It expects a tuple. If None,
             it is chosen randomly.
+        
+        normalize: bool (optional, default: True)
+            If True, each user profile vector is normalized to be a unit vector.
+
+        dynamic_profiles: bool (optional, default: False)
+            If True, user profiles will update dynamically as they interact
+            with items. If False, user profiles are generated once at
+            initialization and never change.
 
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
@@ -133,6 +141,8 @@ class Users(BaseComponent):
         interact_with_items=None,
         size=None,
         num_users=None,
+        normalize=True,
+        dynamic_profiles=False,
         verbose=False,
         seed=None,
     ):
@@ -154,8 +164,12 @@ class Users(BaseComponent):
             while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = Generator(seed=seed).normal(size=size)
+        if normalize:
+            actual_user_profiles = normalize_matrix(actual_user_profiles)
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
+        self.dynamic_profiles = dynamic_profiles
+        self.score_fn = None  # function that dictates how scores will be generated
         # this will be initialized by the system
         self.actual_user_scores = None
         if num_users is not None:
@@ -165,10 +179,19 @@ class Users(BaseComponent):
             self, verbose=verbose, init_value=self.actual_user_scores
         )
 
-    def compute_user_scores(self, train_function, *args, **kwargs):
+    def set_score_function(self, score_fn):
+        """ TODO: write description
         """
+        if not callable(score_fn):
+            raise TypeError("train_function must be callable")
+        self.score_fn = score_fn
+
+    def compute_user_scores(self, item_attributes):
+        """ TODO: edit docstring
         Computes and stores the actual scores that users assign to items
-        compatible with the system. It does so by using the model's train function.
+        compatible with the system. Note that we expect that the score_fn
+        attribute to be set to some callable function which takes item 
+        attributes and user profiles.
 
         Parameters
         ------------
@@ -179,19 +202,17 @@ class Users(BaseComponent):
             as predicted by the model, the same function can be used to compute
             the real scores using the real user preferences.
 
-        args, kwargs:
-            Parameters needed by the model's train function.
-
         Raises
         --------
 
         TypeError
             If train_function is not callable.
         """
-        if not callable(train_function):
-            raise TypeError("train_function must be callable")
-        actual_scores = train_function(
-            user_profiles=self.actual_user_profiles, *args, **kwargs
+        if not callable(self.score_fn):
+            raise TypeError("score function must be callable")
+        actual_scores = self.score_fn(
+            user_profiles=self.actual_user_profiles,
+            item_attributes=item_attributes
         )
         if self.actual_user_scores is None:
             self.actual_user_scores = actual_scores
@@ -262,13 +283,24 @@ class Users(BaseComponent):
         reshaped_user_vector = self._user_vector.reshape((items.shape[0], 1))
         user_interactions = self.actual_user_scores[reshaped_user_vector, items]
         self.log("User scores for given items are:\n" + str(user_interactions))
-        sorted_user_preferences = user_interactions.argsort()[:, ::-1][:, 0]
+        sorted_user_preferences = user_interactions.argsort()[:, -1]
         interactions = items[self._user_vector, sorted_user_preferences]
         self.log(
             "Users interact with the following items respectively:\n"
             + str(interactions)
         )
+        if self.dynamic_profiles:
+            self.update_profiles(interactions)
+            # update user scores
+            self.compute_user_scores(items)
         return interactions
+
+    def update_profiles(self, interactions, t=0.05):
+        """ TODO: write docstring
+        """
+        # can some of this be cached from computing the scores? we would need
+        # item scores to be guaranteed to be normalized...
+        self.actual_user_profiles = slerp(self.actual_user_scores, interactions)
 
     def store_state(self):
         self.state_history.append(np.copy(self.actual_user_scores))
