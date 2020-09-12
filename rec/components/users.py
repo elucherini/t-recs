@@ -1,6 +1,6 @@
 import numpy as np
 
-from rec.utils import VerboseMode, normalize_matrix
+from rec.utils import VerboseMode, normalize_matrix, contains_row
 from rec.random import Generator
 from .base_components import Component, FromNdArray, BaseComponent
 
@@ -150,7 +150,10 @@ class Users(BaseComponent):
             if not isinstance(actual_user_scores, (list, np.ndarray)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
-            actual_user_profiles = Generator(seed=seed).normal(size=size)
+            row_zeros = np.zeros(size[1]) # one row vector of zeroes
+            while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
+                # generate matrix until no row is the zero vector
+                actual_user_profiles = Generator(seed=seed).normal(size=size)
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         # this will be initialized by the system

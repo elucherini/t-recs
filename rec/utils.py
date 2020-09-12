@@ -9,11 +9,19 @@ import numpy as np
 
 
 def normalize_matrix(matrix, axis=1):
-    divisor = matrix.sum(axis=axis)[:, None]
-    result = np.divide(
-        matrix, divisor, out=np.zeros(matrix.shape, dtype=float), where=divisor != 0
-    )
+    """ Normalize a matrix so that each row vector has a Euclidean norm of 1.
+    """
+    divisor = np.linalg.norm(matrix, axis=1)[:, np.newaxis]
+    # only normalize where divisor is not zero
+    result = np.divide(matrix, divisor, out=np.zeros(matrix.shape), where=divisor != 0)
     return result
+
+
+def contains_row(matrix, row):
+    """ Check if a numpy matrix contains a row with the same values as the 
+        variable `row`.
+    """
+    return (matrix == row).all(1).any()
 
 
 def toDataFrame(data, index=None):
