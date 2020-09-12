@@ -215,7 +215,7 @@ class Users(BaseComponent):
         Parameters
         ------------
 
-        item_attributes: :obj:`array_like` or None (optional, default: None)
+        item_attributes: :obj:`array_like`
             A matrix representation of item attributes.
         """
         if not callable(self.score_fn):
