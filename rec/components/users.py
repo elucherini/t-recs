@@ -306,11 +306,26 @@ class Users(BaseComponent):
         return interactions
 
     def update_profiles(self, interactions, t=0.05):
-        """ TODO: write docstring
+        """ In the case of dynamic user profiles, we update the user's actual
+            profiles with new values as each user profile "drifts" towards
+            items that they consume.
+
+            Parameters
+            -----------
+
+                interactions: numpy.ndarray or list
+                    A matrix where row `i` corresponds to the attribute vector
+                    that user `i` interacted with.
+
+                t: float (optional, default: 0.05)
+                    A parameter between 0 and 1 that controls the degree of
+                    rotational drift. If `t=1`, then the user profile vector
+                    takes on the exact same direction as the attribute vector
+                    of the item they just interacted with.
         """
-        # can some of this be cached from computing the scores? we would need
-        # item scores to be guaranteed to be normalized...
-        self.actual_user_profiles = slerp(self.actual_user_scores, interactions)
+        # we make no assumptions about whether the user profiles or item
+        # attributes vectors are normalized
+        self.actual_user_profiles = slerp(self.actual_user_profiles, interactions, t=t)
 
     def store_state(self):
         self.state_history.append(np.copy(self.actual_user_scores))
