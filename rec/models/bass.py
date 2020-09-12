@@ -170,25 +170,16 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
     def score(self, user_profiles, item_attributes):
         """ Overrides score method of parent class :class:`Recommender`. 
-            TODO: update documentation
-
             Args:
 
-            user_profiles: :obj:`array_like` or None (optional, default: None)
+            user_profiles: :obj:`array_like`
                 First factor of the dot product, which should provide a
-                representation of users. If None, the first factor defaults to
-                :attr:`user_profiles`.
+                representation of users.
 
-            item_attributes: :obj:`array_like` or None (optional, default: None)
+            item_attributes: :obj:`array_like`
                 Second factor of the dot product, which should provide a
-                representation of items. If None, the second factor defaults to
-                :attr:`item_attributes`. (Kept for compatibility, currently
-                ignored in this model)
-
-            normalize: bool (optional, default: False)
-                Set to True if the scores should be normalized, False otherwise (kept for compatibility but ignored in this model)
+                representation of items.
         """
-        # normalizing the user profiles is meaningless here
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         dot_product = np.dot(
             user_profiles, self.infection_state * np.log(1 - self.item_attributes)

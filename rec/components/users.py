@@ -86,9 +86,6 @@ class Users(BaseComponent):
         size: tuple, None (optional, default: None)
             Size of the user representation. It expects a tuple. If None,
             it is chosen randomly.
-        
-        normalize: bool (optional, default: True)
-            If True, each user profile vector is normalized to be a unit vector.
 
         dynamic_profiles: bool (optional, default: False)
             If True, user profiles will update dynamically as they interact
@@ -141,7 +138,6 @@ class Users(BaseComponent):
         interact_with_items=None,
         size=None,
         num_users=None,
-        normalize=True,
         dynamic_profiles=False,
         verbose=False,
         seed=None,
@@ -164,8 +160,6 @@ class Users(BaseComponent):
             while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = Generator(seed=seed).normal(size=size)
-        if normalize:
-            actual_user_profiles = normalize_matrix(np.asarray(actual_user_profiles))
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         self.dynamic_profiles = dynamic_profiles

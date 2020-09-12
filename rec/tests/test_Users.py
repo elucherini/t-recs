@@ -30,8 +30,7 @@ class TestUsers:
         model = ContentFiltering(
             user_representation=actual_user_repr, item_representation=item_repr,
         )
-        # todo: uh oh, is this weird
-        s = Users(actual_user_repr, normalize=False)
+        s = Users(actual_user_repr)
         s.set_score_function(model.score)
         s.compute_user_scores(item_repr)
         test_utils.assert_equal_arrays(

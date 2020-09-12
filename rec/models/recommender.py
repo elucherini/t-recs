@@ -263,11 +263,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
     def score(self, user_profiles, item_attributes, normalize=True):
         if normalize:
-            # TODO: figure out what is guaranteed to be normalized already
-            # user profiles should be normalized by row
+            # this is purely an optimization that prevents numpy from having
+            # to multiply huge numbers
             user_profiles = utils.normalize_matrix(user_profiles, axis=1)
-            # item attributes should be normalized by column
-            item_attributes = utils.normalize_matrix(item_attributes, axis=0)
         assert user_profiles.shape[1] == item_attributes.shape[0]
         predicted_scores = np.dot(user_profiles, item_attributes)
         return predicted_scores
