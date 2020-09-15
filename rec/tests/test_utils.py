@@ -1,66 +1,97 @@
 import numpy as np
+import test_helpers
+from rec.utils import (
+    normalize_matrix,
+    contains_row,
+    slerp
+)
 
+class TestUtils:
+    def test_normalize_matrix(self):
+        # matrix that already has norm 1 columns/rows
+        mat_1 = np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_1))
+        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_1, axis=0))
+        
+        # matrix with norm 2 columns/rows
+        mat_2 = np.array([
+            [2, 0, 0, 0],
+            [0, 2, 0, 0],
+            [0, 0, 2, 0],
+            [0, 0, 0, 2]
+        ])
+        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_2))
+        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_2, axis=0))
 
-def assert_equal_arrays(a, b):
-    assert np.array_equal(a, b)
+        # check norm of all rows equals 1 after normalization
+        mat_3 = np.arange(16).reshape((4,4))
+        normalized = normalize_matrix(mat_3, axis=1)
+        assert (np.linalg.norm(normalized, axis=1) == 1).all()
 
+    def test_normalize_vector(self):
+        vec = np.array([3, 4])
+        unit_vec = normalize_matrix(vec)
+        correct_unit_vec = np.array(
+            [[3/5, 4/5]
+        ])
+        test_helpers.assert_equal_arrays(unit_vec, correct_unit_vec)
 
-def assert_correct_num_users(num_users, model, size):
-    assert num_users == model.num_users
-    assert num_users == size
+    def test_contains_row(self):
+        mat = np.arange(16).reshape((4, 4))
+        assert contains_row(mat, [0, 1, 2, 3])
+        assert not contains_row(mat, [3, 2, 1, 0])
 
+    def test_slerp(self):
+        # rotate unit vectors 45 degrees
+        mat1 = np.array([
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0]
+        ])
+        mat2 = np.array([
+            [1, 0],
+            [0, -1],
+            [-1, 0],
+            [0, 1]
+        ])
+        rotated = slerp(mat1, mat2, t=0.5)
+        correct_rotation = np.array([
+            [np.sqrt(2)/2, np.sqrt(2)/2],
+            [np.sqrt(2)/2, -np.sqrt(2)/2],
+            [-np.sqrt(2)/2, -np.sqrt(2)/2],
+            [-np.sqrt(2)/2, np.sqrt(2)/2]
+        ])
+        # there may be imprecision due to floating point errors
+        np.testing.assert_array_almost_equal(rotated, correct_rotation)
 
-def assert_correct_num_items(num_items, model, size):
-    assert num_items == model.num_items
-    assert num_items == size
+        # increase norm of vectors and check that norm of rotated vectors
+        # does not change
+        mat1_big = np.array([
+            [0, 2],
+            [2, 0],
+            [0, -2],
+            [-2, 0]
+        ])
+        rotated = slerp(mat1_big, mat2, t=0.5)
+        np.testing.assert_array_almost_equal(rotated, 2 * correct_rotation)
 
+        # only rotate 5% and then verify that the angle between each row of the
+        # resulting matrix and the target matrix is 0.95 * 90
+        rotated = slerp(mat1, mat2, t=0.05)
+        theta = np.arccos((rotated * mat2).sum(axis=1))
+        test_helpers.assert_equal_arrays(theta, np.repeat([np.pi / 2 * 0.95], 4))
 
-def assert_correct_size_generic(attribute, num_attribute, size):
-    assert num_attribute == attribute
-    assert num_attribute == size
-
-
-def assert_correct_representation(repr, model_repr):
-    assert np.array_equal(repr, model_repr)
-
-
-def assert_social_graph_following(graph, user, following):
-    assert graph[following, user]
-
-
-def assert_social_graph_not_following(graph, user, not_following):
-    assert graph[not_following, user] == 0
-
-
-def assert_not_none(repr):
-    assert repr is not None
-
-
-def assert_equal_measurements(meas1, meas2):
-    for key, val in meas1.items():
-        assert key in meas2
-        assert_equal_arrays(val, meas2[key])
-    for key, val in meas2.items():
-        assert key in meas1
-        assert_equal_arrays(val, meas1[key])
-
-
-def assert_equal_system_state(systate1, systate2):
-    for key, val in systate1.items():
-        assert key in systate2
-        if isinstance(val, list):
-            for i, item in enumerate(val):
-                assert_equal_arrays(item, systate2[key][i])
-        if val is None:
-            assert val == systate2[key] == None
-        if isinstance(val, np.ndarray):
-            assert_equal_arrays(val, systate2[key])
-    for key, val in systate2.items():
-        assert key in systate1
-        if isinstance(val, list):
-            for i, item in enumerate(val):
-                assert_equal_arrays(item, systate1[key][i])
-        if val is None:
-            assert val == systate1[key] == None
-        if isinstance(val, np.ndarray):
-            assert_equal_arrays(val, systate1[key])
+        # rotate a unit vector 45 degrees
+        vec1 = np.array([np.sqrt(2)/2, np.sqrt(2)/2])
+        vec2 = np.array([np.sqrt(2)/2, -np.sqrt(2)/2])
+        correct_rotation = np.array([
+            [1, 0]
+        ])
+        rotated = slerp(vec1, vec2, t=0.5)
+        test_helpers.assert_equal_arrays(rotated, correct_rotation)

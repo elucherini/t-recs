@@ -1,7 +1,7 @@
 import numpy as np
 from rec.components import Users
 from rec.models import ContentFiltering
-import test_utils
+import test_helpers
 import pytest
 
 
@@ -34,10 +34,10 @@ class TestUsers:
         s.set_score_function(model.score)
         s.compute_user_scores(item_repr)
         model.update_predicted_scores(s.actual_user_profiles)
-        test_utils.assert_equal_arrays(
+        test_helpers.assert_equal_arrays(
             s.actual_user_scores, model.predicted_scores
         )
-        test_utils.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
+        test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
         # user_repr != actual_user_repr
         user_repr = np.random.randint(15, size=(users, attr))
@@ -58,7 +58,7 @@ class TestUsers:
             )
         )
         model.update_predicted_scores(s.actual_user_profiles)
-        test_utils.assert_equal_arrays(
+        test_helpers.assert_equal_arrays(
             s.actual_user_scores, model.predicted_scores
         )
 
@@ -68,7 +68,7 @@ class TestUsers:
             seed = np.random.randint(1000)
         users1 = Users(size=(users, attr), seed=seed)
         users2 = Users(size=(users, attr), seed=seed)
-        test_utils.assert_equal_arrays(
+        test_helpers.assert_equal_arrays(
             users1.actual_user_profiles, users2.actual_user_profiles
         )
         # no seeding
@@ -76,7 +76,7 @@ class TestUsers:
         users4 = Users(size=(users, attr))
         # very low chances of this passing
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(
+            test_helpers.assert_equal_arrays(
                 users3.actual_user_profiles, users4.actual_user_profiles
             )
 
