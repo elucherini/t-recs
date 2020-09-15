@@ -25,7 +25,7 @@ def contains_row(matrix, row):
     """ Check if a numpy matrix contains a row with the same values as the 
         variable `row`.
     """
-    return (matrix == row).all(1).any()
+    return (matrix == row).all(axis=1).any()
 
 
 def slerp(mat1, mat2, t=0.05):
