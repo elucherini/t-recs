@@ -1,7 +1,8 @@
 import numpy as np
 import test_utils
 from rec.utils import (
-    normalize_matrix
+    normalize_matrix,
+    contains_row
 )
 
 class TestUtils:
@@ -38,3 +39,8 @@ class TestUtils:
             [[3/5, 4/5]
         ])
         test_utils.assert_equal_arrays(unit_vec, correct_unit_vec)
+
+    def test_contains_row(self):
+        mat = np.arange(16).reshape((4, 4))
+        assert contains_row(mat, [0, 1, 2, 3])
+        assert not contains_row(mat, [3, 2, 1, 0])
