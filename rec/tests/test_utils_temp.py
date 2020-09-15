@@ -2,7 +2,8 @@ import numpy as np
 import test_utils
 from rec.utils import (
     normalize_matrix,
-    contains_row
+    contains_row,
+    slerp
 )
 
 class TestUtils:
@@ -44,3 +45,53 @@ class TestUtils:
         mat = np.arange(16).reshape((4, 4))
         assert contains_row(mat, [0, 1, 2, 3])
         assert not contains_row(mat, [3, 2, 1, 0])
+
+    def test_slerp(self):
+        # rotate unit vectors 45 degrees
+        mat1 = np.array([
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0]
+        ])
+        mat2 = np.array([
+            [1, 0],
+            [0, -1],
+            [-1, 0],
+            [0, 1]
+        ])
+        rotated = slerp(mat1, mat2, t=0.5)
+        correct_rotation = np.array([
+            [np.sqrt(2)/2, np.sqrt(2)/2],
+            [np.sqrt(2)/2, -np.sqrt(2)/2],
+            [-np.sqrt(2)/2, -np.sqrt(2)/2],
+            [-np.sqrt(2)/2, np.sqrt(2)/2]
+        ])
+        # there may be imprecision due to floating point errors
+        np.testing.assert_array_almost_equal(rotated, correct_rotation)
+
+        # increase norm of vectors and check that norm of rotated vectors
+        # does not change
+        mat1_big = np.array([
+            [0, 2],
+            [2, 0],
+            [0, -2],
+            [-2, 0]
+        ])
+        rotated = slerp(mat1_big, mat2, t=0.5)
+        np.testing.assert_array_almost_equal(rotated, 2 * correct_rotation)
+
+        # only rotate 5% and then verify that the angle between each row of the
+        # resulting matrix and the target matrix is 0.95 * 90
+        rotated = slerp(mat1, mat2, t=0.05)
+        theta = np.arccos((rotated * mat2).sum(axis=1))
+        test_utils.assert_equal_arrays(theta, np.repeat([np.pi / 2 * 0.95], 4))
+
+        # rotate a unit vector 45 degrees
+        vec1 = np.array([np.sqrt(2)/2, np.sqrt(2)/2])
+        vec2 = np.array([np.sqrt(2)/2, -np.sqrt(2)/2])
+        correct_rotation = np.array([
+            [1, 0]
+        ])
+        rotated = slerp(vec1, vec2, t=0.5)
+        test_utils.assert_equal_arrays(rotated, correct_rotation)
