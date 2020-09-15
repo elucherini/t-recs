@@ -58,16 +58,24 @@ def slerp(mat1, mat2, t=0.05):
     mat1_norm = np.linalg.norm(mat1, axis=1)[:, np.newaxis]
     mat2_norm = np.linalg.norm(mat2, axis=0)[:, np.newaxis]
     # dot every user profile with its corresponding item attributes
-    omega = np.arccos((mat1/mat1_norm) * (mat2/mat2_norm).sum(axis=1))
+    omega = np.arccos((mat1 / mat1_norm) * (mat2 / mat2_norm).sum(axis=1))
     # note: bad things will happen if the vectors are in exactly opposite
     # directions! this is a pathological case; we are using this function
-    # to calculate user profile drift after the user selects an item. 
+    # to calculate user profile drift after the user selects an item.
     # but the dot product of a user profile and an item vector in opposite
-    # directions is very negative, so a user should almost never select an 
+    # directions is very negative, so a user should almost never select an
     # item in the opposite direction of its own profile.
+    if omega == np.pi:
+        # raise error if vectors are in exactly opposite directions
+        raise ValueError(
+            "Cannot perform spherical interpolation between vectors in opposite direction"
+        )
     so = np.sin(omega)
-    unit_rot = (np.sin((1.0-t)*omega)/so * mat1.T + np.sin(t*omega)/so * mat2.T).T
+    unit_rot = (
+        np.sin((1.0 - t) * omega) / so * mat1.T + np.sin(t * omega) / so * mat2.T
+    ).T
     return unit_rot * mat1_norm
+
 
 def toDataFrame(data, index=None):
     import pandas as pd
