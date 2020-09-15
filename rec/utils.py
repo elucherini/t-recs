@@ -55,26 +55,33 @@ def slerp(mat1, mat2, t=0.05):
                 of rotation.
     """
     assert t >= 0.0 and t <= 1.0
-    mat1_norm = np.linalg.norm(mat1, axis=1)[:, np.newaxis]
-    mat2_norm = np.linalg.norm(mat2, axis=0)[:, np.newaxis]
+    assert mat1.shape == mat2.shape # arrays should have same dimension
+    if len(mat1.shape) == 1:
+        # turn vector into matrix with one row
+        mat1 = mat1[np.newaxis, :]
+        mat2 = mat2[np.newaxis, :]
+    mat1_length = np.linalg.norm(mat1, axis=1)[:, np.newaxis]
+    mat2_length = np.linalg.norm(mat2, axis=1)[:, np.newaxis]
+    mat1_norm, mat2_norm = mat1 / mat1_length, mat2 / mat2_length 
+    row_dot_product = (mat1_norm * mat2_norm).sum(axis=1)
     # dot every user profile with its corresponding item attributes
-    omega = np.arccos((mat1 / mat1_norm) * (mat2 / mat2_norm).sum(axis=1))
+    omega = np.arccos(row_dot_product)
     # note: bad things will happen if the vectors are in exactly opposite
     # directions! this is a pathological case; we are using this function
     # to calculate user profile drift after the user selects an item.
     # but the dot product of a user profile and an item vector in opposite
     # directions is very negative, so a user should almost never select an
     # item in the opposite direction of its own profile.
-    if omega == np.pi:
+    if (omega == np.pi).any():
         # raise error if vectors are in exactly opposite directions
         raise ValueError(
             "Cannot perform spherical interpolation between vectors in opposite direction"
         )
     so = np.sin(omega)
     unit_rot = (
-        np.sin((1.0 - t) * omega) / so * mat1.T + np.sin(t * omega) / so * mat2.T
+        np.sin((1.0 - t) * omega) / so * mat1_norm.T + np.sin(t * omega) / so * mat2_norm.T
     ).T
-    return unit_rot * mat1_norm
+    return unit_rot * mat1_length
 
 
 def toDataFrame(data, index=None):
