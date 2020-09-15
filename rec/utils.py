@@ -15,7 +15,7 @@ def normalize_matrix(matrix, axis=1):
     if len(matrix.shape) == 1:
         # turn vector into matrix with one row
         matrix = matrix[:, np.newaxis]
-    divisor = np.linalg.norm(matrix, axis=1)[:, np.newaxis]
+    divisor = np.linalg.norm(matrix, axis=axis)[:, np.newaxis]
     # only normalize where divisor is not zero
     result = np.divide(matrix, divisor, out=np.zeros(matrix.shape), where=divisor != 0)
     return result
