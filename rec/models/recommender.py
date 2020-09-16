@@ -100,18 +100,23 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            user_representation: :obj:`numpy.ndarray`
+            users_hat: :obj:`numpy.ndarray`
                 An array representing users. The shape and meaning depends on
                 the implementation of the concrete class.
 
-            item_representation: :obj:`numpy.ndarray`
+            items_hat: :obj:`numpy.ndarray`
                 An array representing items. The shape and meaning depends on
                 the implementation of the concrete class.
 
-            actual_user_representation: :obj:`numpy.ndarray`
+            users: :obj:`numpy.ndarray` or :class:`~components.users.Users`
                 An array representing real user preferences unknown to the
-                system. The shape and meaning depends on the implementation of
-                the concrete class.
+                system. Shape is |U| x |A|, where |A| is the number of attributes
+                and |U| is the number of users.
+
+            items: :obj:`numpy.ndarray` or :class:`~components.items.Items`
+                An array representing real item attributes unknown to the
+                system. Shape is |A| x |I|, where |I| is the number of items
+                and |A| is the number of attributes.
 
             num_users: int
                 The number of users in the system.
@@ -137,17 +142,22 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Attributes
         -----------
 
-            user_profiles: :class:`~components.users.PredictedUserProfiles`
+            users_hat: :class:`~components.users.PredictedUserProfiles`
                 An array representing users, matching user_representation. The
                 shape and meaning depends on the implementation of the concrete
                 class.
 
-            item_attributes: :class:`~components.items.Items`
+            items_hat: :class:`~components.items.Items`
                 An array representing items, matching item_representation. The
                 shape and meaning depends on the implementation of the concrete
                 class.
 
-            actual_users: :class:`~components.users.Users`
+            users: :class:`~components.users.Users`
+                An array representing real user preferences, matching
+                actual_users. The shape and meaning depends on the
+                implementation of the concrete class.
+
+            items: :class:`~components.users.Users`
                 An array representing real user preferences, matching
                 actual_users. The shape and meaning depends on the
                 implementation of the concrete class.
@@ -157,7 +167,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 system. The shape is always `|U|x|I|`, where `|U|` is the number
                 of users in the system and `|I|` is the number of items in the
                 system. The scores are calculated with the dot product of
-                :attr:`user_profiles` and :attr:`item_attributes`.
+                :attr:`users_hat` and :attr:`items_hat`.
 
             num_users: int
                 The number of users in the system.
@@ -180,9 +190,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     @abstractmethod
     def __init__(
         self,
-        user_representation,
-        item_representation,
-        actual_user_representation,
+        users_hat,
+        items_hat,
+        users,
+        items,
         num_users,
         num_items,
         num_items_per_iter,
@@ -197,12 +208,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         MeasurementModule.__init__(self)
         if measurements is not None:
             self.add_metrics(*measurements)
-        # init users and items
-        self.user_profiles = PredictedUserProfiles(user_representation)
-        self.item_attributes = Items(item_representation)
+        # init the recommender system's internal representation of users
+        # and items
+        self.users_hat = PredictedUserProfiles(users_hat)
+        self.items_hat = Items(items_hat)
         # set predicted scores
         self.predicted_scores = PredictedScores(
-            self.train(self.user_profiles, self.item_attributes, normalize=True)
+            self.train(self.users_hat, self.items_hat, normalize=True)
         )
         assert self.predicted_scores is not None
 
@@ -215,35 +227,51 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
+        # check users array
         if not utils.is_valid_or_none(
-            actual_user_representation, (list, np.ndarray, Users)
+            users, (list, np.ndarray, Users)
         ):
-            raise TypeError("actual_user_representation must be array_like or Users")
-        if actual_user_representation is None:
-            self.actual_users = Users(
-                size=self.user_profiles.shape, num_users=num_users, seed=seed
+            raise TypeError("users must be array_like or Users")
+        if users is None:
+            self.users = Users(
+                size=self.users_hat.shape, num_users=num_users, seed=seed
             )
-        if isinstance(actual_user_representation, (list, np.ndarray)):
-            self.actual_users = Users(
-                actual_user_scores=actual_user_representation, num_users=num_users
+        if isinstance(users, (list, np.ndarray)):
+            self.users = Users(
+                actual_user_scores=users, num_users=num_users
             )
-        if isinstance(actual_user_representation, Users):
-            self.actual_users = actual_user_representation
+        if isinstance(users, Users):
+            self.users = users
+
+        # check items array
+        if not utils.is_valid_or_none(
+            items, (list, np.ndarray, Items)
+        ):
+            raise TypeError("items must be array_like or Items")
+        if items is None:
+            self.actual_items = Items(
+                size=self.items_hat.shape, seed=seed
+            )
+        if isinstance(items, (list, np.ndarray)):
+            # TODO: this doesn't work!!!!
+            self.actual_items = Items(items)
+        if isinstance(items, Items):
+            self.actual_items = items
 
         # system state
         SystemStateModule.__init__(self)
         self.add_state_variable(
-            self.user_profiles,
-            self.actual_users,
-            self.item_attributes,
+            self.users_hat,
+            self.users,
+            self.items_hat,
             self.predicted_scores,
         )
         if system_state is not None:
             self.add_state_variable(*system_state)
 
-        self.actual_users.compute_user_scores(self.train)
+        self.users.compute_user_scores(self.train)
 
-        assert self.actual_users and isinstance(self.actual_users, Users)
+        assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
         self.num_items = num_items
         self.num_items_per_iter = num_items_per_iter
@@ -286,9 +314,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             predicted_scores: :class:`~components.users.PredictedScores`
         """
         if user_profiles is None:
-            user_profiles = self.user_profiles
+            user_profiles = self.users_hat
         if item_attributes is None:
-            item_attributes = self.item_attributes
+            item_attributes = self.items_hat
         if normalize:
             user_profiles = utils.normalize_matrix(user_profiles, axis=1)
         assert user_profiles.shape[1] == item_attributes.shape[0]
@@ -327,7 +355,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Insufficient number of items left!")
             indices_prime = self.indices[np.where(self.indices >= 0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
-        row = np.repeat(self.actual_users._user_vector, indices_prime.shape[1])
+        row = np.repeat(self.users._user_vector, indices_prime.shape[1])
         row = row.reshape((self.num_users, -1))
         self.log("Row:\n" + str(row))
         self.log("Indices_prime:\n" + str(indices_prime))
@@ -341,7 +369,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             permutation.shape[1], p=probabilities, size=(self.num_users, k)
         )
         return rec[
-            np.repeat(self.actual_users._user_vector, k).reshape((self.num_users, -1)),
+            np.repeat(self.users._user_vector, k).reshape((self.num_users, -1)),
             picks,
         ]
 
@@ -402,7 +430,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             col = self.random_state.integers(
                 indices_prime.shape[1], size=(self.num_users, num_new_items)
             )
-            row = np.repeat(self.actual_users._user_vector, num_new_items).reshape(
+            row = np.repeat(self.users._user_vector, num_new_items).reshape(
                 (self.num_users, -1)
             )
             new_items = indices_prime[row, col]
@@ -461,24 +489,24 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         for t in tqdm(range(timesteps)):
             self.log("Step %d" % t)
             items = self.recommend(startup=startup)
-            interactions = self.actual_users.get_user_feedback(items=items)
+            interactions = self.users.get_user_feedback(items=items)
             if not repeated_items:
-                self.indices[self.actual_users._user_vector, interactions] = -1
+                self.indices[self.users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
             self.log(
                 "System updates user profiles based on last interaction:\n"
-                + str(self.user_profiles)
+                + str(self.users_hat)
             )
             # train between steps:
             if train_between_steps:
                 self.predicted_scores[:, :] = self.train(
-                    self.user_profiles, self.item_attributes
+                    self.users_hat, self.items_hat
                 )
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
             self.predicted_scores[:, :] = self.train(
-                self.user_profiles, self.item_attributes
+                self.users_hat, self.items_hat
             )
             self.measure_content(interactions, step=t)
 
@@ -515,11 +543,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                                                                     type(num_new_items)))
         if num_new_items < 1:
             raise ValueError("Can't increment items by a number smaller than 1!")
-        #new_indices = np.tile(self.item_attributes.expand_items(self, num_new_items),
+        #new_indices = np.tile(self.items_hat.expand_items(self, num_new_items),
         #    (self.num_users,1))
         self.indices = np.concatenate((self.indices, new_indices), axis=1)
-        self.actual_users.compute_user_scores(self.train)
-        self.predicted_scores = self.train(self.user_profiles, self.item_attributes)
+        self.users.compute_user_scores(self.train)
+        self.predicted_scores = self.train(self.users_hat, self.items_hat)
         """
         pass
 
