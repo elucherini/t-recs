@@ -11,7 +11,7 @@ from rec.random import Generator
 
 class MeasurementModule(BaseObserver):
     """
-    Mixin for observers of :class:`Measurement` observables.Implements the
+    Mixin for observers of :class:`Measurement` observables. Implements the
     `Observer design pattern`_.
 
     .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
@@ -186,6 +186,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_users,
         num_items,
         num_items_per_iter,
+        probabilistic_recommendations=False,
         measurements=None,
         system_state=None,
         verbose=False,
@@ -201,10 +202,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.user_profiles = PredictedUserProfiles(user_representation)
         self.item_attributes = Items(item_representation)
         # set predicted scores
-        self.predicted_scores = PredictedScores(
-            self.train(self.user_profiles, self.item_attributes, normalize=True)
-        )
+        self.predicted_scores = None
+        self.update_predicted_scores(self.user_profiles, self.item_attributes)
         assert self.predicted_scores is not None
+        # determine whether recommendations should be randomized, rather than
+        # top-k by predicted score
+        self.probabilistic_recommendations = probabilistic_recommendations
 
         if not utils.is_valid_or_none(num_users, int):
             raise TypeError("num_users must be an int")
@@ -241,7 +244,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if system_state is not None:
             self.add_state_variable(*system_state)
 
-        self.actual_users.compute_user_scores(self.train)
+        # initialize actual user scores for items
+        self.actual_users.set_score_function(self.score)
+        self.actual_users.compute_user_scores(self.item_attributes)
 
         assert self.actual_users and isinstance(self.actual_users, Users)
         self.num_users = num_users
@@ -259,7 +264,36 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             self.log("Seed was not set.")
 
-    def train(self, user_profiles=None, item_attributes=None, normalize=True):
+    def score(self, user_profiles, item_attributes, normalize=True):
+        """
+        Performs a dot product multiplication between user profiles and 
+        item attributes to return the scores (utility) each item possesses
+        for each user.
+
+        Parameters
+        -----------
+
+            user_profiles: :obj:`array_like`
+                First factor of the dot product, which should provide a
+                representation of users.
+
+            item_attributes: :obj:`array_like`
+                Second factor of the dot product, which should provide a
+                representation of items.
+
+        Returns
+        --------
+            scores: :obj:`numpy.ndarray`
+        """
+        if normalize:
+            # this is purely an optimization that prevents numpy from having
+            # to multiply huge numbers
+            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
+        assert user_profiles.shape[1] == item_attributes.shape[0]
+        scores = np.dot(user_profiles, item_attributes)
+        return scores
+
+    def update_predicted_scores(self, user_profiles=None, item_attributes=None):
         """
         Updates scores predicted by the system based on past interactions for
         better user predictions. Specifically, it updates :attr:`predicted_scores`
@@ -278,9 +312,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 representation of items. If None, the second factor defaults to
                 :attr:`item_attributes`.
 
-            normalize: bool (optional, default: True)
-                Set to True if the scores should be normalized, False otherwise.
-
         Returns
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
@@ -289,17 +320,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             user_profiles = self.user_profiles
         if item_attributes is None:
             item_attributes = self.item_attributes
-        if normalize:
-            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
-        assert user_profiles.shape[1] == item_attributes.shape[0]
-        predicted_scores = np.dot(user_profiles, item_attributes)
+        predicted_scores = self.score(user_profiles, item_attributes)
         self.log(
             "System updates predicted scores given by users (rows) "
             + "to items (columns):\n"
             + str(predicted_scores)
         )
         assert predicted_scores is not None
-        return predicted_scores
+        if self.predicted_scores is None:
+            self.predicted_scores = PredictedScores(predicted_scores)
+        else:
+            self.predicted_scores[:, :] = predicted_scores
 
     def generate_recommendations(self, k=1, indices_prime=None):
         """
@@ -312,7 +343,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 Number of items to recommend.
 
             indices_prime : :obj:`numpy.ndarray` or None (optional, default: None)
-                A matrix containing the indices of the items each user has
+                A matrix containing the indices of the items each user has not yet
                 interacted with. It is used to ensure that the user is presented
                 with items they have already interacted with.
 
@@ -332,18 +363,28 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.log("Row:\n" + str(row))
         self.log("Indices_prime:\n" + str(indices_prime))
         s_filtered = self.predicted_scores[row, indices_prime]
+        # scores are U x I; we can use argsort to sort the item indices
+        # from low to high scores
         permutation = s_filtered.argsort()
         rec = indices_prime[row, permutation]
-        probabilities = np.logspace(0.0, rec.shape[1] / 10.0, num=rec.shape[1], base=2)
-        probabilities = probabilities / probabilities.sum()
-        self.log("Items ordered by preference for each user:\n" + str(rec))
-        picks = self.random_state.choice(
-            permutation.shape[1], p=probabilities, size=(self.num_users, k)
+        self.log(
+            "Items ordered by preference (low to high) for each user:\n" + str(rec)
         )
-        return rec[
-            np.repeat(self.actual_users._user_vector, k).reshape((self.num_users, -1)),
-            picks,
-        ]
+        if self.probabilistic_recommendations:
+            # the recommended items will not be exactly determined by
+            # predicted score; instead, we will sample from the sorted list
+            # such that higher-preference items get more probability mass
+            num_items_unseen = rec.shape[1]  # number of items unseen per user
+            probabilities = np.logspace(
+                0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2
+            )
+            probabilities = probabilities / probabilities.sum()
+            picks = np.random.choice(
+                num_items_unseen, k, replace=False, p=probabilities
+            )
+            return rec[:, picks]
+        else:
+            return rec[:, -k:]
 
     def recommend(self, startup=False):
         """
@@ -460,8 +501,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
         for t in tqdm(range(timesteps)):
             self.log("Step %d" % t)
-            items = self.recommend(startup=startup)
-            interactions = self.actual_users.get_user_feedback(items=items)
+            item_idxs = self.recommend(startup=startup)
+            interactions = self.actual_users.get_user_feedback(
+                items_shown=item_idxs, item_attributes=self.item_attributes
+            )
             if not repeated_items:
                 self.indices[self.actual_users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
@@ -471,15 +514,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # train between steps:
             if train_between_steps:
-                self.predicted_scores[:, :] = self.train(
-                    self.user_profiles, self.item_attributes
-                )
+                self.update_predicted_scores(self.user_profiles, self.item_attributes)
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.predicted_scores[:, :] = self.train(
-                self.user_profiles, self.item_attributes
-            )
+            self.update_predicted_scores(self.user_profiles, self.item_attributes)
             self.measure_content(interactions, step=t)
 
     def startup_and_train(self, timesteps=50):

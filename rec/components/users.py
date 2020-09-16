@@ -1,6 +1,6 @@
 import numpy as np
 
-from rec.utils import VerboseMode, normalize_matrix
+from rec.utils import VerboseMode, normalize_matrix, contains_row, slerp
 from rec.random import Generator
 from .base_components import Component, FromNdArray, BaseComponent
 
@@ -87,6 +87,15 @@ class Users(BaseComponent):
             Size of the user representation. It expects a tuple. If None,
             it is chosen randomly.
 
+        drift: float (optional, default: 0)
+            If greater than 0, user profiles will update dynamically as they
+            interact with items, "drifting" towards the item attribute vectors
+            they interact with. `drift` is a parameter between 0 and 1 that
+            controls the degree of rotational drift. If `t=1`, then the user
+            profile vector takes on the exact same direction as the attribute
+            vector of the item they just interacted with. If 0, user profiles
+            are generated once at initialization and never change.
+
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
 
@@ -133,6 +142,7 @@ class Users(BaseComponent):
         interact_with_items=None,
         size=None,
         num_users=None,
+        drift=0,
         verbose=False,
         seed=None,
     ):
@@ -150,9 +160,16 @@ class Users(BaseComponent):
             if not isinstance(actual_user_scores, (list, np.ndarray)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
-            actual_user_profiles = Generator(seed=seed).normal(size=size)
+            row_zeros = np.zeros(size[1])  # one row vector of zeroes
+            while actual_user_profiles is None or contains_row(
+                actual_user_profiles, row_zeros
+            ):
+                # generate matrix until no row is the zero vector
+                actual_user_profiles = Generator(seed=seed).normal(size=size)
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
+        self.drift = drift
+        self.score_fn = None  # function that dictates how scores will be generated
         # this will be initialized by the system
         self.actual_user_scores = None
         if num_users is not None:
@@ -162,33 +179,49 @@ class Users(BaseComponent):
             self, verbose=verbose, init_value=self.actual_user_scores
         )
 
-    def compute_user_scores(self, train_function, *args, **kwargs):
-        """
-        Computes and stores the actual scores that users assign to items
-        compatible with the system. It does so by using the model's train function.
+    def set_score_function(self, score_fn):
+        """ 
+        Users "score" items before "deciding" which item to interact with.
+        This function makes it possible to set an arbitrary function as the
+        score function. 
 
         Parameters
         ------------
 
-        train_function: callable
-            Function that is used to train the model. Since training the model
-            corresponds to generating user scores starting from user profiles,
-            as predicted by the model, the same function can be used to compute
-            the real scores using the real user preferences.
-
-        args, kwargs:
-            Parameters needed by the model's train function.
+        score_fn: callable
+            Function that is used to calculate each user's scores for each
+            candidate item. Note that this function can be the same function
+            used by the recommender system to generate its predictions for
+            user-item scores. The score function should take as input
+            user_profiles and item_attributes.
 
         Raises
         --------
 
         TypeError
-            If train_function is not callable.
+            If score_fn is not callable.
         """
-        if not callable(train_function):
-            raise TypeError("train_function must be callable")
-        actual_scores = train_function(
-            user_profiles=self.actual_user_profiles, *args, **kwargs
+        if not callable(score_fn):
+            raise TypeError("score function must be callable")
+        self.score_fn = score_fn
+
+    def compute_user_scores(self, item_attributes):
+        """
+        Computes and stores the actual scores that users assign to items
+        compatible with the system. Note that we expect that the score_fn
+        attribute to be set to some callable function which takes item 
+        attributes and user profiles.
+
+        Parameters
+        ------------
+
+        item_attributes: :obj:`array_like`
+            A matrix representation of item attributes.
+        """
+        if not callable(self.score_fn):
+            raise TypeError("score function must be callable")
+        actual_scores = self.score_fn(
+            user_profiles=self.actual_user_profiles, item_attributes=item_attributes
         )
         if self.actual_user_scores is None:
             self.actual_user_scores = actual_scores
@@ -236,8 +269,10 @@ class Users(BaseComponent):
         args, kwargs:
             Parameters needed by the model's train function.
 
-            items: :obj:`numpy.ndarray`): A |U|x|num_items_per_iter| matrix with
+            items_shown: :obj:`numpy.ndarray`): A |U|x|num_items_per_iter| matrix with
             recommendations and new items.
+            item_attributes: :obj:`numpy.ndarray`): A |A|x|I| matrix with
+            item attributes.
 
         Returns
         ---------
@@ -253,19 +288,49 @@ class Users(BaseComponent):
         """
         if self.interact_with_items is not None:
             return self.interact_with_items(*args, **kwargs)
-        items = kwargs.pop("items", None)
-        if items is None:
+        items_shown = kwargs.pop("items_shown", None)
+        item_attributes = kwargs.pop("item_attributes", None)
+        if items_shown is None:
             raise ValueError("Items can't be None")
-        reshaped_user_vector = self._user_vector.reshape((items.shape[0], 1))
-        user_interactions = self.actual_user_scores[reshaped_user_vector, items]
+        reshaped_user_vector = self._user_vector.reshape((items_shown.shape[0], 1))
+        user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
         self.log("User scores for given items are:\n" + str(user_interactions))
-        sorted_user_preferences = user_interactions.argsort()[:, ::-1][:, 0]
-        interactions = items[self._user_vector, sorted_user_preferences]
+        sorted_user_preferences = user_interactions.argsort()[:, -1]
+        interactions = items_shown[self._user_vector, sorted_user_preferences]
         self.log(
             "Users interact with the following items respectively:\n"
             + str(interactions)
         )
+        if self.drift > 0:
+            if item_attributes is None:
+                raise ValueError(
+                    "Item attributes can't be None if user preferences are dynamic"
+                )
+            # update user profiles based on the attributes of items they
+            # interacted with
+            interact_attrs = item_attributes.T[interactions, :]
+            self.update_profiles(interact_attrs)
+            # update user scores
+            self.compute_user_scores(item_attributes)
         return interactions
+
+    def update_profiles(self, item_attributes):
+        """ In the case of dynamic user profiles, we update the user's actual
+            profiles with new values as each user profile "drifts" towards
+            items that they consume.
+
+            Parameters
+            -----------
+
+                interactions: numpy.ndarray or list
+                    A matrix where row `i` corresponds to the attribute vector
+                    that user `i` interacted with.                    
+        """
+        # we make no assumptions about whether the user profiles or item
+        # attributes vectors are normalized
+        self.actual_user_profiles = slerp(
+            self.actual_user_profiles, item_attributes, t=self.drift
+        )
 
     def store_state(self):
         self.state_history.append(np.copy(self.actual_user_scores))
