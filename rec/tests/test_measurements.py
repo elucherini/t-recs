@@ -1,4 +1,4 @@
-import test_utils
+import test_helpers
 import numpy as np
 from rec.models import SocialFiltering, ContentFiltering, BassModel
 from rec.metrics import (
