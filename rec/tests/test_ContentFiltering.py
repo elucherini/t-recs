@@ -332,7 +332,7 @@ class TestContentFiltering:
 
         # item_repr (transposed):
         # [ [   1 , 0.1 ,   0 , ... , 0 ]
-        #   [   0 ,   1 ,   0 , ... , 0 ]
+        #   [   0 ,   1 ,  0.1, ... , 0 ]
         #              ...
         #   [ 0.1 ,   0 ,   0 , ... , 1 ]
         # this is essentially the same as the user vector, with the addition
