@@ -2,6 +2,7 @@ from rec.metrics import MSEMeasurement, HomogeneityMeasurement
 import numpy as np
 from rec.models import BaseRecommender
 from rec.random import Generator
+from rec.components import Users
 from rec.utils import (
     get_first_valid,
     is_array_valid_or_none,
@@ -160,8 +161,10 @@ class ContentFiltering(BaseRecommender):
         # if user_representation and actual_user_representation are both
         # passed in, they must have matching dimensions
         if user_representation is not None and actual_user_representation is not None:
+            users_object = isinstance(actual_user_representation, Users)
+            actual_user_matrix = actual_user_representation.actual_user_profiles if users_object else actual_user_representation
             if not array_dimensions_match(
-                user_representation, actual_user_representation
+                user_representation, actual_user_matrix
             ):
                 raise ValueError(
                     (

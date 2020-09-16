@@ -1,7 +1,9 @@
 from rec.models import ContentFiltering
+from rec.components import Users
 import numpy as np
 import pytest
 import test_helpers
+from rec.utils import normalize_matrix
 
 
 class TestContentFiltering:
@@ -319,3 +321,40 @@ class TestContentFiltering:
         systate1 = s1.get_system_state()
         systate2 = s2.get_system_state()
         test_helpers.assert_equal_system_state(systate1, systate2)
+
+    def test_drift(self, seed=None, items=None, users=None):
+        # user_repr:
+        # [ [ 1 , 0 , ... , 0 ]
+        #   [ 0 , 1 , ... , 0 ]
+        #         ...
+        #   [ 0 , 0 , ... , 1 ] ]
+        user_repr = np.diag(np.ones(10))
+
+        # item_repr (transposed):
+        # [ [   1 , 0.1 ,   0 , ... , 0 ]
+        #   [   0 ,   1 ,   0 , ... , 0 ]
+        #              ...
+        #   [ 0.1 ,   0 ,   0 , ... , 1 ]
+        # this is essentially the same as the user vector, with the addition
+        # of a small value in an adjacent entry. we'll use this small value
+        # to test whether users are correctly drifting towards the items
+        # vector
+        item_repr = (user_repr + 0.1 * np.vstack([user_repr[1:], user_repr[0]])).T
+        users = Users(actual_user_profiles = np.copy(user_repr), num_users=10, drift=0.5)
+        model = ContentFiltering(
+            user_representation = np.copy(user_repr),
+            item_representation = item_repr,
+            actual_user_representation = users
+        )
+        model.run(timesteps=1)
+        # user profiles should have drifted after interacting with items
+        assert not np.array_equal(user_repr, users.actual_user_profiles)
+        # user profiles should be closer to the items after drifting
+        orig_dist = np.linalg.norm(item_repr.T - user_repr, axis=1)
+        new_dist = np.linalg.norm(item_repr.T - users.actual_user_profiles, axis=1)
+        assert (new_dist < orig_dist).all()
+        # let's go further and check that angles are decreased by 50% too!
+        item_norm = normalize_matrix(item_repr.T)
+        orig_angles = np.arccos((user_repr * item_norm).sum(axis=1))
+        new_angles = np.arccos((users.actual_user_profiles * item_norm).sum(axis=1))
+        np.testing.assert_array_almost_equal(0.5 * orig_angles, new_angles)

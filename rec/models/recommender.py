@@ -339,7 +339,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 Number of items to recommend.
 
             indices_prime : :obj:`numpy.ndarray` or None (optional, default: None)
-                A matrix containing the indices of the items each user has
+                A matrix containing the indices of the items each user has not yet
                 interacted with. It is used to ensure that the user is presented
                 with items they have already interacted with.
 
@@ -359,18 +359,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.log("Row:\n" + str(row))
         self.log("Indices_prime:\n" + str(indices_prime))
         s_filtered = self.predicted_scores[row, indices_prime]
+        # scores are U x I; we can use argsort to sort the item indices
+        # from low to high scores
         permutation = s_filtered.argsort()
         rec = indices_prime[row, permutation]
-        probabilities = np.logspace(0.0, rec.shape[1] / 10.0, num=rec.shape[1], base=2)
-        probabilities = probabilities / probabilities.sum()
-        self.log("Items ordered by preference for each user:\n" + str(rec))
-        picks = self.random_state.choice(
-            permutation.shape[1], p=probabilities, size=(self.num_users, k)
-        )
-        return rec[
-            np.repeat(self.actual_users._user_vector, k).reshape((self.num_users, -1)),
-            picks,
-        ]
+        return rec[:, -k:]
 
     def recommend(self, startup=False):
         """
@@ -487,8 +480,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
         for t in tqdm(range(timesteps)):
             self.log("Step %d" % t)
-            items = self.recommend(startup=startup)
-            interactions = self.actual_users.get_user_feedback(items=items)
+            item_idxs = self.recommend(startup=startup)
+            interactions = self.actual_users.get_user_feedback(items_shown=item_idxs, item_attributes=self.item_attributes)
             if not repeated_items:
                 self.indices[self.actual_users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
