@@ -249,14 +249,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         ):
             raise TypeError("items must be array_like or Items")
         if items is None:
-            self.actual_items = Items(
+            self.items = Items(
                 size=self.items_hat.shape, seed=seed
             )
         if isinstance(items, (list, np.ndarray)):
             # TODO: this doesn't work!!!!
-            self.actual_items = Items(items)
+            self.items = Items(items)
         if isinstance(items, Items):
-            self.actual_items = items
+            self.items = items
 
         # system state
         SystemStateModule.__init__(self)

@@ -7,8 +7,8 @@ import test_utils
 class TestPopularityRecommender:
     def test_default(self):
         c = PopularityRecommender()
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
+        test_utils.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
     def test_arguments(self, items=None, users=None):
@@ -19,8 +19,8 @@ class TestPopularityRecommender:
 
         # init with given arguments
         c = PopularityRecommender(num_users=users, num_items=items)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.users_hat.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.items_hat.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
     def test_partial_arguments(self, items=None, users=None):
@@ -31,18 +31,18 @@ class TestPopularityRecommender:
             users = np.random.randint(1, 100)
 
         c = PopularityRecommender(num_users=users)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.users_hat.shape[0])
+        test_utils.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(num_items=items)
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.items_hat.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(num_users=users, num_items=items)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.users_hat.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.items_hat.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
     def test_representations(self, item_repr=None, user_repr=None):
@@ -54,32 +54,32 @@ class TestPopularityRecommender:
             user_repr = np.random.randint(10, size=(users, 1))
 
         c = PopularityRecommender(item_representation=item_repr)
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
+        test_utils.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
         test_utils.assert_correct_num_items(
-            item_repr.shape[1], c, c.item_attributes.shape[1]
+            item_repr.shape[1], c, c.items_hat.shape[1]
         )
-        test_utils.assert_equal_arrays(item_repr, c.item_attributes)
+        test_utils.assert_equal_arrays(item_repr, c.items_hat)
         test_utils.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(user_representation=user_repr)
         test_utils.assert_correct_num_users(
-            user_repr.shape[0], c, c.user_profiles.shape[0]
+            user_repr.shape[0], c, c.users_hat.shape[0]
         )
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
-        test_utils.assert_equal_arrays(user_repr, c.user_profiles)
+        test_utils.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_utils.assert_equal_arrays(user_repr, c.users_hat)
         test_utils.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(
             user_representation=user_repr, item_representation=item_repr
         )
         test_utils.assert_correct_num_users(
-            user_repr.shape[0], c, c.user_profiles.shape[0]
+            user_repr.shape[0], c, c.users_hat.shape[0]
         )
         test_utils.assert_correct_num_items(
-            item_repr.shape[1], c, c.item_attributes.shape[1]
+            item_repr.shape[1], c, c.items_hat.shape[1]
         )
-        test_utils.assert_equal_arrays(user_repr, c.user_profiles)
-        test_utils.assert_equal_arrays(item_repr, c.item_attributes)
+        test_utils.assert_equal_arrays(user_repr, c.users_hat)
+        test_utils.assert_equal_arrays(item_repr, c.items_hat)
         test_utils.assert_not_none(c.predicted_scores)
 
     def test_wrong_representation(
@@ -119,8 +119,8 @@ class TestPopularityRecommender:
         c = PopularityRecommender(verbose=False, num_items_per_iter=num_items_per_iter)
         assert num_items_per_iter == c.num_items_per_iter
         # also check other params
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
+        test_utils.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
     def test_seeding(self, seed=None, items=None, users=None):
@@ -128,8 +128,8 @@ class TestPopularityRecommender:
             seed = np.random.randint(100000)
         s1 = PopularityRecommender(seed=seed)
         s2 = PopularityRecommender(seed=seed)
-        test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
-        test_utils.assert_equal_arrays(s1.user_profiles, s2.user_profiles)
+        test_utils.assert_equal_arrays(s1.items_hat, s2.items_hat)
+        test_utils.assert_equal_arrays(s1.users_hat, s2.users_hat)
         s1.run(timesteps=5)
         s2.run(timesteps=5)
         # check that measurements are the same
@@ -146,8 +146,8 @@ class TestPopularityRecommender:
             users = np.random.randint(10, 100)
         s1 = PopularityRecommender(seed=seed, num_users=users, num_items=items)
         s2 = PopularityRecommender(seed=seed, num_users=users, num_items=items)
-        test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
-        test_utils.assert_equal_arrays(s1.user_profiles, s2.user_profiles)
+        test_utils.assert_equal_arrays(s1.items_hat, s2.items_hat)
+        test_utils.assert_equal_arrays(s1.users_hat, s2.users_hat)
         s1.run(timesteps=5)
         s2.run(timesteps=5)
         # check that measurements are the same

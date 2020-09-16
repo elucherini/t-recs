@@ -69,18 +69,18 @@ class PopularityRecommender(BaseRecommender):
         case, it will be initialized with the default parameters.
 
         >>> pr = PopularityRecommender()
-        >>> pr.user_profiles.shape
+        >>> pr.users_hat.shape
         (100, 1)   # <-- 100 users (default)
-        >>> pr.item_attributes.shape
+        >>> pr.items.shape
         (1, 1250) # <-- 1250 items (default)
 
         This class can be customized by defining the number of users and/or items
         in the system.
 
         >>> pr = PopularityRecommender(num_users=1200, num_items=5000)
-        >>> pr.user_profiles.shape
+        >>> pr.users_hat.shape
         (1200, 1) # <-- 1200 users
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (1, 5000)
 
         Or by generating representations for items (user representation can
@@ -90,9 +90,9 @@ class PopularityRecommender(BaseRecommender):
 
             >>> item_representation = np.random.randint(11, size=(1, 200))
             >>> pr = PopularityRecommender(item_representation=item_representation)
-            >>> cf.item_attributes.shape
+            >>> cf.items.shape
             (1, 200)
-            >>> cf.user_profiles.shape
+            >>> cf.users_hat.shape
             (100, 1)
 
         Note that user and item representations have the precedence over the
@@ -101,7 +101,7 @@ class PopularityRecommender(BaseRecommender):
 
         >>> user_representation = np.ones((3000, 1))
         >>> pr = PopularityRecommender(num_users=50, user_representation=user_representation)
-        >>> pr.user_profiles.shape
+        >>> pr.users_hat.shape
         (3000, 1) # <-- 30000 users. num_users was ignored because user_representation was specified.
 
     """
@@ -113,6 +113,7 @@ class PopularityRecommender(BaseRecommender):
         item_representation=None,
         user_representation=None,
         actual_user_representation=None,
+        actual_item_representation=None,
         seed=None,
         verbose=False,
         num_items_per_iter=10,
@@ -138,6 +139,9 @@ class PopularityRecommender(BaseRecommender):
 
         if item_representation is None:
             item_representation = np.zeros((1, num_items), dtype=int)
+        # placeholder until we figure out what to do
+        if actual_item_representation is None:
+            actual_item_representation = np.copy(item_representation)
         if user_representation is None:
             user_representation = np.ones((num_users, 1), dtype=int)
 
@@ -168,6 +172,7 @@ class PopularityRecommender(BaseRecommender):
             user_representation,
             item_representation,
             actual_user_representation,
+            actual_item_representation,
             num_users,
             num_items,
             num_items_per_iter,
@@ -179,4 +184,4 @@ class PopularityRecommender(BaseRecommender):
     def _update_user_profiles(self, interactions):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
-        self.item_attributes[:, :] = np.add(self.item_attributes, histogram)
+        self.items_hat[:, :] = np.add(self.items_hat, histogram)
