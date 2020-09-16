@@ -43,14 +43,14 @@ class TestUsers:
         model = ContentFiltering(
             user_representation=user_repr, item_representation=item_repr
         )
-        assert model.user_profiles.shape == actual_user_repr.shape
+        assert model.users_hat.shape == actual_user_repr.shape
         s = Users(actual_user_repr)
         s.compute_user_scores(model.train)
         print(
             np.array_equal(
                 s.actual_user_scores,
                 model.train(
-                    s.actual_user_profiles, model.item_attributes, normalize=True
+                    s.actual_user_profiles, model.items_hat, normalize=True
                 ),
             )
         )

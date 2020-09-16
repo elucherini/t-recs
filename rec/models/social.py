@@ -79,20 +79,20 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         previous interactions for this set of users.
 
         >>> sf = SocialFiltering()
-        >>> sf.user_profiles.shape
+        >>> sf.users_hat.shape
         (100, 100)   # <-- 100 users (default)
-        >>> sf.item_attributes.shape
+        >>> sf.items_hat.shape
         (100, 1250) # <-- 100 users (default), 1250 items (default)
 
         This class can be customized either by defining the number of users
         and/or items in the system:
 
         >>> sf = SocialFiltering(num_users=1200, num_items=5000)
-        >>> sf.item_attributes.shape
+        >>> sf.items_hat.shape
         (1200, 5000) # <-- 1200 users, 5000 items
 
         >>> sf = ContentFiltering(num_users=50)
-        >>> sf.item_attributes.shape
+        >>> sf.items_hat.shape
         (50, 1250) # <-- 50 users, 1250 items (default)
 
         Or by generating representations for items and/or users. In the example
@@ -102,22 +102,22 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         >>> item_representation = np.random.randint(2, size=(100, 200))
         # Social networks are drawn from a binomial distribution. This representation also uses 100 users.
         >>> sf = SocialFiltering(item_representation=item_representation)
-        >>> sf.item_attributes.shape
+        >>> sf.items_hat.shape
         (100, 200)
-        >>> sf.user_profiles.shape
+        >>> sf.users_hat.shape
         (100, 100)
 
         Note that user and item representations have the precedence over the
         number of users/items specified at initialization. For example:
 
         >>> sf = SocialFiltering(num_users=50, user_representation=user_representation)
-        >>> sf.item_attributes.shape
+        >>> sf.items_hat.shape
         (100, 200) # <-- 100 users, 200 items. num_users was ignored because user_representation was specified.
 
         The same is true about the number of items or users and item representations.
 
         >>> sf = SocialFiltering(num_users=1400, item_representation=item_representation)
-        >>> sf.item_attributes.shape
+        >>> sf.items_hat.shape
         (100, 200) # <-- 100 attributes, 200 items. num_users was ignored.
         >>> cf.user_profile.shape
         (100, 100) # <-- 100 users (as implicitly specified by item_representation)
@@ -131,6 +131,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         item_representation=None,
         user_representation=None,
         actual_user_scores=None,
+        actual_item_representation=None,
         verbose=False,
         num_items_per_iter=10,
         seed=None,
@@ -164,7 +165,9 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             )
         if item_representation is None:
             item_representation = np.zeros((num_users, num_items), dtype=int)
-
+        # placeholder until we figure out what to do
+        if actual_item_representation is None:
+            actual_item_representation = np.copy(item_representation)
         if not is_equal_dim_or_none(
             getattr(user_representation, "shape", [None])[0],
             getattr(user_representation, "shape", [None, None])[1],
@@ -194,6 +197,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             user_representation,
             item_representation,
             actual_user_scores,
+            actual_item_representation,
             num_users,
             num_items,
             num_items_per_iter,
@@ -216,6 +220,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.actual_users._user_vector, interactions] = 1
-        assert interactions_per_user.shape == self.item_attributes.shape
-        self.item_attributes[:, :] = np.add(self.item_attributes, interactions_per_user)
+        interactions_per_user[self.users._user_vector, interactions] = 1
+        assert interactions_per_user.shape == self.items_hat.shape
+        self.items_hat[:, :] = np.add(self.items_hat, interactions_per_user)

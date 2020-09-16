@@ -79,9 +79,9 @@ class TestMeasurementModule:
 
         s = SocialFiltering()
         state_mappings = {
-            "predicted_user_profiles": s.user_profiles,
-            "actual_user_scores": s.actual_users.actual_user_scores,
-            "items": s.item_attributes,
+            "predicted_user_profiles": s.users_hat,
+            "actual_user_scores": s.users.actual_user_scores,
+            "items": s.items_hat,
             "predicted_user_scores": s.predicted_scores,
         }
 
