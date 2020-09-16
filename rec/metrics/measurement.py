@@ -274,7 +274,7 @@ class MSEMeasurement(Measurement):
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
         """
         diff = (
-            recommender.predicted_scores - recommender.actual_users.actual_user_scores
+            recommender.predicted_scores - recommender.users.actual_user_scores
         )
         self.observe((diff ** 2).mean(), copy=False)
 
@@ -389,7 +389,7 @@ class DiffusionTreeMeasurement(Measurement):
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
         """
         num_new_infections = self._manage_new_infections(
-            recommender.user_profiles, recommender.infection_state
+            recommender.users_hat, recommender.infection_state
         )
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
         self._old_infection_state = np.copy(recommender.infection_state)

@@ -75,13 +75,13 @@ class ContentFiltering(BaseRecommender):
         attributes and the item/user representations will be assigned randomly.
 
         >>> cf = ContentFiltering()
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (100, 99)   # <-- 100 users (default), 99 attributes (randomly generated)
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (99, 1250) # <-- 99 attributes (randomly generated), 1250 items (default)
 
         >>> cf1 = ContentFiltering()
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (100, 582) # <-- 100 users (default), 582 attributes (randomly generated)
 
         This class can be customized either by defining the number of users/items
@@ -89,11 +89,11 @@ class ContentFiltering(BaseRecommender):
         specified.
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (1200, 2341) # <-- 1200 users, 2341 attributes
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000, num_attributes=2000)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (1200, 2000) # <-- 1200 users, 2000 attributes
 
         Or by generating representations for items and/or users. In the example
@@ -104,25 +104,25 @@ class ContentFiltering(BaseRecommender):
         # Users are represented by a power law distribution. This representation also uses 100 attributes.
         >>> user_representation = Distribution(distr_type='powerlaw').compute(a=1.16, size=(30, 100)).compute()
         >>> cf = ContentFiltering(item_representation=item_representation, user_representation=user_representation)
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (100, 200)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (30, 100)
 
         Note that user and item representations have the precedence over the 
         number of users/items/attributes specified at initialization. For example:
 
         >>> cf = ContentFiltering(num_users=50, user_representation=user_representation)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (30, 100) # <-- 30 users, 100 attributes. num_users was ignored because user_representation was specified.
 
         The same happens with the number of items and the number of attributes.
         In the latter case, the explicit number of attributes is ignored:
 
         >>> cf = ContentFiltering(num_attributes=1400, item_representation=item_representation)
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (100, 200) # <-- 100 attributes, 200 items. num_attributes was ignored.
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (100, 100) # <-- 100 users (default), 100 attributes (as implicitly specified by item_representation)
 
     """
@@ -135,6 +135,7 @@ class ContentFiltering(BaseRecommender):
         item_representation=None,
         user_representation=None,
         actual_user_representation=None,
+        actual_item_representation=None,
         seed=None,
         verbose=False,
         num_items_per_iter=10,
@@ -198,6 +199,9 @@ class ContentFiltering(BaseRecommender):
             item_representation = Generator(seed=seed).binomial(
                 n=1, p=0.5, size=(num_attributes, num_items)
             )
+        if actual_item_representation is None:
+            # simply copy the item representation
+            actual_item_representation = np.copy(item_representation)
 
         if not is_equal_dim_or_none(
             getattr(user_representation, "shape", [None, None])[1],
@@ -230,6 +234,7 @@ class ContentFiltering(BaseRecommender):
             user_representation,
             item_representation,
             actual_user_representation,
+            actual_item_representation,
             num_users,
             num_items,
             num_items_per_iter,
@@ -257,6 +262,6 @@ class ContentFiltering(BaseRecommender):
 
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.actual_users._user_vector, interactions] = 1
-        user_attributes = np.dot(interactions_per_user, self.item_attributes.T)
-        self.user_profiles[:, :] = np.add(self.user_profiles, user_attributes)
+        interactions_per_user[self.users._user_vector, interactions] = 1
+        user_attributes = np.dot(interactions_per_user, self.items_hat.T)
+        self.users_hat[:, :] = np.add(self.users_hat, user_attributes)
