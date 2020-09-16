@@ -10,7 +10,9 @@ class TestContentFiltering:
     def test_default(self):
         c = ContentFiltering()
         test_helpers.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_correct_size_generic(
             c.num_attributes, c.num_attributes, c.user_profiles.shape[1]
         )
@@ -61,7 +63,9 @@ class TestContentFiltering:
 
         c = ContentFiltering(num_users=users)
         test_helpers.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_correct_size_generic(
             c.num_attributes, c.num_attributes, c.item_attributes.shape[0]
         )
@@ -95,7 +99,9 @@ class TestContentFiltering:
 
         c = ContentFiltering(num_attributes=attr)
         test_helpers.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_correct_size_generic(
             attr, c.num_attributes, c.item_attributes.shape[0]
         )
@@ -129,7 +135,9 @@ class TestContentFiltering:
 
         c = ContentFiltering(num_users=users, num_attributes=attr)
         test_helpers.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_correct_size_generic(
             attr, c.num_attributes, c.item_attributes.shape[0]
         )
@@ -188,7 +196,9 @@ class TestContentFiltering:
         test_helpers.assert_correct_num_users(
             user_repr.shape[0], c, c.user_profiles.shape[0]
         )
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_correct_size_generic(
             user_repr.shape[1], c.num_attributes, c.item_attributes.shape[0]
         )
@@ -278,7 +288,9 @@ class TestContentFiltering:
         assert num_items_per_iter == c.num_items_per_iter
         # also check other params
         test_helpers.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_correct_size_generic(
             c.num_attributes, c.num_attributes, c.user_profiles.shape[1]
         )
@@ -340,11 +352,11 @@ class TestContentFiltering:
         # to test whether users are correctly drifting towards the items
         # vector
         item_repr = (user_repr + 0.1 * np.vstack([user_repr[1:], user_repr[0]])).T
-        users = Users(actual_user_profiles = np.copy(user_repr), num_users=10, drift=0.5)
+        users = Users(actual_user_profiles=np.copy(user_repr), num_users=10, drift=0.5)
         model = ContentFiltering(
-            user_representation = np.copy(user_repr),
-            item_representation = item_repr,
-            actual_user_representation = users
+            user_representation=np.copy(user_repr),
+            item_representation=item_repr,
+            actual_user_representation=users,
         )
         model.run(timesteps=1)
         # user profiles should have drifted after interacting with items

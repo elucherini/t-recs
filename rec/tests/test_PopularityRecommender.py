@@ -8,7 +8,9 @@ class TestPopularityRecommender:
     def test_default(self):
         c = PopularityRecommender()
         test_helpers.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_arguments(self, items=None, users=None):
@@ -32,7 +34,9 @@ class TestPopularityRecommender:
 
         c = PopularityRecommender(num_users=users)
         test_helpers.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(num_items=items)
@@ -65,7 +69,9 @@ class TestPopularityRecommender:
         test_helpers.assert_correct_num_users(
             user_repr.shape[0], c, c.user_profiles.shape[0]
         )
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_equal_arrays(user_repr, c.user_profiles)
         test_helpers.assert_not_none(c.predicted_scores)
 
@@ -120,7 +126,9 @@ class TestPopularityRecommender:
         assert num_items_per_iter == c.num_items_per_iter
         # also check other params
         test_helpers.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_helpers.assert_correct_num_items(
+            c.num_items, c, c.item_attributes.shape[1]
+        )
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_seeding(self, seed=None, items=None, users=None):

@@ -136,6 +136,7 @@ class ContentFiltering(BaseRecommender):
         item_representation=None,
         user_representation=None,
         actual_user_representation=None,
+        probabilistic_recommendations=False,
         seed=None,
         verbose=False,
         num_items_per_iter=10,
@@ -162,10 +163,12 @@ class ContentFiltering(BaseRecommender):
         # passed in, they must have matching dimensions
         if user_representation is not None and actual_user_representation is not None:
             users_object = isinstance(actual_user_representation, Users)
-            actual_user_matrix = actual_user_representation.actual_user_profiles if users_object else actual_user_representation
-            if not array_dimensions_match(
-                user_representation, actual_user_matrix
-            ):
+            actual_user_matrix = (
+                actual_user_representation.actual_user_profiles
+                if users_object
+                else actual_user_representation
+            )
+            if not array_dimensions_match(user_representation, actual_user_matrix):
                 raise ValueError(
                     (
                         "Dimensions of user_representation and "
@@ -236,6 +239,7 @@ class ContentFiltering(BaseRecommender):
             num_users,
             num_items,
             num_items_per_iter,
+            probabilistic_recommendations=False,
             measurements=measurements,
             verbose=verbose,
             seed=seed,

@@ -34,9 +34,7 @@ class TestUsers:
         s.set_score_function(model.score)
         s.compute_user_scores(item_repr)
         model.update_predicted_scores(s.actual_user_profiles)
-        test_helpers.assert_equal_arrays(
-            s.actual_user_scores, model.predicted_scores
-        )
+        test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
         test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
         # user_repr != actual_user_repr
@@ -48,19 +46,10 @@ class TestUsers:
         s = Users(actual_user_repr)
         s.set_score_function(model.score)
         s.compute_user_scores(item_repr)
-        model.update_predicted_scores(
-            s.actual_user_profiles, model.item_attributes
-        )
-        print(
-            np.array_equal(
-                s.actual_user_scores,
-                model.predicted_scores
-            )
-        )
+        model.update_predicted_scores(s.actual_user_profiles, model.item_attributes)
+        print(np.array_equal(s.actual_user_scores, model.predicted_scores))
         model.update_predicted_scores(s.actual_user_profiles)
-        test_helpers.assert_equal_arrays(
-            s.actual_user_scores, model.predicted_scores
-        )
+        test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
     def test_seeding(self, users=15, attr=15, seed=None):
         actual_user_repr = np.random.randint(15, size=(users, attr))

@@ -160,8 +160,10 @@ class Users(BaseComponent):
             if not isinstance(actual_user_scores, (list, np.ndarray)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
-            row_zeros = np.zeros(size[1]) # one row vector of zeroes
-            while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
+            row_zeros = np.zeros(size[1])  # one row vector of zeroes
+            while actual_user_profiles is None or contains_row(
+                actual_user_profiles, row_zeros
+            ):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = Generator(seed=seed).normal(size=size)
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
@@ -219,8 +221,7 @@ class Users(BaseComponent):
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
         actual_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles,
-            item_attributes=item_attributes
+            user_profiles=self.actual_user_profiles, item_attributes=item_attributes
         )
         if self.actual_user_scores is None:
             self.actual_user_scores = actual_scores
@@ -302,9 +303,11 @@ class Users(BaseComponent):
         )
         if self.drift > 0:
             if item_attributes is None:
-                raise ValueError("Item attributes can't be None if user preferences are dynamic")
+                raise ValueError(
+                    "Item attributes can't be None if user preferences are dynamic"
+                )
             # update user profiles based on the attributes of items they
-            # interacted with 
+            # interacted with
             interact_attrs = item_attributes.T[interactions, :]
             self.update_profiles(interact_attrs)
             # update user scores
@@ -325,7 +328,9 @@ class Users(BaseComponent):
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized
-        self.actual_user_profiles = slerp(self.actual_user_profiles, item_attributes, t=self.drift)
+        self.actual_user_profiles = slerp(
+            self.actual_user_profiles, item_attributes, t=self.drift
+        )
 
     def store_state(self):
         self.state_history.append(np.copy(self.actual_user_scores))

@@ -1,44 +1,29 @@
 import numpy as np
 import test_helpers
-from rec.utils import (
-    normalize_matrix,
-    contains_row,
-    slerp
-)
+from rec.utils import normalize_matrix, contains_row, slerp
+
 
 class TestUtils:
     def test_normalize_matrix(self):
         # matrix that already has norm 1 columns/rows
-        mat_1 = np.array([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ])
+        mat_1 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
         test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_1))
         test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_1, axis=0))
-        
+
         # matrix with norm 2 columns/rows
-        mat_2 = np.array([
-            [2, 0, 0, 0],
-            [0, 2, 0, 0],
-            [0, 0, 2, 0],
-            [0, 0, 0, 2]
-        ])
+        mat_2 = np.array([[2, 0, 0, 0], [0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]])
         test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_2))
         test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_2, axis=0))
 
         # check norm of all rows equals 1 after normalization
-        mat_3 = np.arange(16).reshape((4,4))
+        mat_3 = np.arange(16).reshape((4, 4))
         normalized = normalize_matrix(mat_3, axis=1)
         assert (np.linalg.norm(normalized, axis=1) == 1).all()
 
     def test_normalize_vector(self):
         vec = np.array([3, 4])
         unit_vec = normalize_matrix(vec)
-        correct_unit_vec = np.array(
-            [[3/5, 4/5]
-        ])
+        correct_unit_vec = np.array([[3 / 5, 4 / 5]])
         test_helpers.assert_equal_arrays(unit_vec, correct_unit_vec)
 
     def test_contains_row(self):
@@ -48,36 +33,23 @@ class TestUtils:
 
     def test_slerp(self):
         # rotate unit vectors 45 degrees
-        mat1 = np.array([
-            [0, 1],
-            [1, 0],
-            [0, -1],
-            [-1, 0]
-        ])
-        mat2 = np.array([
-            [1, 0],
-            [0, -1],
-            [-1, 0],
-            [0, 1]
-        ])
+        mat1 = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]])
+        mat2 = np.array([[1, 0], [0, -1], [-1, 0], [0, 1]])
         rotated = slerp(mat1, mat2, t=0.5)
-        correct_rotation = np.array([
-            [np.sqrt(2)/2, np.sqrt(2)/2],
-            [np.sqrt(2)/2, -np.sqrt(2)/2],
-            [-np.sqrt(2)/2, -np.sqrt(2)/2],
-            [-np.sqrt(2)/2, np.sqrt(2)/2]
-        ])
+        correct_rotation = np.array(
+            [
+                [np.sqrt(2) / 2, np.sqrt(2) / 2],
+                [np.sqrt(2) / 2, -np.sqrt(2) / 2],
+                [-np.sqrt(2) / 2, -np.sqrt(2) / 2],
+                [-np.sqrt(2) / 2, np.sqrt(2) / 2],
+            ]
+        )
         # there may be imprecision due to floating point errors
         np.testing.assert_array_almost_equal(rotated, correct_rotation)
 
         # increase norm of vectors and check that norm of rotated vectors
         # does not change
-        mat1_big = np.array([
-            [0, 2],
-            [2, 0],
-            [0, -2],
-            [-2, 0]
-        ])
+        mat1_big = np.array([[0, 2], [2, 0], [0, -2], [-2, 0]])
         rotated = slerp(mat1_big, mat2, t=0.5)
         np.testing.assert_array_almost_equal(rotated, 2 * correct_rotation)
 
@@ -88,10 +60,8 @@ class TestUtils:
         test_helpers.assert_equal_arrays(theta, np.repeat([np.pi / 2 * 0.95], 4))
 
         # rotate a unit vector 45 degrees
-        vec1 = np.array([np.sqrt(2)/2, np.sqrt(2)/2])
-        vec2 = np.array([np.sqrt(2)/2, -np.sqrt(2)/2])
-        correct_rotation = np.array([
-            [1, 0]
-        ])
+        vec1 = np.array([np.sqrt(2) / 2, np.sqrt(2) / 2])
+        vec2 = np.array([np.sqrt(2) / 2, -np.sqrt(2) / 2])
+        correct_rotation = np.array([[1, 0]])
         rotated = slerp(vec1, vec2, t=0.5)
         test_helpers.assert_equal_arrays(rotated, correct_rotation)

@@ -186,6 +186,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_users,
         num_items,
         num_items_per_iter,
+        probabilistic_recommendations=False,
         measurements=None,
         system_state=None,
         verbose=False,
@@ -204,6 +205,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.predicted_scores = None
         self.update_predicted_scores(self.user_profiles, self.item_attributes)
         assert self.predicted_scores is not None
+        # determine whether recommendations should be randomized, rather than
+        # top-k by predicted score
+        self.probabilistic_recommendations = probabilistic_recommendations
 
         if not utils.is_valid_or_none(num_users, int):
             raise TypeError("num_users must be an int")
@@ -363,7 +367,24 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # from low to high scores
         permutation = s_filtered.argsort()
         rec = indices_prime[row, permutation]
-        return rec[:, -k:]
+        self.log(
+            "Items ordered by preference (low to high) for each user:\n" + str(rec)
+        )
+        if self.probabilistic_recommendations:
+            # the recommended items will not be exactly determined by
+            # predicted score; instead, we will sample from the sorted list
+            # such that higher-preference items get more probability mass
+            num_items_unseen = rec.shape[1]  # number of items unseen per user
+            probabilities = np.logspace(
+                0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2
+            )
+            probabilities = probabilities / probabilities.sum()
+            picks = np.random.choice(
+                num_items_unseen, k, replace=False, p=probabilities
+            )
+            return rec[:, picks]
+        else:
+            return rec[:, -k:]
 
     def recommend(self, startup=False):
         """
@@ -481,7 +502,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         for t in tqdm(range(timesteps)):
             self.log("Step %d" % t)
             item_idxs = self.recommend(startup=startup)
-            interactions = self.actual_users.get_user_feedback(items_shown=item_idxs, item_attributes=self.item_attributes)
+            interactions = self.actual_users.get_user_feedback(
+                items_shown=item_idxs, item_attributes=self.item_attributes
+            )
             if not repeated_items:
                 self.indices[self.actual_users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
@@ -491,15 +514,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # train between steps:
             if train_between_steps:
-                 self.update_predicted_scores(
-                    self.user_profiles, self.item_attributes
-                )
+                self.update_predicted_scores(self.user_profiles, self.item_attributes)
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.update_predicted_scores(
-                self.user_profiles, self.item_attributes
-            )
+            self.update_predicted_scores(self.user_profiles, self.item_attributes)
             self.measure_content(interactions, step=t)
 
     def startup_and_train(self, timesteps=50):

@@ -55,14 +55,14 @@ def slerp(mat1, mat2, t=0.05):
                 of rotation.
     """
     assert t >= 0.0 and t <= 1.0
-    assert mat1.shape == mat2.shape # arrays should have same dimension
+    assert mat1.shape == mat2.shape  # arrays should have same dimension
     if len(mat1.shape) == 1:
         # turn vector into matrix with one row
         mat1 = mat1[np.newaxis, :]
         mat2 = mat2[np.newaxis, :]
     mat1_length = np.linalg.norm(mat1, axis=1)[:, np.newaxis]
     mat2_length = np.linalg.norm(mat2, axis=1)[:, np.newaxis]
-    mat1_norm, mat2_norm = mat1 / mat1_length, mat2 / mat2_length 
+    mat1_norm, mat2_norm = mat1 / mat1_length, mat2 / mat2_length
     row_dot_product = (mat1_norm * mat2_norm).sum(axis=1)
     # dot every user profile with its corresponding item attributes
     omega = np.arccos(row_dot_product)
@@ -79,7 +79,8 @@ def slerp(mat1, mat2, t=0.05):
         )
     so = np.sin(omega)
     unit_rot = (
-        np.sin((1.0 - t) * omega) / so * mat1_norm.T + np.sin(t * omega) / so * mat2_norm.T
+        np.sin((1.0 - t) * omega) / so * mat1_norm.T
+        + np.sin(t * omega) / so * mat2_norm.T
     ).T
     return unit_rot * mat1_length
 
