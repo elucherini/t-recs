@@ -111,7 +111,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             users: :obj:`numpy.ndarray` or :class:`~components.users.Users`
                 An array representing real user preferences unknown to the
                 system. Shape is |U| x |A|, where |A| is the number of attributes
-                and |U| is the number of users.
+                and |U| is the number of users. When a `numpy.ndarray` is passed
+                in, we assume this represents the user *scores*, not the
+                users' actual attribute vectors.
 
             items: :obj:`numpy.ndarray` or :class:`~components.items.Items`
                 An array representing real item attributes unknown to the
@@ -153,14 +155,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 class.
 
             users: :class:`~components.users.Users`
-                An array representing real user preferences, matching
-                actual_users. The shape and meaning depends on the
-                implementation of the concrete class.
+                An array representing real user preferences. Shape should be 
+                |U| x |A|, and should match items.
 
-            items: :class:`~components.users.Users`
-                An array representing real user preferences, matching
-                actual_users. The shape and meaning depends on the
-                implementation of the concrete class.
+            items: :class:`~components.items.Items`
+                An array representing actual item attributes. Shape should be 
+                |A| x |I|, and should match users.
 
             predicted_scores: :class:`~components.users.PredictedScores`
                 An array representing the user preferences as perceived by the
@@ -237,6 +237,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 size=self.users_hat.shape, num_users=num_users, seed=seed
             )
         if isinstance(users, (list, np.ndarray)):
+            # assume that's what passed in is the user's true scores on
+            # the items
             self.users = Users(
                 actual_user_scores=users, num_users=num_users
             )
@@ -249,11 +251,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         ):
             raise TypeError("items must be array_like or Items")
         if items is None:
-            self.items = Items(
-                size=self.items_hat.shape, seed=seed
-            )
+            # TODO: this doesn't work yet - punting while we wait on Elena's
+            # changes for a fix
+            raise ValueError("true item attributes can't be None")
         if isinstance(items, (list, np.ndarray)):
-            # TODO: this doesn't work!!!!
             self.items = Items(items)
         if isinstance(items, Items):
             self.items = items
