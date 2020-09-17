@@ -51,7 +51,7 @@ class ContentFiltering(BaseRecommender):
             attribute, as interpreted by the system. If this is not None,
             num_users is ignored.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_user_scores: :obj:`numpy.ndarray` or None or :class:`~components.items.Items` (optional, default: None)
             A `|U|x|I|` matrix representing the real user scores. This matrix is
             **not** used for recommendations. This is only kept for measurements
             and the system is unaware of it.
@@ -135,7 +135,7 @@ class ContentFiltering(BaseRecommender):
         num_attributes=1000,
         item_representation=None,
         user_representation=None,
-        actual_user_representation=None,
+        actual_user_scores=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
         seed=None,
@@ -160,20 +160,21 @@ class ContentFiltering(BaseRecommender):
             raise ValueError("user_representation is not valid")
         if not is_valid_or_none(num_attributes, int):
             raise TypeError("num_attributes must be an int")
-        # if user_representation and actual_user_representation are both
-        # passed in, they must have matching dimensions
-        if user_representation is not None and actual_user_representation is not None:
-            users_object = isinstance(actual_user_representation, Users)
-            actual_user_matrix = (
-                actual_user_representation.actual_user_profiles
-                if users_object
-                else actual_user_representation
-            )
-            if not array_dimensions_match(user_representation, actual_user_matrix):
+        # if user_representation and actual_user_scores are both
+        # passed in, they must have matching dimensions on the first axis.
+        # TODO: think about passing in actual user representation that is just scores
+        # versus user representation that is just attributes
+        if user_representation is not None and actual_user_scores is not None:
+            actual_users = get_first_valid(
+                getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],
+                getattr(actual_user_scores.actual_user_profiles, "shape", [None])[0],
+            ) if isinstance(actual_user_scores, Users) else actual_user_scores.shape[0]
+            # number of users should match up, so rows should be identical
+            if user_representation.shape[0] != actual_users:
                 raise ValueError(
                     (
                         "Dimensions of user_representation and "
-                        "actual_user_representation do not align."
+                        "actual_user_scores do not align."
                     )
                 )
 
@@ -182,19 +183,13 @@ class ContentFiltering(BaseRecommender):
         )
         attribute_values = [
             getattr(item_representation, "shape", [None])[0],
-            getattr(actual_user_representation, "shape", [None, None])[1],
-            getattr(
-                getattr(actual_user_representation, "actual_user_profiles", None),
-                "shape",
-                [None, None],
-            )[1],
             getattr(user_representation, "shape", [None, None])[1],
             num_attributes,
         ]
         num_attributes = get_first_valid(*attribute_values)
 
         num_users = get_first_valid(
-            getattr(actual_user_representation, "shape", [None])[0],
+            getattr(actual_user_scores, "shape", [None])[0],
             getattr(user_representation, "shape", [None])[0],
             num_users,
         )
@@ -239,7 +234,7 @@ class ContentFiltering(BaseRecommender):
             self,
             user_representation,
             item_representation,
-            actual_user_representation,
+            actual_user_scores,
             actual_item_representation,
             num_users,
             num_items,

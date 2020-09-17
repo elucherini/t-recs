@@ -276,7 +276,7 @@ class TestContentFiltering:
             # must be the same dimension
             c = ContentFiltering(
                 user_representation=user_repr,
-                actual_user_representation=bad_user_repr,
+                actual_user_scores=bad_user_repr,
                 item_representation=bad_item_repr,
             )
 
@@ -356,7 +356,7 @@ class TestContentFiltering:
         model = ContentFiltering(
             user_representation=np.copy(user_repr),
             item_representation=item_repr,
-            actual_user_representation=users,
+            actual_user_scores=users,
         )
         model.run(timesteps=1)
         # user profiles should have drifted after interacting with items

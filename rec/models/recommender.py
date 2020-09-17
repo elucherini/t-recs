@@ -275,7 +275,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         # initialize actual user scores for items
         self.users.set_score_function(self.score)
-        self.users.compute_user_scores(self.items_hat)
+        # users compute their own scores using the true item attributes
+        self.users.compute_user_scores(self.items)
 
         assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
@@ -531,8 +532,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         for t in tqdm(range(timesteps)):
             self.log("Step %d" % t)
             item_idxs = self.recommend(startup=startup)
+            # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
-                items_shown=item_idxs, item_attributes=self.items_hat
+                items_shown=item_idxs, item_attributes=self.items
             )
             if not repeated_items:
                 self.indices[self.users._user_vector, interactions] = -1
