@@ -118,6 +118,7 @@ class PopularityRecommender(BaseRecommender):
         seed=None,
         verbose=False,
         num_items_per_iter=10,
+        **kwargs
     ):
 
         if all_none(item_representation, num_items):
@@ -181,6 +182,7 @@ class PopularityRecommender(BaseRecommender):
             measurements=measurements,
             verbose=verbose,
             seed=seed,
+            **kwargs
         )
 
     def _update_user_profiles(self, interactions):

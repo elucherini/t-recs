@@ -171,7 +171,7 @@ class Users(BaseComponent):
         self.drift = drift
         self.score_fn = None  # function that dictates how scores will be generated
         # this will be initialized by the system
-        self.actual_user_scores = None
+        self.actual_user_scores = actual_user_scores
         if num_users is not None:
             self._user_vector = np.arange(num_users, dtype=int)
         self.name = "actual_user_scores"

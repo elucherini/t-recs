@@ -66,7 +66,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.measurement_history.append(to_append)
 
     @abstractmethod
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         pass
 
     def get_timesteps(self):
@@ -135,7 +135,7 @@ class InteractionMeasurement(Measurement):
         assert histogram.sum() == num_users
         return histogram
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
             Measures and stores a histogram of the number of interactions per
             item at the given timestep.
@@ -154,13 +154,37 @@ class InteractionMeasurement(Measurement):
                 recommender: :class:`~models.recommender.BaseRecommender`
                     Model that inherits from :class:`~models.recommender.BaseRecommender`.
         """
-
+        interactions = kwargs.pop("interactions", None)
         histogram = self._generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
         )
         # histogram[::-1].sort()
         self.observe(histogram, copy=True)
 
+
+class JaccardSimilarity(Measurement):
+    """
+    TODO: write documentation, tests
+    """
+
+    def __init__(self, pairs, verbose=False):
+        self.name = "jaccard_similarity"
+        self.pairs = pairs
+        Measurement.__init__(self, verbose, init_value=None)
+
+    def measure(self, recommender, **kwargs):
+        """
+           TODO: write documentation
+        """
+        similarity = 0
+        items_shown = kwargs.pop("items_shown", None)
+        for p in self.pairs:
+            itemset_1 = set(items_shown[p[0], :])
+            itemset_2 = set(items_shown[p[1], :])
+            common = len(itemset_1.intersection(itemset_2))
+            union = len(itemset_1.union(itemset_2))
+            similarity += common / union / len(self.pairs)
+        self.observe(similarity)
 
 class HomogeneityMeasurement(InteractionMeasurement):
     """
@@ -194,7 +218,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
         self.name = "homogeneity"
         Measurement.__init__(self, verbose, init_value=None)
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
             Measures the homogeneity of user interactions -- that is, whether
             interactions are spread among many items or only a few items.
@@ -214,6 +238,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
                     Model that inherits from
                     :class:`~models.recommender.BaseRecommender`.
         """
+        interactions = kwargs.pop("interactions", None)
         assert interactions.size == recommender.num_users
         histogram = self._generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
@@ -254,7 +279,7 @@ class MSEMeasurement(Measurement):
         self.name = "mse"
         Measurement.__init__(self, verbose, init_value=None)
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
         Measures and records the mean squared error between the user preferences
         predicted by the system and the users' actual preferences.
@@ -367,7 +392,7 @@ class DiffusionTreeMeasurement(Measurement):
         # return number of new infections
         return new_infected_users.shape[0]
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
         Updates tree with new infections and stores information about new
         infections. In :attr:`~.Measurement.measurement_history`, it stores the

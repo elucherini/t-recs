@@ -275,8 +275,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         # initialize actual user scores for items
         self.users.set_score_function(self.score)
-        # users compute their own scores using the true item attributes
-        self.users.compute_user_scores(self.items)
+        # users compute their own scores using the true item attributes,
+        # unless their own scores are already known to them
+        if self.users.get_actual_user_scores() is None:
+            self.users.compute_user_scores(self.items)
 
         assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
@@ -546,11 +548,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # train between steps:
             if train_between_steps:
                 self.update_predicted_scores(self.users_hat, self.items_hat)
-            self.measure_content(interactions, step=t)
+            self.measure_content(interactions, item_idxs, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
             self.update_predicted_scores(self.users_hat, self.items_hat)
-            self.measure_content(interactions, step=t)
+            self.measure_content(interactions, item_idxs, step=t)
 
     def startup_and_train(self, timesteps=50):
         """
@@ -643,8 +645,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             state["actual_user_scores"].pop(0)
         return state
 
-    def measure_content(self, interactions, step):
+    def measure_content(self, interactions, items_shown, step):
         """
+        TODO: UPDATE DOCUMENTATION
         Calls method in the :class:`Measurements` module to record metrics.
         For more details, see the :class:`Measurements` class and its measure
         method.
@@ -657,6 +660,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             step (int): step on which the recorded interactions refers to.
         """
         for metric in self.metrics:
-            metric.measure(step, interactions, self)
+            metric.measure(self, step=step, interactions=interactions, items_shown=items_shown)
         for component in self._system_state:
             component.store_state()

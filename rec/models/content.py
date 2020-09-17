@@ -141,6 +141,7 @@ class ContentFiltering(BaseRecommender):
         seed=None,
         verbose=False,
         num_items_per_iter=10,
+        **kwargs
     ):
 
         # Give precedence to item_representation, otherwise build random one
@@ -243,6 +244,7 @@ class ContentFiltering(BaseRecommender):
             measurements=measurements,
             verbose=verbose,
             seed=seed,
+            **kwargs
         )
 
     def _update_user_profiles(self, interactions):

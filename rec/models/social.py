@@ -136,6 +136,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         verbose=False,
         num_items_per_iter=10,
         seed=None,
+        **kwargs
     ):
         # Give precedence to user_representation, otherwise build empty one
 
@@ -206,6 +207,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             seed=seed,
             measurements=measurements,
             verbose=verbose,
+            **kwargs
         )
 
     def _update_user_profiles(self, interactions):

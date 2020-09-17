@@ -51,6 +51,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         verbose=False,
         num_items_per_iter=1,
         seed=None,
+        **kwargs
     ):
         # these are not allowed to be None at the same time
         if all_none(user_representation, num_users, infection_state):
@@ -153,6 +154,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             system_state=system_state,
             verbose=verbose,
             seed=seed,
+            **kwargs
         )
 
     def _update_user_profiles(self, interactions):
