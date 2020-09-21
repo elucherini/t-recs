@@ -231,9 +231,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise ValueError("You must define at least one measurement module")
 
         # check users array
-        if not utils.is_valid_or_none(
-            users, (list, np.ndarray, Users)
-        ):
+        if not utils.is_valid_or_none(users, (list, np.ndarray, Users)):
             raise TypeError("users must be array_like or Users")
         if users is None:
             self.users = Users(
@@ -242,16 +240,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if isinstance(users, (list, np.ndarray)):
             # assume that's what passed in is the user's true scores on
             # the items
-            self.users = Users(
-                actual_user_scores=users, num_users=num_users
-            )
+            self.users = Users(actual_user_scores=users, num_users=num_users)
         if isinstance(users, Users):
             self.users = users
 
         # check items array
-        if not utils.is_valid_or_none(
-            items, (list, np.ndarray, Items)
-        ):
+        if not utils.is_valid_or_none(items, (list, np.ndarray, Items)):
             raise TypeError("items must be array_like or Items")
         if items is None:
             raise ValueError("true item attributes can't be None")
@@ -265,10 +259,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # system state
         SystemStateModule.__init__(self)
         self.add_state_variable(
-            self.users_hat,
-            self.users,
-            self.items_hat,
-            self.predicted_scores,
+            self.users_hat, self.users, self.items_hat, self.predicted_scores,
         )
         if system_state is not None:
             self.add_state_variable(*system_state)
@@ -660,6 +651,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             step (int): step on which the recorded interactions refers to.
         """
         for metric in self.metrics:
-            metric.measure(self, step=step, interactions=interactions, items_shown=items_shown)
+            metric.measure(
+                self, step=step, interactions=interactions, items_shown=items_shown
+            )
         for component in self._system_state:
             component.store_state()

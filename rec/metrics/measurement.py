@@ -219,6 +219,7 @@ class JaccardSimilarity(Measurement):
             similarity += common / union / len(self.pairs)
         self.observe(similarity)
 
+
 class HomogeneityMeasurement(InteractionMeasurement):
     """
     Measures the homogeneity of the interactions between users and items.
@@ -325,9 +326,7 @@ class MSEMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        diff = (
-            recommender.predicted_scores - recommender.users.actual_user_scores
-        )
+        diff = recommender.predicted_scores - recommender.users.actual_user_scores
         self.observe((diff ** 2).mean(), copy=False)
 
 
@@ -437,9 +436,7 @@ class DiffusionTreeMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        self._manage_new_infections(
-            recommender.users_hat, recommender.infection_state
-        )
+        self._manage_new_infections(recommender.users_hat, recommender.infection_state)
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
         self._old_infection_state = np.copy(recommender.infection_state)
 

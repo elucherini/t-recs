@@ -8,7 +8,7 @@ from rec.metrics import (
     DiffusionTreeMeasurement,
     StructuralVirality,
     InteractionMeasurement,
-    JaccardSimilarity
+    JaccardSimilarity,
 )
 import pytest
 
@@ -126,7 +126,6 @@ class TestJaccardSimilarity:
         MeasurementUtils.test_generic_metric(
             ContentFiltering(), JaccardSimilarity(pairs), timesteps
         )
-
 
 
 class TestMSEMeasurement:

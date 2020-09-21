@@ -164,10 +164,16 @@ class ContentFiltering(BaseRecommender):
         # if user_representation and actual_user_scores are both
         # passed in, they must have matching dimensions on the first axis.
         if user_representation is not None and actual_user_scores is not None:
-            actual_users = get_first_valid(
-                getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],
-                getattr(actual_user_scores.actual_user_profiles, "shape", [None])[0],
-            ) if isinstance(actual_user_scores, Users) else actual_user_scores.shape[0]
+            actual_users = (
+                get_first_valid(
+                    getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],
+                    getattr(actual_user_scores.actual_user_profiles, "shape", [None])[
+                        0
+                    ],
+                )
+                if isinstance(actual_user_scores, Users)
+                else actual_user_scores.shape[0]
+            )
             # number of users should match up, so rows should be identical
             if user_representation.shape[0] != actual_users:
                 raise ValueError(

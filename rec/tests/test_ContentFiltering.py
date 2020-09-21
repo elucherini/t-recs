@@ -10,9 +10,7 @@ class TestContentFiltering:
     def test_default(self):
         c = ContentFiltering()
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            c.num_items, c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             c.num_attributes, c.num_attributes, c.users_hat.shape[1]
         )
@@ -63,9 +61,7 @@ class TestContentFiltering:
 
         c = ContentFiltering(num_users=users)
         test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            c.num_items, c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             c.num_attributes, c.num_attributes, c.items_hat.shape[0]
         )
@@ -99,9 +95,7 @@ class TestContentFiltering:
 
         c = ContentFiltering(num_attributes=attr)
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            c.num_items, c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             attr, c.num_attributes, c.items_hat.shape[0]
         )
@@ -135,9 +129,7 @@ class TestContentFiltering:
 
         c = ContentFiltering(num_users=users, num_attributes=attr)
         test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            c.num_items, c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             attr, c.num_attributes, c.items_hat.shape[0]
         )
@@ -196,9 +188,7 @@ class TestContentFiltering:
         test_helpers.assert_correct_num_users(
             user_repr.shape[0], c, c.users_hat.shape[0]
         )
-        test_helpers.assert_correct_num_items(
-            c.num_items, c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             user_repr.shape[1], c.num_attributes, c.items_hat.shape[0]
         )
@@ -288,9 +278,7 @@ class TestContentFiltering:
         assert num_items_per_iter == c.num_items_per_iter
         # also check other params
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            c.num_items, c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             c.num_attributes, c.num_attributes, c.users_hat.shape[1]
         )

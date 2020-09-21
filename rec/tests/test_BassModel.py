@@ -9,9 +9,7 @@ class TestBassModel:
         s = BassModel()
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(
-            s.num_items, s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
         test_helpers.assert_not_none(s.predicted_scores)
         # did not set seed, show random behavior
         s1 = BassModel()
@@ -44,9 +42,7 @@ class TestBassModel:
         s = BassModel(num_users=users)
         test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
         test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(
-            s.num_items, s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
         test_helpers.assert_not_none(s.predicted_scores)
         s = BassModel(num_items=items)
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
@@ -95,9 +91,7 @@ class TestBassModel:
         test_helpers.assert_correct_num_users(
             user_repr.shape[1], s, s.users_hat.shape[1]
         )
-        test_helpers.assert_correct_num_items(
-            s.num_items, s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
@@ -146,9 +140,7 @@ class TestBassModel:
         test_helpers.assert_not_none(s.predicted_scores)
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(
-            s.num_items, s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
 
     def test_social_graph(self, user_repr=None, user1=None, user2=None):
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
