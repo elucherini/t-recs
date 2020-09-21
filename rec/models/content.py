@@ -201,8 +201,10 @@ class ContentFiltering(BaseRecommender):
             item_representation = Generator(seed=seed).binomial(
                 n=1, p=0.5, size=(num_attributes, num_items)
             )
+        # if the actual item representation is not specified, we assume
+        # that the recommender system's beliefs about the item attributes
+        # are the same as the "true" item attributes
         if actual_item_representation is None:
-            # simply copy the item representation
             actual_item_representation = np.copy(item_representation)
 
         if not is_equal_dim_or_none(

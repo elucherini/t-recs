@@ -141,7 +141,9 @@ class PopularityRecommender(BaseRecommender):
 
         if item_representation is None:
             item_representation = np.zeros((1, num_items), dtype=int)
-        # placeholder until we figure out what to do
+        # if the actual item representation is not specified, we assume
+        # that the recommender system's beliefs about the item attributes
+        # are the same as the "true" item attributes
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
         if user_representation is None:
