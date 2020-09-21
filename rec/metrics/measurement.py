@@ -66,7 +66,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.measurement_history.append(to_append)
 
     @abstractmethod
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         pass
 
     def get_timesteps(self):
@@ -135,31 +135,89 @@ class InteractionMeasurement(Measurement):
         assert histogram.sum() == num_users
         return histogram
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
-            Measures and stores a histogram of the number of interactions per
-            item at the given timestep.
+        Measures and stores a histogram of the number of interactions per
+        item at the given timestep.
 
-            Parameters
-            ------------
+        Parameters
+        ------------
+            recommender: :class:`~models.recommender.BaseRecommender`
+                Model that inherits from :class:`~models.recommender.BaseRecommender`.
 
-                step: int
-                    Current time step
-
-                interactions: :obj:`numpy.array`
-                    Non-aggregated array of interactions -- that is, an array of
-                    length `|U|` s.t. element `u` is the index of the item with
-                    which user `u` interacted.
-
-                recommender: :class:`~models.recommender.BaseRecommender`
-                    Model that inherits from :class:`~models.recommender.BaseRecommender`.
+            **kwargs
+                Keyword arguments, one of which must be `interactions`.
+                `interactions` is a non-aggregated array of interactions -- 
+                that is, an array of length `|U|` s.t. element `u` is the index
+                of the item with which user `u` interacted.
         """
-
+        interactions = kwargs.pop("interactions", None)
         histogram = self._generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
         )
         # histogram[::-1].sort()
         self.observe(histogram, copy=True)
+
+
+class JaccardSimilarity(Measurement):
+    """
+    Keeps track of the average Jaccard similarity between items seen by pairs
+    of users at each timestep. The pairs of users must be passed in by the 
+    user.
+
+    Parameters
+    -----------
+        pairs: iterable of tuples
+            Contains tuples representing each pair of users. Each user should
+            be represented as an index into the user profiles matrix.
+
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
+
+    Attributes
+    -----------
+        Inherited by Measurement: :class:`.Measurement`
+
+        name: str
+            Name of the measurement component.
+    """
+
+    def __init__(self, pairs, verbose=False):
+        self.name = "jaccard_similarity"
+        self.pairs = pairs
+        Measurement.__init__(self, verbose, init_value=None)
+
+    def measure(self, recommender, **kwargs):
+        """
+        Measures the average Jaccard index of items shown to pairs of users in 
+        the system. Intuitively, a higher average Jaccard index corresponds to
+        increasing "homogenization" in that the recommender system is starting
+        to treat each user the same way (i.e., show them the same items). 
+
+        Parameters
+        ------------
+            recommender: :class:`~models.recommender.BaseRecommender`
+                Model that inherits from
+                :class:`~models.recommender.BaseRecommender`.
+
+            **kwargs
+                Keyword arguments, one of which must be `items_shown`, a |U| x
+                num_items_per_iter matrix that contains the indices of every
+                item shown to every user at a particular timestep.
+        """
+        similarity = 0
+        items_shown = kwargs.pop("items_shown", None)
+        if items_shown is None:
+            raise ValueError(
+                "items_shown must be passed in to JaccardSimilarity's `measure` method as a keyword argument"
+            )
+        for p in self.pairs:
+            itemset_1 = set(items_shown[p[0], :])
+            itemset_2 = set(items_shown[p[1], :])
+            common = len(itemset_1.intersection(itemset_2))
+            union = len(itemset_1.union(itemset_2))
+            similarity += common / union / len(self.pairs)
+        self.observe(similarity)
 
 
 class HomogeneityMeasurement(InteractionMeasurement):
@@ -194,26 +252,24 @@ class HomogeneityMeasurement(InteractionMeasurement):
         self.name = "homogeneity"
         Measurement.__init__(self, verbose, init_value=None)
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
-            Measures the homogeneity of user interactions -- that is, whether
-            interactions are spread among many items or only a few items.
+        Measures the homogeneity of user interactions -- that is, whether
+        interactions are spread among many items or only a few items.
 
-            Parameters
-            ------------
+        Parameters
+        ------------
+            recommender: :class:`~models.recommender.BaseRecommender`
+                Model that inherits from
+                :class:`~models.recommender.BaseRecommender`.
 
-                step: int
-                    Current time step
-
-                interactions: :obj:`numpy.array`
-                    Non-aggregated array of interactions -- that is, an array of
-                    length `|U|` s.t. element `u` is the index of the item with
-                    which user `u` interacted.
-
-                recommender: :class:`~models.recommender.BaseRecommender`
-                    Model that inherits from
-                    :class:`~models.recommender.BaseRecommender`.
+            **kwargs
+                Keyword arguments, one of which must be `interactions`.
+                `interactions` is a non-aggregated array of interactions -- 
+                that is, an array of length `|U|` s.t. element `u` is the index
+                of the item with which user `u` interacted.
         """
+        interactions = kwargs.pop("interactions", None)
         assert interactions.size == recommender.num_users
         histogram = self._generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
@@ -254,28 +310,23 @@ class MSEMeasurement(Measurement):
         self.name = "mse"
         Measurement.__init__(self, verbose, init_value=None)
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
         Measures and records the mean squared error between the user preferences
         predicted by the system and the users' actual preferences.
 
         Parameters
         ------------
-
-            step: int
-                Current time step
-
-            interactions: :obj:`numpy.array`
-                Non-aggregated array of interactions -- that is, an array of
-                length `|U|` s.t. element `u` is the index of the item with
-                which user `u` interacted.
-
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
+
+            **kwargs
+                Keyword arguments, one of which must be `interactions`.
+                `interactions` is a non-aggregated array of interactions -- 
+                that is, an array of length `|U|` s.t. element `u` is the index
+                of the item with which user `u` interacted.
         """
-        diff = (
-            recommender.predicted_scores - recommender.actual_users.actual_user_scores
-        )
+        diff = recommender.predicted_scores - recommender.users.actual_user_scores
         self.observe((diff ** 2).mean(), copy=False)
 
 
@@ -367,7 +418,7 @@ class DiffusionTreeMeasurement(Measurement):
         # return number of new infections
         return new_infected_users.shape[0]
 
-    def measure(self, step, interactions, recommender):
+    def measure(self, recommender, **kwargs):
         """
         Updates tree with new infections and stores information about new
         infections. In :attr:`~.Measurement.measurement_history`, it stores the
@@ -376,21 +427,16 @@ class DiffusionTreeMeasurement(Measurement):
 
         Parameters
         ------------
-
-            step: int
-                Current time step
-
-            interactions: :obj:`numpy.array`
-                Non-aggregated array of interactions -- that is, an array of
-                length `|U|` s.t. element `u` is the index of the item with
-                which user `u` interacted.
-
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
+
+            **kwargs
+                Keyword arguments, one of which must be `interactions`.
+                `interactions` is a non-aggregated array of interactions -- 
+                that is, an array of length `|U|` s.t. element `u` is the index
+                of the item with which user `u` interacted.
         """
-        num_new_infections = self._manage_new_infections(
-            recommender.user_profiles, recommender.infection_state
-        )
+        self._manage_new_infections(recommender.users_hat, recommender.infection_state)
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
         self._old_infection_state = np.copy(recommender.infection_state)
 

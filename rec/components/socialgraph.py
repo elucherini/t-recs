@@ -6,7 +6,7 @@ from rec.utils import VerboseMode
 class BinarySocialGraph(VerboseMode):
     """
     A mixin for classes with a 
-    :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute
+    :attr:`~rec.models.recommender.BaseRecommender.users_hat` attribute
     to gain the basic functionality of a binary social graph.
 
     It assumes a network adjacency matrix of size `|U|x|U|`.
@@ -37,8 +37,8 @@ class BinarySocialGraph(VerboseMode):
                 "Number of users is %d, but indices %d and %d"
                 + " were requested" % (self.num_users, user_index, following_index)
             )
-        if self.user_profiles[following_index, user_index] == 0:
-            self.user_profiles[following_index, user_index] = 1
+        if self.users_hat[following_index, user_index] == 0:
+            self.users_hat[following_index, user_index] = 1
         else:
             self.log(
                 "User %d was already following user %d" % (following_index, user_index)
@@ -69,8 +69,8 @@ class BinarySocialGraph(VerboseMode):
                 "Number of user is %d, but indices %d and %d"
                 + " were requested" % (self.num_users, user_index, following_index)
             )
-        if self.user_profiles[following_index, user_index] == 1:
-            self.user_profiles[following_index, user_index] = 0
+        if self.users_hat[following_index, user_index] == 1:
+            self.users_hat[following_index, user_index] = 0
         else:
             self.log(
                 "User %d was not following user %d" % (following_index, user_index)
@@ -101,14 +101,14 @@ class BinarySocialGraph(VerboseMode):
                 "Number of user is %d, but indices %d and %d"
                 + " were requested" % (self.num_users, user1_index, user2_index)
             )
-        if self.user_profiles[user1_index, user2_index] == 0:
-            self.user_profiles[user1_index, user2_index] = 1
+        if self.users_hat[user1_index, user2_index] == 0:
+            self.users_hat[user1_index, user2_index] = 1
         else:
             self.log(
                 "User %d was already following user %d" % (user2_index, user1_index)
             )
-        if self.user_profiles[user2_index, user1_index] == 0:
-            self.user_profiles[user2_index, user1_index] = 1
+        if self.users_hat[user2_index, user1_index] == 0:
+            self.users_hat[user2_index, user1_index] = 1
         else:
             self.log(
                 "User %d was already following user %d" % (user1_index, user2_index)
@@ -139,11 +139,11 @@ class BinarySocialGraph(VerboseMode):
                 "Number of user is %d, but indices %d and %d"
                 + " were requested" % (self.num_users, user1_index, user2_index)
             )
-        if self.user_profiles[user1_index, user2_index] == 1:
-            self.user_profiles[user1_index, user2_index] = 0
+        if self.users_hat[user1_index, user2_index] == 1:
+            self.users_hat[user1_index, user2_index] = 0
         else:
             self.log("User %d was not following user %d" % (user2_index, user1_index))
-        if self.user_profiles[user2_index, user1_index] == 1:
-            self.user_profiles[user2_index, user1_index] = 0
+        if self.users_hat[user2_index, user1_index] == 1:
+            self.users_hat[user2_index, user1_index] = 0
         else:
             self.log("User %d was not following user %d" % (user1_index, user2_index))

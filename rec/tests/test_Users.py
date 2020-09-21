@@ -42,17 +42,16 @@ class TestUsers:
         model = ContentFiltering(
             user_representation=user_repr, item_representation=item_repr
         )
-        assert model.user_profiles.shape == actual_user_repr.shape
+        assert model.users_hat.shape == actual_user_repr.shape
         s = Users(actual_user_repr)
         s.set_score_function(model.score)
         s.compute_user_scores(item_repr)
-        model.update_predicted_scores(s.actual_user_profiles, model.item_attributes)
+        model.update_predicted_scores(s.actual_user_profiles, model.items_hat)
         print(np.array_equal(s.actual_user_scores, model.predicted_scores))
         model.update_predicted_scores(s.actual_user_profiles)
         test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
     def test_seeding(self, users=15, attr=15, seed=None):
-        actual_user_repr = np.random.randint(15, size=(users, attr))
         if seed is None:
             seed = np.random.randint(1000)
         users1 = Users(size=(users, attr), seed=seed)

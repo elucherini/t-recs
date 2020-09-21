@@ -51,7 +51,7 @@ class ContentFiltering(BaseRecommender):
             attribute, as interpreted by the system. If this is not None,
             num_users is ignored.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_user_scores: :obj:`numpy.ndarray` or None or :class:`~components.items.Items` (optional, default: None)
             A `|U|x|I|` matrix representing the real user scores. This matrix is
             **not** used for recommendations. This is only kept for measurements
             and the system is unaware of it.
@@ -76,13 +76,13 @@ class ContentFiltering(BaseRecommender):
         attributes and the item/user representations will be assigned randomly.
 
         >>> cf = ContentFiltering()
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (100, 99)   # <-- 100 users (default), 99 attributes (randomly generated)
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (99, 1250) # <-- 99 attributes (randomly generated), 1250 items (default)
 
         >>> cf1 = ContentFiltering()
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (100, 582) # <-- 100 users (default), 582 attributes (randomly generated)
 
         This class can be customized either by defining the number of users/items
@@ -90,11 +90,11 @@ class ContentFiltering(BaseRecommender):
         specified.
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (1200, 2341) # <-- 1200 users, 2341 attributes
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000, num_attributes=2000)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (1200, 2000) # <-- 1200 users, 2000 attributes
 
         Or by generating representations for items and/or users. In the example
@@ -105,25 +105,25 @@ class ContentFiltering(BaseRecommender):
         # Users are represented by a power law distribution. This representation also uses 100 attributes.
         >>> user_representation = Distribution(distr_type='powerlaw').compute(a=1.16, size=(30, 100)).compute()
         >>> cf = ContentFiltering(item_representation=item_representation, user_representation=user_representation)
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (100, 200)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (30, 100)
 
         Note that user and item representations have the precedence over the 
         number of users/items/attributes specified at initialization. For example:
 
         >>> cf = ContentFiltering(num_users=50, user_representation=user_representation)
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (30, 100) # <-- 30 users, 100 attributes. num_users was ignored because user_representation was specified.
 
         The same happens with the number of items and the number of attributes.
         In the latter case, the explicit number of attributes is ignored:
 
         >>> cf = ContentFiltering(num_attributes=1400, item_representation=item_representation)
-        >>> cf.item_attributes.shape
+        >>> cf.items.shape
         (100, 200) # <-- 100 attributes, 200 items. num_attributes was ignored.
-        >>> cf.user_profiles.shape
+        >>> cf.users_hat.shape
         (100, 100) # <-- 100 users (default), 100 attributes (as implicitly specified by item_representation)
 
     """
@@ -135,11 +135,13 @@ class ContentFiltering(BaseRecommender):
         num_attributes=1000,
         item_representation=None,
         user_representation=None,
-        actual_user_representation=None,
+        actual_user_scores=None,
+        actual_item_representation=None,
         probabilistic_recommendations=False,
         seed=None,
         verbose=False,
         num_items_per_iter=10,
+        **kwargs
     ):
 
         # Give precedence to item_representation, otherwise build random one
@@ -159,20 +161,25 @@ class ContentFiltering(BaseRecommender):
             raise ValueError("user_representation is not valid")
         if not is_valid_or_none(num_attributes, int):
             raise TypeError("num_attributes must be an int")
-        # if user_representation and actual_user_representation are both
-        # passed in, they must have matching dimensions
-        if user_representation is not None and actual_user_representation is not None:
-            users_object = isinstance(actual_user_representation, Users)
-            actual_user_matrix = (
-                actual_user_representation.actual_user_profiles
-                if users_object
-                else actual_user_representation
+        # if user_representation and actual_user_scores are both
+        # passed in, they must have matching dimensions on the first axis.
+        if user_representation is not None and actual_user_scores is not None:
+            actual_users = (
+                get_first_valid(
+                    getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],
+                    getattr(actual_user_scores.actual_user_profiles, "shape", [None])[
+                        0
+                    ],
+                )
+                if isinstance(actual_user_scores, Users)
+                else actual_user_scores.shape[0]
             )
-            if not array_dimensions_match(user_representation, actual_user_matrix):
+            # number of users should match up, so rows should be identical
+            if user_representation.shape[0] != actual_users:
                 raise ValueError(
                     (
                         "Dimensions of user_representation and "
-                        "actual_user_representation do not align."
+                        "actual_user_scores do not align."
                     )
                 )
 
@@ -181,19 +188,13 @@ class ContentFiltering(BaseRecommender):
         )
         attribute_values = [
             getattr(item_representation, "shape", [None])[0],
-            getattr(actual_user_representation, "shape", [None, None])[1],
-            getattr(
-                getattr(actual_user_representation, "actual_user_profiles", None),
-                "shape",
-                [None, None],
-            )[1],
             getattr(user_representation, "shape", [None, None])[1],
             num_attributes,
         ]
         num_attributes = get_first_valid(*attribute_values)
 
         num_users = get_first_valid(
-            getattr(actual_user_representation, "shape", [None])[0],
+            getattr(actual_user_scores, "shape", [None])[0],
             getattr(user_representation, "shape", [None])[0],
             num_users,
         )
@@ -204,6 +205,11 @@ class ContentFiltering(BaseRecommender):
             item_representation = Generator(seed=seed).binomial(
                 n=1, p=0.5, size=(num_attributes, num_items)
             )
+        # if the actual item representation is not specified, we assume
+        # that the recommender system's beliefs about the item attributes
+        # are the same as the "true" item attributes
+        if actual_item_representation is None:
+            actual_item_representation = np.copy(item_representation)
 
         if not is_equal_dim_or_none(
             getattr(user_representation, "shape", [None, None])[1],
@@ -235,7 +241,8 @@ class ContentFiltering(BaseRecommender):
             self,
             user_representation,
             item_representation,
-            actual_user_representation,
+            actual_user_scores,
+            actual_item_representation,
             num_users,
             num_items,
             num_items_per_iter,
@@ -243,6 +250,7 @@ class ContentFiltering(BaseRecommender):
             measurements=measurements,
             verbose=verbose,
             seed=seed,
+            **kwargs
         )
 
     def _update_user_profiles(self, interactions):
@@ -264,6 +272,6 @@ class ContentFiltering(BaseRecommender):
 
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.actual_users._user_vector, interactions] = 1
-        user_attributes = np.dot(interactions_per_user, self.item_attributes.T)
-        self.user_profiles[:, :] = np.add(self.user_profiles, user_attributes)
+        interactions_per_user[self.users._user_vector, interactions] = 1
+        user_attributes = np.dot(interactions_per_user, self.items_hat.T)
+        self.users_hat[:, :] = np.add(self.users_hat, user_attributes)

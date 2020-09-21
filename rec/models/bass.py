@@ -46,10 +46,12 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         user_representation=None,
         infection_thresholds=None,
         actual_user_scores=None,
+        actual_item_representation=None,
         probabilistic_recommendations=False,
         verbose=False,
         num_items_per_iter=1,
         seed=None,
+        **kwargs
     ):
         # these are not allowed to be None at the same time
         if all_none(user_representation, num_users, infection_state):
@@ -87,6 +89,11 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         generator = Generator(seed)
         if item_representation is None:
             item_representation = generator.uniform(size=(1, num_items))
+        # if the actual item representation is not specified, we assume
+        # that the recommender system's beliefs about the item attributes
+        # are the same as the "true" item attributes
+        if actual_item_representation is None:
+            actual_item_representation = np.copy(item_representation)
         if user_representation is None:
             import networkx as nx
 
@@ -139,6 +146,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             user_representation,
             item_representation,
             actual_user_scores,
+            actual_item_representation,
             num_users,
             num_items,
             num_items_per_iter,
@@ -147,6 +155,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             system_state=system_state,
             verbose=verbose,
             seed=seed,
+            **kwargs
         )
 
     def _update_user_profiles(self, interactions):
@@ -164,7 +173,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
         """
         infection_probabilities = self.predicted_scores[
-            self.actual_users._user_vector, interactions
+            self.users._user_vector, interactions
         ]
         newly_infected = np.where(infection_probabilities > self.infection_thresholds)
         if newly_infected[0].shape[0] > 0:
@@ -183,8 +192,10 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 representation of items.
         """
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
+        if user_profiles is None:
+            user_profiles = self.users_hat
         dot_product = np.dot(
-            user_profiles, self.infection_state * np.log(1 - self.item_attributes)
+            user_profiles, self.infection_state * np.log(1 - self.items_hat)
         )
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)

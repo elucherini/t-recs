@@ -8,6 +8,7 @@ from rec.metrics import (
     DiffusionTreeMeasurement,
     StructuralVirality,
     InteractionMeasurement,
+    JaccardSimilarity,
 )
 import pytest
 
@@ -79,9 +80,9 @@ class TestMeasurementModule:
 
         s = SocialFiltering()
         state_mappings = {
-            "predicted_user_profiles": s.user_profiles,
-            "actual_user_scores": s.actual_users.actual_user_scores,
-            "items": s.item_attributes,
+            "predicted_user_profiles": s.users_hat,
+            "actual_user_scores": s.users.actual_user_scores,
+            "items": s.items_hat,
             "predicted_user_scores": s.predicted_scores,
         }
 
@@ -110,6 +111,20 @@ class TestHomogeneityMeasurement:
         )
         MeasurementUtils.test_generic_metric(
             ContentFiltering(), HomogeneityMeasurement(), timesteps
+        )
+
+
+class TestJaccardSimilarity:
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        # default # of users is 100
+        pairs = [np.random.choice(100, 2, replace=False) for i in range(50)]
+        MeasurementUtils.test_generic_metric(
+            SocialFiltering(), JaccardSimilarity(pairs), timesteps
+        )
+        MeasurementUtils.test_generic_metric(
+            ContentFiltering(), JaccardSimilarity(pairs), timesteps
         )
 
 

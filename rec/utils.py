@@ -114,12 +114,15 @@ def is_array_valid_or_none(array, ndim=2):
     return True
 
 
-def array_dimensions_match(array1, array2):
+def array_dimensions_match(array1, array2, axis=None):
     """ Assuming that both arrays are defined,
         we test whether they have matching dimensions.
     """
     array1, array2 = np.asarray(array1), np.asarray(array2)
-    return array1.shape == array2.shape
+    if axis is None:
+        return array1.shape == array2.shape
+    else:
+        return array1.shape[axis] == array2.shape[axis]
 
 
 def is_valid_or_none(value, type):
