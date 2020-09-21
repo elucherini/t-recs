@@ -163,8 +163,6 @@ class ContentFiltering(BaseRecommender):
             raise TypeError("num_attributes must be an int")
         # if user_representation and actual_user_scores are both
         # passed in, they must have matching dimensions on the first axis.
-        # TODO: think about passing in actual user representation that is just scores
-        # versus user representation that is just attributes
         if user_representation is not None and actual_user_scores is not None:
             actual_users = get_first_valid(
                 getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],

@@ -81,18 +81,18 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         >>> sf = SocialFiltering()
         >>> sf.users_hat.shape
         (100, 100)   # <-- 100 users (default)
-        >>> sf.items_hat.shape
+        >>> sf.items.shape
         (100, 1250) # <-- 100 users (default), 1250 items (default)
 
         This class can be customized either by defining the number of users
         and/or items in the system:
 
         >>> sf = SocialFiltering(num_users=1200, num_items=5000)
-        >>> sf.items_hat.shape
+        >>> sf.items.shape
         (1200, 5000) # <-- 1200 users, 5000 items
 
         >>> sf = ContentFiltering(num_users=50)
-        >>> sf.items_hat.shape
+        >>> sf.items.shape
         (50, 1250) # <-- 50 users, 1250 items (default)
 
         Or by generating representations for items and/or users. In the example
@@ -102,7 +102,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         >>> item_representation = np.random.randint(2, size=(100, 200))
         # Social networks are drawn from a binomial distribution. This representation also uses 100 users.
         >>> sf = SocialFiltering(item_representation=item_representation)
-        >>> sf.items_hat.shape
+        >>> sf.items.shape
         (100, 200)
         >>> sf.users_hat.shape
         (100, 100)
@@ -111,13 +111,13 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         number of users/items specified at initialization. For example:
 
         >>> sf = SocialFiltering(num_users=50, user_representation=user_representation)
-        >>> sf.items_hat.shape
+        >>> sf.items.shape
         (100, 200) # <-- 100 users, 200 items. num_users was ignored because user_representation was specified.
 
         The same is true about the number of items or users and item representations.
 
         >>> sf = SocialFiltering(num_users=1400, item_representation=item_representation)
-        >>> sf.items_hat.shape
+        >>> sf.items.shape
         (100, 200) # <-- 100 attributes, 200 items. num_users was ignored.
         >>> cf.user_profile.shape
         (100, 100) # <-- 100 users (as implicitly specified by item_representation)

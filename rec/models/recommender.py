@@ -254,10 +254,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         ):
             raise TypeError("items must be array_like or Items")
         if items is None:
-            # TODO: this doesn't work yet - punting while we wait on Elena's
-            # changes for a fix
             raise ValueError("true item attributes can't be None")
         if isinstance(items, (list, np.ndarray)):
+            # will need to change this when Items no longer inherits from
+            # ndarray
             self.items = Items(items)
         if isinstance(items, Items):
             self.items = items
