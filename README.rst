@@ -9,6 +9,16 @@ This simulator supports Python 3.7+ and it has not been tested with older versio
 
 .. _instructions for installing a scientific Python distribution: https://scipy.org/install.html
 
+If you do not have Python 3.7+ installed, you can create a new environment with Python 3.7 by running the following command in terminal:
+
+..  code-block:: bash
+
+    conda create --name py37 python=3.7
+
+To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow `the instructions from this blog post`_.
+
+    .. _the instructions from this blog post: https://medium.com/@nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084
+
 Currently, the simulator has only been tested extensively on MacOS 10.15.
 
 To install the simulator, you will need the Python package manager, pip. After activating your virtual environment, run the following commands in a terminal:
@@ -50,7 +60,7 @@ Example usage
   recsys = rec.models.ContentFiltering()
   recsys.run(timesteps=10)
   measurements = recsys.get_measurements()
-  
+
 Documentation
 --------------
 
@@ -58,5 +68,3 @@ A first draft of the documentation is available `here`_. In its current version,
 
 .. _here: https://elucherini.github.io/algo-segregation/index.html
 .. _examples: examples/
-
-
