@@ -6,7 +6,7 @@ from rec.random import SocialGraphGenerator
 from rec.utils import (
     get_first_valid,
     is_array_valid_or_none,
-    is_equal_dim_or_none,
+    all_besides_none_equal,
     all_none,
     is_valid_or_none,
 )
@@ -172,13 +172,13 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         # are the same as the "true" item attributes
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(user_representation, "shape", [None])[0],
             getattr(user_representation, "shape", [None, None])[1],
             num_users,
         ):
             raise ValueError("user_representation must be a square matrix")
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(user_representation, "shape", [None, None])[1],
             getattr(item_representation, "shape", [None])[0],
             num_users,
@@ -187,7 +187,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 "user_representation.shape[1] should be the same as "
                 + "item_representation.shape[0]"
             )
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(item_representation, "shape", [None, None])[1], num_items
         ):
             raise ValueError("item_representation.shape[1] should be the same as " + "num_items")

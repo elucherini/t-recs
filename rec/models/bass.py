@@ -6,7 +6,7 @@ from rec.metrics import StructuralVirality
 from rec.utils import (
     get_first_valid,
     is_array_valid_or_none,
-    is_equal_dim_or_none,
+    all_besides_none_equal,
     all_none,
     is_valid_or_none,
 )
@@ -105,19 +105,19 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             infection_state[infected_users, infectious_items] = 1
         self.infection_state = infection_state
 
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(user_representation, "shape", [None])[0],
             getattr(user_representation, "shape", [None, None])[1],
         ):
             raise ValueError("user_representation should be a square matrix")
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(user_representation, "shape", [None])[0],
             getattr(infection_state, "shape", [None])[0],
         ):
             raise ValueError(
                 "user_representation and infection_state should be of " + "same size on dimension 0"
             )
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(item_representation, "shape", [None, None])[1],
             getattr(infection_state, "shape", [None, None])[1],
         ):

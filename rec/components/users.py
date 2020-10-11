@@ -315,7 +315,7 @@ class Users(BaseComponent):
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized
-        self.actual_user_profiles = slerp(self.actual_user_profiles, item_attributes, t=self.drift)
+        self.actual_user_profiles = slerp(self.actual_user_profiles, item_attributes, perc=self.drift)
 
     def store_state(self):
         self.state_history.append(np.copy(self.actual_user_scores))

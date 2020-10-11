@@ -4,7 +4,7 @@ from rec.metrics import MSEMeasurement
 from rec.utils import (
     get_first_valid,
     is_array_valid_or_none,
-    is_equal_dim_or_none,
+    all_besides_none_equal,
     all_none,
     is_valid_or_none,
 )
@@ -147,7 +147,7 @@ class PopularityRecommender(BaseRecommender):
         if user_representation is None:
             user_representation = np.ones((num_users, 1), dtype=int)
 
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(user_representation, "shape", [None, None])[1],
             getattr(item_representation, "shape", [None])[0],
         ):
@@ -155,9 +155,9 @@ class PopularityRecommender(BaseRecommender):
                 "user_representation.shape[1] should be the same as "
                 + "item_representation.shape[0]"
             )
-        if not is_equal_dim_or_none(getattr(user_representation, "shape", [None])[0], num_users):
+        if not all_besides_none_equal(getattr(user_representation, "shape", [None])[0], num_users):
             raise ValueError("user_representation.shape[0] should be the same as " + "num_users")
-        if not is_equal_dim_or_none(
+        if not all_besides_none_equal(
             getattr(item_representation, "shape", [None, None])[1], num_items
         ):
             raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
