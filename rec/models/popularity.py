@@ -135,9 +135,7 @@ class PopularityRecommender(BaseRecommender):
             getattr(item_representation, "shape", [None, None])[1], num_items
         )
 
-        num_users = get_first_valid(
-            getattr(user_representation, "shape", [None])[0], num_users
-        )
+        num_users = get_first_valid(getattr(user_representation, "shape", [None])[0], num_users)
 
         if item_representation is None:
             item_representation = np.zeros((1, num_items), dtype=int)
@@ -157,18 +155,12 @@ class PopularityRecommender(BaseRecommender):
                 "user_representation.shape[1] should be the same as "
                 + "item_representation.shape[0]"
             )
-        if not is_equal_dim_or_none(
-            getattr(user_representation, "shape", [None])[0], num_users
-        ):
-            raise ValueError(
-                "user_representation.shape[0] should be the same as " + "num_users"
-            )
+        if not is_equal_dim_or_none(getattr(user_representation, "shape", [None])[0], num_users):
+            raise ValueError("user_representation.shape[0] should be the same as " + "num_users")
         if not is_equal_dim_or_none(
             getattr(item_representation, "shape", [None, None])[1], num_items
         ):
-            raise ValueError(
-                "item_representation.shape[1] should be the same as " + "num_items"
-            )
+            raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
 
         measurements = [MSEMeasurement()]
 

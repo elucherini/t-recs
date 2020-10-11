@@ -25,11 +25,7 @@ class InfectionThresholds(Component):
     def __init__(self, infection_thresholds=None, verbose=False):
         self.name = "infection_thresholds"
         Component.__init__(
-            self,
-            current_state=infection_thresholds,
-            size=None,
-            verbose=verbose,
-            seed=None,
+            self, current_state=infection_thresholds, size=None, verbose=verbose, seed=None,
         )
 
 
@@ -119,16 +115,14 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             getattr(infection_state, "shape", [None])[0],
         ):
             raise ValueError(
-                "user_representation and infection_state should be of "
-                + "same size on dimension 0"
+                "user_representation and infection_state should be of " + "same size on dimension 0"
             )
         if not is_equal_dim_or_none(
             getattr(item_representation, "shape", [None, None])[1],
             getattr(infection_state, "shape", [None, None])[1],
         ):
             raise ValueError(
-                "item_representation and infection_state should be of "
-                + "same size on dimension 1"
+                "item_representation and infection_state should be of " + "same size on dimension 1"
             )
 
         if infection_thresholds is None:
@@ -172,9 +166,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
 
         """
-        infection_probabilities = self.predicted_scores[
-            self.users._user_vector, interactions
-        ]
+        infection_probabilities = self.predicted_scores[self.users._user_vector, interactions]
         newly_infected = np.where(infection_probabilities > self.infection_thresholds)
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
@@ -194,16 +186,12 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         if user_profiles is None:
             user_profiles = self.users_hat
-        dot_product = np.dot(
-            user_profiles, self.infection_state * np.log(1 - self.items_hat)
-        )
+        dot_product = np.dot(user_profiles, self.infection_state * np.log(1 - self.items_hat))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
         return predicted_scores
 
-    def run(
-        self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True
-    ):
+    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
         """ Overrides run method of parent class :class:`Recommender`, so that repeated_items defaults to True in Bass models.
 
             Args:

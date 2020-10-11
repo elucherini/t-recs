@@ -39,9 +39,7 @@ class TestUsers:
 
         # user_repr != actual_user_repr
         user_repr = np.random.randint(15, size=(users, attr))
-        model = ContentFiltering(
-            user_representation=user_repr, item_representation=item_repr
-        )
+        model = ContentFiltering(user_representation=user_repr, item_representation=item_repr)
         assert model.users_hat.shape == actual_user_repr.shape
         s = Users(actual_user_repr)
         s.set_score_function(model.score)
@@ -56,9 +54,7 @@ class TestUsers:
             seed = np.random.randint(1000)
         users1 = Users(size=(users, attr), seed=seed)
         users2 = Users(size=(users, attr), seed=seed)
-        test_helpers.assert_equal_arrays(
-            users1.actual_user_profiles, users2.actual_user_profiles
-        )
+        test_helpers.assert_equal_arrays(users1.actual_user_profiles, users2.actual_user_profiles)
         # no seeding
         users3 = Users(size=(users, attr))
         users4 = Users(size=(users, attr))

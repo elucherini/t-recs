@@ -55,29 +55,19 @@ class TestPopularityRecommender:
 
         c = PopularityRecommender(item_representation=item_repr)
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], c, c.users_hat.shape[0]
-        )
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
         test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, c.users_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
-        c = PopularityRecommender(
-            user_representation=user_repr, item_representation=item_repr
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], c, c.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], c, c.items_hat.shape[1]
-        )
+        c = PopularityRecommender(user_representation=user_repr, item_representation=item_repr)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, c.users_hat)
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
@@ -94,14 +84,10 @@ class TestPopularityRecommender:
 
         if bad_user_repr is None or bad_user_repr.shape[1] == item_repr.shape[0]:
             # |A| shouldn't match item_repr.shape[0]
-            bad_user_repr = np.random.randint(
-                10, size=(user_repr.shape[0], user_repr.shape[1] + 2)
-            )
+            bad_user_repr = np.random.randint(10, size=(user_repr.shape[0], user_repr.shape[1] + 2))
         if bad_item_repr is None or bad_item_repr.shape[0] == user_repr.shape[1]:
             # |A| shouldn't match user_repr.shape[1]
-            bad_item_repr = np.random.random(
-                size=(item_repr.shape[0] + 1, item_repr.shape[1])
-            )
+            bad_item_repr = np.random.random(size=(item_repr.shape[0] + 1, item_repr.shape[1]))
 
         with pytest.raises(ValueError):
             c = PopularityRecommender(

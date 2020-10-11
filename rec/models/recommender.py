@@ -85,9 +85,7 @@ class SystemStateModule(BaseObserver):
                 :class:`~components.base_components.BaseComponent`
         """
         self.register_observables(
-            observer=self._system_state,
-            observables=list(args),
-            observable_type=BaseComponent,
+            observer=self._system_state, observables=list(args), observable_type=BaseComponent,
         )
 
 
@@ -234,9 +232,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if not utils.is_valid_or_none(users, (list, np.ndarray, Users)):
             raise TypeError("users must be array_like or Users")
         if users is None:
-            self.users = Users(
-                size=self.users_hat.shape, num_users=num_users, seed=seed
-            )
+            self.users = Users(size=self.users_hat.shape, num_users=num_users, seed=seed)
         if isinstance(users, (list, np.ndarray)):
             # assume that's what passed in is the user's true scores on
             # the items
@@ -390,21 +386,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # from low to high scores
         permutation = s_filtered.argsort()
         rec = indices_prime[row, permutation]
-        self.log(
-            "Items ordered by preference (low to high) for each user:\n" + str(rec)
-        )
+        self.log("Items ordered by preference (low to high) for each user:\n" + str(rec))
         if self.probabilistic_recommendations:
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
             # such that higher-preference items get more probability mass
             num_items_unseen = rec.shape[1]  # number of items unseen per user
-            probabilities = np.logspace(
-                0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2
-            )
+            probabilities = np.logspace(0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2)
             probabilities = probabilities / probabilities.sum()
-            picks = np.random.choice(
-                num_items_unseen, k, replace=False, p=probabilities
-            )
+            picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
             return rec[:, picks]
         else:
             return rec[:, -k:]
@@ -434,8 +424,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         if num_recommended == 0 and num_new_items == 0:
             raise ValueError(
-                "Not allowed for there to be 0 new items presented and 0"
-                + " recommended items."
+                "Not allowed for there to be 0 new items presented and 0" + " recommended items."
             )
 
         if num_recommended > 0:
@@ -466,9 +455,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             col = self.random_state.integers(
                 indices_prime.shape[1], size=(self.num_users, num_new_items)
             )
-            row = np.repeat(self.users._user_vector, num_new_items).reshape(
-                (self.num_users, -1)
-            )
+            row = np.repeat(self.users._user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = indices_prime[row, col]
             self.log(
                 "System picked these items (cols) randomly for each user "
@@ -494,9 +481,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         """
         pass
 
-    def run(
-        self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True
-    ):
+    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
         """
         Runs simulation for the given timesteps.
 
@@ -519,9 +504,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 users can interact with the same item more than once.
         """
         if not startup:
-            self.log(
-                "Run -- interleave recommendations and random items " + "from now on"
-            )
+            self.log("Run -- interleave recommendations and random items " + "from now on")
         for t in tqdm(range(timesteps)):
             self.log("Step %d" % t)
             item_idxs = self.recommend(startup=startup)
@@ -533,8 +516,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.indices[self.users._user_vector, interactions] = -1
             self._update_user_profiles(interactions)
             self.log(
-                "System updates user profiles based on last interaction:\n"
-                + str(self.users_hat)
+                "System updates user profiles based on last interaction:\n" + str(self.users_hat)
             )
             # train between steps:
             if train_between_steps:
@@ -651,8 +633,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             step (int): step on which the recorded interactions refers to.
         """
         for metric in self.metrics:
-            metric.measure(
-                self, step=step, interactions=interactions, items_shown=items_shown
-            )
+            metric.measure(self, step=step, interactions=interactions, items_shown=items_shown)
         for component in self._system_state:
             component.store_state()

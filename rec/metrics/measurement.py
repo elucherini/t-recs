@@ -277,9 +277,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
         histogram[::-1].sort()
         if self._old_histogram is None:
             self._old_histogram = np.zeros(recommender.num_items)
-        self.observe(
-            np.trapz(self._old_histogram, dx=1) - np.trapz(histogram, dx=1), copy=False
-        )
+        self.observe(np.trapz(self._old_histogram, dx=1) - np.trapz(histogram, dx=1), copy=False)
         self._old_histogram = np.copy(histogram)
         self.histogram = histogram
 
@@ -382,9 +380,7 @@ class DiffusionTreeMeasurement(Measurement):
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, np.copy(infection_state))
         self._old_infection_state = np.copy(infection_state)
-        Measurement.__init__(
-            self, verbose, init_value=self.diffusion_tree.number_of_nodes()
-        )
+        Measurement.__init__(self, verbose, init_value=self.diffusion_tree.number_of_nodes())
 
     def _find_parents(self, user_profiles, new_infected_users):
         if (self._old_infection_state == 0).all():

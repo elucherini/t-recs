@@ -78,8 +78,6 @@ class TestSocialGraphGenerator:
 
         ws = nx.watts_strogatz_graph
         k = m
-        graph = SocialGraphGenerator.generate_random_graph(
-            graph_type=ws, n=n, k=k, p=0.5
-        )
+        graph = SocialGraphGenerator.generate_random_graph(graph_type=ws, n=n, k=k, p=0.5)
         assert isinstance(graph, np.ndarray)
         assert graph.shape == (n, n)

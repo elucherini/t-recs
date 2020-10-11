@@ -24,9 +24,7 @@ class FromNdArray(np.ndarray, VerboseMode):
 class BaseObserver(ABC):
     """Observer mixin for the observer design pattern."""
 
-    def register_observables(
-        self, observables=None, observer=None, observable_type=None
-    ):
+    def register_observables(self, observables=None, observer=None, observable_type=None):
         if observer is None:
             raise ValueError("Argument `observer` cannot be None")
         elif not isinstance(observer, list):
@@ -149,10 +147,7 @@ if __name__ == "__main__":
 
         def run(self, to_add=1):
             self.user_profiles += to_add
-            print(
-                "Adding %d to user profiles. Result:\n%s\n\n"
-                % (to_add, self.user_profiles)
-            )
+            print("Adding %d to user profiles. Result:\n%s\n\n" % (to_add, self.user_profiles))
             self.measure_content()
 
         def measure_content(self):

@@ -167,9 +167,7 @@ class ContentFiltering(BaseRecommender):
             actual_users = (
                 get_first_valid(
                     getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],
-                    getattr(actual_user_scores.actual_user_profiles, "shape", [None])[
-                        0
-                    ],
+                    getattr(actual_user_scores.actual_user_profiles, "shape", [None])[0],
                 )
                 if isinstance(actual_user_scores, Users)
                 else actual_user_scores.shape[0]
@@ -177,10 +175,7 @@ class ContentFiltering(BaseRecommender):
             # number of users should match up, so rows should be identical
             if user_representation.shape[0] != actual_users:
                 raise ValueError(
-                    (
-                        "Dimensions of user_representation and "
-                        "actual_user_scores do not align."
-                    )
+                    ("Dimensions of user_representation and " "actual_user_scores do not align.")
                 )
 
         num_items = get_first_valid(
@@ -220,18 +215,12 @@ class ContentFiltering(BaseRecommender):
                 "user_representation.shape[1] should be the same as "
                 + "item_representation.shape[0]"
             )
-        if not is_equal_dim_or_none(
-            getattr(user_representation, "shape", [None])[0], num_users
-        ):
-            raise ValueError(
-                "user_representation.shape[0] should be the same as " + "num_users"
-            )
+        if not is_equal_dim_or_none(getattr(user_representation, "shape", [None])[0], num_users):
+            raise ValueError("user_representation.shape[0] should be the same as " + "num_users")
         if not is_equal_dim_or_none(
             getattr(item_representation, "shape", [None, None])[1], num_items
         ):
-            raise ValueError(
-                "item_representation.shape[1] should be the same as " + "num_items"
-            )
+            raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
 
         self.num_attributes = num_attributes
         measurements = [MSEMeasurement()]

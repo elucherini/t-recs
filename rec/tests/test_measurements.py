@@ -106,9 +106,7 @@ class TestHomogeneityMeasurement:
     def test_generic(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
-        MeasurementUtils.test_generic_metric(
-            SocialFiltering(), HomogeneityMeasurement(), timesteps
-        )
+        MeasurementUtils.test_generic_metric(SocialFiltering(), HomogeneityMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(
             ContentFiltering(), HomogeneityMeasurement(), timesteps
         )
@@ -120,9 +118,7 @@ class TestJaccardSimilarity:
             timesteps = np.random.randint(2, 100)
         # default # of users is 100
         pairs = [np.random.choice(100, 2, replace=False) for i in range(50)]
-        MeasurementUtils.test_generic_metric(
-            SocialFiltering(), JaccardSimilarity(pairs), timesteps
-        )
+        MeasurementUtils.test_generic_metric(SocialFiltering(), JaccardSimilarity(pairs), timesteps)
         MeasurementUtils.test_generic_metric(
             ContentFiltering(), JaccardSimilarity(pairs), timesteps
         )
@@ -132,21 +128,15 @@ class TestMSEMeasurement:
     def test_generic(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
-        MeasurementUtils.test_generic_metric(
-            SocialFiltering(), MSEMeasurement(), timesteps
-        )
-        MeasurementUtils.test_generic_metric(
-            ContentFiltering(), MSEMeasurement(), timesteps
-        )
+        MeasurementUtils.test_generic_metric(SocialFiltering(), MSEMeasurement(), timesteps)
+        MeasurementUtils.test_generic_metric(ContentFiltering(), MSEMeasurement(), timesteps)
 
 
 class TestInteractionMeasurement:
     def test_generic(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
-        MeasurementUtils.test_generic_metric(
-            SocialFiltering(), InteractionMeasurement(), timesteps
-        )
+        MeasurementUtils.test_generic_metric(SocialFiltering(), InteractionMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(
             ContentFiltering(), InteractionMeasurement(), timesteps
         )
@@ -183,6 +173,4 @@ class TestStructuralVirality:
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
         b = BassModel()
-        MeasurementUtils.test_generic_metric(
-            b, StructuralVirality(b.infection_state), timesteps
-        )
+        MeasurementUtils.test_generic_metric(b, StructuralVirality(b.infection_state), timesteps)

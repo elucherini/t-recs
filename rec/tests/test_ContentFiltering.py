@@ -36,12 +36,8 @@ class TestContentFiltering:
         c = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
         test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
         test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.items_hat.shape[0]
-        )
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.users_hat.shape[1]
-        )
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.items_hat.shape[0])
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.users_hat.shape[1])
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -96,12 +92,8 @@ class TestContentFiltering:
         c = ContentFiltering(num_attributes=attr)
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
         test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.items_hat.shape[0]
-        )
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.users_hat.shape[1]
-        )
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.items_hat.shape[0])
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.users_hat.shape[1])
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -130,12 +122,8 @@ class TestContentFiltering:
         c = ContentFiltering(num_users=users, num_attributes=attr)
         test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
         test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.items_hat.shape[0]
-        )
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.users_hat.shape[1]
-        )
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.items_hat.shape[0])
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.users_hat.shape[1])
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -147,12 +135,8 @@ class TestContentFiltering:
         c = ContentFiltering(num_attributes=attr, num_items=items)
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
         test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.items_hat.shape[0]
-        )
-        test_helpers.assert_correct_size_generic(
-            attr, c.num_attributes, c.users_hat.shape[1]
-        )
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.items_hat.shape[0])
+        test_helpers.assert_correct_size_generic(attr, c.num_attributes, c.users_hat.shape[1])
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -172,9 +156,7 @@ class TestContentFiltering:
 
         c = ContentFiltering(item_representation=item_repr)
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], c, c.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             item_repr.shape[0], c.num_attributes, c.items_hat.shape[0]
         )
@@ -185,9 +167,7 @@ class TestContentFiltering:
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = ContentFiltering(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], c, c.users_hat.shape[0]
-        )
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
         test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             user_repr.shape[1], c.num_attributes, c.items_hat.shape[0]
@@ -206,15 +186,9 @@ class TestContentFiltering:
             # also check attributes for users
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
-        c = ContentFiltering(
-            user_representation=user_repr, item_representation=item_repr
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], c, c.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], c, c.items_hat.shape[1]
-        )
+        c = ContentFiltering(user_representation=user_repr, item_representation=item_repr)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
         test_helpers.assert_correct_size_generic(
             user_repr.shape[1], c.num_attributes, c.items_hat.shape[0]
         )
@@ -244,23 +218,15 @@ class TestContentFiltering:
 
         if bad_user_repr is None or bad_user_repr.shape[1] == item_repr.shape[0]:
             # |A| shouldn't match item_repr.shape[0]
-            bad_user_repr = np.random.randint(
-                10, size=(user_repr.shape[0], user_repr.shape[1] + 2)
-            )
+            bad_user_repr = np.random.randint(10, size=(user_repr.shape[0], user_repr.shape[1] + 2))
         if bad_item_repr is None or bad_item_repr.shape[0] == user_repr.shape[1]:
             # |A| shouldn't match user_repr.shape[1]
-            bad_item_repr = np.random.random(
-                size=(item_repr.shape[0] + 1, item_repr.shape[1])
-            )
+            bad_item_repr = np.random.random(size=(item_repr.shape[0] + 1, item_repr.shape[1]))
 
         with pytest.raises(ValueError):
-            c = ContentFiltering(
-                user_representation=bad_user_repr, item_representation=item_repr
-            )
+            c = ContentFiltering(user_representation=bad_user_repr, item_representation=item_repr)
         with pytest.raises(ValueError):
-            c = ContentFiltering(
-                user_representation=user_repr, item_representation=bad_item_repr
-            )
+            c = ContentFiltering(user_representation=user_repr, item_representation=bad_item_repr)
         with pytest.raises(ValueError):
             # actual user prefs and system's representation of user's prefs
             # must be the same dimension

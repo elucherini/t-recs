@@ -66,11 +66,7 @@ class TestSocialFiltering:
     def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
             items = np.random.randint(20, 1000)
-            users = (
-                user_repr.shape[0]
-                if user_repr is not None
-                else np.random.randint(20, 100)
-            )
+            users = user_repr.shape[0] if user_repr is not None else np.random.randint(20, 100)
             item_repr = np.random.random(size=(users, items))
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
             users = item_repr.shape[0]
@@ -79,9 +75,7 @@ class TestSocialFiltering:
         s = SocialFiltering(item_representation=item_repr)
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
@@ -93,41 +87,21 @@ class TestSocialFiltering:
 
         # test user representation
         s = SocialFiltering(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[1]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
         test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test item and user representations
-        s = SocialFiltering(
-            user_representation=user_repr, item_representation=item_repr
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[1]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[1]
-        )
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], s, s.items_hat.shape[1]
-        )
+        s = SocialFiltering(user_representation=user_repr, item_representation=item_repr)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)

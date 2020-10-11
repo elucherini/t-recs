@@ -79,8 +79,7 @@ def slerp(mat1, mat2, t=0.05):
         )
     so = np.sin(omega)
     unit_rot = (
-        np.sin((1.0 - t) * omega) / so * mat1_norm.T
-        + np.sin(t * omega) / so * mat2_norm.T
+        np.sin((1.0 - t) * omega) / so * mat1_norm.T + np.sin(t * omega) / so * mat2_norm.T
     ).T
     return unit_rot * mat1_length
 

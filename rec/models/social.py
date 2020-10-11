@@ -190,9 +190,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         if not is_equal_dim_or_none(
             getattr(item_representation, "shape", [None, None])[1], num_items
         ):
-            raise ValueError(
-                "item_representation.shape[1] should be the same as " + "num_items"
-            )
+            raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
 
         measurements = [MSEMeasurement()]
         # Initialize recommender system

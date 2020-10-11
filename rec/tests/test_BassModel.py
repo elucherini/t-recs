@@ -71,47 +71,27 @@ class TestBassModel:
         s = BassModel(item_representation=item_repr)
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
         test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test user representation
         s = BassModel(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[1]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
         test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test item and user representations
         s = BassModel(user_representation=user_repr, item_representation=item_repr)
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[0], s, s.users_hat.shape[1]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[0]
-        )
-        test_helpers.assert_correct_num_users(
-            user_repr.shape[1], s, s.users_hat.shape[1]
-        )
-        test_helpers.assert_correct_num_items(
-            item_repr.shape[1], s, s.items_hat.shape[1]
-        )
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
