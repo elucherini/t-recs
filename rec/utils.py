@@ -1,12 +1,7 @@
+"""Various utility functions, mainly for matrices and input validation"""
+import logging
+from abc import ABC
 import numpy as np
-
-
-"""
-'' Normalize matrix
-'' @matrix: matrix to normalize
-'' @axis: 1 -> rows, 0 -> columns
-"""
-
 
 def normalize_matrix(matrix, axis=1):
     """ Normalize a matrix so that each row vector has a Euclidean norm of 1.
@@ -22,17 +17,17 @@ def normalize_matrix(matrix, axis=1):
 
 
 def contains_row(matrix, row):
-    """ Check if a numpy matrix contains a row with the same values as the 
+    """ Check if a numpy matrix contains a row with the same values as the
         variable `row`.
     """
     return (matrix == row).all(axis=1).any()
 
 
-def slerp(mat1, mat2, t=0.05):
+def slerp(mat1, mat2, perc=0.05):
     """ Implements `spherical linear interpolation`_. Takes each row vector in
         mat1 and rotates it in the direction of the corresponding row vector in
-        mat2. The angle of rotation is `(t * the angle between the two row
-        vectors)`. i.e., when `t=0.05`, each row vector
+        mat2. The angle of rotation is `(perc * the angle between the two row
+        vectors)`. i.e., when `perc=0.05`, each row vector
         in mat1 is rotated with an angle equal to 5% of the total angle
         between it and the corresponding row vector in mat2. The matrix returned
         will have row vectors that each have the same norm as mat1, but pointing
@@ -46,15 +41,15 @@ def slerp(mat1, mat2, t=0.05):
             mat1: numpy.ndarray or list
                 Matrix whose row vectors will be rotated in the direction of
                 mat2's row vectors.
-            
+
             mat2: numpy.ndarray or list
                 Matrix that should have the same dimensions at mat1.
 
-            t: float
+            perc: float
                 Parameter in [0,1] inclusive that specifies the percentage
                 of rotation.
     """
-    assert t >= 0.0 and t <= 1.0
+    assert 0 <= perc <= 1.0
     assert mat1.shape == mat2.shape  # arrays should have same dimension
     if len(mat1.shape) == 1:
         # turn vector into matrix with one row
@@ -77,27 +72,20 @@ def slerp(mat1, mat2, t=0.05):
         raise ValueError(
             "Cannot perform spherical interpolation between vectors in opposite direction"
         )
-    so = np.sin(omega)
+    sin_o = np.sin(omega)
     unit_rot = (
-        np.sin((1.0 - t) * omega) / so * mat1_norm.T + np.sin(t * omega) / so * mat2_norm.T
+        np.sin((1.0 - perc) * omega) / sin_o * mat1_norm.T
+        + np.sin(perc * omega) / sin_o * mat2_norm.T
     ).T
     return unit_rot * mat1_length
 
 
-def toDataFrame(data, index=None):
-    import pandas as pd
-
-    if index is None:
-        df = pd.DataFrame(data)
-    else:
-        df = pd.DataFrame(data).set_index(index)
-    return df
-
-
-"""Common input validation functions"""
-
+# Common input validation functions
 
 def is_array_valid_or_none(array, ndim=2):
+    """ Return True if no array was passed in or if the array matches the
+        dimensions specified
+    """
     # check if array_like
     if not is_valid_or_none(array, (np.ndarray, list)):
         return False
@@ -120,13 +108,12 @@ def array_dimensions_match(array1, array2, axis=None):
     array1, array2 = np.asarray(array1), np.asarray(array2)
     if axis is None:
         return array1.shape == array2.shape
-    else:
-        return array1.shape[axis] == array2.shape[axis]
+    return array1.shape[axis] == array2.shape[axis]
 
 
-def is_valid_or_none(value, type):
-    """Returns true if either None or of the specified type"""
-    return value is None or isinstance(value, type)
+def is_valid_or_none(value, desired_type):
+    """ Returns true if either None or of the specified type"""
+    return value is None or isinstance(value, desired_type)
 
 
 def get_first_valid(*args):
@@ -140,74 +127,54 @@ def get_first_valid(*args):
     return None
 
 
-def is_equal_dim_or_none(*args):
-    for i, arg in enumerate(args):
-        if arg is None:
-            return True
-        if i + 1 < len(args) and args[i + 1] is not None and arg != args[i + 1]:
+def all_besides_none_equal(*args):
+    """ Return True if all of the (non-None) elements are equal
+    """
+    non_none = list(filter(None, args))
+    for i, arg in enumerate(non_none):
+        if i + 1 < len(non_none) and arg != args[i + 1]:
             print(arg)
             return False
     return True
 
 
-"""
-def validate_input(**kwargs):
-    rules = kwargs.pop('rules', None)
-    args = kwargs.pop('args', None)
-    if len(rules) != len(args):
-        return False
-    for index, rule in enumerate(rules):
-        if not rule(args[i]):
-            return False
-    return True
-"""
+def all_none(*args):
+    """ Return True if all arguments passed in are None. """
+    return all(a is None for a in args)
 
 
-def all_none(*arrays):
-    return all(a is None for a in arrays)
-
-
-import logging
-import sys
-import numpy as np
-from abc import ABC, abstractmethod
-
-# Abstract class for verbose mode
 class VerboseMode(ABC):
+    """ Abstract class for verbose mode
+    """
     def __init__(self, name, verbose=False):
         self._logger = DebugLogger(name, verbose)
 
-    """
-    '' Toggle verbosity
-    '' @toggle: True/False
-    """
 
     def set_verbose(self, toggle):
+        """ Toggle verbosity
+        """
         try:
             self._logger.set_verbose(toggle)
-        except TypeError as e:
-            print("set_verbose:", e)
-
-    """
-    '' Return True if verbosity is enabled,
-    '' False otherwise
-    """
+        except TypeError as err:
+            print("set_verbose:", err)
 
     def is_verbose(self):
+        """ Return True if verbosity is enabled, False otherwise
+        """
         return self._logger.is_verbose()
 
     def log(self, msg):
+        """ Log given message"""
         self._logger.log(msg)
 
 
-# Class to configure debug logging module
 class DebugLogger:
-    """
-    '' @name: name of logger
-    '' @level: level of logger (see documentation of logging module)
-    """
-
+    """ Class to configure debug logging module """
     def __init__(self, name, verbose=False):
+        """ Instantiate DebugLogger object
+            @name: name of logger
+            @level: level of logger (see documentation of logging module)
+        """
         # create logger
         self.logger = logging.getLogger(name)
         if verbose:
@@ -232,35 +199,27 @@ class DebugLogger:
         # test
         self._test_configured_logger()
 
-    """
-    '' Simple test to announce logger is enabled
-    """
 
     def _test_configured_logger(self):
+        """ Simple test to announce logger is enabled
+        """
         self.logger.debug("Debugging module inizialized")
 
-    """
-    '' Log at DEBUG level
-    '' @message: message to log
-    """
 
     def log(self, message):
+        """ Log at DEBUG level """
         self.logger.debug(message)
 
-    """
-    '' Return True if debugger is enabled
-    '' That is, if debugger can log DEBUG-level messages
-    """
 
     def is_verbose(self):
+        """ Return True if debugger is enabled; That is, if debugger can log
+            DEBUG-level messages
+        """
         return self.logger.isEnabledFor(logging.DEBUG)
 
-    """
-    '' Enable/disable verbose
-    '' @verbose: bool
-    """
 
     def set_verbose(self, verbose=False):
+        """ Enable/disable verbose """
         if not isinstance(verbose, bool):
             raise TypeError("verbose must be bool, got %s type" % type(verbose))
         if verbose:
