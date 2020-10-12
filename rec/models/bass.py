@@ -166,13 +166,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
 
         """
-        infection_probabilities = self.predicted_scores[self.users._user_vector, interactions]
+        infection_probabilities = self.predicted_scores[self.users.user_vector, interactions]
         newly_infected = np.where(infection_probabilities > self.infection_thresholds)
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
     def score(self, user_profiles, item_attributes):
-        """ Overrides score method of parent class :class:`Recommender`. 
+        """ Overrides score method of parent class :class:`Recommender`.
             Args:
 
             user_profiles: :obj:`array_like`

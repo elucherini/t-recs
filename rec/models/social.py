@@ -16,7 +16,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
     """
     A customizable social filtering recommendation system.
 
-    With social filtering, users are presented items that were previously 
+    With social filtering, users are presented items that were previously
     liked by other users in their social networks.
 
     The social network is represented by a `|U|x|U|` matrix, where `|U|` is the
@@ -224,6 +224,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.users._user_vector, interactions] = 1
+        interactions_per_user[self.users.user_vector, interactions] = 1
         assert interactions_per_user.shape == self.items_hat.shape
         self.items_hat[:, :] = np.add(self.items_hat, interactions_per_user)

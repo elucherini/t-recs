@@ -1,5 +1,6 @@
-from rec.metrics import MSEMeasurement, HomogeneityMeasurement
+""" Content filtering class """
 import numpy as np
+from rec.metrics import MSEMeasurement
 from rec.models import BaseRecommender
 from rec.random import Generator
 from rec.components import Users
@@ -9,7 +10,6 @@ from rec.utils import (
     all_besides_none_equal,
     all_none,
     is_valid_or_none,
-    array_dimensions_match,
 )
 
 
@@ -17,7 +17,7 @@ class ContentFiltering(BaseRecommender):
     """
     A customizable content-filtering recommendation system.
 
-    With content filtering, items and users are represented by a set of 
+    With content filtering, items and users are represented by a set of
     attributes A. This class assumes that the attributes used for items and
     users are the same. The recommendation system matches users to items with
     similar attributes.
@@ -51,7 +51,8 @@ class ContentFiltering(BaseRecommender):
             attribute, as interpreted by the system. If this is not None,
             num_users is ignored.
 
-        actual_user_scores: :obj:`numpy.ndarray` or None or :class:`~components.items.Items` (optional, default: None)
+        actual_user_scores: :obj:`numpy.ndarray` or None or \
+                            :class:`~components.items.Items` (optional, default: None)
             A `|U|x|I|` matrix representing the real user scores. This matrix is
             **not** used for recommendations. This is only kept for measurements
             and the system is unaware of it.
@@ -86,7 +87,7 @@ class ContentFiltering(BaseRecommender):
         (100, 582) # <-- 100 users (default), 582 attributes (randomly generated)
 
         This class can be customized either by defining the number of users/items
-        in the system. The number of attributes will still be random, unless 
+        in the system. The number of attributes will still be random, unless
         specified.
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000)
@@ -101,21 +102,24 @@ class ContentFiltering(BaseRecommender):
         below, items are uniformly distributed. We indirectly define 100
         attributes by defining the following `item_representation`:
 
-        >>> item_representation = np.random.randint(0, 1, size=(100, 200))
-        # Users are represented by a power law distribution. This representation also uses 100 attributes.
-        >>> user_representation = Distribution(distr_type='powerlaw').compute(a=1.16, size=(30, 100)).compute()
-        >>> cf = ContentFiltering(item_representation=item_representation, user_representation=user_representation)
+        >>> items = np.random.randint(0, 1, size=(100, 200))
+        # Users are represented by a power law distribution.
+        # This representation also uses 100 attributes.
+        >>> power_dist = Distribution(distr_type='powerlaw')
+        >>> users = power_dist.compute(a=1.16, size=(30, 100)).compute()
+        >>> cf = ContentFiltering(item_representation=items, user_representation=users)
         >>> cf.items.shape
         (100, 200)
         >>> cf.users_hat.shape
         (30, 100)
 
-        Note that user and item representations have the precedence over the 
+        Note that user and item representations have the precedence over the
         number of users/items/attributes specified at initialization. For example:
 
         >>> cf = ContentFiltering(num_users=50, user_representation=user_representation)
         >>> cf.users_hat.shape
-        (30, 100) # <-- 30 users, 100 attributes. num_users was ignored because user_representation was specified.
+        (30, 100) # <-- 30 users, 100 attributes.
+        # Note that num_users was ignored because user_representation was specified.
 
         The same happens with the number of items and the number of attributes.
         In the latter case, the explicit number of attributes is ignored:
@@ -124,11 +128,11 @@ class ContentFiltering(BaseRecommender):
         >>> cf.items.shape
         (100, 200) # <-- 100 attributes, 200 items. num_attributes was ignored.
         >>> cf.users_hat.shape
-        (100, 100) # <-- 100 users (default), 100 attributes (as implicitly specified by item_representation)
+        (100, 100) # <-- 100 users (default), 100 attributes (as specified by item_representation)
 
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-branches
         self,
         num_users=100,
         num_items=1250,
@@ -242,7 +246,7 @@ class ContentFiltering(BaseRecommender):
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_user_profiles(self, interactions):  # pylint: disable=arguments-differ
         """
         Private function that updates user profiles with data from latest
         interactions.
@@ -261,6 +265,6 @@ class ContentFiltering(BaseRecommender):
 
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.users._user_vector, interactions] = 1
+        interactions_per_user[self.users.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, self.items_hat.T)
         self.users_hat[:, :] = np.add(self.users_hat, user_attributes)

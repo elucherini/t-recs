@@ -63,7 +63,7 @@ class SystemStateModule:
 
     This mixin allows the system to monitor the system state. That is, at each
     timestep, an element will be added to the
-    :attr:`~components.base_components.BaseComponent.state_history` lists 
+    :attr:`~components.base_components.BaseComponent.state_history` lists
     of each component that the system is monitoring.
 
     Attributes
@@ -158,11 +158,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 class.
 
             users: :class:`~components.users.Users`
-                An array representing real user preferences. Shape should be 
+                An array representing real user preferences. Shape should be
                 |U| x |A|, and should match items.
 
             items: :class:`~components.items.Items`
-                An array representing actual item attributes. Shape should be 
+                An array representing actual item attributes. Shape should be
                 |A| x |I|, and should match users.
 
             predicted_scores: :class:`~components.users.PredictedScores`
@@ -290,7 +290,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
     def score(self, user_profiles, item_attributes, normalize=True):
         """
-        Performs a dot product multiplication between user profiles and 
+        Performs a dot product multiplication between user profiles and
         item attributes to return the scores (utility) each item possesses
         for each user.
 
@@ -382,7 +382,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Insufficient number of items left!")
             indices_prime = self.indices[np.where(self.indices >= 0)]
             indices_prime = indices_prime.reshape((self.num_users, -1))
-        row = np.repeat(self.users._user_vector, indices_prime.shape[1])
+        row = np.repeat(self.users.user_vector, indices_prime.shape[1])
         row = row.reshape((self.num_users, -1))
         self.log("Row:\n" + str(row))
         self.log("Indices_prime:\n" + str(indices_prime))
@@ -460,7 +460,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             col = self.random_state.integers(
                 indices_prime.shape[1], size=(self.num_users, num_new_items)
             )
-            row = np.repeat(self.users._user_vector, num_new_items).reshape((self.num_users, -1))
+            row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = indices_prime[row, col]
             self.log(
                 "System picked these items (cols) randomly for each user "
@@ -518,7 +518,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 items_shown=item_idxs, item_attributes=self.items
             )
             if not repeated_items:
-                self.indices[self.users._user_vector, interactions] = -1
+                self.indices[self.users.user_vector, interactions] = -1
             self._update_user_profiles(interactions)
             self.log(
                 "System updates user profiles based on last interaction:\n" + str(self.users_hat)
@@ -575,7 +575,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
     def get_measurements(self):
         """
-        Returns all available measurements. For more details, please see the 
+        Returns all available measurements. For more details, please see the
         :class:`~metrics.measurement.Measurement` class.
 
         Returns

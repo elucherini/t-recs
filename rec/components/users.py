@@ -123,8 +123,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             A function that defines user behaviors when interacting with items.
             If None, users follow the behavior in :meth:`get_user_feedback()`.
 
-        _user_vector: **private** :obj:`numpy.ndarray`
-            A ```|U|``` array of user indices, used internally.
+        user_vector: :obj:`numpy.ndarray`
+            A ```|U|``` array of user indices.
 
     Raises
     --------
@@ -172,7 +172,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         # this will be initialized by the system
         self.actual_user_scores = actual_user_scores
         if num_users is not None:
-            self._user_vector = np.arange(num_users, dtype=int)
+            self.user_vector = np.arange(num_users, dtype=int)
         self.name = "actual_user_scores"
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 
@@ -288,11 +288,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         item_attributes = kwargs.pop("item_attributes", None)
         if items_shown is None:
             raise ValueError("Items can't be None")
-        reshaped_user_vector = self._user_vector.reshape((items_shown.shape[0], 1))
+        reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
         user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
         self.log("User scores for given items are:\n" + str(user_interactions))
         sorted_user_preferences = user_interactions.argsort()[:, -1]
-        interactions = items_shown[self._user_vector, sorted_user_preferences]
+        interactions = items_shown[self.user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + str(interactions))
         if self.drift > 0:
             if item_attributes is None:
