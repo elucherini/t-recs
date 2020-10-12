@@ -1,16 +1,21 @@
+""" A binary social graph that represents relationships between users which
+    can be used in different types of recommender systems
+"""
 import numpy as np
-
 from rec.utils import VerboseMode
 
 
 class BinarySocialGraph(VerboseMode):
     """
-    A mixin for classes with a 
+    A mixin for classes with a
     :attr:`~rec.models.recommender.BaseRecommender.users_hat` attribute
     to gain the basic functionality of a binary social graph.
 
     It assumes a network adjacency matrix of size `|U|x|U|`.
     """
+    # expect these to be initialized
+    users_hat = np.array([])
+    num_users = np.array([])
 
     def follow(self, user_index, following_index):
         """
@@ -34,8 +39,8 @@ class BinarySocialGraph(VerboseMode):
         """
         if user_index >= self.num_users or following_index >= self.num_users:
             raise ValueError(
-                "Number of users is %d, but indices %d and %d"
-                + " were requested" % (self.num_users, user_index, following_index)
+                f"Number of users is {self.num_users}, but indices "
+                f"{user_index} and {following_index} were requested."
             )
         if self.users_hat[following_index, user_index] == 0:
             self.users_hat[following_index, user_index] = 1
@@ -64,8 +69,8 @@ class BinarySocialGraph(VerboseMode):
         """
         if user_index >= self.num_users or following_index >= self.num_users:
             raise ValueError(
-                "Number of user is %d, but indices %d and %d"
-                + " were requested" % (self.num_users, user_index, following_index)
+                f"Number of users is {self.num_users}, but indices "
+                f"{user_index} and {following_index} were requested."
             )
         if self.users_hat[following_index, user_index] == 1:
             self.users_hat[following_index, user_index] = 0
@@ -94,8 +99,8 @@ class BinarySocialGraph(VerboseMode):
         """
         if user1_index >= self.num_users or user2_index >= self.num_users:
             raise ValueError(
-                "Number of user is %d, but indices %d and %d"
-                + " were requested" % (self.num_users, user1_index, user2_index)
+                f"Number of users is {self.num_users}, but indices "
+                f"{user1_index} and {user2_index} were requested."
             )
         if self.users_hat[user1_index, user2_index] == 0:
             self.users_hat[user1_index, user2_index] = 1
@@ -128,8 +133,8 @@ class BinarySocialGraph(VerboseMode):
         """
         if user1_index >= self.num_users or user2_index >= self.num_users:
             raise ValueError(
-                "Number of user is %d, but indices %d and %d"
-                + " were requested" % (self.num_users, user1_index, user2_index)
+                f"Number of users is {self.num_users}, but indices "
+                f"{user1_index} and {user2_index} were requested."
             )
         if self.users_hat[user1_index, user2_index] == 1:
             self.users_hat[user1_index, user2_index] = 0
