@@ -1,3 +1,6 @@
+"""
+Popularity-based recommender system
+"""
 import numpy as np
 from rec.models import BaseRecommender
 from rec.metrics import MSEMeasurement
@@ -6,7 +9,6 @@ from rec.utils import (
     is_array_valid_or_none,
     all_besides_none_equal,
     all_none,
-    is_valid_or_none,
 )
 
 
@@ -14,7 +16,7 @@ class PopularityRecommender(BaseRecommender):
     """
     A customizable popularity recommendation system.
 
-    With the popularity recommender system, users are presented items that are 
+    With the popularity recommender system, users are presented items that are
     popular in the system. The popularity of an item is measured by the number
     of times users interacted with that item in the past. In this
     implementation, items do not expire and, therefore, the system does not base
@@ -102,11 +104,12 @@ class PopularityRecommender(BaseRecommender):
         >>> user_representation = np.ones((3000, 1))
         >>> pr = PopularityRecommender(num_users=50, user_representation=user_representation)
         >>> pr.users_hat.shape
-        (3000, 1) # <-- 30000 users. num_users was ignored because user_representation was specified.
+        (3000, 1)
+        # 30000 users. num_users was ignored because user_representation was specified.
 
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         num_users=100,
         num_items=1250,
