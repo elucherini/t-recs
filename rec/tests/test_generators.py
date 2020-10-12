@@ -48,14 +48,14 @@ class TestSocialGraphGenerator:
             n = np.random.randint(1000)
         if seed is None:
             seed = np.random.randint(10000)
-        graph = SocialGraphGenerator.generate_random_graph(n=n)
+        graph = SocialGraphGenerator.generate_random_graph(num=n)
 
         assert isinstance(graph, np.ndarray)
         assert graph.shape == (n, n)
 
         # test seeds are set correctly
-        graph1 = SocialGraphGenerator.generate_random_graph(n=n, seed=seed)
-        graph2 = SocialGraphGenerator.generate_random_graph(n=n, seed=seed)
+        graph1 = SocialGraphGenerator.generate_random_graph(num=n, seed=seed)
+        graph2 = SocialGraphGenerator.generate_random_graph(num=n, seed=seed)
         assert np.array_equal(graph1, graph2)
 
     def test_graph_generators(self, n=None, seed=None):
@@ -70,7 +70,7 @@ class TestSocialGraphGenerator:
         gnm = nx.gnm_random_graph
         # make sure m will always be valid
         m = np.random.randint(n)
-        graph = SocialGraphGenerator.generate_random_graph(graph_type=gnm, n=n, m=m)
+        graph = SocialGraphGenerator.generate_random_graph(graph_type=gnm, num=n, m=m)
 
         assert isinstance(graph, np.ndarray)
         assert graph.shape == (n, n)
@@ -78,6 +78,6 @@ class TestSocialGraphGenerator:
 
         ws = nx.watts_strogatz_graph
         k = m
-        graph = SocialGraphGenerator.generate_random_graph(graph_type=ws, n=n, k=k, p=0.5)
+        graph = SocialGraphGenerator.generate_random_graph(graph_type=ws, num=n, k=k, p=0.5)
         assert isinstance(graph, np.ndarray)
         assert graph.shape == (n, n)

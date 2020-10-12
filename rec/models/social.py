@@ -163,7 +163,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             import networkx as nx
 
             user_representation = SocialGraphGenerator.generate_random_graph(
-                n=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
+                num=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
             )
         if item_representation is None:
             item_representation = np.zeros((num_users, num_items), dtype=int)

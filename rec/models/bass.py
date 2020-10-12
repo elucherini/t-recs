@@ -1,3 +1,9 @@
+"""
+Bass Model for modeling the spread of infection. This can be applied to studying
+virality in online communications.
+"""
+import networkx as nx
+import numpy as np
 from rec.models import BaseRecommender
 from rec.components import BinarySocialGraph
 from rec.components import Component
@@ -8,12 +14,14 @@ from rec.utils import (
     is_array_valid_or_none,
     all_besides_none_equal,
     all_none,
-    is_valid_or_none,
 )
-import numpy as np
 
 
-class InfectionState(Component):
+class InfectionState(Component):  # pylint: disable=too-many-ancestors
+    """ Component that tracks infection state, which is a binary array with
+        an element recording whether each user is infected
+    """
+
     def __init__(self, infection_state=None, verbose=False):
         self.name = "infection_state"
         Component.__init__(
@@ -21,7 +29,11 @@ class InfectionState(Component):
         )
 
 
-class InfectionThresholds(Component):
+class InfectionThresholds(Component):  # pylint: disable=too-many-ancestors
+    """ Component that tracks infection thresholds, where each user has their own
+        threshold for infection
+    """
+
     def __init__(self, infection_thresholds=None, verbose=False):
         self.name = "infection_thresholds"
         Component.__init__(
@@ -33,7 +45,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     """ Bass model that, for now, only supports one item at a time
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-branches,too-many-arguments,super-init-not-called
         self,
         num_users=100,
         num_items=1,
@@ -91,10 +103,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
         if user_representation is None:
-            import networkx as nx
-
             user_representation = SocialGraphGenerator.generate_random_graph(
-                n=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
+                num=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
             )
 
         # Define infection_state
@@ -171,7 +181,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
-    def score(self, user_profiles, item_attributes):
+    def score(self, user_profiles, item_attributes):  # pylint: disable=arguments-differ
         """ Overrides score method of parent class :class:`Recommender`.
             Args:
 
@@ -192,7 +202,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         return predicted_scores
 
     def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
-        """ Overrides run method of parent class :class:`Recommender`, so that repeated_items defaults to True in Bass models.
+        """ Overrides run method of parent class :class:`Recommender`, so that
+            repeated_items defaults to True in Bass models.
 
             Args:
                 timestep (int, optional): number of timesteps for simulation
@@ -221,11 +232,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         )
 
     def draw_diffusion_tree(self):
+        """ Draw diffusion tree using matplotlib """
         for metric in self.metrics:
             if hasattr(metric, "draw_tree"):
                 metric.draw_tree()
 
     def get_structural_virality(self):
+        """ Return the value of the structural virality metric """
         for metric in self.metrics:
             if hasattr(metric, "get_structural_virality"):
                 return metric.get_structural_virality()

@@ -478,7 +478,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         return items
 
     @abstractmethod
-    def _update_user_profiles(self):
+    def _update_user_profiles(self, interactions):
         """
         Updates user profiles based on last interaction.
 
