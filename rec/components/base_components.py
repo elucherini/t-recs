@@ -23,9 +23,9 @@ class FromNdArray(np.ndarray, VerboseMode):
         """ Set the verbosity based on the object passed in """
         if obj is None:
             return
-        self.verbose = getattr(
+        self.verbose = getattr(  # pylint: disable=attribute-defined-outside-init
             obj, "verbose", False
-        )  # pylint: disable=attribute-defined-outside-init
+        )
 
 
 # Observer methods for the observer design pattern
