@@ -1,7 +1,12 @@
+"""
+Set of various measurements that can be used to track outcomes of interest
+throughout a simulation
+"""
 from abc import ABC, abstractmethod
+from networkx import wiener_index  # pylint: disable=import-error
+import numpy as np
 from rec.utils import VerboseMode
 from rec.components import BaseObservable
-import numpy as np
 
 
 class Measurement(BaseObservable, VerboseMode, ABC):
@@ -43,7 +48,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         """
         return self.get_observable(data=self.measurement_history)
 
-    def observe(self, observation, copy=True):
+    def observe(self, observation, copy=True):  # pylint: disable=arguments-differ
         """
         Stores measurements. It can be called by implementations to ensure
         consistency when storing different measurements.
@@ -67,7 +72,9 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
     @abstractmethod
     def measure(self, recommender, **kwargs):
-        pass
+        """ Function that should calculate some outcome of interest of the system
+            at the current timestep
+        """
 
     def get_timesteps(self):
         """
@@ -107,7 +114,8 @@ class InteractionMeasurement(Measurement):
         self.name = "interaction_histogram"
         Measurement.__init__(self, verbose, init_value=None)
 
-    def _generate_interaction_histogram(self, interactions, num_users, num_items):
+    @staticmethod
+    def generate_interaction_histogram(interactions, num_users, num_items):
         """
         Generates a histogram of the number of interactions per item at the
         given timestep.
@@ -147,12 +155,12 @@ class InteractionMeasurement(Measurement):
 
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions -- 
+                `interactions` is a non-aggregated array of interactions --
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
         interactions = kwargs.pop("interactions", None)
-        histogram = self._generate_interaction_histogram(
+        histogram = self.generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
         )
         # histogram[::-1].sort()
@@ -162,7 +170,7 @@ class InteractionMeasurement(Measurement):
 class JaccardSimilarity(Measurement):
     """
     Keeps track of the average Jaccard similarity between items seen by pairs
-    of users at each timestep. The pairs of users must be passed in by the 
+    of users at each timestep. The pairs of users must be passed in by the
     user.
 
     Parameters
@@ -189,10 +197,10 @@ class JaccardSimilarity(Measurement):
 
     def measure(self, recommender, **kwargs):
         """
-        Measures the average Jaccard index of items shown to pairs of users in 
+        Measures the average Jaccard index of items shown to pairs of users in
         the system. Intuitively, a higher average Jaccard index corresponds to
         increasing "homogenization" in that the recommender system is starting
-        to treat each user the same way (i.e., show them the same items). 
+        to treat each user the same way (i.e., show them the same items).
 
         Parameters
         ------------
@@ -209,7 +217,8 @@ class JaccardSimilarity(Measurement):
         items_shown = kwargs.pop("items_shown", None)
         if items_shown is None:
             raise ValueError(
-                "items_shown must be passed in to JaccardSimilarity's `measure` method as a keyword argument"
+                "items_shown must be passed in to JaccardSimilarity's `measure` "
+                "method as a keyword argument"
             )
         for p in self.pairs:
             itemset_1 = set(items_shown[p[0], :])
@@ -265,7 +274,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
 
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions -- 
+                `interactions` is a non-aggregated array of interactions --
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
@@ -320,7 +329,7 @@ class MSEMeasurement(Measurement):
 
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions -- 
+                `interactions` is a non-aggregated array of interactions --
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
@@ -373,8 +382,6 @@ class DiffusionTreeMeasurement(Measurement):
     """
 
     def __init__(self, infection_state, verbose=False):
-        import networkx as nx
-
         self.name = "num_infected"
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
@@ -428,7 +435,7 @@ class DiffusionTreeMeasurement(Measurement):
 
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions -- 
+                `interactions` is a non-aggregated array of interactions --
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
@@ -474,8 +481,5 @@ class StructuralVirality(DiffusionTreeMeasurement):
         --------
             Structural virality: float
         """
-        import networkx as nx
-        from networkx.algorithms.wiener import wiener_index
-
-        n = self.diffusion_tree.number_of_nodes()
-        return nx.wiener_index(self.diffusion_tree) / (n * (n - 1))
+        num_nodes = self.diffusion_tree.number_of_nodes()
+        return wiener_index(self.diffusion_tree) / (num_nodes * (num_nodes - 1))

@@ -7,6 +7,7 @@ import numpy as np
 from rec.utils import VerboseMode
 from rec.random import Generator
 
+
 class FromNdArray(np.ndarray, VerboseMode):
     """Subclass for Numpy's ndarrays."""
 
@@ -15,14 +16,16 @@ class FromNdArray(np.ndarray, VerboseMode):
         obj.verbose = verbose
         return obj
 
-    def __init__(self, *args, **kwargs): # pylint: disable=super-init-not-called
+    def __init__(self, *args, **kwargs):  # pylint: disable=super-init-not-called
         pass
 
     def __array_finalize__(self, obj):
         """ Set the verbosity based on the object passed in """
         if obj is None:
             return
-        self.verbose = getattr(obj, "verbose", False) # pylint: disable=attribute-defined-outside-init
+        self.verbose = getattr(
+            obj, "verbose", False
+        )  # pylint: disable=attribute-defined-outside-init
 
 
 # Observer methods for the observer design pattern
@@ -88,7 +91,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         """ Return the history of the component's values as a dictionary """
         return self.get_observable(data=self.state_history)
 
-    def observe(self, state, copy=True): # pylint: disable=arguments-differ
+    def observe(self, state, copy=True):  # pylint: disable=arguments-differ
         """ Append the current value of the variable (by default a copy) to the
             state history """
         if copy:
@@ -105,7 +108,9 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
 class Component(FromNdArray, BaseComponent):
     """Class for components that make up the system state."""
 
-    def __init__(self, current_state=None, size=None, verbose=False, seed=None): # pylint: disable=super-init-not-called
+    def __init__(
+        self, current_state=None, size=None, verbose=False, seed=None
+    ):  # pylint: disable=super-init-not-called
         # general input checks
         if current_state is not None:
             if not isinstance(current_state, (list, np.ndarray)):

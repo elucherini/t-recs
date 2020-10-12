@@ -3,7 +3,8 @@
 """
 from .base_components import Component
 
-class Items(Component): # pylint: disable=too-many-ancestors
+
+class Items(Component):  # pylint: disable=too-many-ancestors
     """
     Items components in the system.
 

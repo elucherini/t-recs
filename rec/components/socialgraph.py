@@ -13,6 +13,7 @@ class BinarySocialGraph(VerboseMode):
 
     It assumes a network adjacency matrix of size `|U|x|U|`.
     """
+
     # expect these to be initialized
     users_hat = np.array([])
     num_users = np.array([])

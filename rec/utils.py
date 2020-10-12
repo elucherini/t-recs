@@ -3,6 +3,7 @@ import logging
 from abc import ABC
 import numpy as np
 
+
 def normalize_matrix(matrix, axis=1):
     """ Normalize a matrix so that each row vector has a Euclidean norm of 1.
         If a vector is passed in, we treat it as a matrix with a single row.
@@ -82,6 +83,7 @@ def slerp(mat1, mat2, perc=0.05):
 
 # Common input validation functions
 
+
 def is_array_valid_or_none(array, ndim=2):
     """ Return True if no array was passed in or if the array matches the
         dimensions specified
@@ -146,9 +148,9 @@ def all_none(*args):
 class VerboseMode(ABC):
     """ Abstract class for verbose mode
     """
+
     def __init__(self, name, verbose=False):
         self._logger = DebugLogger(name, verbose)
-
 
     def set_verbose(self, toggle):
         """ Toggle verbosity
@@ -170,6 +172,7 @@ class VerboseMode(ABC):
 
 class DebugLogger:
     """ Class to configure debug logging module """
+
     def __init__(self, name, verbose=False):
         """ Instantiate DebugLogger object
             @name: name of logger
@@ -199,24 +202,20 @@ class DebugLogger:
         # test
         self._test_configured_logger()
 
-
     def _test_configured_logger(self):
         """ Simple test to announce logger is enabled
         """
         self.logger.debug("Debugging module inizialized")
 
-
     def log(self, message):
         """ Log at DEBUG level """
         self.logger.debug(message)
-
 
     def is_verbose(self):
         """ Return True if debugger is enabled; That is, if debugger can log
             DEBUG-level messages
         """
         return self.logger.isEnabledFor(logging.DEBUG)
-
 
     def set_verbose(self, verbose=False):
         """ Enable/disable verbose """

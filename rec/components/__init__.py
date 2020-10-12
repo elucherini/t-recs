@@ -8,5 +8,5 @@ from .base_components import (
     BaseObservable,
     FromNdArray,
     register_observables,
-    unregister_observables
+    unregister_observables,
 )
