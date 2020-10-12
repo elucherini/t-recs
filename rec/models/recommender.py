@@ -4,12 +4,12 @@ from tqdm import tqdm
 from rec import utils
 from rec.metrics import MSEMeasurement, Measurement
 from rec.components import Users, Items, PredictedScores, PredictedUserProfiles
-from rec.components import BaseObserver, BaseComponent, FromNdArray
+from rec.components import BaseComponent, FromNdArray, register_observables, unregister_observables
 from rec.utils import VerboseMode
 from rec.random import Generator
 
 
-class MeasurementModule(BaseObserver):
+class MeasurementModule:
     """
     Mixin for observers of :class:`Measurement` observables. Implements the
     `Observer design pattern`_.
@@ -44,12 +44,12 @@ class MeasurementModule(BaseObserver):
                 Accepts a variable number of metrics that inherits from
                 :class:`~metrics.measurement.Measurement`
         """
-        self.register_observables(
+        register_observables(
             observer=self.metrics, observables=list(args), observable_type=Measurement
         )
 
 
-class SystemStateModule(BaseObserver):
+class SystemStateModule:
     """
     Mixin for observers of :class:`Component` observables. Implements the
     `Observer design pattern`_.
@@ -84,7 +84,7 @@ class SystemStateModule(BaseObserver):
                 Accepts a variable number of components that inherit from class
                 :class:`~components.base_components.BaseComponent`
         """
-        self.register_observables(
+        register_observables(
             observer=self._system_state, observables=list(args), observable_type=BaseComponent,
         )
 
