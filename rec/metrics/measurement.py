@@ -3,7 +3,8 @@ Set of various measurements that can be used to track outcomes of interest
 throughout a simulation
 """
 from abc import ABC, abstractmethod
-from networkx import wiener_index  # pylint: disable=import-error
+import networkx as nx
+from networkx import wiener_index
 import numpy as np
 from rec.utils import VerboseMode
 from rec.components import BaseObservable
@@ -27,9 +28,13 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
         measurement_history: list
             List of measurements. A new element is added at each timestep.
+
+        name: str
+            Name of the measurement quantity.
     """
 
-    def __init__(self, verbose=False, init_value=None):
+    def __init__(self, name, verbose=False, init_value=None):
+        self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
         if isinstance(init_value, np.ndarray):
@@ -106,13 +111,12 @@ class InteractionMeasurement(Measurement):
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str
+        name: str (optional, default: "interaction_histogram")
             Name of the measurement component.
     """
 
-    def __init__(self, verbose=False):
-        self.name = "interaction_histogram"
-        Measurement.__init__(self, verbose, init_value=None)
+    def __init__(self, name="interaction_histogram", verbose=False):
+        Measurement.__init__(self, name, verbose, init_value=None)
 
     @staticmethod
     def generate_interaction_histogram(interactions, num_users, num_items):
@@ -186,14 +190,13 @@ class JaccardSimilarity(Measurement):
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str
+        name: str (optional, default: "jaccard_similarity")
             Name of the measurement component.
     """
 
-    def __init__(self, pairs, verbose=False):
-        self.name = "jaccard_similarity"
+    def __init__(self, pairs, name="jaccard_similarity", verbose=False):
         self.pairs = pairs
-        Measurement.__init__(self, verbose, init_value=None)
+        Measurement.__init__(self, name, verbose, init_value=None)
 
     def measure(self, recommender, **kwargs):
         """
@@ -220,9 +223,9 @@ class JaccardSimilarity(Measurement):
                 "items_shown must be passed in to JaccardSimilarity's `measure` "
                 "method as a keyword argument"
             )
-        for p in self.pairs:
-            itemset_1 = set(items_shown[p[0], :])
-            itemset_2 = set(items_shown[p[1], :])
+        for pair in self.pairs:
+            itemset_1 = set(items_shown[pair[0], :])
+            itemset_2 = set(items_shown[pair[1], :])
             common = len(itemset_1.intersection(itemset_2))
             union = len(itemset_1.union(itemset_2))
             similarity += common / union / len(self.pairs)
@@ -248,7 +251,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
     -----------
         Inherited by InteractionMeasurement: :class:`.InteractionMeasurement`
 
-        name: str
+        name: str (optional, default: "homogeneity")
             Name of the measurement component.
 
         _old_histogram: None, list, array_like
@@ -258,8 +261,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
     def __init__(self, verbose=False):
         self.histogram = None
         self._old_histogram = None
-        self.name = "homogeneity"
-        Measurement.__init__(self, verbose, init_value=None)
+        InteractionMeasurement.__init__(self, name="homogeneity", verbose=verbose)
 
     def measure(self, recommender, **kwargs):
         """
@@ -280,7 +282,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
         """
         interactions = kwargs.pop("interactions", None)
         assert interactions.size == recommender.num_users
-        histogram = self._generate_interaction_histogram(
+        histogram = self.generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
         )
         histogram[::-1].sort()
@@ -309,13 +311,12 @@ class MSEMeasurement(Measurement):
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str
+        name: str (optional, default: "mse")
             Name of the measurement component.
     """
 
     def __init__(self, verbose=False):
-        self.name = "mse"
-        Measurement.__init__(self, verbose, init_value=None)
+        Measurement.__init__(self, "mse", verbose=verbose, init_value=None)
 
     def measure(self, recommender, **kwargs):
         """
@@ -367,7 +368,7 @@ class DiffusionTreeMeasurement(Measurement):
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str
+        name: str (optional, default: "num_infected")
             Name of the metric that is recorded at each time step. Note that,
             in this case, the metric stored in
             :attr:`~.Measurement.measurement_history` is actually the
@@ -382,14 +383,16 @@ class DiffusionTreeMeasurement(Measurement):
     """
 
     def __init__(self, infection_state, verbose=False):
-        self.name = "num_infected"
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, np.copy(infection_state))
         self._old_infection_state = np.copy(infection_state)
-        Measurement.__init__(self, verbose, init_value=self.diffusion_tree.number_of_nodes())
+        Measurement.__init__(
+            self, "num_infected", verbose=verbose, init_value=self.diffusion_tree.number_of_nodes()
+        )
 
     def _find_parents(self, user_profiles, new_infected_users):
+        """ Find the users who infected the newly infected users """
         if (self._old_infection_state == 0).all():
             # Node is root
             return None
@@ -402,6 +405,9 @@ class DiffusionTreeMeasurement(Measurement):
         return parents
 
     def _add_to_graph(self, user_profiles, new_infected_users):
+        """ Add the newly infected users to the graph with edges to the users
+            who infected them
+        """
         self.diffusion_tree.add_nodes_from(new_infected_users)
         parents = self._find_parents(user_profiles, new_infected_users)
         # connect parent(s) and child(ren)
@@ -410,6 +416,9 @@ class DiffusionTreeMeasurement(Measurement):
             self.diffusion_tree.add_edges_from(edges)
 
     def _manage_new_infections(self, user_profiles, current_infection_state):
+        """ Add new infected users to graph and return number of newly infected
+            users
+        """
         if self._old_infection_state is None:
             self._old_infection_state = np.zeros(current_infection_state.shape)
         new_infections = current_infection_state - self._old_infection_state
@@ -447,9 +456,6 @@ class DiffusionTreeMeasurement(Measurement):
         """
         Plots the tree using the Networkx library API.
         """
-        import matplotlib.pyplot as plt
-        import networkx as nx
-
         nx.draw(self.diffusion_tree, with_labels=True)
 
 
