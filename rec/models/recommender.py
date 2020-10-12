@@ -1,3 +1,7 @@
+"""
+BaseRecommender, the foundational class for all recommender systems
+implementable in our simulation library
+"""
 from abc import ABC, abstractmethod
 import numpy as np
 from tqdm import tqdm
@@ -9,7 +13,7 @@ from rec.components import (
     PredictedUserProfiles,
     SystemStateModule,
 )
-from rec.utils import VerboseMode, normalize_matrix, is_valid_or_none, inner_product
+from rec.utils import VerboseMode, is_valid_or_none, inner_product
 from rec.random import Generator
 
 
@@ -369,7 +373,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         It must be defined in the concrete class.
         """
-        pass
 
     def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
         """
@@ -395,8 +398,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         """
         if not startup:
             self.log("Run -- interleave recommendations and random items " + "from now on")
-        for t in tqdm(range(timesteps)):
-            self.log("Step %d" % t)
+        for timestep in tqdm(range(timesteps)):
+            self.log("Step %d" % timestep)
             item_idxs = self.recommend(startup=startup)
             # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
@@ -411,11 +414,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # train between steps:
             if train_between_steps:
                 self.update_predicted_scores()
-            self.measure_content(interactions, item_idxs, step=t)
+            self.measure_content(interactions, item_idxs, step=timestep)
         # If no training in between steps, train at the end:
         if not train_between_steps:
             self.update_predicted_scores()
-            self.measure_content(interactions, item_idxs, step=t)
+            self.measure_content(interactions, item_idxs, step=timesteps)
 
     def startup_and_train(self, timesteps=50):
         """
@@ -432,7 +435,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.log("Startup -- recommend random items")
         return self.run(timesteps, startup=True, train_between_steps=False)
 
-    def _expand_items(self, num_new_items=None):
+    def _expand_items(self):  # pylint: disable=no-self-use
         """
         Increases number of items in the system.
 
@@ -441,8 +444,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             num_new_items (int, optional): number of new items to add to the
                 system. If None, it is equal to twice the number of items
                 presented to the user in one iteration.
-        """
-        """
         if num_new_items is None:
             num_new_items = 2 * self.num_items_per_iter
         if not isinstance(num_new_items, int):
@@ -456,7 +457,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.users.compute_user_scores(self.train)
         self.predicted_scores = self.train(self.users_hat, self.items_hat)
         """
-        pass
 
     def get_measurements(self):
         """

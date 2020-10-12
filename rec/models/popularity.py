@@ -2,7 +2,6 @@
 Popularity-based recommender system
 """
 import numpy as np
-from rec.models import BaseRecommender
 from rec.metrics import MSEMeasurement
 from rec.utils import (
     get_first_valid,
@@ -10,6 +9,7 @@ from rec.utils import (
     all_besides_none_equal,
     all_none,
 )
+from .recommender import BaseRecommender
 
 
 class PopularityRecommender(BaseRecommender):

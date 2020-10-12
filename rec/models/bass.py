@@ -4,7 +4,6 @@ virality in online communications.
 """
 import networkx as nx
 import numpy as np
-from rec.models import BaseRecommender
 from rec.components import BinarySocialGraph
 from rec.components import Component
 from rec.random import Generator, SocialGraphGenerator
@@ -15,6 +14,7 @@ from rec.utils import (
     all_besides_none_equal,
     all_none,
 )
+from .recommender import BaseRecommender
 
 
 class InfectionState(Component):  # pylint: disable=too-many-ancestors

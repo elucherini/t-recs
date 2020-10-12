@@ -1,7 +1,6 @@
 """ Content filtering class """
 import numpy as np
 from rec.metrics import MSEMeasurement
-from rec.models import BaseRecommender
 from rec.random import Generator
 from rec.components import Users
 from rec.utils import (
@@ -11,6 +10,7 @@ from rec.utils import (
     all_none,
     is_valid_or_none,
 )
+from .recommender import BaseRecommender
 
 
 class ContentFiltering(BaseRecommender):
