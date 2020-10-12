@@ -1,4 +1,4 @@
-from rec.models import BaseRecommender
+import networkx as nx
 import numpy as np
 from rec.metrics import MSEMeasurement
 from rec.components import BinarySocialGraph
@@ -8,8 +8,8 @@ from rec.utils import (
     is_array_valid_or_none,
     all_besides_none_equal,
     all_none,
-    is_valid_or_none,
 )
+from .recommender import BaseRecommender
 
 
 class SocialFiltering(BaseRecommender, BinarySocialGraph):
@@ -100,7 +100,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         by defining a `100x200` item representation.
 
         >>> item_representation = np.random.randint(2, size=(100, 200))
-        # Social networks are drawn from a binomial distribution. This representation also uses 100 users.
+        # Social networks are drawn from a binomial distribution.
+        # This representation also uses 100 users.
         >>> sf = SocialFiltering(item_representation=item_representation)
         >>> sf.items.shape
         (100, 200)
@@ -112,7 +113,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         >>> sf = SocialFiltering(num_users=50, user_representation=user_representation)
         >>> sf.items.shape
-        (100, 200) # <-- 100 users, 200 items. num_users was ignored because user_representation was specified.
+        (100, 200) # <-- 100 users, 200 items.
+        # Note thatnum_users was ignored because user_representation was specified.
 
         The same is true about the number of items or users and item representations.
 
@@ -124,7 +126,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,super-init-not-called
         self,
         num_users=100,
         num_items=1250,
@@ -160,8 +162,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         )
 
         if user_representation is None:
-            import networkx as nx
-
             user_representation = SocialGraphGenerator.generate_random_graph(
                 num=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
             )
