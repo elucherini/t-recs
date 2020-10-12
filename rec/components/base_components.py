@@ -19,6 +19,7 @@ class FromNdArray(np.ndarray, VerboseMode):
         pass
 
     def __array_finalize__(self, obj):
+        """ Set the verbosity based on the object passed in """
         if obj is None:
             return
         self.verbose = getattr(obj, "verbose", False) # pylint: disable=attribute-defined-outside-init
