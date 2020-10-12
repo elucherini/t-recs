@@ -1,8 +1,12 @@
-import numpy as np
+"""
+Wrappers for numpy.random.Generator and networkx random graph generators
+"""
 import warnings
+import networkx as nx
+import numpy as np
 
 
-class Generator(np.random.Generator):
+class Generator(np.random.Generator):  # pylint: disable=too-few-public-methods
     """
     Wrapper around :class:`numpy.random.Generator`. Please see the
     `Numpy documentation`_ for more details.
@@ -21,6 +25,9 @@ class Generator(np.random.Generator):
     """
 
     def __init__(self, seed=None, bit_generator=None):
+        """ By default, initialize with a Generator that consumes a
+            PCG64 bit generator
+        """
         if bit_generator is not None and seed is not None:
             warnings.warn("Seed has not been set. Please set seed in bit generator")
         if bit_generator is None:
@@ -28,7 +35,7 @@ class Generator(np.random.Generator):
         np.random.Generator.__init__(self, bit_generator)
 
 
-class SocialGraphGenerator:
+class SocialGraphGenerator:  # pylint: disable=too-few-public-methods
     """
     Thin wrapper around the `Networkx random graph generators`_. We use this
     static class to generate random network adjacency matrices.
@@ -42,7 +49,7 @@ class SocialGraphGenerator:
     """
 
     @staticmethod
-    def generate_random_graph(n, *args, **kwargs):
+    def generate_random_graph(num, *args, **kwargs):
         """
 
         **Note:** to change type of graph, please include the `graph_type`
@@ -51,7 +58,7 @@ class SocialGraphGenerator:
         Parameters
         -----------
 
-            n: int
+            num: int
                 Number of nodes in the graph. This is equivalent to the number of
                 users in the system.
 
@@ -64,7 +71,7 @@ class SocialGraphGenerator:
         Raises
         -------
             ValueError
-                If `n` is not an integer.
+                If `num` is not an integer.
 
         Examples
         ----------
@@ -72,8 +79,8 @@ class SocialGraphGenerator:
             A minimal use case:
 
                 >>> from rec.random import SocialGraphGenerator
-                >>> n = 1000 # <-- number of nodes (users)
-                >>> graph = SocialGraphGenerator.generate_random_graph(n=n)
+                >>> num = 1000 # <-- number of nodes (users)
+                >>> graph = SocialGraphGenerator.generate_random_graph(num=num)
                 >>> graph # <-- 1000x1000 binomial adjacency matrix
 
             Changing random graph generator (e.g., with the `random_regular_graph`_):
@@ -83,15 +90,13 @@ class SocialGraphGenerator:
                 >>> from networkx.generators.random_graphs import random_regular_graph
                 >>> rrg = random_regular_graph
                 >>> d = 30 # <-- degree, also required by random_regular_graph
-                >>> graph = SocialGraphGenerator.generate_random_graph(n=n, d=d, graph_type=rrg)
+                >>> graph = SocialGraphGenerator.generate_random_graph(num=num, d=d, graph_type=rrg)
         """
-        import networkx as nx
-
-        if not isinstance(n, int):
-            raise ValueError("n must be an integer")
+        if not isinstance(num, int):
+            raise ValueError("num must be an integer")
         graph_type = kwargs.pop("graph_type", None)
         if graph_type is None:
             graph_type = nx.fast_gnp_random_graph
             kwargs["p"] = 0.5
-        graph = graph_type(n=n, *args, **kwargs)
+        graph = graph_type(n=num, *args, **kwargs)
         return nx.convert_matrix.to_numpy_array(graph)
