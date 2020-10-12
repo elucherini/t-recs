@@ -150,7 +150,7 @@ class SystemStateModule:
 
     """
 
-    def __init__(self, components=None):
+    def __init__(self):
         self._system_state = list()
 
     def add_state_variable(self, *args):
