@@ -7,7 +7,10 @@ import networkx as nx
 from networkx import wiener_index
 import numpy as np
 from rec.utils import VerboseMode
-from rec.components import BaseObservable
+from rec.components import (
+    BaseObservable,
+    register_observables,
+)
 
 
 class Measurement(BaseObservable, VerboseMode, ABC):
@@ -92,6 +95,46 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Length of measurement_history: int
         """
         return len(self.measurement_history)
+
+
+class MeasurementModule:  # pylint: disable=too-few-public-methods
+    """
+    Mixin for observers of :class:`Measurement` observables. Implements the
+    `Observer design pattern`_.
+
+    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
+
+    This mixin allows the system to monitor metrics. That is, at each timestep,
+    an element will be added to the
+    :attr:`~metrics.measurement.Measurement.measurement_history` lists of each
+    metric that the system is monitoring.
+
+    Attributes
+    ------------
+
+        metrics: list
+            List of metrics that the system will monitor.
+
+    """
+
+    def __init__(self):
+        self.metrics = list()
+
+    def add_metrics(self, *args):
+        """
+        Adds metrics to the :attr:`metrics` list. This allows the system to
+        monitor these metrics.
+
+        Parameters
+        -----------
+
+            args: :class:`~metrics.measurement.Measurement`
+                Accepts a variable number of metrics that inherits from
+                :class:`~metrics.measurement.Measurement`
+        """
+        register_observables(
+            observer=self.metrics, observables=list(args), observable_type=Measurement
+        )
 
 
 class InteractionMeasurement(Measurement):

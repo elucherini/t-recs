@@ -159,6 +159,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             system_state=system_state,
             verbose=verbose,
             seed=seed,
+            score_fn=self.infection_probabilities,
             **kwargs
         )
 
@@ -181,8 +182,9 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
-    def score(self, user_profiles, item_attributes):  # pylint: disable=arguments-differ
-        """ Overrides score method of parent class :class:`Recommender`.
+    def infection_probabilities(self, user_profiles, item_attributes):
+        """ Calculates the infection probabilities for each user at the current
+            timestep
             Args:
 
             user_profiles: :obj:`array_like`
@@ -194,9 +196,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 representation of items.
         """
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
-        if user_profiles is None:
-            user_profiles = self.users_hat
-        dot_product = np.dot(user_profiles, self.infection_state * np.log(1 - self.items_hat))
+        dot_product = np.dot(user_profiles, self.infection_state * np.log(1 - item_attributes))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
         return predicted_scores

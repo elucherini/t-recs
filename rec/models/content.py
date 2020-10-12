@@ -246,7 +246,7 @@ class ContentFiltering(BaseRecommender):
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):  # pylint: disable=arguments-differ
+    def _update_user_profiles(self, interactions):
         """
         Private function that updates user profiles with data from latest
         interactions.

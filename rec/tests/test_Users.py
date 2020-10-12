@@ -31,10 +31,9 @@ class TestUsers:
             user_representation=actual_user_repr, item_representation=item_repr,
         )
         s = Users(actual_user_repr)
-        s.set_score_function(model.score)
+        s.set_score_function(model.score_fn)
         s.compute_user_scores(item_repr)
-        model.update_predicted_scores(s.actual_user_profiles)
-        test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
+        model.update_predicted_scores()
         test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
         # user_repr != actual_user_repr
@@ -42,12 +41,11 @@ class TestUsers:
         model = ContentFiltering(user_representation=user_repr, item_representation=item_repr)
         assert model.users_hat.shape == actual_user_repr.shape
         s = Users(actual_user_repr)
-        s.set_score_function(model.score)
+        s.set_score_function(model.score_fn)
         s.compute_user_scores(item_repr)
-        model.update_predicted_scores(s.actual_user_profiles, model.items_hat)
-        print(np.array_equal(s.actual_user_scores, model.predicted_scores))
-        model.update_predicted_scores(s.actual_user_profiles)
-        test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
+        model.update_predicted_scores()
+        with np.testing.assert_raises(AssertionError):
+            np.testing.assert_array_equal(s.actual_user_scores, model.predicted_scores)
 
     def test_seeding(self, users=15, attr=15, seed=None):
         if seed is None:

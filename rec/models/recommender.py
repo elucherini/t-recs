@@ -1,97 +1,16 @@
-import numpy as np
 from abc import ABC, abstractmethod
+import numpy as np
 from tqdm import tqdm
-from rec import utils
-from rec.metrics import MSEMeasurement, Measurement
-from rec.components import Users, Items, PredictedScores, PredictedUserProfiles
+from rec.metrics import MeasurementModule
 from rec.components import (
-    BaseComponent,
-    FromNdArray,
-    register_observables,
-    unregister_observables,
+    Users,
+    Items,
+    PredictedScores,
+    PredictedUserProfiles,
+    SystemStateModule,
 )
-from rec.utils import VerboseMode
+from rec.utils import VerboseMode, normalize_matrix, is_valid_or_none, inner_product
 from rec.random import Generator
-
-
-class MeasurementModule:
-    """
-    Mixin for observers of :class:`Measurement` observables. Implements the
-    `Observer design pattern`_.
-
-    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
-
-    This mixin allows the system to monitor metrics. That is, at each timestep,
-    an element will be added to the
-    :attr:`~metrics.measurement.Measurement.measurement_history` lists of each
-    metric that the system is monitoring.
-
-    Attributes
-    ------------
-
-        metrics: list
-            List of metrics that the system will monitor.
-
-    """
-
-    def __init__(self):
-        self.metrics = list()
-
-    def add_metrics(self, *args):
-        """
-        Adds metrics to the :attr:`metrics` list. This allows the system to
-        monitor these metrics.
-
-        Parameters
-        -----------
-
-            args: :class:`~metrics.measurement.Measurement`
-                Accepts a variable number of metrics that inherits from
-                :class:`~metrics.measurement.Measurement`
-        """
-        register_observables(
-            observer=self.metrics, observables=list(args), observable_type=Measurement
-        )
-
-
-class SystemStateModule:
-    """
-    Mixin for observers of :class:`Component` observables. Implements the
-    `Observer design pattern`_.
-
-    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
-
-    This mixin allows the system to monitor the system state. That is, at each
-    timestep, an element will be added to the
-    :attr:`~components.base_components.BaseComponent.state_history` lists
-    of each component that the system is monitoring.
-
-    Attributes
-    ------------
-
-        _system_state: list
-            List of system state components that the system will monitor.
-
-    """
-
-    def __init__(self, components=None):
-        self._system_state = list()
-
-    def add_state_variable(self, *args):
-        """
-        Adds metrics to the :attr:`_system_state` list. This allows the system
-        to monitor these system state components.
-
-        Parameters
-        -----------
-
-            args: :class:`~components.base_components.BaseComponent`
-                Accepts a variable number of components that inherit from class
-                :class:`~components.base_components.BaseComponent`
-        """
-        register_observables(
-            observer=self._system_state, observables=list(args), observable_type=BaseComponent,
-        )
 
 
 class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
@@ -188,10 +107,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 user. This keeps track of which items each user has interacted
                 with, so that it won't be presented to the user again if
                 `repeated_items` are not allowed.
+
+            score_fn: callable
+                Function that is used to calculate each user's scores for each
+                candidate item. Note that this function can be the same function
+                used by the recommender system to generate its predictions for
+                user-item scores. The score function should take as input
+                user_profiles and item_attributes.
     """
 
     @abstractmethod
-    def __init__(
+    def __init__(  # pylint: disable=R0913,R0912,R0915
         self,
         users_hat,
         items_hat,
@@ -204,6 +130,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         measurements=None,
         system_state=None,
         verbose=False,
+        score_fn=inner_product,
         seed=None,
     ):
         # Init logger
@@ -216,25 +143,27 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # and items
         self.users_hat = PredictedUserProfiles(users_hat)
         self.items_hat = Items(items_hat)
+        assert callable(score_fn)  # score function must be a function
+        self.score_fn = score_fn
         # set predicted scores
         self.predicted_scores = None
-        self.update_predicted_scores(self.users_hat, self.items_hat)
+        self.update_predicted_scores()
         assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
         self.probabilistic_recommendations = probabilistic_recommendations
 
-        if not utils.is_valid_or_none(num_users, int):
+        if not is_valid_or_none(num_users, int):
             raise TypeError("num_users must be an int")
-        if not utils.is_valid_or_none(num_items, int):
+        if not is_valid_or_none(num_items, int):
             raise TypeError("num_items must be an int")
-        if not utils.is_valid_or_none(num_items_per_iter, int):
+        if not is_valid_or_none(num_items_per_iter, int):
             raise TypeError("num_items_per_iter must be an int")
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
         # check users array
-        if not utils.is_valid_or_none(users, (list, np.ndarray, Users)):
+        if not is_valid_or_none(users, (list, np.ndarray, Users)):
             raise TypeError("users must be array_like or Users")
         if users is None:
             self.users = Users(size=self.users_hat.shape, num_users=num_users, seed=seed)
@@ -246,7 +175,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.users = users
 
         # check items array
-        if not utils.is_valid_or_none(items, (list, np.ndarray, Items)):
+        if not is_valid_or_none(items, (list, np.ndarray, Items)):
             raise TypeError("items must be array_like or Items")
         if items is None:
             raise ValueError("true item attributes can't be None")
@@ -266,7 +195,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.add_state_variable(*system_state)
 
         # initialize actual user scores for items
-        self.users.set_score_function(self.score)
+        self.users.set_score_function(score_fn)
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
         if self.users.get_actual_user_scores() is None:
@@ -288,63 +217,19 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             self.log("Seed was not set.")
 
-    def score(self, user_profiles, item_attributes, normalize=True):
-        """
-        Performs a dot product multiplication between user profiles and
-        item attributes to return the scores (utility) each item possesses
-        for each user.
-
-        Parameters
-        -----------
-
-            user_profiles: :obj:`array_like`
-                First factor of the dot product, which should provide a
-                representation of users.
-
-            item_attributes: :obj:`array_like`
-                Second factor of the dot product, which should provide a
-                representation of items.
-
-        Returns
-        --------
-            scores: :obj:`numpy.ndarray`
-        """
-        if normalize:
-            # this is purely an optimization that prevents numpy from having
-            # to multiply huge numbers
-            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
-        assert user_profiles.shape[1] == item_attributes.shape[0]
-        scores = np.dot(user_profiles, item_attributes)
-        return scores
-
-    def update_predicted_scores(self, user_profiles=None, item_attributes=None):
+    def update_predicted_scores(self):
         """
         Updates scores predicted by the system based on past interactions for
         better user predictions. Specifically, it updates :attr:`predicted_scores`
         with a dot product.
 
-        Parameters
-        -----------
-
-            user_profiles: :obj:`array_like` or None (optional, default: None)
-                First factor of the dot product, which should provide a
-                representation of users. If None, the first factor defaults to
-                :attr:`user_profiles`.
-
-            item_attributes: :obj:`array_like` or None (optional, default: None)
-                Second factor of the dot product, which should provide a
-                representation of items. If None, the second factor defaults to
-                :attr:`item_attributes`.
-
         Returns
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        if user_profiles is None:
-            user_profiles = self.users_hat
-        if item_attributes is None:
-            item_attributes = self.items_hat
-        predicted_scores = self.score(user_profiles, item_attributes)
+        user_profiles = self.users_hat
+        item_attributes = self.items_hat
+        predicted_scores = self.score_fn(user_profiles, item_attributes)
         self.log(
             "System updates predicted scores given by users (rows) "
             + "to items (columns):\n"
@@ -525,11 +410,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # train between steps:
             if train_between_steps:
-                self.update_predicted_scores(self.users_hat, self.items_hat)
+                self.update_predicted_scores()
             self.measure_content(interactions, item_idxs, step=t)
         # If no training in between steps, train at the end:
         if not train_between_steps:
-            self.update_predicted_scores(self.users_hat, self.items_hat)
+            self.update_predicted_scores()
             self.measure_content(interactions, item_idxs, step=t)
 
     def startup_and_train(self, timesteps=50):

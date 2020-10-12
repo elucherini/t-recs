@@ -4,6 +4,38 @@ from abc import ABC
 import numpy as np
 
 
+def inner_product(user_profiles, item_attributes, normalize=True):
+    """
+        Performs a dot product multiplication between user profiles and
+        item attributes to return the scores (utility) each item possesses
+        for each user. We call these matrices `user_profiles` and
+        `item_attributes` but note that you could perform an arbitrary matrix
+        dot product with this method.
+
+        Parameters
+        -----------
+
+            user_profiles: :obj:`array_like`
+                First factor of the dot product, which should provide a
+                representation of users.
+
+            item_attributes: :obj:`array_like`
+                Second factor of the dot product, which should provide a
+                representation of items.
+
+        Returns
+        --------
+            scores: :obj:`numpy.ndarray`
+        """
+    if normalize:
+        # this is purely an optimization that prevents numpy from having
+        # to multiply huge numbers
+        user_profiles = normalize_matrix(user_profiles, axis=1)
+    assert user_profiles.shape[1] == item_attributes.shape[0]
+    scores = np.dot(user_profiles, item_attributes)
+    return scores
+
+
 def normalize_matrix(matrix, axis=1):
     """ Normalize a matrix so that each row vector has a Euclidean norm of 1.
         If a vector is passed in, we treat it as a matrix with a single row.

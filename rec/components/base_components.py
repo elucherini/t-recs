@@ -128,3 +128,43 @@ class Component(FromNdArray, BaseComponent):
     def store_state(self):
         """ Store a copy of the component's value in the state history """
         self.observe(self, copy=True)
+
+
+class SystemStateModule:
+    """
+    Mixin for observers of :class:`Component` observables. Implements the
+    `Observer design pattern`_.
+
+    .. _`Observer design pattern`: https://en.wikipedia.org/wiki/Observer_pattern
+
+    This mixin allows the system to monitor the system state. That is, at each
+    timestep, an element will be added to the
+    :attr:`~components.base_components.BaseComponent.state_history` lists
+    of each component that the system is monitoring.
+
+    Attributes
+    ------------
+
+        _system_state: list
+            List of system state components that the system will monitor.
+
+    """
+
+    def __init__(self, components=None):
+        self._system_state = list()
+
+    def add_state_variable(self, *args):
+        """
+        Adds metrics to the :attr:`_system_state` list. This allows the system
+        to monitor these system state components.
+
+        Parameters
+        -----------
+
+            args: :class:`~components.base_components.BaseComponent`
+                Accepts a variable number of components that inherit from class
+                :class:`~components.base_components.BaseComponent`
+        """
+        register_observables(
+            observer=self._system_state, observables=list(args), observable_type=BaseComponent,
+        )

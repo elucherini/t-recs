@@ -7,6 +7,7 @@ from .base_components import (
     BaseComponent,
     BaseObservable,
     FromNdArray,
+    SystemStateModule,
     register_observables,
     unregister_observables,
 )
