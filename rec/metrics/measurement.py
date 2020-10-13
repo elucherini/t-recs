@@ -162,7 +162,7 @@ class InteractionMeasurement(Measurement):
         Measurement.__init__(self, name, verbose, init_value=None)
 
     @staticmethod
-    def generate_interaction_histogram(interactions, num_users, num_items):
+    def _generate_interaction_histogram(interactions, num_users, num_items):
         """
         Generates a histogram of the number of interactions per item at the
         given timestep.
@@ -207,7 +207,7 @@ class InteractionMeasurement(Measurement):
                 of the item with which user `u` interacted.
         """
         interactions = kwargs.pop("interactions", None)
-        histogram = self.generate_interaction_histogram(
+        histogram = self._generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
         )
         # histogram[::-1].sort()
@@ -325,7 +325,7 @@ class HomogeneityMeasurement(InteractionMeasurement):
         """
         interactions = kwargs.pop("interactions", None)
         assert interactions.size == recommender.num_users
-        histogram = self.generate_interaction_histogram(
+        histogram = self._generate_interaction_histogram(
             interactions, recommender.num_users, recommender.num_items
         )
         histogram[::-1].sort()
