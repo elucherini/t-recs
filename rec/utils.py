@@ -4,14 +4,14 @@ from rec.components import Users
 
 # Common input validation functions
 def validate_user_item_inputs(  # pylint: disable=too-many-arguments
-    num_users,
-    num_items,
-    users_hat,
-    items_hat,
-    users,
-    items,
-    default_num_users,
-    default_num_items,
+    num_users=None,
+    num_items=None,
+    users_hat=None,
+    items_hat=None,
+    users=None,
+    items=None,
+    default_num_users=None,
+    default_num_items=None,
     num_attributes=None,
 ):
     """ Validate that the inputs to the recommender system are consistent
@@ -22,39 +22,39 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
         Parameters
         -----------
 
-        num_users: int or None
+        num_users: int or None (optional, default: None)
             An integer representing the number of users in the system
 
-        num_items: int or None
+        num_items: int or None (optional, default: None)
             An integer representing the number of items in the system
 
-        users_hat: :obj:`numpy.ndarray` or None
+        users_hat: :obj:`numpy.ndarray` or None (optional, default: None)
             A 2D matrix whose first dimension should be equal to the number of
             users in the system. Typically this matrix refers to the system's
             internal representation of user profiles, not the "true" underlying
             user profiles, which are unknown to the system.
 
-        items_hat: :obj:`numpy.ndarray` or None
+        items_hat: :obj:`numpy.ndarray` or None (optional, default: None)
             A 2D matrix whose second dimension should be equal to the number of
             items in the system. Typically this matrix refers to the system's
             internal representation of item attributes, not the "true" underlying
             item attributes, which are unknown to the system.
 
-        users: :obj:`numpy.ndarray` or None
+        users: :obj:`numpy.ndarray` or None (optional, default: None)
             A 2D matrix whose first dimension should be equal to the number of
             users in the system. This is the "true" underlying user profile
             matrix.
 
-        items: :obj:`numpy.ndarray` or None
+        items: :obj:`numpy.ndarray` or None (optional, default: None)
             A 2D matrix whose second dimension should be equal to the number of
             items in the system. This is the "true" underlying item attribute
             matrix.
 
-        default_num_users: int or None
+        default_num_users: int or None (optional, default: None)
             If the number of users is not specified anywhere in the inputs, we return
             this value as the number of users to be returned.
 
-        default_num_items: int or None
+        default_num_items: int or None (optional, default: None)
             If the number of items is not specified anywhere in the inputs, we return
             this value as the number of items to be returned.
 
