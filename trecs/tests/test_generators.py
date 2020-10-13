@@ -1,5 +1,5 @@
 import numpy as np
-from rec.random import Generator, SocialGraphGenerator
+from trecs.random import Generator, SocialGraphGenerator
 import pytest
 
 

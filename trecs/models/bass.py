@@ -4,11 +4,11 @@ virality in online communications.
 """
 import networkx as nx
 import numpy as np
-from rec.components import BinarySocialGraph
-from rec.components import Component
-from rec.random import Generator, SocialGraphGenerator
-from rec.metrics import StructuralVirality
-from rec.utils import (
+from trecs.components import BinarySocialGraph
+from trecs.components import Component
+from trecs.random import Generator, SocialGraphGenerator
+from trecs.metrics import StructuralVirality
+from trecs.utils import (
     get_first_valid,
     is_array_valid_or_none,
     all_besides_none_equal,

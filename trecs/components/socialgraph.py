@@ -2,7 +2,7 @@
     can be used in different types of recommender systems
 """
 import numpy as np
-from rec.logging import VerboseMode
+from trecs.logging import VerboseMode
 
 
 class BinarySocialGraph(VerboseMode):

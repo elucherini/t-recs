@@ -1,7 +1,7 @@
 import test_helpers
 import numpy as np
-from rec.models import SocialFiltering, ContentFiltering, BassModel
-from rec.metrics import (
+from trecs.models import SocialFiltering, ContentFiltering, BassModel
+from trecs.metrics import (
     Measurement,
     HomogeneityMeasurement,
     MSEMeasurement,

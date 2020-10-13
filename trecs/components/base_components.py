@@ -4,8 +4,8 @@
 import inspect
 from abc import ABC, abstractmethod
 import numpy as np
-from rec.logging import VerboseMode
-from rec.random import Generator
+from trecs.logging import VerboseMode
+from trecs.random import Generator
 
 
 class FromNdArray(np.ndarray, VerboseMode):

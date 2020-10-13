@@ -5,18 +5,18 @@ implementable in our simulation library
 from abc import ABC, abstractmethod
 import numpy as np
 from tqdm import tqdm
-from rec.metrics import MeasurementModule
-from rec.components import (
+from trecs.metrics import MeasurementModule
+from trecs.components import (
     Users,
     Items,
     PredictedScores,
     PredictedUserProfiles,
     SystemStateModule,
 )
-from rec.logging import VerboseMode
-from rec.matrix_ops import inner_product
-from rec.random import Generator
-from rec.utils import is_valid_or_none
+from trecs.logging import VerboseMode
+from trecs.matrix_ops import inner_product
+from trecs.random import Generator
+from trecs.utils import is_valid_or_none
 
 
 class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):

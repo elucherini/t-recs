@@ -5,8 +5,8 @@ encapsulates some of these concepts)
 """
 import numpy as np
 
-from rec.matrix_ops import contains_row, slerp
-from rec.random import Generator
+from trecs.matrix_ops import contains_row, slerp
+from trecs.random import Generator
 from .base_components import Component, BaseComponent
 
 

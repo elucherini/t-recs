@@ -1,6 +1,6 @@
 """Various utility functions, mainly for matrices and input validation"""
 import numpy as np
-from rec.components import Users
+from trecs.components import Users
 
 # Common input validation functions
 def validate_user_item_inputs(  # pylint: disable=too-many-arguments

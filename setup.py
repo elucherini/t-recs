@@ -7,7 +7,7 @@ def readme():
 
 
 setup(
-    name="rec",
+    name="trecs",
     version="0.1.0b",
     url="https://github.com/elucherini/t-recs",
     license="GPL-3.0",

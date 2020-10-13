@@ -1,5 +1,5 @@
-from rec.models.recommender import SystemStateModule
-from rec.components import PredictedUserProfiles
+from trecs.models.recommender import SystemStateModule
+from trecs.components import PredictedUserProfiles
 import numpy as np
 
 

@@ -1,3 +1,3 @@
 """ T-RECS simulation package """
-from rec import models, components, metrics, random
+from trecs import models, components, metrics, random
 from .logging import VerboseMode

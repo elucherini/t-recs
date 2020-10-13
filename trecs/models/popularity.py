@@ -2,8 +2,8 @@
 Popularity-based recommender system
 """
 import numpy as np
-from rec.metrics import MSEMeasurement
-from rec.utils import validate_user_item_inputs
+from trecs.metrics import MSEMeasurement
+from trecs.utils import validate_user_item_inputs
 from .recommender import BaseRecommender
 
 

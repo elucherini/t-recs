@@ -1,9 +1,9 @@
-from rec.models import ContentFiltering
-from rec.components import Users
+from trecs.models import ContentFiltering
+from trecs.components import Users
 import numpy as np
 import pytest
 import test_helpers
-from rec.matrix_ops import normalize_matrix
+from trecs.matrix_ops import normalize_matrix
 
 
 class TestContentFiltering:

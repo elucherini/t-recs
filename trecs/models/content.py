@@ -1,8 +1,8 @@
 """ Content filtering class """
 import numpy as np
-from rec.metrics import MSEMeasurement
-from rec.random import Generator
-from rec.utils import (
+from trecs.metrics import MSEMeasurement
+from trecs.random import Generator
+from trecs.utils import (
     non_none_values,
     is_valid_or_none,
     validate_user_item_inputs,

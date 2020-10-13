@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 import networkx as nx
 from networkx import wiener_index
 import numpy as np
-from rec.logging import VerboseMode
-from rec.components import (
+from trecs.logging import VerboseMode
+from trecs.components import (
     BaseObservable,
     register_observables,
 )

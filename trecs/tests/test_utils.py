@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 import test_helpers
-from rec.utils import validate_user_item_inputs
+from trecs.utils import validate_user_item_inputs
 
 
 class TestUtils:

@@ -78,7 +78,7 @@ class SocialGraphGenerator:  # pylint: disable=too-few-public-methods
 
             A minimal use case:
 
-                >>> from rec.random import SocialGraphGenerator
+                >>> from trecs.random import SocialGraphGenerator
                 >>> num = 1000 # <-- number of nodes (users)
                 >>> graph = SocialGraphGenerator.generate_random_graph(num=num)
                 >>> graph # <-- 1000x1000 binomial adjacency matrix

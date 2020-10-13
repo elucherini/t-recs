@@ -1,4 +1,4 @@
-from rec.models import PopularityRecommender
+from trecs.models import PopularityRecommender
 import numpy as np
 import pytest
 import test_helpers
