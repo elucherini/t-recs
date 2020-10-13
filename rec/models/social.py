@@ -1,3 +1,7 @@
+"""
+Social filtering recommender system, where users get shown items that were
+interacted with by users in their social networks
+"""
 import networkx as nx
 import numpy as np
 from rec.metrics import MSEMeasurement
