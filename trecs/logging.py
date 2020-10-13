@@ -47,7 +47,7 @@ class DebugLogger:
         self.logger.setLevel(level)
 
         # create file handler and set level to debug
-        self.handler = logging.FileHandler("rec.log")
+        self.handler = logging.FileHandler("trecs.log")
         self.handler.setLevel(logging.DEBUG)
 
         # create formatter

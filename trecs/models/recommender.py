@@ -106,7 +106,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             num_items_per_iter: int
                 Number of items presented to the user per iteration.
 
-            random_state: :class:`rec.random.generators.Generator`
+            random_state: :class:`trecs.random.generators.Generator`
 
             indices: :obj:`numpy.ndarray`
                 A `|U|x|I|` array representing the past interactions of each
@@ -287,7 +287,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
             # such that higher-preference items get more probability mass
-            num_items_unseen = rec.shape[1]  # number of items unseen per user
+            num_items_unseen = trecs.shape[1]  # number of items unseen per user
             probabilities = np.logspace(0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2)
             probabilities = probabilities / probabilities.sum()
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)

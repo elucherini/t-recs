@@ -55,9 +55,9 @@ Example usage
 
 ..  code-block:: bash
 
-  import rec
+  import trecs
 
-  recsys = rec.models.ContentFiltering()
+  recsys = trecs.models.ContentFiltering()
   recsys.run(timesteps=10)
   measurements = recsys.get_measurements()
 

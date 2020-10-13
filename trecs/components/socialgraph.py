@@ -8,7 +8,7 @@ from trecs.logging import VerboseMode
 class BinarySocialGraph(VerboseMode):
     """
     A mixin for classes with a
-    :attr:`~rec.models.recommender.BaseRecommender.users_hat` attribute
+    :attr:`~trecs.models.recommender.BaseRecommender.users_hat` attribute
     to gain the basic functionality of a binary social graph.
 
     It assumes a network adjacency matrix of size `|U|x|U|`.

@@ -107,7 +107,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     ------------
 
         Attributes from BaseComponent
-            Inherited by :class:`~rec.components.base_components.BaseComponent`
+            Inherited by :class:`~trecs.components.base_components.BaseComponent`
 
         actual_user_profiles: :obj:`numpy.ndarray`
             A matrix representing the *real* similarity between each item and
