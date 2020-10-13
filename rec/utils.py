@@ -3,7 +3,7 @@ import numpy as np
 from rec.components import Users
 
 # Common input validation functions
-def validate_user_item_inputs(
+def validate_user_item_inputs(  # pylint: disable=too-many-arguments
     num_users,
     num_items,
     items_hat,

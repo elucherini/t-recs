@@ -104,7 +104,7 @@ class PopularityRecommender(BaseRecommender):
 
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(  # pylint: disable-all
         self,
         num_users=None,
         num_items=None,

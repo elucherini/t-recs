@@ -129,7 +129,7 @@ class ContentFiltering(BaseRecommender):
 
     """
 
-    def __init__(  # pylint: disable=too-many-arguments,too-many-branches
+    def __init__(  # pylint: disable-all
         self,
         num_users=None,
         num_items=None,
@@ -144,7 +144,8 @@ class ContentFiltering(BaseRecommender):
         num_items_per_iter=10,
         **kwargs
     ):
-        # check values for attributes
+        # pylint: disable=duplicate-code
+        # check values for number of attributes
         if not is_valid_or_none(num_attributes, int):
             raise TypeError("num_attributes must be an int")
 

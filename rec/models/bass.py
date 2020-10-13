@@ -45,7 +45,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     """ Bass model that, for now, only supports one item at a time
     """
 
-    def __init__(  # pylint: disable=too-many-branches,too-many-arguments,super-init-not-called
+    def __init__(  # pylint: disable-all
         self,
         num_users=100,
         num_items=1,

@@ -125,7 +125,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         """
 
-    def __init__(  # pylint: disable=too-many-arguments,super-init-not-called
+    def __init__(  # pylint: disable-all
         self,
         num_users=None,
         num_items=None,
