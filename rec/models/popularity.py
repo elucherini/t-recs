@@ -3,12 +3,7 @@ Popularity-based recommender system
 """
 import numpy as np
 from rec.metrics import MSEMeasurement
-from rec.utils import (
-    get_first_valid,
-    is_array_valid_or_none,
-    all_besides_none_equal,
-    all_none,
-)
+from rec.utils import validate_user_item_inputs
 from .recommender import BaseRecommender
 
 
@@ -111,8 +106,8 @@ class PopularityRecommender(BaseRecommender):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        num_users=100,
-        num_items=1250,
+        num_users=None,
+        num_items=None,
         item_representation=None,
         user_representation=None,
         actual_user_representation=None,
@@ -123,22 +118,16 @@ class PopularityRecommender(BaseRecommender):
         num_items_per_iter=10,
         **kwargs
     ):
-
-        if all_none(item_representation, num_items):
-            raise ValueError("num_items and item_representation can't be all None")
-        if all_none(user_representation, num_users):
-            raise ValueError("num_users and user_representation can't be all None")
-
-        if not is_array_valid_or_none(item_representation, ndim=2):
-            raise ValueError("item_representation is not valid")
-        if not is_array_valid_or_none(user_representation, ndim=2):
-            raise ValueError("item_representation is not valid")
-
-        num_items = get_first_valid(
-            getattr(item_representation, "shape", [None, None])[1], num_items
+        num_users, num_items = validate_user_item_inputs(
+            num_users,
+            num_items,
+            item_representation,
+            user_representation,
+            actual_item_representation,
+            actual_user_representation,
+            100,
+            1250,
         )
-
-        num_users = get_first_valid(getattr(user_representation, "shape", [None])[0], num_users)
 
         if item_representation is None:
             item_representation = np.zeros((1, num_items), dtype=int)
@@ -149,21 +138,6 @@ class PopularityRecommender(BaseRecommender):
             actual_item_representation = np.copy(item_representation)
         if user_representation is None:
             user_representation = np.ones((num_users, 1), dtype=int)
-
-        if not all_besides_none_equal(
-            getattr(user_representation, "shape", [None, None])[1],
-            getattr(item_representation, "shape", [None])[0],
-        ):
-            raise ValueError(
-                "user_representation.shape[1] should be the same as "
-                + "item_representation.shape[0]"
-            )
-        if not all_besides_none_equal(getattr(user_representation, "shape", [None])[0], num_users):
-            raise ValueError("user_representation.shape[0] should be the same as " + "num_users")
-        if not all_besides_none_equal(
-            getattr(item_representation, "shape", [None, None])[1], num_items
-        ):
-            raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
 
         measurements = [MSEMeasurement()]
 

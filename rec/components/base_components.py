@@ -4,7 +4,7 @@
 import inspect
 from abc import ABC, abstractmethod
 import numpy as np
-from rec.utils import VerboseMode
+from rec.logging import VerboseMode
 from rec.random import Generator
 
 
@@ -130,7 +130,7 @@ class Component(FromNdArray, BaseComponent):
         self.observe(self, copy=True)
 
 
-class SystemStateModule:
+class SystemStateModule:  # pylint: disable=too-few-public-methods
     """
     Mixin for observers of :class:`Component` observables. Implements the
     `Observer design pattern`_.

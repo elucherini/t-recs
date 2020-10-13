@@ -3,7 +3,7 @@ from rec.components import Users
 import numpy as np
 import pytest
 import test_helpers
-from rec.utils import normalize_matrix
+from rec.matrix_ops import normalize_matrix
 
 
 class TestContentFiltering:
@@ -224,13 +224,13 @@ class TestContentFiltering:
             bad_item_repr = np.random.random(size=(item_repr.shape[0] + 1, item_repr.shape[1]))
 
         with pytest.raises(ValueError):
-            c = ContentFiltering(user_representation=bad_user_repr, item_representation=item_repr)
+            ContentFiltering(user_representation=bad_user_repr, item_representation=item_repr)
         with pytest.raises(ValueError):
-            c = ContentFiltering(user_representation=user_repr, item_representation=bad_item_repr)
+            ContentFiltering(user_representation=user_repr, item_representation=bad_item_repr)
         with pytest.raises(ValueError):
             # actual user prefs and system's representation of user's prefs
             # must be the same dimension
-            c = ContentFiltering(
+            ContentFiltering(
                 user_representation=user_repr,
                 actual_user_scores=bad_user_repr,
                 item_representation=bad_item_repr,
@@ -310,7 +310,7 @@ class TestContentFiltering:
         model = ContentFiltering(
             user_representation=np.copy(user_repr),
             item_representation=item_repr,
-            actual_user_scores=users,
+            actual_user_representation=users,
         )
         model.run(timesteps=1)
         # user profiles should have drifted after interacting with items

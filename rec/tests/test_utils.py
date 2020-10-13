@@ -1,6 +1,6 @@
 import numpy as np
 import test_helpers
-from rec.utils import normalize_matrix, contains_row, slerp
+from rec.matrix_ops import normalize_matrix, contains_row, slerp
 
 
 class TestUtils:

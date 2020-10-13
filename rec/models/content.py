@@ -2,13 +2,10 @@
 import numpy as np
 from rec.metrics import MSEMeasurement
 from rec.random import Generator
-from rec.components import Users
 from rec.utils import (
-    get_first_valid,
-    is_array_valid_or_none,
-    all_besides_none_equal,
-    all_none,
+    non_none_values,
     is_valid_or_none,
+    validate_user_item_inputs,
 )
 from .recommender import BaseRecommender
 
@@ -134,12 +131,12 @@ class ContentFiltering(BaseRecommender):
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-branches
         self,
-        num_users=100,
-        num_items=1250,
-        num_attributes=1000,
+        num_users=None,
+        num_items=None,
+        num_attributes=None,
         item_representation=None,
         user_representation=None,
-        actual_user_scores=None,
+        actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
         seed=None,
@@ -147,57 +144,37 @@ class ContentFiltering(BaseRecommender):
         num_items_per_iter=10,
         **kwargs
     ):
-
-        # Give precedence to item_representation, otherwise build random one
-        if all_none(item_representation, num_items):
-            raise ValueError("num_items and item_representation can't be all None")
-        if all_none(user_representation, num_users):
-            raise ValueError("num_users and user_representation can't be all None")
-        if all_none(user_representation, item_representation, num_attributes):
-            raise ValueError(
-                "item_representation, user_representation, and "
-                + "num_attributes can't be all None"
-            )
-
-        if not is_array_valid_or_none(item_representation, ndim=2):
-            raise ValueError("item_representation is not valid")
-        if not is_array_valid_or_none(user_representation, ndim=2):
-            raise ValueError("user_representation is not valid")
+        # check values for attributes
         if not is_valid_or_none(num_attributes, int):
             raise TypeError("num_attributes must be an int")
-        # if user_representation and actual_user_scores are both
-        # passed in, they must have matching dimensions on the first axis.
-        if user_representation is not None and actual_user_scores is not None:
-            actual_users = (
-                get_first_valid(
-                    getattr(actual_user_scores.actual_user_scores, "shape", [None])[0],
-                    getattr(actual_user_scores.actual_user_profiles, "shape", [None])[0],
-                )
-                if isinstance(actual_user_scores, Users)
-                else actual_user_scores.shape[0]
-            )
-            # number of users should match up, so rows should be identical
-            if user_representation.shape[0] != actual_users:
-                raise ValueError(
-                    ("Dimensions of user_representation and " "actual_user_scores do not align.")
-                )
 
-        num_items = get_first_valid(
-            getattr(item_representation, "shape", [None, None])[1], num_items
-        )
-        attribute_values = [
-            getattr(item_representation, "shape", [None])[0],
-            getattr(user_representation, "shape", [None, None])[1],
-            num_attributes,
-        ]
-        num_attributes = get_first_valid(*attribute_values)
-
-        num_users = get_first_valid(
-            getattr(actual_user_scores, "shape", [None])[0],
-            getattr(user_representation, "shape", [None])[0],
+        num_users, num_items = validate_user_item_inputs(
             num_users,
+            num_items,
+            item_representation,
+            user_representation,
+            actual_item_representation,
+            actual_user_representation,
+            100,
+            1250,
+            num_attributes=num_attributes,
         )
 
+        # infer the number of attributes based on the dimensions of the
+        # matrices, otherwise, use the default value
+        num_attrs_vals = non_none_values(
+            getattr(user_representation, "shape", [None, None])[1],
+            getattr(item_representation, "shape", [None])[0],
+            num_attributes,
+        )
+
+        if len(num_attrs_vals) == 0:
+            num_attributes = 1000
+        else:
+            num_attributes = list(num_attrs_vals)[0]
+
+        # generate recommender's initial "beliefs" about user profiles
+        # and item attributes
         if user_representation is None:
             user_representation = np.zeros((num_users, num_attributes))
         if item_representation is None:
@@ -210,22 +187,6 @@ class ContentFiltering(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        if not all_besides_none_equal(
-            getattr(user_representation, "shape", [None, None])[1],
-            getattr(item_representation, "shape", [None])[0],
-            num_attributes,
-        ):
-            raise ValueError(
-                "user_representation.shape[1] should be the same as "
-                + "item_representation.shape[0]"
-            )
-        if not all_besides_none_equal(getattr(user_representation, "shape", [None])[0], num_users):
-            raise ValueError("user_representation.shape[0] should be the same as " + "num_users")
-        if not all_besides_none_equal(
-            getattr(item_representation, "shape", [None, None])[1], num_items
-        ):
-            raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
-
         self.num_attributes = num_attributes
         measurements = [MSEMeasurement()]
 
@@ -234,7 +195,7 @@ class ContentFiltering(BaseRecommender):
             self,
             user_representation,
             item_representation,
-            actual_user_scores,
+            actual_user_representation,
             actual_item_representation,
             num_users,
             num_items,

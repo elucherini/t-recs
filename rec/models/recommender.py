@@ -13,8 +13,10 @@ from rec.components import (
     PredictedUserProfiles,
     SystemStateModule,
 )
-from rec.utils import VerboseMode, is_valid_or_none, inner_product
+from rec.logging import VerboseMode
+from rec.matrix_ops import inner_product
 from rec.random import Generator
+from rec.utils import is_valid_or_none
 
 
 class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):

@@ -7,12 +7,7 @@ import numpy as np
 from rec.metrics import MSEMeasurement
 from rec.components import BinarySocialGraph
 from rec.random import SocialGraphGenerator
-from rec.utils import (
-    get_first_valid,
-    is_array_valid_or_none,
-    all_besides_none_equal,
-    all_none,
-)
+from rec.utils import get_first_valid, non_none_values, validate_user_item_inputs
 from .recommender import BaseRecommender
 
 
@@ -118,7 +113,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         >>> sf = SocialFiltering(num_users=50, user_representation=user_representation)
         >>> sf.items.shape
         (100, 200) # <-- 100 users, 200 items.
-        # Note thatnum_users was ignored because user_representation was specified.
+        # Note that num_users was ignored because user_representation was specified.
 
         The same is true about the number of items or users and item representations.
 
@@ -132,11 +127,11 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
     def __init__(  # pylint: disable=too-many-arguments,super-init-not-called
         self,
-        num_users=100,
-        num_items=1250,
+        num_users=None,
+        num_items=None,
         item_representation=None,
         user_representation=None,
-        actual_user_scores=None,
+        actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
         verbose=False,
@@ -144,26 +139,21 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         seed=None,
         **kwargs
     ):
-        # Give precedence to user_representation, otherwise build empty one
-
-        if all_none(user_representation, num_users):
-            raise ValueError("user_representation and num_users can't be all None")
-        if all_none(item_representation, num_items):
-            raise ValueError("item_representation and num_items can't be all None")
-
-        if not is_array_valid_or_none(user_representation, ndim=2):
-            raise ValueError("user_representation is invalid")
-        if not is_array_valid_or_none(item_representation, ndim=2):
-            raise ValueError("item_representation is not valid")
-        num_items = get_first_valid(
-            getattr(item_representation, "shape", [None, None])[1], num_items
-        )
-
-        num_users = get_first_valid(
-            getattr(user_representation, "shape", [None])[0],
-            getattr(item_representation, "shape", [None])[0],
+        num_users, num_items = validate_user_item_inputs(
             num_users,
+            num_items,
+            item_representation,
+            user_representation,
+            actual_item_representation,
+            actual_user_representation,
+            None,  # see if we can get the default number of users from the items array
+            1250,
         )
+        if num_users is None:
+            # get user representation from items instead
+            num_users = get_first_valid(
+                getattr(item_representation, "shape", [None])[0], 100  # default to 100 users
+            )
 
         if user_representation is None:
             user_representation = SocialGraphGenerator.generate_random_graph(
@@ -171,30 +161,21 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             )
         if item_representation is None:
             item_representation = np.zeros((num_users, num_items), dtype=int)
+
+        # verify that the user representation is an adjacency matrix and that
+        # the item representation aligns
+        users_vals = non_none_values(
+            getattr(user_representation, "shape", [None, None])[1],
+            getattr(item_representation, "shape", [None])[0],
+            num_users,
+        )
+        if len(users_vals) > 1:
+            raise ValueError("Number of users must be consistent across all inputs")
         # if the actual item representation is not specified, we assume
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
-        if not all_besides_none_equal(
-            getattr(user_representation, "shape", [None])[0],
-            getattr(user_representation, "shape", [None, None])[1],
-            num_users,
-        ):
-            raise ValueError("user_representation must be a square matrix")
-        if not all_besides_none_equal(
-            getattr(user_representation, "shape", [None, None])[1],
-            getattr(item_representation, "shape", [None])[0],
-            num_users,
-        ):
-            raise ValueError(
-                "user_representation.shape[1] should be the same as "
-                + "item_representation.shape[0]"
-            )
-        if not all_besides_none_equal(
-            getattr(item_representation, "shape", [None, None])[1], num_items
-        ):
-            raise ValueError("item_representation.shape[1] should be the same as " + "num_items")
 
         measurements = [MSEMeasurement()]
         # Initialize recommender system
@@ -202,7 +183,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             self,
             user_representation,
             item_representation,
-            actual_user_scores,
+            actual_user_representation,
             actual_item_representation,
             num_users,
             num_items,
