@@ -39,20 +39,27 @@ class ContentFiltering(BaseRecommender):
         num_attributes: int (optional, default: 1000)
             The number of attributes `|A|` in the system.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A `|A|x|I|` matrix representing the similarity between each item and
-            attribute. If this is not None, num_items is ignored.
-
         user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
             A `|U|x|A|` matrix representing the similarity between each item and
-            attribute, as interpreted by the system. If this is not None,
-            num_users is ignored.
+            attribute, as interpreted by the system.
 
-        actual_user_scores: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.items.Items` (optional, default: None)
-            A `|U|x|I|` matrix representing the real user scores. This matrix is
-            **not** used for recommendations. This is only kept for measurements
-            and the system is unaware of it.
+        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|A|x|I|` matrix representing the similarity between each item and
+            attribute.
+
+        actual_user_representation: :obj:`numpy.ndarray` or None or \
+                            :class:`~components.users.Users` (optional, default: None)
+            Either a `|U|x|T|` matrix representing the real user profiles, where
+            `T` is the number of attributes in the real underlying user profile,
+            or a `Users` object that contains the real user profiles or real
+            user-item scores. This matrix is **not** used for recommendations. This
+            is only kept for measurements and the system is unaware of it.
+
+        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|T|x|I|` matrix representing the real user profiles, where
+            `T` is the number of attributes in the real underlying item profile.
+            This matrix is **not** used for recommendations. This
+            is only kept for measurements and the system is unaware of it.
 
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
@@ -134,8 +141,8 @@ class ContentFiltering(BaseRecommender):
         num_users=None,
         num_items=None,
         num_attributes=None,
-        item_representation=None,
         user_representation=None,
+        item_representation=None,
         actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
@@ -152,10 +159,10 @@ class ContentFiltering(BaseRecommender):
         num_users, num_items = validate_user_item_inputs(
             num_users,
             num_items,
-            item_representation,
             user_representation,
-            actual_item_representation,
+            item_representation,
             actual_user_representation,
+            actual_item_representation,
             100,
             1250,
             num_attributes=num_attributes,

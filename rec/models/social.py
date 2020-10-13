@@ -51,10 +51,19 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             A `|U|x|U|` adjacency matrix representing each users' social network.
             If this is not None, num_users is ignored.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A `|U|x|I|` matrix representing the real user scores. This matrix is
-            **not** used for recommendations. This is only kept for measurements
-            and the system is unaware of it.
+        actual_user_representation: :obj:`numpy.ndarray` or None or \
+                            :class:`~components.users.Users` (optional, default: None)
+            Either a `|U|x|T|` matrix representing the real user profiles, where
+            `T` is the number of attributes in the real underlying user profile,
+            or a `Users` object that contains the real user profiles or real
+            user-item scores. This matrix is **not** used for recommendations. This
+            is only kept for measurements and the system is unaware of it.
+
+        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A `|T|x|I|` matrix representing the real user profiles, where
+            `T` is the number of attributes in the real underlying item profile.
+            This matrix is **not** used for recommendations. This
+            is only kept for measurements and the system is unaware of it.
 
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
@@ -129,8 +138,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         self,
         num_users=None,
         num_items=None,
-        item_representation=None,
         user_representation=None,
+        item_representation=None,
         actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
@@ -142,10 +151,10 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         num_users, num_items = validate_user_item_inputs(
             num_users,
             num_items,
-            item_representation,
             user_representation,
-            actual_item_representation,
+            item_representation,
             actual_user_representation,
+            actual_item_representation,
             None,  # see if we can get the default number of users from the items array
             1250,
         )

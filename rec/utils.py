@@ -6,16 +6,69 @@ from rec.components import Users
 def validate_user_item_inputs(  # pylint: disable=too-many-arguments
     num_users,
     num_items,
-    items_hat,
     users_hat,
-    items,
+    items_hat,
     users,
+    items,
     default_num_users,
     default_num_items,
     num_attributes=None,
 ):
-    """ Validate that the user and item matrices passed in look
-        correct
+    """ Validate that the inputs to the recommender system are consistent
+        based on their dimensions. Furthermore, if all of the inputs
+        are consistent, we return the number of users and items that are inferred
+        from the inputs, or fall back to a provided default number.
+
+        Parameters
+        -----------
+
+        num_users: int or None
+            An integer representing the number of users in the system
+
+        num_items: int or None
+            An integer representing the number of items in the system
+
+        users_hat: :obj:`numpy.ndarray` or None
+            A 2D matrix whose first dimension should be equal to the number of
+            users in the system. Typically this matrix refers to the system's
+            internal representation of user profiles, not the "true" underlying
+            user profiles, which are unknown to the system.
+
+        items_hat: :obj:`numpy.ndarray` or None
+            A 2D matrix whose second dimension should be equal to the number of
+            items in the system. Typically this matrix refers to the system's
+            internal representation of item attributes, not the "true" underlying
+            item attributes, which are unknown to the system.
+
+        users: :obj:`numpy.ndarray` or None
+            A 2D matrix whose first dimension should be equal to the number of
+            users in the system. This is the "true" underlying user profile
+            matrix.
+
+        items: :obj:`numpy.ndarray` or None
+            A 2D matrix whose second dimension should be equal to the number of
+            items in the system. This is the "true" underlying item attribute
+            matrix.
+
+        default_num_users: int or None
+            If the number of users is not specified anywhere in the inputs, we return
+            this value as the number of users to be returned.
+
+        default_num_items: int or None
+            If the number of items is not specified anywhere in the inputs, we return
+            this value as the number of items to be returned.
+
+        num_attributes: int or None (optional, default: None)
+            Check that the number of attributes per user & per item are equal to
+            this specified number.
+
+        Returns
+        --------
+            num_users: int
+                Number of users, inferred from the inputs (or provided default).
+
+            num_items: int
+                Number of items, inferred from the inputs (or provided default).
     """
     if not is_array_valid_or_none(items_hat, ndim=2):
         raise ValueError("items matrix must be a 2D matrix or None")
