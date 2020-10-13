@@ -101,15 +101,11 @@ class PopularityRecommender(BaseRecommender):
             >>> cf.users_hat.shape
             (100, 1)
 
-        Note that user and item representations have the precedence over the
-        number of users and the number of items specified at initialization.
-        For example:
-
-        >>> user_representation = np.ones((3000, 1))
-        >>> pr = PopularityRecommender(num_users=50, user_representation=user_representation)
-        >>> pr.users_hat.shape
-        (3000, 1)
-        # 30000 users. num_users was ignored because user_representation was specified.
+        Note that all arguments passed in at initialization must be consistent -
+        otherwise, an error is thrown. For example, one cannot pass in
+        `num_users=200` but have `user_representation.shape` be `(300, 1)`.
+        Likewise, one cannot pass in `num_items=1000` but have
+        `item_representation.shape` be `(1, 500)`.
 
     """
 

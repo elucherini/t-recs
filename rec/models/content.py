@@ -117,23 +117,11 @@ class ContentFiltering(BaseRecommender):
         >>> cf.users_hat.shape
         (30, 100)
 
-        Note that user and item representations have the precedence over the
-        number of users/items/attributes specified at initialization. For example:
-
-        >>> cf = ContentFiltering(num_users=50, user_representation=user_representation)
-        >>> cf.users_hat.shape
-        (30, 100) # <-- 30 users, 100 attributes.
-        # Note that num_users was ignored because user_representation was specified.
-
-        The same happens with the number of items and the number of attributes.
-        In the latter case, the explicit number of attributes is ignored:
-
-        >>> cf = ContentFiltering(num_attributes=1400, item_representation=item_representation)
-        >>> cf.items.shape
-        (100, 200) # <-- 100 attributes, 200 items. num_attributes was ignored.
-        >>> cf.users_hat.shape
-        (100, 100) # <-- 100 users (default), 100 attributes (as specified by item_representation)
-
+        Note that all arguments passed in at initialization must be consistent -
+        otherwise, an error is thrown. For example, one cannot pass in
+        `num_users=200` but have `user_representation.shape` be `(300, 100)`.
+        Likewise, one cannot pass in `num_items=1000` but have
+        `item_representation.shape` be `(100, 500)`.
     """
 
     def __init__(  # pylint: disable-all

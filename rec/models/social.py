@@ -116,22 +116,11 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         >>> sf.users_hat.shape
         (100, 100)
 
-        Note that user and item representations have the precedence over the
-        number of users/items specified at initialization. For example:
-
-        >>> sf = SocialFiltering(num_users=50, user_representation=user_representation)
-        >>> sf.items.shape
-        (100, 200) # <-- 100 users, 200 items.
-        # Note that num_users was ignored because user_representation was specified.
-
-        The same is true about the number of items or users and item representations.
-
-        >>> sf = SocialFiltering(num_users=1400, item_representation=item_representation)
-        >>> sf.items.shape
-        (100, 200) # <-- 100 attributes, 200 items. num_users was ignored.
-        >>> cf.user_profile.shape
-        (100, 100) # <-- 100 users (as implicitly specified by item_representation)
-
+        Note that all arguments passed in at initialization must be consistent -
+        otherwise, an error is thrown. For example, one cannot pass in
+        `num_users=200` but have `user_representation.shape` be `(200, 500)` or
+        `(300, 300)`. Likewise, one cannot pass in `num_items=1000` but have
+        `item_representation.shape` be `(200, 500)`.
         """
 
     def __init__(  # pylint: disable-all
