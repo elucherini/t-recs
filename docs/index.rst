@@ -1,4 +1,4 @@
-.. Algo-segregation documentation master file, created by
+.. T-RECS documentation master file, created by
    sphinx-quickstart on Mon Feb  3 10:02:24 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -18,7 +18,7 @@ Known bugs and inconsistencies
 ================================
 Please check the `First Round`_ milestone for issues signaling bugs and limitation.
 
-.. _First Round: https://github.com/elucherini/algo-segregation/milestone/3
+.. _First Round: https://github.com/elucherini/t-recs/milestone/3
 
 Feedback and contributions
 ===========================
@@ -30,8 +30,8 @@ Feedback of any form is welcome. I especially encourage:
 - Corrections and fixes to these docs.
 - General feedback about the tool. Is it useful to you? Is it easy to use? What would improve it?
 
-.. _pull requests: https://github.com/elucherini/algo-segregation/pulls
-.. _GitHub issues: https://github.com/elucherini/algo-segregation/milestone/3
+.. _pull requests: https://github.com/elucherini/t-recs/pulls
+.. _GitHub issues: https://github.com/elucherini/t-recs/milestone/3
 
 Indices and tables
 ==================

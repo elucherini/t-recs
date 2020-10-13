@@ -25,8 +25,8 @@ To install the simulator, you will need the Python package manager, pip. After a
 
 ..  code-block:: bash
 
-  git clone https://github.com/elucherini/algo-segregation.git
-  cd algo-segregation
+  git clone https://github.com/elucherini/t-recs.git
+  cd t-recs
   pip install -e .
 
 
@@ -66,5 +66,5 @@ Documentation
 
 A first draft of the documentation is available `here`_. In its current version, the documentation can be used as a supplement to exploring details in the code. Currently, the tutorials in examples_ might be a more useful and centralized resource to learn how to use the system.
 
-.. _here: https://elucherini.github.io/algo-segregation/index.html
+.. _here: https://elucherini.github.io/t-recs/index.html
 .. _examples: examples/

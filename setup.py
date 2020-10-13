@@ -9,7 +9,7 @@ def readme():
 setup(
     name="rec",
     version="0.1.0b",
-    url="https://github.com/elucherini/algo-segregation",
+    url="https://github.com/elucherini/t-recs",
     license="GPL-3.0",
     author="Elena Lucherini",
     author_email="elucherini@cs.princeton.edu",

@@ -21,7 +21,7 @@ sys.setrecursionlimit(1500)
 
 # -- Project information -----------------------------------------------------
 
-project = "Algo-segregation"
+project = "T-RECS"
 copyright = "2020, Elena Lucherini"
 author = "Elena Lucherini"
 
@@ -110,7 +110,7 @@ html_static_path = ["_static"]
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "Algo-segregationdoc"
+htmlhelp_basename = "T-RECSdoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -136,8 +136,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "Algo-segregation.tex",
-        "Algo-segregation Documentation",
+        "T-RECS.tex",
+        "T-RECS Documentation",
         "Elena Lucherini",
         "manual",
     ),
@@ -148,7 +148,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "algo-segregation", "Algo-segregation Documentation", [author], 1)]
+man_pages = [(master_doc, "t-recs", "T-RECS Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -159,10 +159,10 @@ man_pages = [(master_doc, "algo-segregation", "Algo-segregation Documentation", 
 texinfo_documents = [
     (
         master_doc,
-        "Algo-segregation",
-        "Algo-segregation Documentation",
+        "T-RECS",
+        "T-RECS Documentation",
         author,
-        "Algo-segregation",
+        "T-RECS",
         "One line description of project.",
         "Miscellaneous",
     ),

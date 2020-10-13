@@ -4,9 +4,9 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = Algo-segregation
+SPHINXPROJ    = T-RECS
 SOURCEDIR     = .
-BUILDDIR      = ../../algo-segregation-docs
+BUILDDIR      = ../../t-recs-docs
 
 # Put it first so that "make" without argument is like "make help".
 help:
