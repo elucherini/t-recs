@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>models.social &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>models.social &mdash; T-RECS 0.1.0b documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Algo-segregation</a>
+          <a href="../../index.html">T-RECS</a>
         
       </nav>
 
@@ -145,24 +145,40 @@
            <div itemprop="articleBody">
             
   <h1>Source code for models.social</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">rec.models</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Social filtering recommender system, where users get shown items that were</span>
+<span class="sd">interacted with by users in their social networks</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">rec.metrics</span> <span class="kn">import</span> <span class="n">MSEMeasurement</span>
-<span class="kn">from</span> <span class="nn">rec.components</span> <span class="kn">import</span> <span class="n">BinarySocialGraph</span>
-<span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">SocialGraphGenerator</span>
-<span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">get_first_valid</span><span class="p">,</span> <span class="n">is_array_valid_or_none</span><span class="p">,</span> <span class="n">is_equal_dim_or_none</span><span class="p">,</span> <span class="n">all_none</span><span class="p">,</span> <span class="n">is_valid_or_none</span>
+<span class="kn">from</span> <span class="nn">trecs.metrics</span> <span class="kn">import</span> <span class="n">MSEMeasurement</span>
+<span class="kn">from</span> <span class="nn">trecs.components</span> <span class="kn">import</span> <span class="n">BinarySocialGraph</span>
+<span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">SocialGraphGenerator</span>
+<span class="kn">from</span> <span class="nn">trecs.utils</span> <span class="kn">import</span> <span class="n">get_first_valid</span><span class="p">,</span> <span class="n">non_none_values</span><span class="p">,</span> <span class="n">validate_user_item_inputs</span>
+<span class="kn">from</span> <span class="nn">.recommender</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
+
 
 <div class="viewcode-block" id="SocialFiltering"><a class="viewcode-back" href="../../reference/models.html#models.social.SocialFiltering">[docs]</a><span class="k">class</span> <span class="nc">SocialFiltering</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">,</span> <span class="n">BinarySocialGraph</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A customizable social filtering recommendation system.</span>
 
-<span class="sd">    With social filtering, users are presented items that were previously liked by other users in their social networks.</span>
+<span class="sd">    With social filtering, users are presented items that were previously</span>
+<span class="sd">    liked by other users in their social networks.</span>
 
-<span class="sd">    The social network is represented by a `|U|x|U|` matrix, where `|U|` is the number of users in the system. For each pair of users `u` and `v`, entry `[u,v]` defines whether `u` &quot;follows&quot;/is connected to `v`. This can be a binary relationship or a score that measures how likely `u` is to engage with content that `v` has previously interacted with.</span>
+<span class="sd">    The social network is represented by a `|U|x|U|` matrix, where `|U|` is the</span>
+<span class="sd">    number of users in the system. For each pair of users `u` and `v`, entry</span>
+<span class="sd">    `[u,v]` defines whether `u` &quot;follows&quot;/is connected to `v`. This can be a</span>
+<span class="sd">    binary relationship or a score that measures how likely `u` is to engage</span>
+<span class="sd">    with content that `v` has previously interacted with.</span>
 
-<span class="sd">    Please note that, in this class, the follow/unfollow and add_friends/remove_friends methods assume a binary social graph (see :class:`~components.socialgraph.BinarySocialGraph`).</span>
+<span class="sd">    Please note that, in this class, the follow/unfollow and</span>
+<span class="sd">    add_friends/remove_friends methods assume a binary social graph</span>
+<span class="sd">    (see :class:`~components.socialgraph.BinarySocialGraph`).</span>
 
-<span class="sd">    Item attributes are represented by a `|U|x|I|` matrix, where `|I|` is the number of items in the system. For each item `i` and user `u`, we define a score that determines the interactions `u` had with `i`. Again, this could just be a binary relationship.</span>
+<span class="sd">    Item attributes are represented by a `|U|x|I|` matrix, where `|I|` is the</span>
+<span class="sd">    number of items in the system. For each item `i` and user `u`, we define a</span>
+<span class="sd">    score that determines the interactions `u` had with `i`. Again, this could</span>
+<span class="sd">    just be a binary relationship.</span>
 
 
 <span class="sd">    Parameters</span>
@@ -175,13 +191,26 @@
 <span class="sd">            The number of items `|I|` in the system.</span>
 
 <span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|I|` matrix representing the past user interactions. If this is not None, `num_items` is ignored.</span>
+<span class="sd">            A `|U|x|I|` matrix representing the past user interactions. If this</span>
+<span class="sd">            is not None, `num_items` is ignored.</span>
 
 <span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|U|` adjacency matrix representing each users&#39; social network. If this is not None, num_users is ignored.</span>
+<span class="sd">            A `|U|x|U|` adjacency matrix representing each users&#39; social network.</span>
+<span class="sd">            If this is not None, num_users is ignored.</span>
 
-<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|I|` matrix representing the real user scores. This matrix is **not** used for recommendations. This is only kept for measurements and the system is unaware of it.</span>
+<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
+<span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
+<span class="sd">            Either a `|U|x|T|` matrix representing the real user profiles, where</span>
+<span class="sd">            `T` is the number of attributes in the real underlying user profile,</span>
+<span class="sd">            or a `Users` object that contains the real user profiles or real</span>
+<span class="sd">            user-item scores. This matrix is **not** used for recommendations. This</span>
+<span class="sd">            is only kept for measurements and the system is unaware of it.</span>
+
+<span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">            A `|T|x|I|` matrix representing the real user profiles, where</span>
+<span class="sd">            `T` is the number of attributes in the real underlying item profile.</span>
+<span class="sd">            This matrix is **not** used for recommendations. This</span>
+<span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
 <span class="sd">        verbose: bool (optional, default: False)</span>
 <span class="sd">            If True, enables verbose mode. Disabled by default.</span>
@@ -192,113 +221,124 @@
 <span class="sd">        seed: int, None (optional, default: None)</span>
 <span class="sd">            Seed for random generator.</span>
 
-<span class="sd">        Attributes</span>
-<span class="sd">        -----------</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`</span>
 
-<span class="sd">            Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`</span>
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">        SocialFiltering can be instantiated with no arguments -- in which case,</span>
+<span class="sd">        it will be initialized with the default parameters and the item/user</span>
+<span class="sd">        representation will be initialized to zero. This means that a user</span>
+<span class="sd">        starts with no followers/users they follow, and that there have been no</span>
+<span class="sd">        previous interactions for this set of users.</span>
 
-<span class="sd">        Examples</span>
-<span class="sd">        ----------</span>
-<span class="sd">            SocialFiltering can be instantiated with no arguments -- in which case, it will be initialized with the default parameters and the item/user representation will be initialized to zero. This means that a user starts with no followers/users they follow, and that there have been no previous interactions for this set of users.</span>
+<span class="sd">        &gt;&gt;&gt; sf = SocialFiltering()</span>
+<span class="sd">        &gt;&gt;&gt; sf.users_hat.shape</span>
+<span class="sd">        (100, 100)   # &lt;-- 100 users (default)</span>
+<span class="sd">        &gt;&gt;&gt; sf.items.shape</span>
+<span class="sd">        (100, 1250) # &lt;-- 100 users (default), 1250 items (default)</span>
 
-<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering()</span>
-<span class="sd">            &gt;&gt;&gt; sf.user_profiles.shape</span>
-<span class="sd">            (100, 100)   # &lt;-- 100 users (default)</span>
-<span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (100, 1250) # &lt;-- 100 users (default), 1250 items (default)</span>
+<span class="sd">        This class can be customized either by defining the number of users</span>
+<span class="sd">        and/or items in the system:</span>
 
-<span class="sd">            This class can be customized either by defining the number of users and/or items in the system:</span>
+<span class="sd">        &gt;&gt;&gt; sf = SocialFiltering(num_users=1200, num_items=5000)</span>
+<span class="sd">        &gt;&gt;&gt; sf.items.shape</span>
+<span class="sd">        (1200, 5000) # &lt;-- 1200 users, 5000 items</span>
 
-<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(num_users=1200, num_items=5000)</span>
-<span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (1200, 5000) # &lt;-- 1200 users, 5000 items</span>
+<span class="sd">        &gt;&gt;&gt; sf = ContentFiltering(num_users=50)</span>
+<span class="sd">        &gt;&gt;&gt; sf.items.shape</span>
+<span class="sd">        (50, 1250) # &lt;-- 50 users, 1250 items (default)</span>
 
-<span class="sd">            &gt;&gt;&gt; sf = ContentFiltering(num_users=50)</span>
-<span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (50, 1250) # &lt;-- 50 users, 1250 items (default)</span>
+<span class="sd">        Or by generating representations for items and/or users. In the example</span>
+<span class="sd">        below, items are uniformly distributed. We &quot;indirectly&quot; define 100 users</span>
+<span class="sd">        by defining a `100x200` item representation.</span>
 
-<span class="sd">            Or by generating representations for items and/or users. In the example below, items are uniformly distributed. We &quot;indirectly&quot; define 100 users by defining a `100x200` item representation.</span>
+<span class="sd">        &gt;&gt;&gt; item_representation = np.random.randint(2, size=(100, 200))</span>
+<span class="sd">        # Social networks are drawn from a binomial distribution.</span>
+<span class="sd">        # This representation also uses 100 users.</span>
+<span class="sd">        &gt;&gt;&gt; sf = SocialFiltering(item_representation=item_representation)</span>
+<span class="sd">        &gt;&gt;&gt; sf.items.shape</span>
+<span class="sd">        (100, 200)</span>
+<span class="sd">        &gt;&gt;&gt; sf.users_hat.shape</span>
+<span class="sd">        (100, 100)</span>
 
-<span class="sd">            &gt;&gt;&gt; item_representation = np.random.randint(2, size=(100, 200))</span>
-<span class="sd">            # Social networks are drawn from a binomial distribution. This representation also uses 100 users.</span>
-<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(item_representation=item_representation)</span>
-<span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (100, 200)</span>
-<span class="sd">            &gt;&gt;&gt; sf.user_profiles.shape</span>
-<span class="sd">            (100, 100)</span>
-
-<span class="sd">            Note that user and item representations have the precedence over the number of users/items specified at initialization. For example:</span>
-
-<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(num_users=50, user_representation=user_representation)</span>
-<span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (100, 200) # &lt;-- 100 users, 200 items. num_users was ignored because user_representation was specified.</span>
-
-<span class="sd">            The same is true about the number of items or users and item representations.</span>
-
-<span class="sd">            &gt;&gt;&gt; sf = SocialFiltering(num_users=1400, item_representation=item_representation)</span>
-<span class="sd">            &gt;&gt;&gt; sf.item_attributes.shape</span>
-<span class="sd">            (100, 200) # &lt;-- 100 attributes, 200 items. num_users was ignored.</span>
-<span class="sd">            &gt;&gt;&gt; cf.user_profile.shape</span>
-<span class="sd">            (100, 100) # &lt;-- 100 users (as implicitly specified by item_representation)</span>
-
+<span class="sd">        Note that all arguments passed in at initialization must be consistent -</span>
+<span class="sd">        otherwise, an error is thrown. For example, one cannot pass in</span>
+<span class="sd">        `num_users=200` but have `user_representation.shape` be `(200, 500)` or</span>
+<span class="sd">        `(300, 300)`. Likewise, one cannot pass in `num_items=1000` but have</span>
+<span class="sd">        `item_representation.shape` be `(200, 500)`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_users</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">num_items</span><span class="o">=</span><span class="mi">1250</span><span class="p">,</span>
-        <span class="n">item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">actual_user_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># Give precedence to user_representation, otherwise build empty one</span>
 
-        <span class="k">if</span> <span class="n">all_none</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="n">num_users</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;user_representation and num_users can&#39;t be all None&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">all_none</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="n">num_items</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;item_representation and num_items can&#39;t be all None&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_array_valid_or_none</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;user_representation is invalid&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_array_valid_or_none</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;item_representation is not valid&quot;</span><span class="p">)</span>
-        <span class="n">num_items</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span>
-                                            <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
-                                    <span class="n">num_items</span><span class="p">)</span>
-
-        <span class="n">num_users</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span>
-                                            <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
-                                    <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span>
-                                            <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
-                                             <span class="n">num_users</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable-all</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_users</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_items</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">actual_user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">actual_item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="n">validate_user_item_inputs</span><span class="p">(</span>
+            <span class="n">num_users</span><span class="p">,</span>
+            <span class="n">num_items</span><span class="p">,</span>
+            <span class="n">user_representation</span><span class="p">,</span>
+            <span class="n">item_representation</span><span class="p">,</span>
+            <span class="n">actual_user_representation</span><span class="p">,</span>
+            <span class="n">actual_item_representation</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>  <span class="c1"># see if we can get the default number of users from the items array</span>
+            <span class="mi">1250</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_users</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># get user representation from items instead</span>
+            <span class="n">num_users</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">100</span>  <span class="c1"># default to 100 users</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">user_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-            <span class="n">user_representation</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">num_users</span><span class="p">,</span>
-                                                                        <span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
-                                                    <span class="n">graph_type</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">fast_gnp_random_graph</span><span class="p">)</span>
-            <span class="c1">#np.diag(np.diag(np.ones((num_users, num_users),</span>
-            <span class="c1">#                                              dtype=int)))</span>
+            <span class="n">user_representation</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span>
+                <span class="n">num</span><span class="o">=</span><span class="n">num_users</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">fast_gnp_random_graph</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_equal_dim_or_none</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
-                                <span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
-                                <span class="n">num_users</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;user_representation must be a square matrix&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_equal_dim_or_none</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span>
-                                            <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
-                                <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
-                                <span class="n">num_users</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;user_representation.shape[1] should be the same as &quot;</span> <span class="o">+</span> \
-                             <span class="s2">&quot;item_representation.shape[0]&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_equal_dim_or_none</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span>
-                                            <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
-                                    <span class="n">num_items</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;item_representation.shape[1] should be the same as &quot;</span> <span class="o">+</span> \
-                             <span class="s2">&quot;num_items&quot;</span><span class="p">)</span>
+        <span class="c1"># verify that the user representation is an adjacency matrix and that</span>
+        <span class="c1"># the item representation aligns</span>
+        <span class="n">users_vals</span> <span class="o">=</span> <span class="n">non_none_values</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">num_users</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">users_vals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of users must be consistent across all inputs&quot;</span><span class="p">)</span>
+        <span class="c1"># if the actual item representation is not specified, we assume</span>
+        <span class="c1"># that the recommender system&#39;s beliefs about the item attributes</span>
+        <span class="c1"># are the same as the &quot;true&quot; item attributes</span>
+        <span class="k">if</span> <span class="n">actual_item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item_representation</span><span class="p">)</span>
 
         <span class="n">measurements</span> <span class="o">=</span> <span class="p">[</span><span class="n">MSEMeasurement</span><span class="p">()]</span>
         <span class="c1"># Initialize recommender system</span>
-        <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_representation</span><span class="p">,</span> <span class="n">item_representation</span><span class="p">,</span>
-                             <span class="n">actual_user_scores</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">,</span>
-                             <span class="n">num_items_per_iter</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
-                             <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
+        <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">user_representation</span><span class="p">,</span>
+            <span class="n">item_representation</span><span class="p">,</span>
+            <span class="n">actual_user_representation</span><span class="p">,</span>
+            <span class="n">actual_item_representation</span><span class="p">,</span>
+            <span class="n">num_users</span><span class="p">,</span>
+            <span class="n">num_items</span><span class="p">,</span>
+            <span class="n">num_items_per_iter</span><span class="p">,</span>
+            <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Private function that updates user profiles with data from</span>
@@ -314,9 +354,9 @@
 <span class="sd">                the index of the item that the user has interacted with.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">))</span>
-        <span class="n">interactions_per_user</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_users</span><span class="o">.</span><span class="n">_user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">interactions_per_user</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_attributes</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">item_attributes</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_attributes</span><span class="p">,</span> <span class="n">interactions_per_user</span><span class="p">)</span></div>
+        <span class="n">interactions_per_user</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">interactions_per_user</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">interactions_per_user</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

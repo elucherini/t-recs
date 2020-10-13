@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>Index &mdash; T-RECS 0.1.0b documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Algo-segregation
+            <a href="index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -97,7 +97,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Algo-segregation</a>
+          <a href="index.html">T-RECS</a>
         
       </nav>
 
@@ -164,7 +164,6 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
- | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  
 </div>
@@ -173,13 +172,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/metrics.html#metrics.measurement.HomogeneityMeasurement._old_histogram">_old_histogram (metrics.measurement.HomogeneityMeasurement attribute)</a>
 </li>
-      <li><a href="reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement._old_infection_state">_old_infection_state (metrics.measurement.DiffusionTreeMeasurement attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/models.html#models.recommender.SystemStateModule._system_state">_system_state (models.recommender.SystemStateModule attribute)</a>
+      <li><a href="reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement._old_infection_state">_old_infection_state (metrics.measurement.DiffusionTreeMeasurement attribute)</a>
 </li>
-      <li><a href="reference/components.html#components.users.Users._user_vector">_user_vector (components.users.Users attribute)</a>
+      <li><a href="reference/components.html#components.base_components.SystemStateModule._system_state">_system_state (components.base_components.SystemStateModule attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -191,17 +188,13 @@
 </li>
       <li><a href="reference/components.html#components.users.Users.actual_user_scores">actual_user_scores (components.users.Users attribute)</a>
 </li>
-      <li><a href="reference/models.html#models.recommender.BaseRecommender.actual_users">actual_users (models.recommender.BaseRecommender attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/components.html#components.users.ActualUserProfiles">ActualUserProfiles (class in components.users)</a>
 </li>
       <li><a href="reference/components.html#components.socialgraph.BinarySocialGraph.add_friends">add_friends() (components.socialgraph.BinarySocialGraph method)</a>
 </li>
-      <li><a href="reference/models.html#models.recommender.MeasurementModule.add_metrics">add_metrics() (models.recommender.MeasurementModule method)</a>
-</li>
-      <li><a href="reference/models.html#models.recommender.SystemStateModule.add_state_variable">add_state_variable() (models.recommender.SystemStateModule method)</a>
+      <li><a href="reference/components.html#components.base_components.SystemStateModule.add_state_variable">add_state_variable() (components.base_components.SystemStateModule method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -212,8 +205,6 @@
       <li><a href="reference/components.html#components.base_components.BaseComponent">BaseComponent (class in components.base_components)</a>
 </li>
       <li><a href="reference/components.html#components.base_components.BaseObservable">BaseObservable (class in components.base_components)</a>
-</li>
-      <li><a href="reference/components.html#components.base_components.BaseObserver">BaseObserver (class in components.base_components)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -273,9 +264,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.diffusion_tree">diffusion_tree (metrics.measurement.DiffusionTreeMeasurement attribute)</a>
 </li>
+      <li><a href="reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement">DiffusionTreeMeasurement (class in metrics.measurement)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement">DiffusionTreeMeasurement (class in metrics.measurement)</a>
+      <li><a href="reference/models.html#models.bass.BassModel.draw_diffusion_tree">draw_diffusion_tree() (models.bass.BassModel method)</a>
 </li>
       <li><a href="reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.draw_tree">draw_tree() (metrics.measurement.DiffusionTreeMeasurement method)</a>
 </li>
@@ -297,26 +290,38 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/random.html#rec.random.generators.SocialGraphGenerator.generate_random_graph">generate_random_graph() (rec.random.generators.SocialGraphGenerator static method)</a>
+      <li><a href="reference/random.html#trecs.random.generators.SocialGraphGenerator.generate_random_graph">generate_random_graph() (trecs.random.generators.SocialGraphGenerator static method)</a>
 </li>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.generate_recommendations">generate_recommendations() (models.recommender.BaseRecommender method)</a>
 </li>
-      <li><a href="reference/random.html#rec.random.generators.Generator">Generator (class in rec.random.generators)</a>
+      <li><a href="reference/random.html#trecs.random.generators.Generator">Generator (class in trecs.random.generators)</a>
 </li>
       <li><a href="reference/components.html#components.users.Users.get_actual_user_scores">get_actual_user_scores() (components.users.Users method)</a>
 </li>
+      <li><a href="reference/components.html#components.base_components.BaseComponent.get_component_state">get_component_state() (components.base_components.BaseComponent method)</a>
+</li>
       <li><a href="reference/metrics.html#metrics.measurement.Measurement.get_measurement">get_measurement() (metrics.measurement.Measurement method)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.get_measurements">get_measurements() (models.recommender.BaseRecommender method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/models.html#models.recommender.BaseRecommender.get_measurements">get_measurements() (models.recommender.BaseRecommender method)</a>
+      <li><a href="reference/components.html#components.base_components.BaseObservable.get_observable">get_observable() (components.base_components.BaseObservable method)</a>
 </li>
       <li><a href="reference/metrics.html#metrics.measurement.StructuralVirality.get_structural_virality">get_structural_virality() (metrics.measurement.StructuralVirality method)</a>
+
+      <ul>
+        <li><a href="reference/models.html#models.bass.BassModel.get_structural_virality">(models.bass.BassModel method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.get_system_state">get_system_state() (models.recommender.BaseRecommender method)</a>
 </li>
-      <li><a href="reference/metrics.html#metrics.measurement.Measurement.get_timesteps">get_timesteps() (metrics.measurement.Measurement method)</a>
+      <li><a href="reference/components.html#components.base_components.BaseComponent.get_timesteps">get_timesteps() (components.base_components.BaseComponent method)</a>
+
+      <ul>
+        <li><a href="reference/metrics.html#metrics.measurement.Measurement.get_timesteps">(metrics.measurement.Measurement method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/components.html#components.users.Users.get_user_feedback">get_user_feedback() (components.users.Users method)</a>
 </li>
   </ul></td>
@@ -335,6 +340,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.indices">indices (models.recommender.BaseRecommender attribute)</a>
 </li>
+      <li><a href="reference/models.html#models.bass.BassModel.infection_probabilities">infection_probabilities() (models.bass.BassModel method)</a>
+</li>
       <li><a href="reference/models.html#models.bass.InfectionState">InfectionState (class in models.bass)</a>
 </li>
       <li><a href="reference/models.html#models.bass.InfectionThresholds">InfectionThresholds (class in models.bass)</a>
@@ -345,9 +352,11 @@
 </li>
       <li><a href="reference/metrics.html#metrics.measurement.InteractionMeasurement">InteractionMeasurement (class in metrics.measurement)</a>
 </li>
-      <li><a href="reference/models.html#models.recommender.BaseRecommender.item_attributes">item_attributes (models.recommender.BaseRecommender attribute)</a>
-</li>
       <li><a href="reference/components.html#components.items.Items">Items (class in components.items)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.items">items (models.recommender.BaseRecommender attribute)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.items_hat">items_hat (models.recommender.BaseRecommender attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -362,6 +371,8 @@
 </li>
         <li><a href="reference/metrics.html#metrics.measurement.InteractionMeasurement.measure">(metrics.measurement.InteractionMeasurement method)</a>
 </li>
+        <li><a href="reference/metrics.html#metrics.measurement.Measurement.measure">(metrics.measurement.Measurement method)</a>
+</li>
         <li><a href="reference/metrics.html#metrics.measurement.MSEMeasurement.measure">(metrics.measurement.MSEMeasurement method)</a>
 </li>
       </ul></li>
@@ -370,10 +381,6 @@
       <li><a href="reference/metrics.html#metrics.measurement.Measurement">Measurement (class in metrics.measurement)</a>
 </li>
       <li><a href="reference/metrics.html#metrics.measurement.Measurement.measurement_history">measurement_history (metrics.measurement.Measurement attribute)</a>
-</li>
-      <li><a href="reference/models.html#models.recommender.MeasurementModule">MeasurementModule (class in models.recommender)</a>
-</li>
-      <li><a href="reference/models.html#models.recommender.MeasurementModule.metrics">metrics (models.recommender.MeasurementModule attribute)</a>
 </li>
       <li>
     models.bass
@@ -452,6 +459,8 @@
 </li>
         <li><a href="reference/metrics.html#metrics.measurement.InteractionMeasurement.name">(metrics.measurement.InteractionMeasurement attribute)</a>
 </li>
+        <li><a href="reference/metrics.html#metrics.measurement.Measurement.name">(metrics.measurement.Measurement attribute)</a>
+</li>
         <li><a href="reference/metrics.html#metrics.measurement.MSEMeasurement.name">(metrics.measurement.MSEMeasurement attribute)</a>
 </li>
       </ul></li>
@@ -469,8 +478,14 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/metrics.html#metrics.measurement.Measurement.observe">observe() (metrics.measurement.Measurement method)</a>
+      <li><a href="reference/components.html#components.base_components.BaseComponent.observe">observe() (components.base_components.BaseComponent method)</a>
+
+      <ul>
+        <li><a href="reference/components.html#components.base_components.BaseObservable.observe">(components.base_components.BaseObservable method)</a>
 </li>
+        <li><a href="reference/metrics.html#metrics.measurement.Measurement.observe">(metrics.measurement.Measurement method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -497,6 +512,8 @@
 </li>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.recommend">recommend() (models.recommender.BaseRecommender method)</a>
 </li>
+      <li><a href="reference/components.html#components.base_components.register_observables">register_observables() (in module components.base_components)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/components.html#components.socialgraph.BinarySocialGraph.remove_friends">remove_friends() (components.socialgraph.BinarySocialGraph method)</a>
@@ -513,30 +530,28 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.score_fn">score_fn (models.recommender.BaseRecommender attribute)</a>
+</li>
+      <li><a href="reference/components.html#components.users.Users.set_score_function">set_score_function() (components.users.Users method)</a>
+</li>
       <li><a href="reference/models.html#models.social.SocialFiltering">SocialFiltering (class in models.social)</a>
 </li>
-      <li><a href="reference/random.html#rec.random.generators.SocialGraphGenerator">SocialGraphGenerator (class in rec.random.generators)</a>
+      <li><a href="reference/random.html#trecs.random.generators.SocialGraphGenerator">SocialGraphGenerator (class in trecs.random.generators)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.startup_and_train">startup_and_train() (models.recommender.BaseRecommender method)</a>
 </li>
-      <li><a href="reference/metrics.html#metrics.measurement.StructuralVirality">StructuralVirality (class in metrics.measurement)</a>
-</li>
-      <li><a href="reference/models.html#models.recommender.SystemStateModule">SystemStateModule (class in models.recommender)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="T">T</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/models.html#models.bass.BassModel.train">train() (models.bass.BassModel method)</a>
+      <li><a href="reference/components.html#components.base_components.Component.store_state">store_state() (components.base_components.Component method)</a>
 
       <ul>
-        <li><a href="reference/models.html#models.recommender.BaseRecommender.train">(models.recommender.BaseRecommender method)</a>
+        <li><a href="reference/components.html#components.users.Users.store_state">(components.users.Users method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/metrics.html#metrics.measurement.StructuralVirality">StructuralVirality (class in metrics.measurement)</a>
+</li>
+      <li><a href="reference/components.html#components.base_components.SystemStateModule">SystemStateModule (class in components.base_components)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -545,11 +560,21 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/components.html#components.socialgraph.BinarySocialGraph.unfollow">unfollow() (components.socialgraph.BinarySocialGraph method)</a>
 </li>
+      <li><a href="reference/components.html#components.base_components.unregister_observables">unregister_observables() (in module components.base_components)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.update_predicted_scores">update_predicted_scores() (models.recommender.BaseRecommender method)</a>
+</li>
+      <li><a href="reference/components.html#components.users.Users.update_profiles">update_profiles() (components.users.Users method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/models.html#models.recommender.BaseRecommender.user_profiles">user_profiles (models.recommender.BaseRecommender attribute)</a>
+      <li><a href="reference/components.html#components.users.Users.user_vector">user_vector (components.users.Users attribute)</a>
 </li>
       <li><a href="reference/components.html#components.users.Users">Users (class in components.users)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.users">users (models.recommender.BaseRecommender attribute)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.users_hat">users_hat (models.recommender.BaseRecommender attribute)</a>
 </li>
   </ul></td>
 </tr></table>

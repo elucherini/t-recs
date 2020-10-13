@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>components.socialgraph &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>components.socialgraph &mdash; T-RECS 0.1.0b documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Algo-segregation</a>
+          <a href="../../index.html">T-RECS</a>
         
       </nav>
 
@@ -145,19 +145,25 @@
            <div itemprop="articleBody">
             
   <h1>Source code for components.socialgraph</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">VerboseMode</span>
+<span></span><span class="sd">&quot;&quot;&quot; A binary social graph that represents relationships between users which</span>
+<span class="sd">    can be used in different types of recommender systems</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">trecs.logging</span> <span class="kn">import</span> <span class="n">VerboseMode</span>
 
 
 <div class="viewcode-block" id="BinarySocialGraph"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph">[docs]</a><span class="k">class</span> <span class="nc">BinarySocialGraph</span><span class="p">(</span><span class="n">VerboseMode</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A mixin for classes with a </span>
-<span class="sd">    :attr:`~rec.models.recommender.BaseRecommender.user_profiles` attribute</span>
+<span class="sd">    A mixin for classes with a</span>
+<span class="sd">    :attr:`~trecs.models.recommender.BaseRecommender.users_hat` attribute</span>
 <span class="sd">    to gain the basic functionality of a binary social graph.</span>
 
 <span class="sd">    It assumes a network adjacency matrix of size `|U|x|U|`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># expect these to be initialized</span>
+    <span class="n">users_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="n">num_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
 
 <div class="viewcode-block" id="BinarySocialGraph.follow"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.follow">[docs]</a>    <span class="k">def</span> <span class="nf">follow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -181,15 +187,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">following_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Number of users is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of users is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="si">}</span><span class="s2">, but indices &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user_index</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">following_index</span><span class="si">}</span><span class="s2"> were requested.&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                <span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">)</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BinarySocialGraph.unfollow"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.unfollow">[docs]</a>    <span class="k">def</span> <span class="nf">unfollow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -213,15 +217,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">following_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user_index</span><span class="p">,</span> <span class="n">following_index</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of users is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="si">}</span><span class="s2">, but indices &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user_index</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">following_index</span><span class="si">}</span><span class="s2"> were requested.&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                <span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">)</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">following_index</span><span class="p">,</span> <span class="n">user_index</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BinarySocialGraph.add_friends"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.add_friends">[docs]</a>    <span class="k">def</span> <span class="nf">add_friends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -245,21 +247,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user1_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">user2_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of users is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="si">}</span><span class="s2">, but indices &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user1_index</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">user2_index</span><span class="si">}</span><span class="s2"> were requested.&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                <span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                <span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">)</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was already following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BinarySocialGraph.remove_friends"><a class="viewcode-back" href="../../reference/components.html#components.socialgraph.BinarySocialGraph.remove_friends">[docs]</a>    <span class="k">def</span> <span class="nf">remove_friends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -283,15 +281,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user1_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="ow">or</span> <span class="n">user2_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Number of user is </span><span class="si">%d</span><span class="s2">, but indices </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2">&quot;</span>
-                <span class="o">+</span> <span class="s2">&quot; were requested&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of users is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="si">}</span><span class="s2">, but indices &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user1_index</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">user2_index</span><span class="si">}</span><span class="s2"> were requested.&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_profiles</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">[</span><span class="n">user2_index</span><span class="p">,</span> <span class="n">user1_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User </span><span class="si">%d</span><span class="s2"> was not following user </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user1_index</span><span class="p">,</span> <span class="n">user2_index</span><span class="p">))</span></div></div>
 </pre></div>

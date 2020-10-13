@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simulator &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>Simulator &mdash; T-RECS 0.1.0b documentation</title>
   
 
   
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Algo-segregation
+            <a href="index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -104,7 +104,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Algo-segregation</a>
+          <a href="index.html">T-RECS</a>
         
       </nav>
 
@@ -160,10 +160,17 @@
 <div class="section" id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
 <p>This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy’s <a class="reference external" href="https://scipy.org/install.html">instructions for installing a scientific Python distribution</a>.</p>
+<p>If you do not have Python 3.7+ installed, you can create a new environment with Python 3.7 by running the following command in terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create --name py37 <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
+</pre></div>
+</div>
+<p>To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow <a class="reference external" href="https://medium.com/&#64;nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084">the instructions from this blog post</a>.</p>
+<blockquote>
+<div></div></blockquote>
 <p>Currently, the simulator has only been tested extensively on MacOS 10.15.</p>
 <p>To install the simulator, you will need the Python package manager, pip. After activating your virtual environment, run the following commands in a terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/elucherini/algo-segregation.git
-<span class="nb">cd</span> algo-segregation
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/elucherini/t-recs.git
+<span class="nb">cd</span> t-recs
 pip install -e .
 </pre></div>
 </div>
@@ -182,9 +189,9 @@ pip install -e .
 </div>
 <div class="section" id="example-usage">
 <h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import rec
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import trecs
 
-<span class="nv">recsys</span> <span class="o">=</span> rec.models.ContentFiltering<span class="o">()</span>
+<span class="nv">recsys</span> <span class="o">=</span> trecs.models.ContentFiltering<span class="o">()</span>
 recsys.run<span class="o">(</span><span class="nv">timesteps</span><span class="o">=</span><span class="m">10</span><span class="o">)</span>
 <span class="nv">measurements</span> <span class="o">=</span> recsys.get_measurements<span class="o">()</span>
 </pre></div>
@@ -192,7 +199,7 @@ recsys.run<span class="o">(</span><span class="nv">timesteps</span><span class="
 </div>
 <div class="section" id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<p>A first draft of the documentation is available <a class="reference external" href="https://elucherini.github.io/algo-segregation/index.html">here</a>. In its current version, the documentation can be used as a supplement to exploring details in the code. Currently, the tutorials in <a class="reference external" href="examples/">examples</a> might be a more useful and centralized resource to learn how to use the system.</p>
+<p>A first draft of the documentation is available <a class="reference external" href="https://elucherini.github.io/t-recs/index.html">here</a>. In its current version, the documentation can be used as a supplement to exploring details in the code. Currently, the tutorials in <a class="reference external" href="examples/">examples</a> might be a more useful and centralized resource to learn how to use the system.</p>
 </div>
 </div>
 

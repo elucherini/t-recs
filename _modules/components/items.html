@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>components.items &mdash; Algo-segregation 0.1.0b documentation</title>
+  <title>components.items &mdash; T-RECS 0.1.0b documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Algo-segregation
+            <a href="../../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -96,7 +96,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Algo-segregation</a>
+          <a href="../../index.html">T-RECS</a>
         
       </nav>
 
@@ -145,20 +145,20 @@
            <div itemprop="articleBody">
             
   <h1>Source code for components.items</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">rec.utils</span> <span class="kn">import</span> <span class="n">VerboseMode</span><span class="p">,</span> <span class="n">normalize_matrix</span>
-<span class="kn">from</span> <span class="nn">rec.random</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">FromNdArray</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="sd">&quot;&quot;&quot; Class definition for Items in our recommender systems - can represent anything</span>
+<span class="sd">    ranging from disease to consumer goods</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span>
 
 
-<div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../reference/components.html#components.items.Items">[docs]</a><span class="k">class</span> <span class="nc">Items</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../reference/components.html#components.items.Items">[docs]</a><span class="k">class</span> <span class="nc">Items</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Items components in the system.</span>
 
 <span class="sd">    Items are the objects with which users interact with models and with each other.</span>
 
 <span class="sd">    This class is essentially a container of Numpy&#39;s ndarray. Therefore, it</span>
-<span class="sd">    supports all the operations supported by ndarray. It inherits from </span>
+<span class="sd">    supports all the operations supported by ndarray. It inherits from</span>
 <span class="sd">    :class:`~.base_components.Component` and it contains all the attributes of</span>
 <span class="sd">    that class.</span>
 
@@ -198,14 +198,6 @@
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">item_attributes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span>
         <span class="p">)</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">Items</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
 </pre></div>
 
            </div>
