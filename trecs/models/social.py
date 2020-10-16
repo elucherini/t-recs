@@ -18,51 +18,54 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
     With social filtering, users are presented items that were previously
     liked by other users in their social networks.
 
-    The social network is represented by a `|U|x|U|` matrix, where `|U|` is the
-    number of users in the system. For each pair of users `u` and `v`, entry
-    `[u,v]` defines whether `u` "follows"/is connected to `v`. This can be a
-    binary relationship or a score that measures how likely `u` is to engage
-    with content that `v` has previously interacted with.
+    The social network is represented by a :math:`|U|\\times|U|` matrix, where
+    :math:`|U|` is the number of users in the system. For each pair of users
+    :math:`u` and :math:`v`, entry `[u,v]` defines whether :math:`u`
+    "follows"/is connected to :math:`v`. This can be a binary relationship or a
+    score that measures how likely :math:`u` is to engage with content that
+    :math:`v` has previously interacted with.
 
     Please note that, in this class, the follow/unfollow and
     add_friends/remove_friends methods assume a binary social graph
     (see :class:`~components.socialgraph.BinarySocialGraph`).
 
-    Item attributes are represented by a `|U|x|I|` matrix, where `|I|` is the
-    number of items in the system. For each item `i` and user `u`, we define a
-    score that determines the interactions `u` had with `i`. Again, this could
-    just be a binary relationship.
+    Item attributes are represented by a :math:`|U|\\times|I|` matrix, where
+    :math:`|I|` is the number of items in the system. For each item :math:`i`
+    and user :math:`u`, we define a score that determines the interactions
+    :math:`u` had with :math:`i`. Again, this could just be a binary
+    relationship.
 
 
     Parameters
     -----------
 
         num_users: int (optional, default: 100)
-            The number of users `|U|` in the system.
+            The number of users :math:`|U|` in the system.
 
         num_items: int (optional, default: 1250)
-            The number of items `|I|` in the system.
+            The number of items :math:`|I|` in the system.
 
         item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A `|U|x|I|` matrix representing the past user interactions. If this
-            is not None, `num_items` is ignored.
+            A :math:`|U|\\times|I|` matrix representing the past user interactions.
+            If this is not None, `num_items` is ignored.
 
         user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A `|U|x|U|` adjacency matrix representing each users' social network.
-            If this is not None, num_users is ignored.
+            A :math:`|U|\\times|U|` adjacency matrix representing each users'
+            social network. If this is not None, `num_users` is ignored.
 
         actual_user_representation: :obj:`numpy.ndarray` or None or \
                             :class:`~components.users.Users` (optional, default: None)
-            Either a `|U|x|T|` matrix representing the real user profiles, where
-            `T` is the number of attributes in the real underlying user profile,
-            or a `Users` object that contains the real user profiles or real
-            user-item scores. This matrix is **not** used for recommendations. This
-            is only kept for measurements and the system is unaware of it.
+            Either a :math:`|U|\\times|T|` matrix representing the real user
+            profiles, where :math:`T` is the number of attributes in the real
+            underlying user profile, or a `Users` object that contains the real
+            user profiles or real user-item scores. This matrix is **not** used
+            for recommendations. This is only kept for measurements and the
+            system is unaware of it.
 
         actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A `|T|x|I|` matrix representing the real user profiles, where
-            `T` is the number of attributes in the real underlying item profile.
-            This matrix is **not** used for recommendations. This
+            A :math:`|T|\\times|I|` matrix representing the real user profiles,
+            where :math:`T` is the number of attributes in the real underlying
+            item profile. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
         verbose: bool (optional, default: False)

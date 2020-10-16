@@ -171,8 +171,9 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             latest interactions.
 
             Specifically, this function converts interactions into item attributes.
-            For example, if user u has interacted with item i, then the i's attributes
-            will be updated to increase the similarity between u and i.
+            For example, if user :math:`u` has interacted with item :math:`i`,
+            then item :math:`i`'s attributes will be updated to increase the
+            similarity between :math:`u` and :math:`i`.
 
         Args:
             interactions (numpy.ndarray): An array of item indices that users have
