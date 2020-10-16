@@ -1,6 +1,6 @@
 Simulator
 =========
-A simulator for sociotechnical systems. More details coming soon.
+Boop boop test! A simulator for sociotechnical systems. More details coming soon.
 
 Install
 -------
