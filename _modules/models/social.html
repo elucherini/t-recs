@@ -169,51 +169,54 @@
 <span class="sd">    With social filtering, users are presented items that were previously</span>
 <span class="sd">    liked by other users in their social networks.</span>
 
-<span class="sd">    The social network is represented by a `|U|x|U|` matrix, where `|U|` is the</span>
-<span class="sd">    number of users in the system. For each pair of users `u` and `v`, entry</span>
-<span class="sd">    `[u,v]` defines whether `u` &quot;follows&quot;/is connected to `v`. This can be a</span>
-<span class="sd">    binary relationship or a score that measures how likely `u` is to engage</span>
-<span class="sd">    with content that `v` has previously interacted with.</span>
+<span class="sd">    The social network is represented by a :math:`|U|\\times|U|` matrix, where</span>
+<span class="sd">    :math:`|U|` is the number of users in the system. For each pair of users</span>
+<span class="sd">    :math:`u` and :math:`v`, entry `[u,v]` defines whether :math:`u`</span>
+<span class="sd">    &quot;follows&quot;/is connected to :math:`v`. This can be a binary relationship or a</span>
+<span class="sd">    score that measures how likely :math:`u` is to engage with content that</span>
+<span class="sd">    :math:`v` has previously interacted with.</span>
 
 <span class="sd">    Please note that, in this class, the follow/unfollow and</span>
 <span class="sd">    add_friends/remove_friends methods assume a binary social graph</span>
 <span class="sd">    (see :class:`~components.socialgraph.BinarySocialGraph`).</span>
 
-<span class="sd">    Item attributes are represented by a `|U|x|I|` matrix, where `|I|` is the</span>
-<span class="sd">    number of items in the system. For each item `i` and user `u`, we define a</span>
-<span class="sd">    score that determines the interactions `u` had with `i`. Again, this could</span>
-<span class="sd">    just be a binary relationship.</span>
+<span class="sd">    Item attributes are represented by a :math:`|U|\\times|I|` matrix, where</span>
+<span class="sd">    :math:`|I|` is the number of items in the system. For each item :math:`i`</span>
+<span class="sd">    and user :math:`u`, we define a score that determines the interactions</span>
+<span class="sd">    :math:`u` had with :math:`i`. Again, this could just be a binary</span>
+<span class="sd">    relationship.</span>
 
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 
 <span class="sd">        num_users: int (optional, default: 100)</span>
-<span class="sd">            The number of users `|U|` in the system.</span>
+<span class="sd">            The number of users :math:`|U|` in the system.</span>
 
 <span class="sd">        num_items: int (optional, default: 1250)</span>
-<span class="sd">            The number of items `|I|` in the system.</span>
+<span class="sd">            The number of items :math:`|I|` in the system.</span>
 
 <span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|I|` matrix representing the past user interactions. If this</span>
-<span class="sd">            is not None, `num_items` is ignored.</span>
+<span class="sd">            A :math:`|U|\\times|I|` matrix representing the past user interactions.</span>
+<span class="sd">            If this is not None, `num_items` is ignored.</span>
 
 <span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|U|` adjacency matrix representing each users&#39; social network.</span>
-<span class="sd">            If this is not None, num_users is ignored.</span>
+<span class="sd">            A :math:`|U|\\times|U|` adjacency matrix representing each users&#39;</span>
+<span class="sd">            social network. If this is not None, `num_users` is ignored.</span>
 
 <span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
 <span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
-<span class="sd">            Either a `|U|x|T|` matrix representing the real user profiles, where</span>
-<span class="sd">            `T` is the number of attributes in the real underlying user profile,</span>
-<span class="sd">            or a `Users` object that contains the real user profiles or real</span>
-<span class="sd">            user-item scores. This matrix is **not** used for recommendations. This</span>
-<span class="sd">            is only kept for measurements and the system is unaware of it.</span>
+<span class="sd">            Either a :math:`|U|\\times|T|` matrix representing the real user</span>
+<span class="sd">            profiles, where :math:`T` is the number of attributes in the real</span>
+<span class="sd">            underlying user profile, or a `Users` object that contains the real</span>
+<span class="sd">            user profiles or real user-item scores. This matrix is **not** used</span>
+<span class="sd">            for recommendations. This is only kept for measurements and the</span>
+<span class="sd">            system is unaware of it.</span>
 
 <span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|T|x|I|` matrix representing the real user profiles, where</span>
-<span class="sd">            `T` is the number of attributes in the real underlying item profile.</span>
-<span class="sd">            This matrix is **not** used for recommendations. This</span>
+<span class="sd">            A :math:`|T|\\times|I|` matrix representing the real user profiles,</span>
+<span class="sd">            where :math:`T` is the number of attributes in the real underlying</span>
+<span class="sd">            item profile. This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
 <span class="sd">        verbose: bool (optional, default: False)</span>

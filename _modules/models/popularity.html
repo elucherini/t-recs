@@ -168,42 +168,45 @@
 <span class="sd">    implementation, items do not expire and, therefore, the system does not base</span>
 <span class="sd">    its choice on how recent the items are.</span>
 
-<span class="sd">    Item attributes are represented by a `1x|I|` array, where `|I|` is the</span>
-<span class="sd">    number of items in the system. This array stores the number of user</span>
-<span class="sd">    interactions for each item.</span>
+<span class="sd">    Item attributes are represented by a :math:`1\\times|I|` array, where</span>
+<span class="sd">    :math:`|I|` is the number of items in the system. This array stores the</span>
+<span class="sd">    number of user interactions for each item.</span>
 
-<span class="sd">    User profiles are represented by a `|U|x1` matrix, where `|U|` is the number</span>
-<span class="sd">    of users in the system. All elements of this matrix are equal to 1, as the</span>
-<span class="sd">    predictions of the system are solely based on the item attributes.</span>
+<span class="sd">    User profiles are represented by a :math:`|U|\\times 1` matrix, where</span>
+<span class="sd">    :math:`|U|` is the number of users in the system. All elements of this matrix</span>
+<span class="sd">    are equal to 1, as the predictions of the system are solely based on the</span>
+<span class="sd">    item attributes.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 
 <span class="sd">        num_users: int (optional, default: 100)</span>
-<span class="sd">            The number of users `|U|` in the system.</span>
+<span class="sd">            The number of users :math:`|U|` in the system.</span>
 
 <span class="sd">        num_items: int (optional, default: 1250)</span>
-<span class="sd">            The number of items `|I|` in the system.</span>
+<span class="sd">            The number of items :math:`|I|` in the system.</span>
 
 <span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|A|x|I|` matrix representing the similarity between each item</span>
-<span class="sd">            and attribute. If this is not None, num_items is ignored.</span>
+<span class="sd">            A :math:`|A|\\times|I|` matrix representing the similarity between</span>
+<span class="sd">            each item and attribute. If this is not None, `num_items` is ignored.</span>
 
 <span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|A|` matrix representing the similarity between each item</span>
-<span class="sd">            and attribute, as interpreted by the system. If this is not None, num_users is ignored.</span>
+<span class="sd">            A :math:`|U|\\times|A|` matrix representing the similarity between</span>
+<span class="sd">            each item and attribute, as interpreted by the system. If this is not</span>
+<span class="sd">            None, `num_users` is ignored.</span>
 
 <span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
 <span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
-<span class="sd">            Either a `|U|x|T|` matrix representing the real user profiles, where</span>
-<span class="sd">            `T` is the number of attributes in the real underlying user profile,</span>
-<span class="sd">            or a `Users` object that contains the real user profiles or real</span>
-<span class="sd">            user-item scores. This matrix is **not** used for recommendations. This</span>
-<span class="sd">            is only kept for measurements and the system is unaware of it.</span>
+<span class="sd">            Either a :math:`|U|\\times|T|` matrix representing the real user</span>
+<span class="sd">            profiles, where :math:`T` is the number of attributes in the real</span>
+<span class="sd">            underlying user profile, or a `Users` object that contains the real</span>
+<span class="sd">            user profiles or real user-item scores. This matrix is **not** used</span>
+<span class="sd">            for recommendations. This is only kept for measurements and the</span>
+<span class="sd">            system is unaware of it.</span>
 
 <span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|T|x|I|` matrix representing the real user profiles, where</span>
-<span class="sd">            `T` is the number of attributes in the real underlying item profile.</span>
+<span class="sd">            A :math:`|T|\\times|I|` matrix representing the real user profiles, where</span>
+<span class="sd">            :math:`T` is the number of attributes in the real underlying item profile.</span>
 <span class="sd">            This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 

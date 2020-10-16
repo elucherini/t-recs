@@ -170,45 +170,45 @@
 <span class="sd">    users are the same. The recommendation system matches users to items with</span>
 <span class="sd">    similar attributes.</span>
 
-<span class="sd">    Item attributes are represented by a `|A|x|I|` matrix, where `|I|` is the</span>
-<span class="sd">    number of items in the system. For each item, we define the similarity to</span>
-<span class="sd">    each attribute.</span>
+<span class="sd">    Item attributes are represented by a :math:`|A|\\times|I|` matrix, where</span>
+<span class="sd">    :math:`|I|` is the number of items in the system. For each item, we define</span>
+<span class="sd">    the similarity to each attribute.</span>
 
-<span class="sd">    User profiles are represented by a `|U|x|A|` matrix, where `|U|` is the</span>
-<span class="sd">    number of users in the system. For each user, we define the similarity to</span>
-<span class="sd">    each attribute.</span>
+<span class="sd">    User profiles are represented by a :math:`|U|\\times|A|` matrix, where</span>
+<span class="sd">    :math:`|U|` is the number of users in the system. For each user, we define</span>
+<span class="sd">    the similarity to each attribute.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 
 <span class="sd">        num_users: int (optional, default: 100)</span>
-<span class="sd">            The number of users `|U|` in the system.</span>
+<span class="sd">            The number of users :math:`|U|` in the system.</span>
 
 <span class="sd">        num_items: int (optional, default: 1250)</span>
-<span class="sd">            The number of items `|I|` in the system.</span>
+<span class="sd">            The number of items :math:`|I|` in the system.</span>
 
 <span class="sd">        num_attributes: int (optional, default: 1000)</span>
-<span class="sd">            The number of attributes `|A|` in the system.</span>
+<span class="sd">            The number of attributes :math:`|A|` in the system.</span>
 
 <span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|U|x|A|` matrix representing the similarity between each item and</span>
-<span class="sd">            attribute, as interpreted by the system.</span>
+<span class="sd">            A :math:`|U|\\times|A|` matrix representing the similarity between</span>
+<span class="sd">            each item and attribute, as interpreted by the system.</span>
 
 <span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|A|x|I|` matrix representing the similarity between each item and</span>
-<span class="sd">            attribute.</span>
+<span class="sd">            A :math:`|A|\\times|I|` matrix representing the similarity between</span>
+<span class="sd">            each item and attribute.</span>
 
 <span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
 <span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
-<span class="sd">            Either a `|U|x|T|` matrix representing the real user profiles, where</span>
-<span class="sd">            `T` is the number of attributes in the real underlying user profile,</span>
+<span class="sd">            Either a :math:`|U|\\times|T|` matrix representing the real user profiles, where</span>
+<span class="sd">            :math:`T` is the number of attributes in the real underlying user profile,</span>
 <span class="sd">            or a `Users` object that contains the real user profiles or real</span>
 <span class="sd">            user-item scores. This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
 <span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A `|T|x|I|` matrix representing the real user profiles, where</span>
-<span class="sd">            `T` is the number of attributes in the real underlying item profile.</span>
+<span class="sd">            A :math:`|T|\\times|I|` matrix representing the real user profiles, where</span>
+<span class="sd">            :math:`T` is the number of attributes in the real underlying item profile.</span>
 <span class="sd">            This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 

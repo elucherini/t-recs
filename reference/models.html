@@ -181,28 +181,31 @@ popular in the system. The popularity of an item is measured by the number
 of times users interacted with that item in the past. In this
 implementation, items do not expire and, therefore, the system does not base
 its choice on how recent the items are.</p>
-<p>Item attributes are represented by a <cite>1x|I|</cite> array, where <cite>|I|</cite> is the
-number of items in the system. This array stores the number of user
-interactions for each item.</p>
-<p>User profiles are represented by a <cite>|U|x1</cite> matrix, where <cite>|U|</cite> is the number
-of users in the system. All elements of this matrix are equal to 1, as the
-predictions of the system are solely based on the item attributes.</p>
+<p>Item attributes are represented by a <span class="math notranslate nohighlight">\(1\times|I|\)</span> array, where
+<span class="math notranslate nohighlight">\(|I|\)</span> is the number of items in the system. This array stores the
+number of user interactions for each item.</p>
+<p>User profiles are represented by a <span class="math notranslate nohighlight">\(|U|\times 1\)</span> matrix, where
+<span class="math notranslate nohighlight">\(|U|\)</span> is the number of users in the system. All elements of this matrix
+are equal to 1, as the predictions of the system are solely based on the
+item attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <cite>|U|</cite> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <cite>|I|</cite> in the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|A|x|I|</cite> matrix representing the similarity between each item
-and attribute. If this is not None, num_items is ignored.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|U|x|A|</cite> matrix representing the similarity between each item
-and attribute, as interpreted by the system. If this is not None, num_users is ignored.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <cite>|U|x|T|</cite> matrix representing the real user profiles, where
-<cite>T</cite> is the number of attributes in the real underlying user profile,
-or a <cite>Users</cite> object that contains the real user profiles or real
-user-item scores. This matrix is <strong>not</strong> used for recommendations. This
-is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|T|x|I|</cite> matrix representing the real user profiles, where
-<cite>T</cite> is the number of attributes in the real underlying item profile.
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
+each item and attribute. If this is not None, <cite>num_items</cite> is ignored.</p></li>
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
+each item and attribute, as interpreted by the system. If this is not
+None, <cite>num_users</cite> is ignored.</p></li>
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
+profiles, where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real
+underlying user profile, or a <cite>Users</cite> object that contains the real
+user profiles or real user-item scores. This matrix is <strong>not</strong> used
+for recommendations. This is only kept for measurements and the
+system is unaware of it.</p></li>
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
+<span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
@@ -271,29 +274,29 @@ Likewise, one cannot pass in <cite>num_items=1000</cite> but have
 attributes A. This class assumes that the attributes used for items and
 users are the same. The recommendation system matches users to items with
 similar attributes.</p>
-<p>Item attributes are represented by a <cite>|A|x|I|</cite> matrix, where <cite>|I|</cite> is the
-number of items in the system. For each item, we define the similarity to
-each attribute.</p>
-<p>User profiles are represented by a <cite>|U|x|A|</cite> matrix, where <cite>|U|</cite> is the
-number of users in the system. For each user, we define the similarity to
-each attribute.</p>
+<p>Item attributes are represented by a <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix, where
+<span class="math notranslate nohighlight">\(|I|\)</span> is the number of items in the system. For each item, we define
+the similarity to each attribute.</p>
+<p>User profiles are represented by a <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix, where
+<span class="math notranslate nohighlight">\(|U|\)</span> is the number of users in the system. For each user, we define
+the similarity to each attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <cite>|U|</cite> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <cite>|I|</cite> in the system.</p></li>
-<li><p><strong>num_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1000</em><em>)</em>) – The number of attributes <cite>|A|</cite> in the system.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|U|x|A|</cite> matrix representing the similarity between each item and
-attribute, as interpreted by the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|A|x|I|</cite> matrix representing the similarity between each item and
-attribute.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <cite>|U|x|T|</cite> matrix representing the real user profiles, where
-<cite>T</cite> is the number of attributes in the real underlying user profile,
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>num_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1000</em><em>)</em>) – The number of attributes <span class="math notranslate nohighlight">\(|A|\)</span> in the system.</p></li>
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
+each item and attribute, as interpreted by the system.</p></li>
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
+each item and attribute.</p></li>
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user profiles, where
+<span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying user profile,
 or a <cite>Users</cite> object that contains the real user profiles or real
 user-item scores. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|T|x|I|</cite> matrix representing the real user profiles, where
-<cite>T</cite> is the number of attributes in the real underlying item profile.
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
+<span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
@@ -374,35 +377,38 @@ interacted with by users in their social networks</p>
 <dd><p>A customizable social filtering recommendation system.</p>
 <p>With social filtering, users are presented items that were previously
 liked by other users in their social networks.</p>
-<p>The social network is represented by a <cite>|U|x|U|</cite> matrix, where <cite>|U|</cite> is the
-number of users in the system. For each pair of users <cite>u</cite> and <cite>v</cite>, entry
-<cite>[u,v]</cite> defines whether <cite>u</cite> “follows”/is connected to <cite>v</cite>. This can be a
-binary relationship or a score that measures how likely <cite>u</cite> is to engage
-with content that <cite>v</cite> has previously interacted with.</p>
+<p>The social network is represented by a <span class="math notranslate nohighlight">\(|U|\times|U|\)</span> matrix, where
+<span class="math notranslate nohighlight">\(|U|\)</span> is the number of users in the system. For each pair of users
+<span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, entry <cite>[u,v]</cite> defines whether <span class="math notranslate nohighlight">\(u\)</span>
+“follows”/is connected to <span class="math notranslate nohighlight">\(v\)</span>. This can be a binary relationship or a
+score that measures how likely <span class="math notranslate nohighlight">\(u\)</span> is to engage with content that
+<span class="math notranslate nohighlight">\(v\)</span> has previously interacted with.</p>
 <p>Please note that, in this class, the follow/unfollow and
 add_friends/remove_friends methods assume a binary social graph
 (see <a class="reference internal" href="components.html#components.socialgraph.BinarySocialGraph" title="components.socialgraph.BinarySocialGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinarySocialGraph</span></code></a>).</p>
-<p>Item attributes are represented by a <cite>|U|x|I|</cite> matrix, where <cite>|I|</cite> is the
-number of items in the system. For each item <cite>i</cite> and user <cite>u</cite>, we define a
-score that determines the interactions <cite>u</cite> had with <cite>i</cite>. Again, this could
-just be a binary relationship.</p>
+<p>Item attributes are represented by a <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix, where
+<span class="math notranslate nohighlight">\(|I|\)</span> is the number of items in the system. For each item <span class="math notranslate nohighlight">\(i\)</span>
+and user <span class="math notranslate nohighlight">\(u\)</span>, we define a score that determines the interactions
+<span class="math notranslate nohighlight">\(u\)</span> had with <span class="math notranslate nohighlight">\(i\)</span>. Again, this could just be a binary
+relationship.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <cite>|U|</cite> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <cite>|I|</cite> in the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|U|x|I|</cite> matrix representing the past user interactions. If this
-is not None, <cite>num_items</cite> is ignored.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|U|x|U|</cite> adjacency matrix representing each users’ social network.
-If this is not None, num_users is ignored.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <cite>|U|x|T|</cite> matrix representing the real user profiles, where
-<cite>T</cite> is the number of attributes in the real underlying user profile,
-or a <cite>Users</cite> object that contains the real user profiles or real
-user-item scores. This matrix is <strong>not</strong> used for recommendations. This
-is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <cite>|T|x|I|</cite> matrix representing the real user profiles, where
-<cite>T</cite> is the number of attributes in the real underlying item profile.
-This matrix is <strong>not</strong> used for recommendations. This
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the past user interactions.
+If this is not None, <cite>num_items</cite> is ignored.</p></li>
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|U|\)</span> adjacency matrix representing each users’
+social network. If this is not None, <cite>num_users</cite> is ignored.</p></li>
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
+profiles, where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real
+underlying user profile, or a <cite>Users</cite> object that contains the real
+user profiles or real user-item scores. This matrix is <strong>not</strong> used
+for recommendations. This is only kept for measurements and the
+system is unaware of it.</p></li>
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles,
+where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying
+item profile. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
 <li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 10</em><em>)</em>) – Number of items presented to the user per iteration.</p></li>
