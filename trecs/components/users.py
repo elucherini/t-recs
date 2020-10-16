@@ -243,10 +243,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
 
             An array of actual user scores for each item.
 
-        Todo
-        -------
+        .. todo::
 
-        * Raise exceptions
+            Raise exceptions
 
         """
         if user is None:
@@ -265,10 +264,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         args, kwargs:
             Parameters needed by the model's train function.
 
-            items_shown: :obj:`numpy.ndarray`): A |U|x|num_items_per_iter| matrix with
+        items_shown: :obj:`numpy.ndarray`): A
+            :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
-            item_attributes: :obj:`numpy.ndarray`): A |A|x|I| matrix with
-            item attributes.
+        item_attributes: :obj:`numpy.ndarray`):
+            A :math:`|A|\times|I|` matrix with item attributes.
 
         Returns
         ---------

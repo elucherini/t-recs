@@ -38,15 +38,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         users: :obj:`numpy.ndarray` or :class:`~components.users.Users`
             An array representing real user preferences unknown to the
-            system. Shape is |U| x |A|, where |A| is the number of attributes
-            and |U| is the number of users. When a `numpy.ndarray` is passed
-            in, we assume this represents the user *scores*, not the
-            users' actual attribute vectors.
+            system. Shape is :math:`|U| \\times |A|`, where :math:`|A|` is the
+            number of attributes and :math:`|U|` is the number of users. When
+            a `numpy.ndarray` is passed in, we assume this represents the user
+            *scores*, not the users' actual attribute vectors.
 
         items: :obj:`numpy.ndarray` or :class:`~components.items.Items`
             An array representing real item attributes unknown to the
-            system. Shape is |A| x |I|, where |I| is the number of items
-            and |A| is the number of attributes.
+            system. Shape is :math:`|A|\\times|I|`, where :math:`|I|` is the
+            number of items and :math:`|A|` is the number of attributes.
 
         num_users: int
             The number of users in the system.
@@ -84,18 +84,18 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         users: :class:`~components.users.Users`
             An array representing real user preferences. Shape should be
-            |U| x |A|, and should match items.
+            :math:`|U| \\times |A|`, and should match items.
 
         items: :class:`~components.items.Items`
             An array representing actual item attributes. Shape should be
-            |A| x |I|, and should match users.
+            :math:`|A| \\times |I|`, and should match users.
 
         predicted_scores: :class:`~components.users.PredictedScores`
             An array representing the user preferences as perceived by the
-            system. The shape is always `|U|x|I|`, where `|U|` is the number
-            of users in the system and `|I|` is the number of items in the
-            system. The scores are calculated with the dot product of
-            :attr:`users_hat` and :attr:`items_hat`.
+            system. The shape is always :math:`|U| \\times |I|`, where
+            :math:`|U|` is the number of users in the system and :math:`|I|`
+            is the number of items in the system. The scores are calculated with
+            the dot product of :attr:`users_hat` and :attr:`items_hat`.
 
         num_users: int
             The number of users in the system.
@@ -109,7 +109,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         random_state: :class:`trecs.random.generators.Generator`
 
         indices: :obj:`numpy.ndarray`
-            A `|U|x|I|` array representing the past interactions of each
+            A :math:`|U| \\times |I|` array representing the past interactions of each
             user. This keeps track of which items each user has interacted
             with, so that it won't be presented to the user again if
             `repeated_items` are not allowed.
