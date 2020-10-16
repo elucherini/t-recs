@@ -5,27 +5,27 @@ import numpy as np
 
 def inner_product(user_profiles, item_attributes, normalize=True):
     """
-        Performs a dot product multiplication between user profiles and
-        item attributes to return the scores (utility) each item possesses
-        for each user. We call these matrices `user_profiles` and
-        `item_attributes` but note that you could perform an arbitrary matrix
-        dot product with this method.
+    Performs a dot product multiplication between user profiles and
+    item attributes to return the scores (utility) each item possesses
+    for each user. We call these matrices `user_profiles` and
+    `item_attributes` but note that you could perform an arbitrary matrix
+    dot product with this method.
 
-        Parameters
-        -----------
+    Parameters
+    -----------
 
-            user_profiles: :obj:`array_like`
-                First factor of the dot product, which should provide a
-                representation of users.
+        user_profiles: :obj:`array_like`
+            First factor of the dot product, which should provide a
+            representation of users.
 
-            item_attributes: :obj:`array_like`
-                Second factor of the dot product, which should provide a
-                representation of items.
+        item_attributes: :obj:`array_like`
+            Second factor of the dot product, which should provide a
+            representation of items.
 
-        Returns
-        --------
-            scores: :obj:`numpy.ndarray`
-        """
+    Returns
+    --------
+        scores: :obj:`numpy.ndarray`
+    """
     if normalize:
         # this is purely an optimization that prevents numpy from having
         # to multiply huge numbers
@@ -36,8 +36,8 @@ def inner_product(user_profiles, item_attributes, normalize=True):
 
 
 def normalize_matrix(matrix, axis=1):
-    """ Normalize a matrix so that each row vector has a Euclidean norm of 1.
-        If a vector is passed in, we treat it as a matrix with a single row.
+    """Normalize a matrix so that each row vector has a Euclidean norm of 1.
+    If a vector is passed in, we treat it as a matrix with a single row.
     """
     if len(matrix.shape) == 1:
         # turn vector into matrix with one row
@@ -49,37 +49,37 @@ def normalize_matrix(matrix, axis=1):
 
 
 def contains_row(matrix, row):
-    """ Check if a numpy matrix contains a row with the same values as the
-        variable `row`.
+    """Check if a numpy matrix contains a row with the same values as the
+    variable `row`.
     """
     return (matrix == row).all(axis=1).any()
 
 
 def slerp(mat1, mat2, perc=0.05):
-    """ Implements `spherical linear interpolation`_. Takes each row vector in
-        mat1 and rotates it in the direction of the corresponding row vector in
-        mat2. The angle of rotation is `(perc * the angle between the two row
-        vectors)`. i.e., when `perc=0.05`, each row vector
-        in mat1 is rotated with an angle equal to 5% of the total angle
-        between it and the corresponding row vector in mat2. The matrix returned
-        will have row vectors that each have the same norm as mat1, but pointing
-        in different directions.
+    """Implements `spherical linear interpolation`_. Takes each row vector in
+    mat1 and rotates it in the direction of the corresponding row vector in
+    mat2. The angle of rotation is `(perc * the angle between the two row
+    vectors)`. i.e., when `perc=0.05`, each row vector
+    in mat1 is rotated with an angle equal to 5% of the total angle
+    between it and the corresponding row vector in mat2. The matrix returned
+    will have row vectors that each have the same norm as mat1, but pointing
+    in different directions.
 
-        .. _`spherical linear interpolation`: https://en.wikipedia.org/wiki/Slerp
+    .. _`spherical linear interpolation`: https://en.wikipedia.org/wiki/Slerp
 
-        Parameters
-        -----------
+    Parameters
+    -----------
 
-            mat1: numpy.ndarray or list
-                Matrix whose row vectors will be rotated in the direction of
-                mat2's row vectors.
+        mat1: numpy.ndarray or list
+            Matrix whose row vectors will be rotated in the direction of
+            mat2's row vectors.
 
-            mat2: numpy.ndarray or list
-                Matrix that should have the same dimensions at mat1.
+        mat2: numpy.ndarray or list
+            Matrix that should have the same dimensions at mat1.
 
-            perc: float
-                Parameter in [0,1] inclusive that specifies the percentage
-                of rotation.
+        perc: float
+            Parameter in [0,1] inclusive that specifies the percentage
+            of rotation.
     """
     assert 0 <= perc <= 1.0
     assert mat1.shape == mat2.shape  # arrays should have same dimension

@@ -28,7 +28,8 @@ class TestUsers:
         item_repr = np.random.randint(2, size=(attr, items))
         actual_user_repr = np.random.randint(15, size=(users, attr))
         model = ContentFiltering(
-            user_representation=actual_user_repr, item_representation=item_repr,
+            user_representation=actual_user_repr,
+            item_representation=item_repr,
         )
         s = Users(actual_user_repr)
         s.set_score_function(model.score_fn)

@@ -92,8 +92,8 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         return self.get_observable(data=self.state_history)
 
     def observe(self, state, copy=True):  # pylint: disable=arguments-differ
-        """ Append the current value of the variable (by default a copy) to the
-            state history """
+        """Append the current value of the variable (by default a copy) to the
+        state history"""
         if copy:
             to_append = np.copy(state)
         else:
@@ -166,5 +166,7 @@ class SystemStateModule:  # pylint: disable=too-few-public-methods
                 :class:`~components.base_components.BaseComponent`
         """
         register_observables(
-            observer=self._system_state, observables=list(args), observable_type=BaseComponent,
+            observer=self._system_state,
+            observables=list(args),
+            observable_type=BaseComponent,
         )

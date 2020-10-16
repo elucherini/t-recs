@@ -194,7 +194,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         )
 
     def _update_user_profiles(self, interactions):
-        """ Private function that updates user profiles with data from
+        """Private function that updates user profiles with data from
             latest interactions.
 
             Specifically, this function converts interactions into item attributes.

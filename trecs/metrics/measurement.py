@@ -80,8 +80,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
     @abstractmethod
     def measure(self, recommender, **kwargs):
-        """ Function that should calculate some outcome of interest of the system
-            at the current timestep
+        """Function that should calculate some outcome of interest of the system
+        at the current timestep
         """
 
     def get_timesteps(self):
@@ -448,8 +448,8 @@ class DiffusionTreeMeasurement(Measurement):
         return parents
 
     def _add_to_graph(self, user_profiles, new_infected_users):
-        """ Add the newly infected users to the graph with edges to the users
-            who infected them
+        """Add the newly infected users to the graph with edges to the users
+        who infected them
         """
         self.diffusion_tree.add_nodes_from(new_infected_users)
         parents = self._find_parents(user_profiles, new_infected_users)
@@ -459,8 +459,8 @@ class DiffusionTreeMeasurement(Measurement):
             self.diffusion_tree.add_edges_from(edges)
 
     def _manage_new_infections(self, user_profiles, current_infection_state):
-        """ Add new infected users to graph and return number of newly infected
-            users
+        """Add new infected users to graph and return number of newly infected
+        users
         """
         if self._old_infection_state is None:
             self._old_infection_state = np.zeros(current_infection_state.shape)

@@ -80,17 +80,25 @@ class TestUtils:
         # num_attributes does not match the actual number of attributes
         with pytest.raises(ValueError):
             validate_user_item_inputs(
-                users_hat=users_hat, items_hat=items_hat, num_attributes=500,
+                users_hat=users_hat,
+                items_hat=items_hat,
+                num_attributes=500,
             )
 
         # true users and true items do not match the number of users and items
         # in the representation
         with pytest.raises(ValueError):
             validate_user_item_inputs(
-                users_hat=np.ones((299, 100)), items_hat=items_hat, users=users, items=items,
+                users_hat=np.ones((299, 100)),
+                items_hat=items_hat,
+                users=users,
+                items=items,
             )
 
         with pytest.raises(ValueError):
             validate_user_item_inputs(
-                users_hat=users_hat, items_hat=np.ones((100, 599)), users=users, items=items,
+                users_hat=users_hat,
+                items_hat=np.ones((100, 599)),
+                users=users,
+                items=items,
             )

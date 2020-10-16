@@ -18,8 +18,8 @@ from .recommender import BaseRecommender
 
 
 class InfectionState(Component):  # pylint: disable=too-many-ancestors
-    """ Component that tracks infection state, which is a binary array with
-        an element recording whether each user is infected
+    """Component that tracks infection state, which is a binary array with
+    an element recording whether each user is infected
     """
 
     def __init__(self, infection_state=None, verbose=False):
@@ -30,20 +30,23 @@ class InfectionState(Component):  # pylint: disable=too-many-ancestors
 
 
 class InfectionThresholds(Component):  # pylint: disable=too-many-ancestors
-    """ Component that tracks infection thresholds, where each user has their own
-        threshold for infection
+    """Component that tracks infection thresholds, where each user has their own
+    threshold for infection
     """
 
     def __init__(self, infection_thresholds=None, verbose=False):
         self.name = "infection_thresholds"
         Component.__init__(
-            self, current_state=infection_thresholds, size=None, verbose=verbose, seed=None,
+            self,
+            current_state=infection_thresholds,
+            size=None,
+            verbose=verbose,
+            seed=None,
         )
 
 
 class BassModel(BaseRecommender, BinarySocialGraph):
-    """ Bass model that, for now, only supports one item at a time
-    """
+    """Bass model that, for now, only supports one item at a time"""
 
     def __init__(  # pylint: disable-all
         self,
@@ -164,7 +167,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         )
 
     def _update_user_profiles(self, interactions):
-        """ Private function that updates user profiles with data from
+        """Private function that updates user profiles with data from
             latest interactions.
 
             Specifically, this function converts interactions into item attributes.
@@ -183,17 +186,17 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
 
     def infection_probabilities(self, user_profiles, item_attributes):
-        """ Calculates the infection probabilities for each user at the current
-            timestep
-            Args:
+        """Calculates the infection probabilities for each user at the current
+        timestep
+        Args:
 
-            user_profiles: :obj:`array_like`
-                First factor of the dot product, which should provide a
-                representation of users.
+        user_profiles: :obj:`array_like`
+            First factor of the dot product, which should provide a
+            representation of users.
 
-            item_attributes: :obj:`array_like`
-                Second factor of the dot product, which should provide a
-                representation of items.
+        item_attributes: :obj:`array_like`
+            Second factor of the dot product, which should provide a
+            representation of items.
         """
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         dot_product = np.dot(user_profiles, self.infection_state * np.log(1 - item_attributes))
@@ -202,24 +205,24 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         return predicted_scores
 
     def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
-        """ Overrides run method of parent class :class:`Recommender`, so that
-            repeated_items defaults to True in Bass models.
+        """Overrides run method of parent class :class:`Recommender`, so that
+        repeated_items defaults to True in Bass models.
 
-            Args:
-                timestep (int, optional): number of timesteps for simulation
+        Args:
+            timestep (int, optional): number of timesteps for simulation
 
-                startup (bool, optional): if True, it runs the simulation in
-                    startup mode (see recommend() and startup_and_train())
+            startup (bool, optional): if True, it runs the simulation in
+                startup mode (see recommend() and startup_and_train())
 
-                train_between_steps (bool, optional): if True, the model is
-                    retrained after each step with the information gathered
-                    in the previous step.
+            train_between_steps (bool, optional): if True, the model is
+                retrained after each step with the information gathered
+                in the previous step.
 
-                repeated_items (bool, optional): if True, repeated items are allowed
-                    in the system -- that is, users can interact with the same
-                    item more than once. Examples of common instances in which
-                    this is useful: infection and network propagation models.
-                    Default is False.
+            repeated_items (bool, optional): if True, repeated items are allowed
+                in the system -- that is, users can interact with the same
+                item more than once. Examples of common instances in which
+                this is useful: infection and network propagation models.
+                Default is False.
         """
         # NOTE: force repeated_items to True
         repeated_items = True

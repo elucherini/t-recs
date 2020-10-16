@@ -14,61 +14,61 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
     default_num_items=None,
     num_attributes=None,
 ):
-    """ Validate that the inputs to the recommender system are consistent
-        based on their dimensions. Furthermore, if all of the inputs
-        are consistent, we return the number of users and items that are inferred
-        from the inputs, or fall back to a provided default number.
+    """Validate that the inputs to the recommender system are consistent
+    based on their dimensions. Furthermore, if all of the inputs
+    are consistent, we return the number of users and items that are inferred
+    from the inputs, or fall back to a provided default number.
 
-        Parameters
-        -----------
+    Parameters
+    -----------
 
-        num_users: int or None (optional, default: None)
-            An integer representing the number of users in the system
+    num_users: int or None (optional, default: None)
+        An integer representing the number of users in the system
 
-        num_items: int or None (optional, default: None)
-            An integer representing the number of items in the system
+    num_items: int or None (optional, default: None)
+        An integer representing the number of items in the system
 
-        users_hat: :obj:`numpy.ndarray` or None (optional, default: None)
-            A 2D matrix whose first dimension should be equal to the number of
-            users in the system. Typically this matrix refers to the system's
-            internal representation of user profiles, not the "true" underlying
-            user profiles, which are unknown to the system.
+    users_hat: :obj:`numpy.ndarray` or None (optional, default: None)
+        A 2D matrix whose first dimension should be equal to the number of
+        users in the system. Typically this matrix refers to the system's
+        internal representation of user profiles, not the "true" underlying
+        user profiles, which are unknown to the system.
 
-        items_hat: :obj:`numpy.ndarray` or None (optional, default: None)
-            A 2D matrix whose second dimension should be equal to the number of
-            items in the system. Typically this matrix refers to the system's
-            internal representation of item attributes, not the "true" underlying
-            item attributes, which are unknown to the system.
+    items_hat: :obj:`numpy.ndarray` or None (optional, default: None)
+        A 2D matrix whose second dimension should be equal to the number of
+        items in the system. Typically this matrix refers to the system's
+        internal representation of item attributes, not the "true" underlying
+        item attributes, which are unknown to the system.
 
-        users: :obj:`numpy.ndarray` or None (optional, default: None)
-            A 2D matrix whose first dimension should be equal to the number of
-            users in the system. This is the "true" underlying user profile
-            matrix.
+    users: :obj:`numpy.ndarray` or None (optional, default: None)
+        A 2D matrix whose first dimension should be equal to the number of
+        users in the system. This is the "true" underlying user profile
+        matrix.
 
-        items: :obj:`numpy.ndarray` or None (optional, default: None)
-            A 2D matrix whose second dimension should be equal to the number of
-            items in the system. This is the "true" underlying item attribute
-            matrix.
+    items: :obj:`numpy.ndarray` or None (optional, default: None)
+        A 2D matrix whose second dimension should be equal to the number of
+        items in the system. This is the "true" underlying item attribute
+        matrix.
 
-        default_num_users: int or None (optional, default: None)
-            If the number of users is not specified anywhere in the inputs, we return
-            this value as the number of users to be returned.
+    default_num_users: int or None (optional, default: None)
+        If the number of users is not specified anywhere in the inputs, we return
+        this value as the number of users to be returned.
 
-        default_num_items: int or None (optional, default: None)
-            If the number of items is not specified anywhere in the inputs, we return
-            this value as the number of items to be returned.
+    default_num_items: int or None (optional, default: None)
+        If the number of items is not specified anywhere in the inputs, we return
+        this value as the number of items to be returned.
 
-        num_attributes: int or None (optional, default: None)
-            Check that the number of attributes per user & per item are equal to
-            this specified number.
+    num_attributes: int or None (optional, default: None)
+        Check that the number of attributes per user & per item are equal to
+        this specified number.
 
-        Returns
-        --------
-            num_users: int
-                Number of users, inferred from the inputs (or provided default).
+    Returns
+    --------
+        num_users: int
+            Number of users, inferred from the inputs (or provided default).
 
-            num_items: int
-                Number of items, inferred from the inputs (or provided default).
+        num_items: int
+            Number of items, inferred from the inputs (or provided default).
     """
     if not is_array_valid_or_none(items_hat, ndim=2):
         raise ValueError("items matrix must be a 2D matrix or None")
@@ -125,8 +125,8 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
 
 
 def is_array_valid_or_none(array, ndim=2):
-    """ Return True if no array was passed in or if the array matches the
-        dimensions specified
+    """Return True if no array was passed in or if the array matches the
+    dimensions specified
     """
     # check if array_like
     if not is_valid_or_none(array, (np.ndarray, list)):
@@ -144,8 +144,8 @@ def is_array_valid_or_none(array, ndim=2):
 
 
 def array_dimensions_match(array1, array2, axis=None):
-    """ Assuming that both arrays are defined,
-        we test whether they have matching dimensions.
+    """Assuming that both arrays are defined,
+    we test whether they have matching dimensions.
     """
     array1, array2 = np.asarray(array1), np.asarray(array2)
     if axis is None:
@@ -159,9 +159,9 @@ def is_valid_or_none(value, desired_type):
 
 
 def get_first_valid(*args):
-    """ Returns the first value that is not None.
-        If all arguments are None, the function returns None.
-        This is generally used to establish priorities for num_users, num_items, etc.
+    """Returns the first value that is not None.
+    If all arguments are None, the function returns None.
+    This is generally used to establish priorities for num_users, num_items, etc.
     """
     for arg in args:
         if arg is not None:
@@ -170,8 +170,7 @@ def get_first_valid(*args):
 
 
 def all_besides_none_equal(*args):
-    """ Return True if all of the (non-None) elements are equal
-    """
+    """Return True if all of the (non-None) elements are equal"""
     non_none = list(filter(None, args))
     for i, arg in enumerate(non_none):
         if i + 1 < len(non_none) and arg != args[i + 1]:
@@ -181,8 +180,7 @@ def all_besides_none_equal(*args):
 
 
 def non_none_values(*args):
-    """ Return True if all of the (non-None) elements are equal
-    """
+    """Return True if all of the (non-None) elements are equal"""
     return set(filter(None, args))
 
 

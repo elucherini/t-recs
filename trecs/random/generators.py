@@ -25,8 +25,8 @@ class Generator(np.random.Generator):  # pylint: disable=too-few-public-methods
     """
 
     def __init__(self, seed=None, bit_generator=None):
-        """ By default, initialize with a Generator that consumes a
-            PCG64 bit generator
+        """By default, initialize with a Generator that consumes a
+        PCG64 bit generator
         """
         if bit_generator is not None and seed is not None:
             warnings.warn("Seed has not been set. Please set seed in bit generator")

@@ -177,7 +177,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 
     def set_score_function(self, score_fn):
-        """ Users "score" items before "deciding" which item to interact with.
+        """Users "score" items before "deciding" which item to interact with.
             This function makes it possible to set an arbitrary function as the
             score function.
 
@@ -306,16 +306,16 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         return interactions
 
     def update_profiles(self, item_attributes):
-        """ In the case of dynamic user profiles, we update the user's actual
-            profiles with new values as each user profile "drifts" towards
-            items that they consume.
+        """In the case of dynamic user profiles, we update the user's actual
+        profiles with new values as each user profile "drifts" towards
+        items that they consume.
 
-            Parameters
-            -----------
+        Parameters
+        -----------
 
-                interactions: numpy.ndarray or list
-                    A matrix where row `i` corresponds to the attribute vector
-                    that user `i` interacted with.
+            interactions: numpy.ndarray or list
+                A matrix where row `i` corresponds to the attribute vector
+                that user `i` interacted with.
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized

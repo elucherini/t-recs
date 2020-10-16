@@ -22,104 +22,104 @@ from trecs.utils import is_valid_or_none
 class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     """Abstract class representing a recommender system.
 
-        The attributes and methods in this class can be generalized beyond
-        recommender systems and are currently common to all pre-loaded models.
+    The attributes and methods in this class can be generalized beyond
+    recommender systems and are currently common to all pre-loaded models.
 
-        Parameters
-        -----------
+    Parameters
+    -----------
 
-            users_hat: :obj:`numpy.ndarray`
-                An array representing users. The shape and meaning depends on
-                the implementation of the concrete class.
+        users_hat: :obj:`numpy.ndarray`
+            An array representing users. The shape and meaning depends on
+            the implementation of the concrete class.
 
-            items_hat: :obj:`numpy.ndarray`
-                An array representing items. The shape and meaning depends on
-                the implementation of the concrete class.
+        items_hat: :obj:`numpy.ndarray`
+            An array representing items. The shape and meaning depends on
+            the implementation of the concrete class.
 
-            users: :obj:`numpy.ndarray` or :class:`~components.users.Users`
-                An array representing real user preferences unknown to the
-                system. Shape is |U| x |A|, where |A| is the number of attributes
-                and |U| is the number of users. When a `numpy.ndarray` is passed
-                in, we assume this represents the user *scores*, not the
-                users' actual attribute vectors.
+        users: :obj:`numpy.ndarray` or :class:`~components.users.Users`
+            An array representing real user preferences unknown to the
+            system. Shape is |U| x |A|, where |A| is the number of attributes
+            and |U| is the number of users. When a `numpy.ndarray` is passed
+            in, we assume this represents the user *scores*, not the
+            users' actual attribute vectors.
 
-            items: :obj:`numpy.ndarray` or :class:`~components.items.Items`
-                An array representing real item attributes unknown to the
-                system. Shape is |A| x |I|, where |I| is the number of items
-                and |A| is the number of attributes.
+        items: :obj:`numpy.ndarray` or :class:`~components.items.Items`
+            An array representing real item attributes unknown to the
+            system. Shape is |A| x |I|, where |I| is the number of items
+            and |A| is the number of attributes.
 
-            num_users: int
-                The number of users in the system.
+        num_users: int
+            The number of users in the system.
 
-            num_items: int
-                The number of items in the system.
+        num_items: int
+            The number of items in the system.
 
-            num_items_per_iter: int
-                Number of items presented to the user at each iteration.
+        num_items_per_iter: int
+            Number of items presented to the user at each iteration.
 
-            measurements: list
-                List of metrics to monitor.
+        measurements: list
+            List of metrics to monitor.
 
-            system_state: list
-                List of system state components to monitor.
+        system_state: list
+            List of system state components to monitor.
 
-            verbose: bool (optional, default: False)
-                If True, it enables verbose mode.
+        verbose: bool (optional, default: False)
+            If True, it enables verbose mode.
 
-            seed: int, None (optional, default: None)
-                Seed for random generator used
+        seed: int, None (optional, default: None)
+            Seed for random generator used
 
-        Attributes
-        -----------
+    Attributes
+    -----------
 
-            users_hat: :class:`~components.users.PredictedUserProfiles`
-                An array representing users, matching user_representation. The
-                shape and meaning depends on the implementation of the concrete
-                class.
+        users_hat: :class:`~components.users.PredictedUserProfiles`
+            An array representing users, matching user_representation. The
+            shape and meaning depends on the implementation of the concrete
+            class.
 
-            items_hat: :class:`~components.items.Items`
-                An array representing items, matching item_representation. The
-                shape and meaning depends on the implementation of the concrete
-                class.
+        items_hat: :class:`~components.items.Items`
+            An array representing items, matching item_representation. The
+            shape and meaning depends on the implementation of the concrete
+            class.
 
-            users: :class:`~components.users.Users`
-                An array representing real user preferences. Shape should be
-                |U| x |A|, and should match items.
+        users: :class:`~components.users.Users`
+            An array representing real user preferences. Shape should be
+            |U| x |A|, and should match items.
 
-            items: :class:`~components.items.Items`
-                An array representing actual item attributes. Shape should be
-                |A| x |I|, and should match users.
+        items: :class:`~components.items.Items`
+            An array representing actual item attributes. Shape should be
+            |A| x |I|, and should match users.
 
-            predicted_scores: :class:`~components.users.PredictedScores`
-                An array representing the user preferences as perceived by the
-                system. The shape is always `|U|x|I|`, where `|U|` is the number
-                of users in the system and `|I|` is the number of items in the
-                system. The scores are calculated with the dot product of
-                :attr:`users_hat` and :attr:`items_hat`.
+        predicted_scores: :class:`~components.users.PredictedScores`
+            An array representing the user preferences as perceived by the
+            system. The shape is always `|U|x|I|`, where `|U|` is the number
+            of users in the system and `|I|` is the number of items in the
+            system. The scores are calculated with the dot product of
+            :attr:`users_hat` and :attr:`items_hat`.
 
-            num_users: int
-                The number of users in the system.
+        num_users: int
+            The number of users in the system.
 
-            num_items: int
-                The number of items in the system.
+        num_items: int
+            The number of items in the system.
 
-            num_items_per_iter: int
-                Number of items presented to the user per iteration.
+        num_items_per_iter: int
+            Number of items presented to the user per iteration.
 
-            random_state: :class:`trecs.random.generators.Generator`
+        random_state: :class:`trecs.random.generators.Generator`
 
-            indices: :obj:`numpy.ndarray`
-                A `|U|x|I|` array representing the past interactions of each
-                user. This keeps track of which items each user has interacted
-                with, so that it won't be presented to the user again if
-                `repeated_items` are not allowed.
+        indices: :obj:`numpy.ndarray`
+            A `|U|x|I|` array representing the past interactions of each
+            user. This keeps track of which items each user has interacted
+            with, so that it won't be presented to the user again if
+            `repeated_items` are not allowed.
 
-            score_fn: callable
-                Function that is used to calculate each user's scores for each
-                candidate item. Note that this function can be the same function
-                used by the recommender system to generate its predictions for
-                user-item scores. The score function should take as input
-                user_profiles and item_attributes.
+        score_fn: callable
+            Function that is used to calculate each user's scores for each
+            candidate item. Note that this function can be the same function
+            used by the recommender system to generate its predictions for
+            user-item scores. The score function should take as input
+            user_profiles and item_attributes.
     """
 
     @abstractmethod
@@ -195,7 +195,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # system state
         SystemStateModule.__init__(self)
         self.add_state_variable(
-            self.users_hat, self.users, self.items_hat, self.predicted_scores,
+            self.users_hat,
+            self.users,
+            self.items_hat,
+            self.predicted_scores,
         )
         if system_state is not None:
             self.add_state_variable(*system_state)
@@ -287,7 +290,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
             # such that higher-preference items get more probability mass
-            num_items_unseen = trecs.shape[1]  # number of items unseen per user
+            num_items_unseen = rec.shape[1]  # number of items unseen per user
             probabilities = np.logspace(0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2)
             probabilities = probabilities / probabilities.sum()
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
