@@ -1,5 +1,10 @@
-Simulator
+T-RECS (Tool for RecSys Simulation)
 =========
+
+.. image:: https://i.imgur.com/3ZRDVaD.png
+  :width: 400
+  :alt: Picture of T-Rex next to letters T-RECS
+
 A simulator for sociotechnical systems. More details coming soon.
 
 Install
