@@ -211,6 +211,12 @@
 <span class="sd">        measurements: list</span>
 <span class="sd">            List of metrics to monitor.</span>
 
+<span class="sd">        record_base_state: bool (optional, default: False)</span>
+<span class="sd">            If True, the system will record at each time step its internal</span>
+<span class="sd">            representation of users profiles and item profiles, as well as the</span>
+<span class="sd">            true user profiles and item profiles. It will also record the</span>
+<span class="sd">            predicted user-item scores at each time step.</span>
+
 <span class="sd">        system_state: list</span>
 <span class="sd">            List of system state components to monitor.</span>
 
@@ -285,6 +291,7 @@
         <span class="n">num_items_per_iter</span><span class="p">,</span>
         <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">measurements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">record_base_state</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">system_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">score_fn</span><span class="o">=</span><span class="n">inner_product</span><span class="p">,</span>
@@ -345,12 +352,13 @@
 
         <span class="c1"># system state</span>
         <span class="n">SystemStateModule</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">record_base_state</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">system_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span><span class="o">*</span><span class="n">system_state</span><span class="p">)</span>
 
