@@ -60,6 +60,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         measurements: list
             List of metrics to monitor.
 
+        record_base_state: bool (optional, default: False)
+            If True, the system will record at each time step its internal
+            representation of users profiles and item profiles, as well as the
+            true user profiles and item profiles. It will also record the
+            predicted user-item scores at each time step.
+
         system_state: list
             List of system state components to monitor.
 
@@ -134,6 +140,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_items_per_iter,
         probabilistic_recommendations=False,
         measurements=None,
+        record_base_state=False,
         system_state=None,
         verbose=False,
         score_fn=inner_product,
@@ -194,12 +201,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         # system state
         SystemStateModule.__init__(self)
-        self.add_state_variable(
-            self.users_hat,
-            self.users,
-            self.items_hat,
-            self.predicted_scores,
-        )
+        if record_base_state:
+            self.add_state_variable(
+                self.users_hat,
+                self.users,
+                self.items_hat,
+                self.predicted_scores,
+            )
         if system_state is not None:
             self.add_state_variable(*system_state)
 

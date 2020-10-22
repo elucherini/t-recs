@@ -171,7 +171,7 @@ def get_first_valid(*args):
 
 def all_besides_none_equal(*args):
     """Return True if all of the (non-None) elements are equal"""
-    non_none = list(filter(None, args))
+    non_none = list(filter(lambda x: x is not None, args))
     for i, arg in enumerate(non_none):
         if i + 1 < len(non_none) and arg != args[i + 1]:
             print(arg)
@@ -181,7 +181,7 @@ def all_besides_none_equal(*args):
 
 def non_none_values(*args):
     """Return True if all of the (non-None) elements are equal"""
-    return set(filter(None, args))
+    return set(filter(lambda x: x is not None, args))
 
 
 def all_none(*args):
