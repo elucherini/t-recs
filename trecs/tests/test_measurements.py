@@ -78,7 +78,7 @@ class TestMeasurementModule:
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
 
-        s = SocialFiltering()
+        s = SocialFiltering(record_base_state=True)
         state_mappings = {
             "predicted_user_profiles": s.users_hat,
             "actual_user_scores": s.users.actual_user_scores,
