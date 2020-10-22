@@ -256,8 +256,8 @@ class TestContentFiltering:
     def test_seeding(self, seed=None, items=None, users=None):
         if seed is None:
             seed = np.random.randint(100000)
-        s1 = ContentFiltering(seed=seed)
-        s2 = ContentFiltering(seed=seed)
+        s1 = ContentFiltering(seed=seed, record_base_state=True)
+        s2 = ContentFiltering(seed=seed, record_base_state=True)
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
         s1.run(timesteps=5)
@@ -274,8 +274,8 @@ class TestContentFiltering:
             items = np.random.randint(1, 1000)
         if users is None:
             users = np.random.randint(1, 100)
-        s1 = ContentFiltering(seed=seed, num_users=users, num_items=items)
-        s2 = ContentFiltering(seed=seed, num_users=users, num_items=items)
+        s1 = ContentFiltering(seed=seed, num_users=users, num_items=items, record_base_state=True)
+        s2 = ContentFiltering(seed=seed, num_users=users, num_items=items, record_base_state=True)
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
         s1.run(timesteps=5)
