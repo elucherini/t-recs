@@ -112,6 +112,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_items_per_iter: int
             Number of items presented to the user per iteration.
 
+        probabilistic_recommendations: bool (optional, default: False)
+            When this flag is set to `True`, the recommendations (excluding
+            any random interleaving) will be randomized, meaning that items
+            will be recommended with a probability proportionate to their
+            predicted score, rather than the top `k` items, as ranked by their
+            predicted score, being recommended.
+
         random_state: :class:`trecs.random.generators.Generator`
 
         indices: :obj:`numpy.ndarray`
@@ -172,6 +179,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_items must be an int")
         if not is_valid_or_none(num_items_per_iter, int):
             raise TypeError("num_items_per_iter must be an int")
+        assert num_items_per_iter > 0  # check number of items per iteration is positive
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
@@ -181,9 +189,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if users is None:
             self.users = Users(size=self.users_hat.shape, num_users=num_users, seed=seed)
         if isinstance(users, (list, np.ndarray)):
-            # assume that's what passed in is the user's true scores on
-            # the items
-            self.users = Users(actual_user_scores=users, num_users=num_users)
+            # assume that's what passed in is the user's profiles
+            self.users = Users(actual_user_profiles=users, num_users=num_users)
         if isinstance(users, Users):
             self.users = users
 
@@ -258,9 +265,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             self.predicted_scores[:, :] = predicted_scores
 
-    def generate_recommendations(self, k=1, indices_prime=None):
+    def generate_recommendations(self, k=1, item_indices=None):
         """
-        Generate recommendations
+        Generate recommendations for each user.
 
         Parameters
         -----------
@@ -268,31 +275,36 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             k : int (optional, default: 1)
                 Number of items to recommend.
 
-            indices_prime : :obj:`numpy.ndarray` or None (optional, default: None)
+            item_indices : :obj:`numpy.ndarray` or None (optional, default: None)
                 A matrix containing the indices of the items each user has not yet
                 interacted with. It is used to ensure that the user is presented
-                with items they have already interacted with.
+                with items they have not already interacted with. If `None`,
+                then the user may be recommended items that they have already
+                interacted with.
 
         Returns
         ---------
             Recommendations: :obj:`numpy.ndarray`
         """
-        if indices_prime is None:
-            indices_prime = self.indices[np.where(self.indices >= 0)]
-            indices_prime = indices_prime.reshape((self.num_users, -1))
-        if indices_prime.size == 0 or k > indices_prime.shape[1]:
-            self.log("Insufficient number of items left!")
-            indices_prime = self.indices[np.where(self.indices >= 0)]
-            indices_prime = indices_prime.reshape((self.num_users, -1))
-        row = np.repeat(self.users.user_vector, indices_prime.shape[1])
+        if item_indices is not None:
+            if item_indices.size < self.num_users:
+                raise ValueError(
+                    "At least one user has interacted with all items!"
+                    "To avoid this problem, you may want to allow repeated items."
+                )
+            if k > item_indices.shape[1]:
+                raise ValueError(
+                    f"There are not enough items left to recommend {k} items to each user."
+                )
+        row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
         self.log("Row:\n" + str(row))
-        self.log("Indices_prime:\n" + str(indices_prime))
-        s_filtered = self.predicted_scores[row, indices_prime]
+        self.log("Item indices:\n" + str(item_indices))
+        s_filtered = self.predicted_scores[row, item_indices]
         # scores are U x I; we can use argsort to sort the item indices
         # from low to high scores
         permutation = s_filtered.argsort()
-        rec = indices_prime[row, permutation]
+        rec = item_indices[row, permutation]
         self.log("Items ordered by preference (low to high) for each user:\n" + str(rec))
         if self.probabilistic_recommendations:
             # the recommended items will not be exactly determined by
@@ -306,38 +318,69 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             return rec[:, -k:]
 
-    def recommend(self, startup=False):
+    def recommend(
+        self,
+        startup=False,
+        random_items_per_iter=0,
+        vary_random_items_per_iter=False,
+        repeated_items=True,
+    ):
         """
         Implements the recommendation process by combining recommendations and
         new (random) items.
 
         Parameters
         -----------
-            startup (bool, optional): If True, the system is in "startup"
-                (exploration) mode and only presents the user with new randomly
-                chosen items. This is done to maximize exploration.
+            startup: bool (optional, default: False)
+                If True, the system is in "startup"  (exploration) mode and
+                only presents the user with new randomly chosen items. This is
+                done to maximize exploration.
+
+            random_items_per_iter: int (optional, default: 0)
+                Number of per-user item recommendations that should be
+                randomly generated. Passing in `1.0` will result in all
+                recommendations being randomly generated, while passing in `0.0`
+                will result in all recommendations coming from predicted score.
+
+            vary_random_items_per_iter: bool (optional, default: False)
+                If true, then at each timestep, the # of items that are recommended
+                randomly is itself randomly generated between 0 and
+                `random_items_per_iter`, inclusive.
+
+            repeated_items : bool (optional, default: True)
+                If True, repeated items are allowed in the system -- that is,
+                users can interact with the same item more than once.
 
         Returns
         --------
             Items: :obj:`numpy.ndarray`
                 New and recommended items in random order.
         """
+        if random_items_per_iter > self.num_items_per_iter:
+            raise ValueError(
+                "Cannot show more random items per iteration than the total number"
+                " of items shown per iteration"
+            )
+
         if startup:
             num_new_items = self.num_items_per_iter
             num_recommended = 0
         else:
-            num_new_items = self.random_state.integers(0, self.num_items_per_iter)
+            num_new_items = random_items_per_iter
+            if vary_random_items_per_iter:
+                num_new_items = self.random_state.integers(0, random_items_per_iter + 1)
             num_recommended = self.num_items_per_iter - num_new_items
 
-        if num_recommended == 0 and num_new_items == 0:
-            raise ValueError(
-                "Not allowed for there to be 0 new items presented and 0" + " recommended items."
-            )
+        item_indices = self.indices
+        if not repeated_items:
+            # for each user, eliminate items that have been interacted with
+            item_indices = item_indices[np.where(item_indices >= 0)]
+            item_indices = item_indices.reshape((self.num_users, -1))
 
         if num_recommended > 0:
-            recommended = self.generate_recommendations(k=num_recommended)
-            assert num_recommended == recommended.shape[1]
-            assert recommended.shape[0] == self.num_users
+            recommended = self.generate_recommendations(
+                k=num_recommended, item_indices=item_indices
+            )
             self.log(
                 "System recommended these items (cols) to each user "
                 + "(rows):\n"
@@ -345,25 +388,19 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
         else:
             recommended = None
-        indices_prime = self.indices[np.where(self.indices >= 0)]
-        indices_prime = indices_prime.reshape((self.num_users, -1))
-        # Current assumptions:
-        # 1. Interleave new items and recommended items
-        # 2. Each user interacts with one element depending on preference
-        # 3. Users can't interact with the same item more than once
-        assert np.count_nonzero(self.indices == -1) % self.num_users == 0
-        self.log("Choice among %d items" % (indices_prime.shape[0]))
-        if indices_prime.shape[1] < num_new_items:
+
+        self.log("Choice among %d items" % (item_indices.shape[0]))
+        if item_indices.shape[1] < num_new_items:
             self.log("Insufficient number of items left!")
-            indices_prime = self.indices[np.where(self.indices >= 0)]
-            indices_prime = indices_prime.reshape((self.num_users, -1))
 
         if num_new_items:
+            # no guarantees that randomly interleaved items do not overlap
+            # with recommended items
             col = self.random_state.integers(
-                indices_prime.shape[1], size=(self.num_users, num_new_items)
+                item_indices.shape[1], size=(self.num_users, num_new_items)
             )
             row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
-            new_items = indices_prime[row, col]
+            new_items = item_indices[row, col]
             self.log(
                 "System picked these items (cols) randomly for each user "
                 + "(rows):\n"
@@ -387,7 +424,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         It must be defined in the concrete class.
         """
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
+    def run(
+        self,
+        timesteps=50,
+        startup=False,
+        train_between_steps=True,
+        random_items_per_iter=0,
+        vary_random_items_per_iter=False,
+        repeated_items=True,
+    ):
         """
         Runs simulation for the given timesteps.
 
@@ -405,6 +450,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 If True, the model is retrained after each timestep with the
                 information gathered in the previous step.
 
+            random_items_per_iter: float (optional, default: 0)
+                Percentage of per-user item recommendations that should be
+                randomly generated. Passing in `1.0` will result in all
+                recommendations being randomly generated, while passing in `0.0`
+                will result in all recommendations coming from predicted score.
+
+            vary_random_items_per_iter: bool (optional, default: False)
+                If true, then at each timestep, the # of items that are recommended
+                randomly is itself randomly generated between 0 and
+                `random_items_per_iter`, inclusive.
+
             repeated_items : bool (optional, default: True)
                 If True, repeated items are allowed in the system -- that is,
                 users can interact with the same item more than once.
@@ -413,7 +469,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Run -- interleave recommendations and random items " + "from now on")
         for timestep in tqdm(range(timesteps)):
             self.log("Step %d" % timestep)
-            item_idxs = self.recommend(startup=startup)
+            item_idxs = self.recommend(
+                startup=startup,
+                random_items_per_iter=random_items_per_iter,
+                vary_random_items_per_iter=vary_random_items_per_iter,
+                repeated_items=repeated_items,
+            )
             # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
                 items_shown=item_idxs, item_attributes=self.items
