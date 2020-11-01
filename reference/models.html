@@ -687,6 +687,21 @@ the dot product of <a class="reference internal" href="#models.recommender.BaseR
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="models.recommender.BaseRecommender.probabilistic_recommendations">
+<code class="sig-name descname">probabilistic_recommendations</code><a class="headerlink" href="#models.recommender.BaseRecommender.probabilistic_recommendations" title="Permalink to this definition">¶</a></dt>
+<dd><p>When this flag is set to <cite>True</cite>, the recommendations (excluding
+any random interleaving) will be randomized, meaning that items
+will be recommended with a probability proportionate to their
+predicted score, rather than the top <cite>k</cite> items, as ranked by their
+predicted score, being recommended.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a> (optional, default: False)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="models.recommender.BaseRecommender.random_state">
 <code class="sig-name descname">random_state</code><a class="headerlink" href="#models.recommender.BaseRecommender.random_state" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -727,15 +742,17 @@ user_profiles and item_attributes.</p>
 
 <dl class="py method">
 <dt id="models.recommender.BaseRecommender.generate_recommendations">
-<code class="sig-name descname">generate_recommendations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">indices_prime</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.generate_recommendations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.generate_recommendations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate recommendations</p>
+<code class="sig-name descname">generate_recommendations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">item_indices</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.generate_recommendations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.generate_recommendations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate recommendations for each user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1</em><em>)</em>) – Number of items to recommend.</p></li>
-<li><p><strong>indices_prime</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A matrix containing the indices of the items each user has not yet
+<li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A matrix containing the indices of the items each user has not yet
 interacted with. It is used to ensure that the user is presented
-with items they have already interacted with.</p></li>
+with items they have not already interacted with. If <cite>None</cite>,
+then the user may be recommended items that they have already
+interacted with.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -793,16 +810,24 @@ method.</p>
 
 <dl class="py method">
 <dt id="models.recommender.BaseRecommender.recommend">
-<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">startup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">startup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">random_items_per_iter</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">repeated_items</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.recommend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the recommendation process by combining recommendations and
 new (random) items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>bool</strong> (<em>startup</em>) – (exploration) mode and only presents the user with new randomly
-chosen items. This is done to maximize exploration.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> (<em>If True</em><em>, </em><em>the system is in &quot;startup&quot;</em>) – (exploration) mode and only presents the user with new randomly
-chosen items. This is done to maximize exploration.</p></li>
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, the system is in “startup”  (exploration) mode and
+only presents the user with new randomly chosen items. This is
+done to maximize exploration.</p></li>
+<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – Number of per-user item recommendations that should be
+randomly generated. Passing in <cite>1.0</cite> will result in all
+recommendations being randomly generated, while passing in <cite>0.0</cite>
+will result in all recommendations coming from predicted score.</p></li>
+<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If true, then at each timestep, the # of items that are recommended
+randomly is itself randomly generated between 0 and
+<cite>random_items_per_iter</cite>, inclusive.</p></li>
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, repeated items are allowed in the system – that is,
+users can interact with the same item more than once.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -816,7 +841,7 @@ chosen items. This is done to maximize exploration.</p></li>
 
 <dl class="py method">
 <dt id="models.recommender.BaseRecommender.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timesteps</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">startup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">train_between_steps</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">repeated_items</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timesteps</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">startup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">train_between_steps</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">random_items_per_iter</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">repeated_items</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs simulation for the given timesteps.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -826,6 +851,13 @@ chosen items. This is done to maximize exploration.</p></li>
 <a class="reference internal" href="#models.recommender.BaseRecommender.recommend" title="models.recommender.BaseRecommender.recommend"><code class="xref py py-func docutils literal notranslate"><span class="pre">recommend()</span></code></a> and <a class="reference internal" href="#models.recommender.BaseRecommender.startup_and_train" title="models.recommender.BaseRecommender.startup_and_train"><code class="xref py py-func docutils literal notranslate"><span class="pre">startup_and_train()</span></code></a>)</p></li>
 <li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, the model is retrained after each timestep with the
 information gathered in the previous step.</p></li>
+<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – Percentage of per-user item recommendations that should be
+randomly generated. Passing in <cite>1.0</cite> will result in all
+recommendations being randomly generated, while passing in <cite>0.0</cite>
+will result in all recommendations coming from predicted score.</p></li>
+<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If true, then at each timestep, the # of items that are recommended
+randomly is itself randomly generated between 0 and
+<cite>random_items_per_iter</cite>, inclusive.</p></li>
 <li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, repeated items are allowed in the system – that is,
 users can interact with the same item more than once.</p></li>
 </ul>
