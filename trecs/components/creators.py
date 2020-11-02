@@ -116,7 +116,6 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         actual_creator_scores=None,
         create_new_items=None,
         size=None,
-        cov_matrix=None,
         num_creators=None,
         drift=0,
         verbose=False,
@@ -145,10 +144,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         self.actual_creator_profiles = ActualCreatorProfiles(np.asarray(actual_creator_profiles))
         self.create_new_items = create_new_items
         self.drift = drift
-        if cov_matrix is None:
-            cov_matrix = np.eye(self.actual_creator_profiles.shape[0])
-        self.cov_matrix = cov_matrix
-        self.score_fn = None  # function that dictates how new items will be generated
+        self.score_fn = None  # function that dictates how items will be scored
         # this will be initialized by the system
         self.actual_creator_scores = actual_creator_scores
         if num_creators is not None:
@@ -266,13 +262,26 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         if self.create_new_items is not None:
             return self.create_new_items(*args, **kwargs)
-        # Toss coin for each creator to determine whether they are releasing new content
-        num_new_items = Generator(seed=self.seed).binomial(
-            n=1, p=[1 / 3] * self.actual_creator_profiles.shape[0]
+        # Generate mask by tossing coin for each creator to determine who is releasing content
+        # This should result in a _binary_ matrix of size (num_creators,)
+        creator_mask = Generator(seed=self.seed).binomial(
+            n=1,
+            p=[1 / 2] * self.actual_creator_profiles.shape[0],
         )
+        # I want to mask self.actual_creator_profiles with the results from creator_mask
+        # First I need to repeat each element of creator_mask as many times as actual_creator_profiles's columns
+        # and then reshape to obtain an array of the same size as actual_creator_profiles
+        # TODO: check that the following is correct
+        creator_mask = np.repeat(creator_mask, self.actual_creator_profiles.shape[1]).reshape(
+            self.actual_creator_profiles.shape
+        )
+        masked_profiles = np.ma.masked_array(self.actual_creator_profiles, creator_mask)
+        # for each creator that will add new items, generate multivariate_normal with each profile
+        # TODO: check that the following is correct
         items = Generator(seed=self.seed).multivariate_normal(
-            self.actual_creator_profiles.ravel(), self.cov_matrix, size=num_new_items
+            masked_profiles.ravel(), np.eye(masked_profiles)
         )
+        # TODO: check reshape
         return items.reshape(self.actual_creator_profiles.shape[0], -1)
 
     def update_profiles(self, item_attributes):

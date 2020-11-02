@@ -80,11 +80,12 @@ class BaseObservable(ABC):
 class BaseComponent(BaseObservable, VerboseMode, ABC):
     """Observable that stores a history of its state."""
 
-    def __init__(self, verbose=False, init_value=None):
+    def __init__(self, verbose=False, init_value=None, seed=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
         if isinstance(init_value, np.ndarray):
             init_value = np.copy(init_value)
+        self.seed = seed
         self.state_history.append(init_value)
 
     def get_component_state(self):
