@@ -75,7 +75,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             infected_users = generator.integers(num_users)
             infectious_items = generator.integers(num_items)
             infection_state[infected_users, infectious_items] = 1
-        self.infection_state = infection_state
+        #self.infection_state = infection_state
 
         if not is_equal_dim_or_none(getattr(user_representation, 'shape', [None])[0],
                                 getattr(user_representation, 'shape', [None, None])[1]):
@@ -150,7 +150,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if user_profiles is None:
             user_profiles = self.user_profiles
         dot_product = np.dot(user_profiles,
-            self.infection_state*np.log(1-self.item_attributes))
+            self.infection_state.current_state*np.log(1-self.item_attributes.current_state))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
         self.log('System updates predicted scores given by users (rows) ' + \

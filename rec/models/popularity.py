@@ -136,4 +136,4 @@ class PopularityRecommender(BaseRecommender):
     def _update_user_profiles(self, interactions):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
-        self.item_attributes[:,:] = np.add(self.item_attributes, histogram)
+        self.item_attributes.current_state[:,:] = np.add(self.item_attributes.current_state, histogram)

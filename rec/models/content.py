@@ -139,7 +139,7 @@ class ContentFiltering(BaseRecommender):
             getattr(actual_user_representation, 'shape', [None, None])[1],
             getattr(
                 getattr(actual_user_representation, 'actual_user_profiles', None),
-                'shape', 
+                'shape',
                 [None, None]
             )[1],
             getattr(user_representation, 'shape', [None, None])[1],
@@ -198,5 +198,20 @@ class ContentFiltering(BaseRecommender):
         """
         interactions_per_user = np.zeros((self.num_users, self.num_items))
         interactions_per_user[self.actual_users._user_vector, interactions] = 1
-        user_attributes = np.dot(interactions_per_user, self.item_attributes.T)
-        self.user_profiles[:,:] = np.add(self.user_profiles, user_attributes)
+        user_attributes = np.dot(interactions_per_user, self.item_attributes.current_state.T)
+        self.user_profiles.current_state[:,:] = np.add(self.user_profiles.current_state, user_attributes)
+
+
+if __name__ == "__main__":
+    import rec
+    items = np.zeros((2,10))
+    users = np.zeros((5,2))
+    items[0,0] = 1
+    items[1,1] = 1
+    items[1,3] = 1
+    users[:,1] = 1
+
+    c = rec.models.ContentFiltering(user_representation=users,
+                                    item_representation=items)
+
+    c.run()

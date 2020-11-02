@@ -15,9 +15,9 @@ class TestUsers:
         with pytest.raises(TypeError):
             s = Users(size='wrong_type')
         s = Users(size=(users,attr))
-        assert(s.actual_user_profiles.shape == (users, attr))
+        assert(s.actual_user_profiles.current_state.shape == (users, attr))
         s = Users(actual_user_profiles=np.random.randint(5, size=(users, attr)))
-        assert(s.actual_user_profiles.shape == (users, attr))
+        assert(s.actual_user_profiles.current_state.shape == (users, attr))
         s = Users(actual_user_profiles=[1,2,3])
 
     def test_content(self, items=10, attr=5, users=6, expand_items_by=2):
@@ -35,13 +35,13 @@ class TestUsers:
                                        model.train(s.actual_user_profiles,
                                                    normalize=True))
         test_utils.assert_equal_arrays(s.actual_user_scores,
-                                   model.predicted_scores)
+                                   model.predicted_scores.current_state)
 
         # user_repr != actual_user_repr
         user_repr =np.random.randint(15, size=(users, attr))
         model = ContentFiltering(user_representation=user_repr,
                                  item_representation=item_repr)
-        assert(model.user_profiles.shape == actual_user_repr.shape)
+        assert(model.user_profiles.current_state.shape == actual_user_repr.shape)
         s = Users(actual_user_repr)
         s.compute_user_scores(model.train)
         print(np.array_equal(s.actual_user_scores, model.train(s.actual_user_profiles,
@@ -58,15 +58,15 @@ class TestUsers:
             seed = np.random.randint(1000)
         users1 = Users(size=(users, attr), seed=seed)
         users2 = Users(size=(users, attr), seed=seed)
-        test_utils.assert_equal_arrays(users1.actual_user_profiles,
-                                       users2.actual_user_profiles)
+        test_utils.assert_equal_arrays(users1.actual_user_profiles.current_state,
+                                       users2.actual_user_profiles.current_state)
         # no seeding
         users3 = Users(size=(users, attr))
         users4 = Users(size=(users, attr))
         # very low chances of this passing
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(users3.actual_user_profiles,
-                                           users4.actual_user_profiles)
+            test_utils.assert_equal_arrays(users3.actual_user_profiles.current_state,
+                                           users4.actual_user_profiles.current_state)
 
 
 

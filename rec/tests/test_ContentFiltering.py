@@ -7,20 +7,20 @@ class TestContentFiltering:
     def test_default(self):
         c = ContentFiltering()
         test_utils.assert_correct_num_users(c.num_users, c,
-                                            c.user_profiles.shape[0])
+                                            c.user_profiles.current_state.shape[0])
         test_utils.assert_correct_num_items(c.num_items, c,
-                                            c.item_attributes.shape[1])
+                                            c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                           c.user_profiles.shape[1])
+                                           c.user_profiles.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                           c.item_attributes.shape[0])
+                                           c.item_attributes.current_state.shape[0])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering()
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
     def test_arguments(self, items=None, attr=None, users=None):
         if items is None:
@@ -31,19 +31,19 @@ class TestContentFiltering:
             attr = np.random.randint(1,100)
         # init with given arguments
         c = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
     def test_partial_arguments(self, items=None, users=None, attr=None):
         # init with partially given arguments
@@ -55,94 +55,94 @@ class TestContentFiltering:
             attr = np.random.randint(1,100)
 
         c = ContentFiltering(num_users=users)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_users=users)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
         c = ContentFiltering(num_items=items)
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_items=items)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
         c = ContentFiltering(num_attributes=attr)
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_attributes=attr)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
         c = ContentFiltering(num_users=users, num_items=items)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_users=users, num_items=items)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
         c = ContentFiltering(num_users=users, num_attributes=attr)
-        test_utils.assert_correct_num_users(users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(c.num_items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_users=users, num_attributes=attr)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
         c = ContentFiltering(num_attributes=attr, num_items=items)
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
-        test_utils.assert_correct_num_items(items, c, c.item_attributes.shape[1])
+        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.current_state.shape[0])
+        test_utils.assert_correct_num_items(items, c, c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(attr, c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
         c1 = ContentFiltering(num_attributes=attr, num_items=items)
 
         with pytest.raises(AssertionError):
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
 
 
     def test_representations(self, item_repr=None, user_repr=None, bad_user_repr=None):
@@ -155,27 +155,27 @@ class TestContentFiltering:
             user_repr = np.random.randint(10, size=(users, item_repr.shape[0]))
 
         c = ContentFiltering(item_representation=item_repr)
-        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.shape[0])
+        test_utils.assert_correct_num_users(c.num_users, c, c.user_profiles.current_state.shape[0])
         test_utils.assert_correct_num_items(item_repr.shape[1], c,
-                                            c.item_attributes.shape[1])
+                                            c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(item_repr.shape[0], c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(item_repr.shape[0], c.num_attributes,
-                                               c.user_profiles.shape[1])
-        test_utils.assert_equal_arrays(item_repr, c.item_attributes)
+                                               c.user_profiles.current_state.shape[1])
+        test_utils.assert_equal_arrays(item_repr, c.item_attributes.current_state)
         test_utils.assert_not_none(c.predicted_scores)
 
 
         c = ContentFiltering(user_representation=user_repr)
         test_utils.assert_correct_num_users(user_repr.shape[0], c,
-                                            c.user_profiles.shape[0])
+                                            c.user_profiles.current_state.shape[0])
         test_utils.assert_correct_num_items(c.num_items, c,
-                                            c.item_attributes.shape[1])
+                                            c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(user_repr.shape[1], c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(user_repr.shape[1], c.num_attributes,
-                                               c.user_profiles.shape[1])
-        test_utils.assert_equal_arrays(user_repr, c.user_profiles)
+                                               c.user_profiles.current_state.shape[1])
+        test_utils.assert_equal_arrays(user_repr, c.user_profiles.current_state)
         test_utils.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -186,7 +186,7 @@ class TestContentFiltering:
         with pytest.raises(AssertionError):
             # FIXME this fails from time to time because
             # it might happen that these two are in fact equal
-            test_utils.assert_equal_arrays(c.item_attributes, c1.item_attributes)
+            test_utils.assert_equal_arrays(c.item_attributes.current_state, c1.item_attributes.current_state)
         #with pytest.raises(AssertionError):
         #    test_utils.assert_equal_arrays(c.num_attributes, c1.num_attributes)
 
@@ -194,19 +194,19 @@ class TestContentFiltering:
         c = ContentFiltering(user_representation=user_repr,
                              item_representation=item_repr)
         test_utils.assert_correct_num_users(user_repr.shape[0], c,
-                                            c.user_profiles.shape[0])
+                                            c.user_profiles.current_state.shape[0])
         test_utils.assert_correct_num_items(item_repr.shape[1], c,
-                                            c.item_attributes.shape[1])
+                                            c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(user_repr.shape[1], c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(user_repr.shape[1], c.num_attributes,
-                                               c.user_profiles.shape[1])
+                                               c.user_profiles.current_state.shape[1])
         test_utils.assert_correct_size_generic(item_repr.shape[0], c.num_attributes,
-                                               c.item_attributes.shape[0])
+                                               c.item_attributes.current_state.shape[0])
         test_utils.assert_correct_size_generic(item_repr.shape[0], c.num_attributes,
-                                               c.user_profiles.shape[1])
-        test_utils.assert_equal_arrays(user_repr, c.user_profiles)
-        test_utils.assert_equal_arrays(item_repr, c.item_attributes)
+                                               c.user_profiles.current_state.shape[1])
+        test_utils.assert_equal_arrays(user_repr, c.user_profiles.current_state)
+        test_utils.assert_equal_arrays(item_repr, c.item_attributes.current_state)
         test_utils.assert_not_none(c.predicted_scores)
 
     def test_wrong_representation(self, user_repr=None, item_repr=None,
@@ -234,7 +234,7 @@ class TestContentFiltering:
                                  item_representation=bad_item_repr)
         with pytest.raises(ValueError):
             # actual user prefs and system's representation of user's prefs
-            # must be the same dimension 
+            # must be the same dimension
             c = ContentFiltering(user_representation=user_repr,
                                  actual_user_representation=bad_user_repr,
                                  item_representation=bad_item_repr)
@@ -247,13 +247,13 @@ class TestContentFiltering:
         assert(num_items_per_iter == c.num_items_per_iter)
         # also check other params
         test_utils.assert_correct_num_users(c.num_users, c,
-                                            c.user_profiles.shape[0])
+                                            c.user_profiles.current_state.shape[0])
         test_utils.assert_correct_num_items(c.num_items, c,
-                                            c.item_attributes.shape[1])
+                                            c.item_attributes.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                           c.user_profiles.shape[1])
+                                           c.user_profiles.current_state.shape[1])
         test_utils.assert_correct_size_generic(c.num_attributes, c.num_attributes,
-                                           c.item_attributes.shape[0])
+                                           c.item_attributes.current_state.shape[0])
         test_utils.assert_not_none(c.predicted_scores)
 
 
@@ -262,8 +262,8 @@ class TestContentFiltering:
             seed = np.random.randint(100000)
         s1 = ContentFiltering(seed=seed)
         s2 = ContentFiltering(seed=seed)
-        test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
-        test_utils.assert_equal_arrays(s1.user_profiles, s2.user_profiles)
+        test_utils.assert_equal_arrays(s1.item_attributes.current_state, s2.item_attributes.current_state)
+        test_utils.assert_equal_arrays(s1.user_profiles.current_state, s2.user_profiles.current_state)
         s1.run(timesteps=5)
         s2.run(timesteps=5)
         # check that measurements are the same
@@ -280,8 +280,8 @@ class TestContentFiltering:
             users = np.random.randint(1,100)
         s1 = ContentFiltering(seed=seed, num_users=users, num_items=items)
         s2 = ContentFiltering(seed=seed, num_users=users, num_items=items)
-        test_utils.assert_equal_arrays(s1.item_attributes, s2.item_attributes)
-        test_utils.assert_equal_arrays(s1.user_profiles, s2.user_profiles)
+        test_utils.assert_equal_arrays(s1.item_attributes.current_state, s2.item_attributes.current_state)
+        test_utils.assert_equal_arrays(s1.user_profiles.current_state, s2.user_profiles.current_state)
         s1.run(timesteps=5)
         s2.run(timesteps=5)
         # check that measurements are the same

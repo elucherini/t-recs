@@ -152,9 +152,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.user_profiles = PredictedUserProfiles(user_representation)
         self.item_attributes = Items(item_representation)
         # set predicted scores
-        self.predicted_scores = PredictedScores(self.train(self.user_profiles,
-                                                           self.item_attributes,
-                                                           normalize=True))
+        self.predicted_scores = PredictedScores(self.train(normalize=True))
         assert(self.predicted_scores is not None)
 
         if not utils.is_valid_or_none(num_users, int):
@@ -170,7 +168,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                                                                     Users)):
             raise TypeError("actual_user_representation must be array_like or Users")
         if actual_user_representation is None:
-            self.actual_users = Users(size=self.user_profiles.shape,
+            self.actual_users = Users(size=self.user_profiles.current_state.shape,
                                       num_users=num_users, seed=seed)
         if isinstance(actual_user_representation, (list, np.ndarray)):
             self.actual_users = Users(actual_user_scores=actual_user_representation,
@@ -229,9 +227,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if item_attributes is None:
             item_attributes = self.item_attributes
         if normalize:
-            user_profiles = utils.normalize_matrix(user_profiles, axis=1)
-        assert(user_profiles.shape[1] == item_attributes.shape[0])
-        predicted_scores = np.dot(user_profiles, item_attributes)
+            user_profiles = PredictedUserProfiles(utils.normalize_matrix(user_profiles.current_state, axis=1))
+        assert(user_profiles.current_state.shape[1] == item_attributes.current_state.shape[0])
+        predicted_scores = np.dot(user_profiles.current_state, item_attributes.current_state)
         self.log('System updates predicted scores given by users (rows) ' + \
                  'to items (columns):\n' + str(predicted_scores))
         assert(predicted_scores is not None)
@@ -271,7 +269,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         #self.log('row:\n' + str(row))
         self.log('Row:\n' + str(row))
         self.log('Indices_prime:\n' + str(indices_prime))
-        s_filtered = self.predicted_scores[row, indices_prime]
+        s_filtered = self.predicted_scores.current_state[row, indices_prime]
         #self.log('s_filtered\n' + str(s_filtered))
         permutation = s_filtered.argsort()
         #self.log('permutation\n' + str(permutation))
@@ -394,7 +392,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             #self.get_user_feedback()
             # train between steps:
             if train_between_steps:
-                self.predicted_scores[:,:] = self.train(self.user_profiles,
+                self.predicted_scores.current_state[:,:] = self.train(self.user_profiles,
                                                         self.item_attributes)
             self.measure_content(interactions, step=t)
         # If no training in between steps, train at the end:
