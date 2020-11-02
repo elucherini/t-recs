@@ -9,6 +9,7 @@ from trecs.metrics import MeasurementModule
 from trecs.components import (
     Users,
     Items,
+    Creators,
     PredictedScores,
     PredictedUserProfiles,
     SystemStateModule,
@@ -129,6 +130,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         items_hat,
         users,
         items,
+        creators,
         num_users,
         num_items,
         num_items_per_iter,
@@ -191,6 +193,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.items = Items(items)
         if isinstance(items, Items):
             self.items = items
+
+        # TODO: check creators array
+        if isinstance(creators, Creators):
+            self.creators = creators
 
         # system state
         SystemStateModule.__init__(self)
@@ -405,6 +411,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Run -- interleave recommendations and random items " + "from now on")
         for timestep in tqdm(range(timesteps)):
             self.log("Step %d" % timestep)
+            if self.creators:
+                new_items = self.creators.generate_new_items()
+                # TODO: add new items to self.items
             item_idxs = self.recommend(startup=startup)
             # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
