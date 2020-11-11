@@ -392,6 +392,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Seed was not set.&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the logging handler upon garbage collection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
 <div class="viewcode-block" id="BaseRecommender.update_predicted_scores"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.update_predicted_scores">[docs]</a>    <span class="k">def</span> <span class="nf">update_predicted_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates scores predicted by the system based on past interactions for</span>
