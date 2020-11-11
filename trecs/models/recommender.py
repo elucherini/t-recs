@@ -241,6 +241,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             self.log("Seed was not set.")
 
+    def __del__(self):
+        """
+        Closes the logging handler upon garbage collection.
+        """
+        self.close()
+
     def update_predicted_scores(self):
         """
         Updates scores predicted by the system based on past interactions for

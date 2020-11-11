@@ -1,5 +1,6 @@
 from trecs.models import BaseRecommender
 import numpy as np
+import pytest
 
 
 class DummyRecommender(BaseRecommender):
@@ -47,3 +48,13 @@ class TestBaseRecommender:
         dummy.run(5, repeated_items=True)  # run 5 timesteps
         # check that no users are recorded as having interacted with items
         assert (dummy.indices == -1).sum() == 0
+
+    def test_closed_logger(self):
+        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)
+        dummy.run(5, repeated_items=True)  # run 5 timesteps
+        logger = dummy._logger.logger  # pylint: disable=protected-access
+        handler = dummy._logger.handler  # pylint: disable=protected-access
+        assert len(logger.handlers) > 0  # before garbage collection
+        del dummy
+        # after garbage collection, handler should be closed
+        assert handler not in logger.handlers
