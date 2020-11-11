@@ -53,7 +53,8 @@ class TestBaseRecommender:
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)
         dummy.run(5, repeated_items=True)  # run 5 timesteps
         logger = dummy._logger.logger  # pylint: disable=protected-access
-        assert len(logger.handlers) == 1  # before garbage collection
+        handler = dummy._logger.handler  # pylint: disable=protected-access
+        assert len(logger.handlers) > 0  # before garbage collection
         del dummy
         # after garbage collection, handler should be closed
-        assert len(logger.handlers) == 0
+        assert handler not in logger.handlers
