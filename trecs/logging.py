@@ -26,6 +26,11 @@ class VerboseMode(ABC):
         """ Log given message"""
         self._logger.log(msg)
 
+    def close(self):
+        """ Close the logging file handler """
+        self._logger.handler.close()
+        self._logger.logger.removeHandler(self._logger.handler)
+
 
 class DebugLogger:
     """ Class to configure debug logging module """
