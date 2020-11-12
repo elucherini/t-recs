@@ -143,10 +143,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         items_hat,
         users,
         items,
-        creators,
         num_users,
         num_items,
         num_items_per_iter,
+        creators=None,
         probabilistic_recommendations=False,
         measurements=None,
         record_base_state=False,
@@ -275,7 +275,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            self.predicted_scores[:, :] = predicted_scores
+            self.predicted_scores.current_state = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
         """
@@ -436,6 +436,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         It must be defined in the concrete class.
         """
 
+    @abstractmethod
+    def new_item_representation(self, new_items):
+        """
+        Creates new item representations based on items that were just created.
+
+        Must be defined in the concrete class.
+        """
+
     def run(
         self,
         timesteps=50,
@@ -483,7 +491,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Step %d" % timestep)
             if self.creators:
                 new_items = self.creators.generate_new_items()
-                # TODO: add new items to self.items
+                self.num_items += new_items.shape[0]  # increment number of items
+                self.items = np.hstack([self.items, new_items.T]) # TODO: add new items to self.items
+                item_representation = self.new_item_representation(new_items)
+                # generate new internal system representations of the items
+                self.update_predicted_scores()
             item_idxs = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,

@@ -168,3 +168,18 @@ class PopularityRecommender(BaseRecommender):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
         self.items_hat[:, :] = np.add(self.items_hat, histogram)
+
+    def new_item_representation(self, new_items):
+        """
+        We assume the content filtering system has perfect knowledge
+        of the new items; therefore, when new items are created,
+        we simply return the new item attributes.
+
+        Parameters:
+        ------------
+            new_items: numpy.ndarray
+                An array of items that represents new items that are being
+                added into the system. Should be :math:`|A|\times|I|`
+        """
+        # start popularity of new items as 0
+        return np.hstack([self.item_representation, np.zeros(new_items.shape[1])])

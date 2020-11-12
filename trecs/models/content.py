@@ -1,5 +1,6 @@
 """ Content filtering class """
 import numpy as np
+from scipy.optimize import nnls
 from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.utils import (
@@ -225,3 +226,17 @@ class ContentFiltering(BaseRecommender):
         interactions_per_user[self.users.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, self.items_hat.T)
         self.users_hat[:, :] = np.add(self.users_hat, user_attributes)
+
+    def new_item_representation(self, new_items):
+        """
+        We assume the content filtering system has perfect knowledge
+        of the new items; therefore, when new items are created,
+        we simply return the new item attributes.
+
+        Parameters:
+        ------------
+            new_items: numpy.ndarray
+                An array of items that represents new items that are being
+                added into the system. Should be :math:`|A|\times|I|`
+        """
+        return new_items
