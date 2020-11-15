@@ -208,9 +208,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if isinstance(items, Items):
             self.items = items
 
-        # TODO: check creators array
         if isinstance(creators, Creators):
             self.creators = creators
+        else:
+            self.creators = None
 
         # system state
         SystemStateModule.__init__(self)
@@ -492,7 +493,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log("Run -- interleave recommendations and random items " + "from now on")
         for timestep in tqdm(range(timesteps)):
             self.log("Step %d" % timestep)
-            if self.creators:
+            if self.creators is not None:
                 new_items = self.creators.generate_new_items()
                 self.num_items += new_items.shape[0]  # increment number of items
                 self.items = np.hstack([self.items, new_items.T])

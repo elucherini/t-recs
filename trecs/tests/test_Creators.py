@@ -20,6 +20,8 @@ class TestCreators:
         c = Creators(actual_creator_profiles=np.random.randint(5, size=(creators, attr)))
         assert c.actual_creator_profiles.shape == (creators, attr)
         # can't normalize a vector that isn't a matrix
-        c = Creators(actual_creator_profiles=[1, 2, 3])
+        c = Creators(actual_creator_profiles=[[1, 2, 3]])
 
-        print(c.generate_new_items())
+        new_items = c.generate_items()
+        assert new_items.shape[0] <= 1 # there is only one creator
+        assert new_items.shape[1] == 3

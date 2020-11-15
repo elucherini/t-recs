@@ -127,7 +127,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         items = Generator(seed=self.seed).binomial(
             1, chosen_profiles.reshape(-1), chosen_profiles.size
         )
-        return items.reshape(self.actual_creator_profiles.shape[0], -1)
+        return items.reshape(chosen_profiles.shape)
 
     def update_profiles(self, interactions, items):
         """In the case of dynamic user profiles, we update the user's actual
