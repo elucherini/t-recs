@@ -1,6 +1,5 @@
 import numpy as np
 from trecs.components import Creators
-from trecs.models import ContentFiltering
 import test_helpers
 import pytest
 
@@ -29,7 +28,7 @@ class TestCreators:
         profiles = np.random.uniform(size=(10, 5))
         c = Creators(actual_creator_profiles=profiles)
 
-        for i in range(5):
+        for _ in range(5):
             new_items = c.generate_items()
             assert new_items.shape[0] <= 10
             assert new_items.shape[1] == 5

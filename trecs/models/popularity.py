@@ -169,11 +169,9 @@ class PopularityRecommender(BaseRecommender):
         np.add.at(histogram, interactions, 1)
         self.items_hat[:, :] = np.add(self.items_hat, histogram)
 
-    def new_item_representation(self, new_items):
+    def process_new_items(self, new_items):
         """
-        We assume the content filtering system has perfect knowledge
-        of the new items; therefore, when new items are created,
-        we simply return the new item attributes.
+        The popularity of any new items is always zero.
 
         Parameters:
         ------------

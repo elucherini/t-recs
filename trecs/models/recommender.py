@@ -276,7 +276,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            self.predicted_scores.current_state = predicted_scores
+            # resize for new items if necessary
+            new_items = predicted_scores.shape[1] - self.predicted_scores.shape[1]
+            if new_items != 0:
+                self.predicted_scores = np.hstack([self.predicted_scores, np.zeros((self.num_users, new_items))])
+            self.predicted_scores[:, :] = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
         """
@@ -494,15 +498,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         for timestep in tqdm(range(timesteps)):
             self.log("Step %d" % timestep)
             if self.creators is not None:
-                # generate new items
-                new_items = self.creators.generate_new_items()
-                self.num_items += new_items.shape[0]  # increment number of items
-                # concatenate old items with new items
-                self.items = np.hstack([self.items, new_items.T])
-                # generate new internal system representations of the items
-                self.process_new_items(new_items)
-                # create new predicted scores
-                self.update_predicted_scores()
+                self.create_and_process_items()
             item_idxs = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,
@@ -519,6 +515,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.log(
                 "System updates user profiles based on last interaction:\n" + str(self.users_hat)
             )
+            # update creators if any
+            if self.creators is not None:
+                self.creators.update_profiles(interactions, self.items)
             # train between steps:
             if train_between_steps:
                 self.update_predicted_scores()
@@ -543,28 +542,34 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.log("Startup -- recommend random items")
         return self.run(timesteps, startup=True, train_between_steps=False)
 
-    def _expand_items(self):  # pylint: disable=no-self-use
+    def create_and_process_items(self):
         """
-        Increases number of items in the system.
+        Creates and processes items made by content creators
+        """
+        # generate new items
+        new_items = self.creators.generate_items()
+        self.num_items += new_items.shape[0]  # increment number of items
+        # concatenate old items with new items
+        self.items = np.hstack([self.items, new_items.T])
+        # generate new internal system representations of the items
+        self.process_new_items(new_items)
+        self.add_new_item_indices(new_items.shape[0])
+        # create new predicted scores
+        self.update_predicted_scores()
+
+    def add_new_item_indices(self, num_new_items):
+        """
+        Expands the indices matrix to include entries for new items that
+        were created.
 
         Parameters
         -----------
-            num_new_items (int, optional): number of new items to add to the
-                system. If None, it is equal to twice the number of items
-                presented to the user in one iteration.
-        if num_new_items is None:
-            num_new_items = 2 * self.num_items_per_iter
-        if not isinstance(num_new_items, int):
-            raise TypeError("num_new_items should be int, is instead %s" % (
-                                                                    type(num_new_items)))
-        if num_new_items < 1:
-            raise ValueError("Can't increment items by a number smaller than 1!")
-        #new_indices = np.tile(self.items_hat.expand_items(self, num_new_items),
-        #    (self.num_users,1))
-        self.indices = np.concatenate((self.indices, new_indices), axis=1)
-        self.users.compute_user_scores(self.train)
-        self.predicted_scores = self.train(self.users_hat, self.items_hat)
+            num_new_items (int): The number of new items added to the system
+            in this iteration
         """
+        num_existing_items = self.indices.shape[1]
+        new_indices = num_existing_items + np.tile(np.arange(num_new_items), (self.num_users, 1))
+        self.indices = np.hstack([self.indices, new_indices])
 
     def get_measurements(self):
         """
