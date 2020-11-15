@@ -182,4 +182,4 @@ class PopularityRecommender(BaseRecommender):
                 added into the system. Should be :math:`|A|\times|I|`
         """
         # start popularity of new items as 0
-        return np.hstack([self.item_representation, np.zeros(new_items.shape[1])])
+        self.items_hat = np.hstack([self.items_hat, np.zeros(new_items.shape[1])])

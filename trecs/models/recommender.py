@@ -436,13 +436,16 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         It must be defined in the concrete class.
         """
 
-    @abstractmethod
-    def new_item_representation(self, new_items):
+    def process_new_items(self, new_items):
         """
         Creates new item representations based on items that were just created.
 
         Must be defined in the concrete class.
         """
+        raise RuntimeError(
+            "new_item_representation not defined. Support for representing new"
+            "items must be implemented by the user!"
+        )
 
     def run(
         self,
@@ -492,9 +495,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if self.creators:
                 new_items = self.creators.generate_new_items()
                 self.num_items += new_items.shape[0]  # increment number of items
-                self.items = np.hstack([self.items, new_items.T]) # TODO: add new items to self.items
-                item_representation = self.new_item_representation(new_items)
+                self.items = np.hstack([self.items, new_items.T])
                 # generate new internal system representations of the items
+                self.process_new_items(new_items)
                 self.update_predicted_scores()
             item_idxs = self.recommend(
                 startup=startup,

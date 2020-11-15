@@ -45,13 +45,13 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         num_items: int (optional, default: 1250)
             The number of items :math:`|I|` in the system.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A :math:`|U|\\times|I|` matrix representing the past user interactions.
-            If this is not None, `num_items` is ignored.
-
         user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
             A :math:`|U|\\times|U|` adjacency matrix representing each users'
             social network. If this is not None, `num_users` is ignored.
+
+        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A :math:`|U|\\times|I|` matrix representing the past user interactions.
+            If this is not None, `num_items` is ignored.
 
         actual_user_representation: :obj:`numpy.ndarray` or None or \
                             :class:`~components.users.Users` (optional, default: None)
@@ -63,7 +63,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             system is unaware of it.
 
         actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A :math:`|T|\\times|I|` matrix representing the real user profiles,
+            A :math:`|T|\\times|I|` matrix representing the real item profiles,
             where :math:`T` is the number of attributes in the real underlying
             item profile. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
@@ -213,3 +213,20 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         interactions_per_user[self.users.user_vector, interactions] = 1
         assert interactions_per_user.shape == self.items_hat.shape
         self.items_hat[:, :] = np.add(self.items_hat, interactions_per_user)
+
+
+    def process_new_items(self, new_items):
+        """
+        We assume the content filtering system has perfect knowledge
+        of the new items; therefore, when new items are created,
+        we simply return the new item attributes.
+
+        Parameters:
+        ------------
+            new_items: numpy.ndarray
+                An array of items that represents new items that are being
+                added into the system. Should be :math:`|A|\times|I|`
+        """
+        # users have never interacted with new items
+        new_representation = np.zeros(self.num_users, new_items.shape[0])
+        self.items_hat = np.hstack([self.items_hat, new_representation])

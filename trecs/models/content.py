@@ -227,7 +227,7 @@ class ContentFiltering(BaseRecommender):
         user_attributes = np.dot(interactions_per_user, self.items_hat.T)
         self.users_hat[:, :] = np.add(self.users_hat, user_attributes)
 
-    def new_item_representation(self, new_items):
+    def process_new_items(self, new_items):
         """
         We assume the content filtering system has perfect knowledge
         of the new items; therefore, when new items are created,
@@ -239,4 +239,4 @@ class ContentFiltering(BaseRecommender):
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\times|I|`
         """
-        return new_items
+        self.items_hat = np.hstack([self.items_hat, new_items])
