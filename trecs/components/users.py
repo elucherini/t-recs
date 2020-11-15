@@ -226,6 +226,25 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
 
         self.store_state()
 
+    def score_new_items(self, new_items):
+        """
+        Computes and stores the actual scores that users assign to any new
+        items that enter the compatible with the system. Note that we
+        expect that the score_fn attribute to be set to some callable function which takes item
+        attributes and user profiles.
+
+        Parameters
+        ------------
+
+        new_items: :obj:`array_like`
+            A matrix representation of item attributes. Should be of dimension
+            :math:`|A|\\times|I|`, where :math:`|I|` is the
+            number of items and :math:`|A|` is the number of attributes.
+        """
+        new_scores = self.score_fn(user_profiles=self.actual_user_profiles, item_attributes=new_items)
+        self.actual_user_scores = np.hstack([self.actual_user_scores, new_scores])
+        self.store_state()
+
     def get_actual_user_scores(self, user=None):
         """
         Returns an array of actual user scores.

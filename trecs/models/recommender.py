@@ -547,15 +547,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Creates and processes items made by content creators
         """
         # generate new items
-        new_items = self.creators.generate_items()
-        self.num_items += new_items.shape[0]  # increment number of items
+        new_items = self.creators.generate_items().T # transpose so its A x I
+        self.num_items += new_items.shape[1]  # increment number of items
         # concatenate old items with new items
-        self.items = np.hstack([self.items, new_items.T])
+        self.items = np.hstack([self.items, new_items])
         # generate new internal system representations of the items
         self.process_new_items(new_items)
-        self.add_new_item_indices(new_items.shape[0])
+        self.add_new_item_indices(new_items.shape[1])
         # create new predicted scores
         self.update_predicted_scores()
+        # have users update their own scores too
+        self.users.score_new_items(new_items)
 
     def add_new_item_indices(self, num_new_items):
         """

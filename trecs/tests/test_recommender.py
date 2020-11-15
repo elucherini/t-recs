@@ -18,7 +18,7 @@ class DummyRecommender(BaseRecommender):
     def process_new_items(self, new_items):
         # generate a representation of ones
         num_attr = self.items.shape[0]
-        num_items = new_items.shape[0]
+        num_items = new_items.shape[1]
         self.items_hat = np.hstack([self.items_hat, np.ones((num_attr, num_items))])
 
 
@@ -70,5 +70,6 @@ class TestBaseRecommender:
         # 10 content creators
         creators = Creators(np.random.uniform(size=(10, 5)), creation_probability=1)
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, creators=creators)
+        assert dummy.num_items == 50
         dummy.run(5, repeated_items=True)  # run 5 timesteps
         assert dummy.num_items == 100 # 10 creators * 5 iterations + 50 initial items
