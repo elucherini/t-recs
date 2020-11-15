@@ -15,13 +15,28 @@ class TestCreators:
             c = Creators(actual_creator_profiles=None, size="wrong type")
         with pytest.raises(TypeError):
             c = Creators(size="wrong_type")
+        with pytest.raises(ValueError):
+            c = Creators(creation_probability=30)
+        with pytest.raises(ValueError):
+            c = Creators(creation_probability=-6)
         c = Creators(size=(creators, attr))
         assert c.actual_creator_profiles.shape == (creators, attr)
         c = Creators(actual_creator_profiles=np.random.randint(5, size=(creators, attr)))
         assert c.actual_creator_profiles.shape == (creators, attr)
-        # can't normalize a vector that isn't a matrix
-        c = Creators(actual_creator_profiles=[[1, 2, 3]])
 
-        new_items = c.generate_items()
-        assert new_items.shape[0] <= 1 # there is only one creator
-        assert new_items.shape[1] == 3
+    def test_item_creation(self):
+        # 10 users, with 5 attributes each
+        profiles = np.random.uniform(size=(10, 5))
+        c = Creators(actual_creator_profiles=profiles)
+
+        for i in range(5):
+            new_items = c.generate_items()
+            assert new_items.shape[0] <= 10
+            assert new_items.shape[1] == 5
+
+    def test_invalid_item_creation(self):
+        profiles = -1 * np.random.uniform(size=(10, 5))
+        c = Creators(actual_creator_profiles=profiles)
+
+        with pytest.raises(ValueError):
+            c.generate_items()

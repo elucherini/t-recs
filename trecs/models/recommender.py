@@ -494,11 +494,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         for timestep in tqdm(range(timesteps)):
             self.log("Step %d" % timestep)
             if self.creators is not None:
+                # generate new items
                 new_items = self.creators.generate_new_items()
                 self.num_items += new_items.shape[0]  # increment number of items
+                # concatenate old items with new items
                 self.items = np.hstack([self.items, new_items.T])
                 # generate new internal system representations of the items
                 self.process_new_items(new_items)
+                # create new predicted scores
                 self.update_predicted_scores()
             item_idxs = self.recommend(
                 startup=startup,

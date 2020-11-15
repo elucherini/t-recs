@@ -92,6 +92,8 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
             ):
                 # generate matrix until no row is the zero vector
                 actual_creator_profiles = Generator(seed=seed).uniform(size=size)
+        if creation_probability > 1 or creation_probability < 0:
+            raise ValueError("Creation probability cannot be less than 0 or greater than 1")
         self.actual_creator_profiles = np.asarray(actual_creator_profiles)
         self.creation_probability = creation_probability
         self.score_fn = None  # function that dictates how items will be scored
@@ -116,6 +118,8 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         # Generate mask by tossing coin for each creator to determine who is releasing content
         # This should result in a _binary_ matrix of size (num_creators,)
+        if (self.actual_creator_profiles < 0).any() or (self.actual_creator_profiles > 1).any():
+            raise ValueError("Creator profile attributes must be between zero and one.")
         creator_mask = Generator(seed=self.seed).binomial(
             1,
             self.creation_probability,
