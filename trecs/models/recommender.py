@@ -443,7 +443,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         It must be defined in the concrete class.
         """
 
-    def process_new_items(self, new_items):
+    def process_new_items(self, new_items):  # pylint: disable=R0201
         """
         Creates new item representations based on items that were just created.
 

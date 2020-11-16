@@ -5,9 +5,9 @@ encapsulates some of these concepts)
 """
 import numpy as np
 
-from trecs.matrix_ops import contains_row, slerp
+from trecs.matrix_ops import contains_row
 from trecs.random import Generator
-from .base_components import Component, BaseComponent
+from .base_components import BaseComponent
 
 
 class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
