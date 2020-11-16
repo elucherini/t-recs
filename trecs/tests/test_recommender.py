@@ -69,7 +69,9 @@ class TestBaseRecommender:
     def test_content_creators(self):
         # 10 content creators
         creators = Creators(np.random.uniform(size=(10, 5)), creation_probability=1)
-        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, creators=creators)
+        dummy = DummyRecommender(
+            self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, creators=creators
+        )
         assert dummy.num_items == 50
         dummy.run(5, repeated_items=True)  # run 5 timesteps
-        assert dummy.num_items == 100 # 10 creators * 5 iterations + 50 initial items
+        assert dummy.num_items == 100  # 10 creators * 5 iterations + 50 initial items

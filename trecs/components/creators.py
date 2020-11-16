@@ -117,9 +117,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         if (self.actual_creator_profiles < 0).any() or (self.actual_creator_profiles > 1).any():
             raise ValueError("Creator profile attributes must be between zero and one.")
         creator_mask = Generator(seed=self.seed).binomial(
-            1,
-            self.creation_probability,
-            self.actual_creator_profiles.shape[0]
+            1, self.creation_probability, self.actual_creator_profiles.shape[0]
         )
         chosen_profiles = self.actual_creator_profiles[creator_mask == 1, :]
         # for each creator that will add new items, generate Bernoulli trial

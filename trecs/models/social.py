@@ -214,7 +214,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         assert interactions_per_user.shape == self.items_hat.shape
         self.items_hat[:, :] = np.add(self.items_hat, interactions_per_user)
 
-
     def process_new_items(self, new_items):
         """
         We assume the content filtering system has perfect knowledge

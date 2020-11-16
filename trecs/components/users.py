@@ -241,7 +241,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             :math:`|A|\\times|I|`, where :math:`|I|` is the
             number of items and :math:`|A|` is the number of attributes.
         """
-        new_scores = self.score_fn(user_profiles=self.actual_user_profiles, item_attributes=new_items)
+        new_scores = self.score_fn(
+            user_profiles=self.actual_user_profiles, item_attributes=new_items
+        )
         self.actual_user_scores = np.hstack([self.actual_user_scores, new_scores])
         self.store_state()
 

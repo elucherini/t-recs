@@ -328,11 +328,13 @@ class TestContentFiltering:
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
         items = np.random.randint(2, size=(10, 100))
-        creator_profiles = Creators(np.random.uniform(size=(50, 10)), creation_probability=1.0) # 50 creator profiles
+        creator_profiles = Creators(
+            np.random.uniform(size=(50, 10)), creation_probability=1.0
+        )  # 50 creator profiles
         cf = ContentFiltering(
             actual_user_representation=users, item_representation=items, creators=creator_profiles
         )
         cf.run(1, repeated_items=True)
-        assert cf.items.shape == (10, 150) # 50 new items
+        assert cf.items.shape == (10, 150)  # 50 new items
         assert cf.items_hat.shape == (10, 150)
         assert cf.users.state_history[-1].shape == (100, 150)

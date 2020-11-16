@@ -220,11 +220,15 @@ class TestSocialFiltering:
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
         items = np.random.randint(2, size=(10, 100))
-        creator_profiles = Creators(np.random.uniform(size=(50, 10)), creation_probability=1.0) # 50 creator profiles
+        creator_profiles = Creators(
+            np.random.uniform(size=(50, 10)), creation_probability=1.0
+        )  # 50 creator profiles
         sf = SocialFiltering(
-            actual_user_representation=users, actual_item_representation=items, creators=creator_profiles
+            actual_user_representation=users,
+            actual_item_representation=items,
+            creators=creator_profiles,
         )
         sf.run(1, repeated_items=True)
-        assert sf.items.shape == (10, 150) # 50 new items
+        assert sf.items.shape == (10, 150)  # 50 new items
         assert sf.items_hat.shape == (100, 150)
         assert sf.users.state_history[-1].shape == (100, 150)

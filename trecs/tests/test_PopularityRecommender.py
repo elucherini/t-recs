@@ -152,12 +152,15 @@ class TestPopularityRecommender:
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
         items = np.random.randint(2, size=(10, 100))
-        creator_profiles = Creators(np.random.uniform(size=(50, 10)), creation_probability=1.0) # 50 creator profiles
+        creator_profiles = Creators(
+            np.random.uniform(size=(50, 10)), creation_probability=1.0
+        )  # 50 creator profiles
         p = PopularityRecommender(
-            actual_user_representation=users, actual_item_representation=items, creators=creator_profiles
+            actual_user_representation=users,
+            actual_item_representation=items,
+            creators=creator_profiles,
         )
         p.run(1, repeated_items=True)
-        assert p.items.shape[1] == 150 # 50 new items
+        assert p.items.shape[1] == 150  # 50 new items
         assert p.items_hat.shape[1] == 150
         assert p.users.state_history[-1].shape[1] == 150
-

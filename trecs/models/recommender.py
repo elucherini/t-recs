@@ -279,7 +279,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # resize for new items if necessary
             new_items = predicted_scores.shape[1] - self.predicted_scores.shape[1]
             if new_items != 0:
-                self.predicted_scores = np.hstack([self.predicted_scores, np.zeros((self.num_users, new_items))])
+                self.predicted_scores = np.hstack(
+                    [self.predicted_scores, np.zeros((self.num_users, new_items))]
+                )
             self.predicted_scores[:, :] = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
@@ -547,7 +549,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Creates and processes items made by content creators
         """
         # generate new items
-        new_items = self.creators.generate_items().T # transpose so its A x I
+        new_items = self.creators.generate_items().T  # transpose so its A x I
         self.num_items += new_items.shape[1]  # increment number of items
         # concatenate old items with new items
         self.items = np.hstack([self.items, new_items])
