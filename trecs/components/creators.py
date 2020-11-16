@@ -27,13 +27,9 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         actual_creator_profiles: array_like or None (optional, default: None)
             Representation of the creator's attribute profiles.
 
-        create_new_items: callable or None (optional, default: None)
-            Function that specifies the behavior of users when interacting with
-            items. If None, users follow the behavior specified in
-            :meth:`generate_new_items()`.
-
-        num_creators: int or None, (optional, default: None)
-            The number of users in the system.
+        creation_probability: float, (optional, default: 0.5)
+            The probability that any given creator produces a new item at a
+            timestep.
 
         size: tuple, None (optional, default: None)
             Size of the user representation. It expects a tuple. If None,
