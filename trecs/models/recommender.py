@@ -267,6 +267,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         user_profiles = self.users_hat
         item_attributes = self.items_hat
         predicted_scores = self.score_fn(user_profiles, item_attributes)
+        # import pdb; pdb.set_trace()
         self.log(
             "System updates predicted scores given by users (rows) "
             + "to items (columns):\n"
