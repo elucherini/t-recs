@@ -204,7 +204,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     def compute_user_scores(self, item_attributes):
         """
         Computes and stores the actual scores that users assign to items
-        compatible with the system. Note that we expect that the score_fn
+        compatible with the system. Note that we expect the score_fn
         attribute to be set to some callable function which takes item
         attributes and user profiles.
 
