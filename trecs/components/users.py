@@ -229,8 +229,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     def score_new_items(self, new_items):
         """
         Computes and stores the actual scores that users assign to any new
-        items that enter the compatible with the system. Note that we
-        expect that the score_fn attribute to be set to some callable function which takes item
+        items that enter the system. Note that we expect the score_fn
+        attribute to be set to some callable function which takes item
         attributes and user profiles.
 
         Parameters
