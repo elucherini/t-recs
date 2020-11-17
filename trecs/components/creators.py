@@ -128,9 +128,9 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         return items.reshape(chosen_profiles.shape)
 
     def update_profiles(self, interactions, items):
-        """In the case of dynamic user profiles, we update the user's actual
-        profiles with new values as each user profile "drifts" towards
-        items that they consume.
+        """
+        This method can be implemented by child classes to update the
+        creator profiles over time.
 
         Parameters
         -----------
