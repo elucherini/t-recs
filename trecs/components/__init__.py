@@ -2,6 +2,7 @@
 from .items import Items
 from .socialgraph import BinarySocialGraph
 from .users import Users, PredictedUserProfiles, PredictedScores
+from .creators import Creators
 from .base_components import (
     Component,
     BaseComponent,

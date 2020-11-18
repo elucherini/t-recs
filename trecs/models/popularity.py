@@ -168,3 +168,17 @@ class PopularityRecommender(BaseRecommender):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
         self.items_hat[:, :] = np.add(self.items_hat, histogram)
+
+    def process_new_items(self, new_items):
+        """
+        The popularity of any new items is always zero.
+
+        Parameters:
+        ------------
+            new_items: numpy.ndarray
+                An array of items that represents new items that are being
+                added into the system. Should be :math:`|A|\times|I|`
+        """
+        # start popularity of new items as 0
+        new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)
+        self.items_hat = np.hstack([self.items_hat, new_representation])

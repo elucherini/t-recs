@@ -1,6 +1,7 @@
-from trecs.models import BaseRecommender
 import numpy as np
-import pytest
+from trecs.models import BaseRecommender
+from trecs.components import Creators
+import test_helpers
 
 
 class DummyRecommender(BaseRecommender):
@@ -13,6 +14,12 @@ class DummyRecommender(BaseRecommender):
 
     def _update_user_profiles(self, interactions):
         pass
+
+    def process_new_items(self, new_items):
+        # generate a representation of ones
+        num_attr = self.items.shape[0]
+        num_items = new_items.shape[1]
+        self.items_hat = np.hstack([self.items_hat, np.random.uniform(size=(num_attr, num_items))])
 
 
 class TestBaseRecommender:
@@ -58,3 +65,20 @@ class TestBaseRecommender:
         del dummy
         # after garbage collection, handler should be closed
         assert handler not in logger.handlers
+
+    def test_content_creators(self):
+        # 10 content creators
+        creators = Creators(np.random.uniform(size=(10, 5)), creation_probability=1)
+        dummy = DummyRecommender(
+            self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, creators=creators
+        )
+        assert dummy.num_items == 50
+        dummy.run(5, repeated_items=True)  # run 5 timesteps
+        assert dummy.num_items == 100  # 10 creators * 5 iterations + 50 initial items
+        # assert scores are updated correctly
+        created_items = dummy.items_hat[:, 50:100]
+        true_scores = self.users @ created_items
+        predicted_scores = dummy.predicted_scores[:, 50:100]
+        # the predicted scores normalize the user arrays before doing the dot product,
+        # so instead we verify the sorted position of each item
+        test_helpers.assert_equal_arrays(true_scores.argsort(), predicted_scores.argsort())

@@ -1,6 +1,7 @@
 import test_helpers
 import numpy as np
 from trecs.models import SocialFiltering
+from trecs.components import Creators
 import pytest
 
 
@@ -215,3 +216,19 @@ class TestSocialFiltering:
         systate1 = s1.get_system_state()
         systate2 = s2.get_system_state()
         test_helpers.assert_equal_system_state(systate1, systate2)
+
+    def test_creator_items(self):
+        users = np.random.randint(10, size=(100, 10))
+        items = np.random.randint(2, size=(10, 100))
+        creator_profiles = Creators(
+            np.random.uniform(size=(50, 10)), creation_probability=1.0
+        )  # 50 creator profiles
+        sf = SocialFiltering(
+            actual_user_representation=users,
+            actual_item_representation=items,
+            creators=creator_profiles,
+        )
+        sf.run(1, repeated_items=True)
+        assert sf.items.shape == (10, 150)  # 50 new items
+        assert sf.items_hat.shape == (100, 150)
+        assert sf.users.state_history[-1].shape == (100, 150)
