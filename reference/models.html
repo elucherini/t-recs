@@ -260,6 +260,19 @@ otherwise, an error is thrown. For example, one cannot pass in
 <cite>num_users=200</cite> but have <cite>user_representation.shape</cite> be <cite>(300, 1)</cite>.
 Likewise, one cannot pass in <cite>num_items=1000</cite> but have
 <cite>item_representation.shape</cite> be <cite>(1, 500)</cite>.</p>
+<dl class="py method">
+<dt id="models.popularity.PopularityRecommender.process_new_items">
+<code class="sig-name descname">process_new_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender.process_new_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.popularity.PopularityRecommender.process_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>The popularity of any new items is always zero.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>new_items: numpy.ndarray</dt><dd><p>An array of items that represents new items that are being
+added into the system. Should be <span class="math notranslate nohighlight">\(|A|     imes|I|\)</span></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -364,6 +377,21 @@ otherwise, an error is thrown. For example, one cannot pass in
 <cite>num_users=200</cite> but have <cite>user_representation.shape</cite> be <cite>(300, 100)</cite>.
 Likewise, one cannot pass in <cite>num_items=1000</cite> but have
 <cite>item_representation.shape</cite> be <cite>(100, 500)</cite>.</p>
+<dl class="py method">
+<dt id="models.content.ContentFiltering.process_new_items">
+<code class="sig-name descname">process_new_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.process_new_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.content.ContentFiltering.process_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>We assume the content filtering system has perfect knowledge
+of the new items; therefore, when new items are created,
+we simply return the new item attributes.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>new_items: numpy.ndarray</dt><dd><p>An array of items that represents new items that are being
+added into the system. Should be <span class="math notranslate nohighlight">\(|A|     imes|I|\)</span></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -396,17 +424,17 @@ relationship.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
 <li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the past user interactions.
-If this is not None, <cite>num_items</cite> is ignored.</p></li>
 <li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|U|\)</span> adjacency matrix representing each users’
 social network. If this is not None, <cite>num_users</cite> is ignored.</p></li>
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the past user interactions.
+If this is not None, <cite>num_items</cite> is ignored.</p></li>
 <li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
 profiles, where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real
 underlying user profile, or a <cite>Users</cite> object that contains the real
 user profiles or real user-item scores. This matrix is <strong>not</strong> used
 for recommendations. This is only kept for measurements and the
 system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles,
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real item profiles,
 where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying
 item profile. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
@@ -469,6 +497,21 @@ otherwise, an error is thrown. For example, one cannot pass in
 <cite>num_users=200</cite> but have <cite>user_representation.shape</cite> be <cite>(200, 500)</cite> or
 <cite>(300, 300)</cite>. Likewise, one cannot pass in <cite>num_items=1000</cite> but have
 <cite>item_representation.shape</cite> be <cite>(200, 500)</cite>.</p>
+<dl class="py method">
+<dt id="models.social.SocialFiltering.process_new_items">
+<code class="sig-name descname">process_new_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering.process_new_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.social.SocialFiltering.process_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>We assume the content filtering system has perfect knowledge
+of the new items; therefore, when new items are created,
+we simply return the new item attributes.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>new_items: numpy.ndarray</dt><dd><p>An array of items that represents new items that are being
+added into the system. Should be <span class="math notranslate nohighlight">\(|A|     imes|I|\)</span></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -555,7 +598,7 @@ threshold for infection</p>
 implementable in our simulation library</p>
 <dl class="py class">
 <dt id="models.recommender.BaseRecommender">
-<em class="property">class </em><code class="sig-prename descclassname">models.recommender.</code><code class="sig-name descname">BaseRecommender</code><span class="sig-paren">(</span><em class="sig-param">users_hat</em>, <em class="sig-param">items_hat</em>, <em class="sig-param">users</em>, <em class="sig-param">items</em>, <em class="sig-param">num_users</em>, <em class="sig-param">num_items</em>, <em class="sig-param">num_items_per_iter</em>, <em class="sig-param">probabilistic_recommendations=False</em>, <em class="sig-param">measurements=None</em>, <em class="sig-param">record_base_state=False</em>, <em class="sig-param">system_state=None</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">score_fn=&lt;function inner_product&gt;</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">models.recommender.</code><code class="sig-name descname">BaseRecommender</code><span class="sig-paren">(</span><em class="sig-param">users_hat</em>, <em class="sig-param">items_hat</em>, <em class="sig-param">users</em>, <em class="sig-param">items</em>, <em class="sig-param">num_users</em>, <em class="sig-param">num_items</em>, <em class="sig-param">num_items_per_iter</em>, <em class="sig-param">creators=None</em>, <em class="sig-param">probabilistic_recommendations=False</em>, <em class="sig-param">measurements=None</em>, <em class="sig-param">record_base_state=False</em>, <em class="sig-param">system_state=None</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">score_fn=&lt;function inner_product&gt;</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract class representing a recommender system.</p>
 <p>The attributes and methods in this class can be generalized beyond
 recommender systems and are currently common to all pre-loaded models.</p>
@@ -741,6 +784,27 @@ user_profiles and item_attributes.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="models.recommender.BaseRecommender.add_new_item_indices">
+<code class="sig-name descname">add_new_item_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_new_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.add_new_item_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.add_new_item_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expands the indices matrix to include entries for new items that
+were created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>num_new_items</em>) – </p></li>
+<li><p><strong>this iteration</strong> (<em>in</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="models.recommender.BaseRecommender.create_and_process_items">
+<code class="sig-name descname">create_and_process_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.create_and_process_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.create_and_process_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates and processes items made by content creators</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="models.recommender.BaseRecommender.generate_recommendations">
 <code class="sig-name descname">generate_recommendations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">item_indices</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.generate_recommendations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.generate_recommendations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate recommendations for each user.</p>
@@ -806,6 +870,13 @@ method.</p>
 :type interactions (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>): matrix of interactions
 :param step (int):
 :type step (int): step on which the recorded interactions refers to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="models.recommender.BaseRecommender.process_new_items">
+<code class="sig-name descname">process_new_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.process_new_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.process_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates new item representations based on items that were just created.</p>
+<p>Must be defined in the concrete class.</p>
 </dd></dl>
 
 <dl class="py method">

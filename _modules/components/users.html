@@ -355,7 +355,7 @@
 <div class="viewcode-block" id="Users.compute_user_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.compute_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes and stores the actual scores that users assign to items</span>
-<span class="sd">        compatible with the system. Note that we expect that the score_fn</span>
+<span class="sd">        compatible with the system. Note that we expect the score_fn</span>
 <span class="sd">        attribute to be set to some callable function which takes item</span>
 <span class="sd">        attributes and user profiles.</span>
 
@@ -375,6 +375,27 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">actual_scores</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Users.score_new_items"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.score_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">score_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes and stores the actual scores that users assign to any new</span>
+<span class="sd">        items that enter the system. Note that we expect the score_fn</span>
+<span class="sd">        attribute to be set to some callable function which takes item</span>
+<span class="sd">        attributes and user profiles.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+
+<span class="sd">        new_items: :obj:`array_like`</span>
+<span class="sd">            A matrix representation of item attributes. Should be of dimension</span>
+<span class="sd">            :math:`|A|\\times|I|`, where :math:`|I|` is the</span>
+<span class="sd">            number of items and :math:`|A|` is the number of attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span><span class="p">(</span>
+            <span class="n">user_profiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="n">new_items</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Users.get_actual_user_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.get_actual_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_actual_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

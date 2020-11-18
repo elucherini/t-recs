@@ -196,13 +196,13 @@
 <span class="sd">        num_items: int (optional, default: 1250)</span>
 <span class="sd">            The number of items :math:`|I|` in the system.</span>
 
-<span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A :math:`|U|\\times|I|` matrix representing the past user interactions.</span>
-<span class="sd">            If this is not None, `num_items` is ignored.</span>
-
 <span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
 <span class="sd">            A :math:`|U|\\times|U|` adjacency matrix representing each users&#39;</span>
 <span class="sd">            social network. If this is not None, `num_users` is ignored.</span>
+
+<span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">            A :math:`|U|\\times|I|` matrix representing the past user interactions.</span>
+<span class="sd">            If this is not None, `num_items` is ignored.</span>
 
 <span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
 <span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
@@ -214,7 +214,7 @@
 <span class="sd">            system is unaware of it.</span>
 
 <span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
-<span class="sd">            A :math:`|T|\\times|I|` matrix representing the real user profiles,</span>
+<span class="sd">            A :math:`|T|\\times|I|` matrix representing the real item profiles,</span>
 <span class="sd">            where :math:`T` is the number of attributes in the real underlying</span>
 <span class="sd">            item profile. This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
@@ -363,7 +363,23 @@
         <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">))</span>
         <span class="n">interactions_per_user</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">assert</span> <span class="n">interactions_per_user</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">shape</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">interactions_per_user</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">interactions_per_user</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SocialFiltering.process_new_items"><a class="viewcode-back" href="../../reference/models.html#models.social.SocialFiltering.process_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">process_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We assume the content filtering system has perfect knowledge</span>
+<span class="sd">        of the new items; therefore, when new items are created,</span>
+<span class="sd">        we simply return the new item attributes.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ------------</span>
+<span class="sd">            new_items: numpy.ndarray</span>
+<span class="sd">                An array of items that represents new items that are being</span>
+<span class="sd">                added into the system. Should be :math:`|A|\times|I|`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># users have never interacted with new items</span>
+        <span class="n">new_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">new_representation</span><span class="p">])</span></div></div>
 </pre></div>
 
            </div>

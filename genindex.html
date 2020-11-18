@@ -191,11 +191,13 @@
 </li>
       <li><a href="reference/components.html#components.users.Users.actual_user_scores">actual_user_scores (components.users.Users attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/components.html#components.users.ActualUserProfiles">ActualUserProfiles (class in components.users)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/components.html#components.socialgraph.BinarySocialGraph.add_friends">add_friends() (components.socialgraph.BinarySocialGraph method)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.add_new_item_indices">add_new_item_indices() (models.recommender.BaseRecommender method)</a>
 </li>
       <li><a href="reference/components.html#components.base_components.SystemStateModule.add_state_variable">add_state_variable() (components.base_components.SystemStateModule method)</a>
 </li>
@@ -239,8 +241,6 @@
         <li><a href="reference/components.html#module-components.items">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.socialgraph
 
@@ -248,6 +248,8 @@
         <li><a href="reference/components.html#module-components.socialgraph">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.users
 
@@ -258,6 +260,8 @@
       <li><a href="reference/components.html#components.users.Users.compute_user_scores">compute_user_scores() (components.users.Users method)</a>
 </li>
       <li><a href="reference/models.html#models.content.ContentFiltering">ContentFiltering (class in models.content)</a>
+</li>
+      <li><a href="reference/models.html#models.recommender.BaseRecommender.create_and_process_items">create_and_process_items() (models.recommender.BaseRecommender method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -499,14 +503,24 @@
 </li>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.predicted_scores">predicted_scores (models.recommender.BaseRecommender attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/components.html#components.users.PredictedScores">PredictedScores (class in components.users)</a>
 </li>
       <li><a href="reference/components.html#components.users.PredictedUserProfiles">PredictedUserProfiles (class in components.users)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.probabilistic_recommendations">probabilistic_recommendations (models.recommender.BaseRecommender attribute)</a>
 </li>
+      <li><a href="reference/models.html#models.content.ContentFiltering.process_new_items">process_new_items() (models.content.ContentFiltering method)</a>
+
+      <ul>
+        <li><a href="reference/models.html#models.popularity.PopularityRecommender.process_new_items">(models.popularity.PopularityRecommender method)</a>
+</li>
+        <li><a href="reference/models.html#models.recommender.BaseRecommender.process_new_items">(models.recommender.BaseRecommender method)</a>
+</li>
+        <li><a href="reference/models.html#models.social.SocialFiltering.process_new_items">(models.social.SocialFiltering method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -536,6 +550,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/models.html#models.recommender.BaseRecommender.score_fn">score_fn (models.recommender.BaseRecommender attribute)</a>
+</li>
+      <li><a href="reference/components.html#components.users.Users.score_new_items">score_new_items() (components.users.Users method)</a>
 </li>
       <li><a href="reference/components.html#components.users.Users.set_score_function">set_score_function() (components.users.Users method)</a>
 </li>

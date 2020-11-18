@@ -303,7 +303,7 @@ If None, users follow the behavior in <a class="reference internal" href="#compo
 <dt id="components.users.Users.compute_user_scores">
 <code class="sig-name descname">compute_user_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_attributes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.compute_user_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users.compute_user_scores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes and stores the actual scores that users assign to items
-compatible with the system. Note that we expect that the score_fn
+compatible with the system. Note that we expect the score_fn
 attribute to be set to some callable function which takes item
 attributes and user profiles.</p>
 <dl class="field-list simple">
@@ -357,6 +357,22 @@ recommendations and new items.</p></li>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If <a class="reference internal" href="#components.users.Users.interact_with_items" title="components.users.Users.interact_with_items"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interact_with_items</span></code></a> is None and there is not <cite>item</cite>
     parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.Users.score_new_items">
+<code class="sig-name descname">score_new_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.score_new_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users.score_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes and stores the actual scores that users assign to any new
+items that enter the system. Note that we expect the score_fn
+attribute to be set to some callable function which takes item
+attributes and user profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_items</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">array_like</span></code>) – A matrix representation of item attributes. Should be of dimension
+<span class="math notranslate nohighlight">\(|A|\times|I|\)</span>, where <span class="math notranslate nohighlight">\(|I|\)</span> is the
+number of items and <span class="math notranslate nohighlight">\(|A|\)</span> is the number of attributes.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -547,7 +563,7 @@ link that goes from one user to the other.</p>
 variables of interest in the recommender systems</p>
 <dl class="py class">
 <dt id="components.base_components.BaseComponent">
-<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">BaseComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">init_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.BaseComponent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">components.base_components.</code><code class="sig-name descname">BaseComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">init_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.base_components.BaseComponent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Observable that stores a history of its state.</p>
 <dl class="py method">
 <dt id="components.base_components.BaseComponent.get_component_state">

@@ -318,7 +318,21 @@
     <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="n">histogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">histogram</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">histogram</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PopularityRecommender.process_new_items"><a class="viewcode-back" href="../../reference/models.html#models.popularity.PopularityRecommender.process_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">process_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The popularity of any new items is always zero.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ------------</span>
+<span class="sd">            new_items: numpy.ndarray</span>
+<span class="sd">                An array of items that represents new items that are being</span>
+<span class="sd">                added into the system. Should be :math:`|A|\times|I|`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># start popularity of new items as 0</span>
+        <span class="n">new_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">new_representation</span><span class="p">])</span></div></div>
 </pre></div>
 
            </div>
