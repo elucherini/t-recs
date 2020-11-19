@@ -31,21 +31,17 @@ def calc_choice_probabilities(image_matrices, values):
     c_T = np.transpose(c, axes=(0, 2, 1))
     vi = c_T.diagonal()
 
-    z1 = np.multiply(-2**0.5, vi)
-    z2 = np.multiply(-2**0.5, x)
+    z1 = np.multiply(-(2 ** 0.5), vi)
+    z2 = np.multiply(-(2 ** 0.5), x)
     zz = [z1 - e for e in z2]
 
     aa = np.prod(norm.cdf(zz), axis=1)
-    #Pi have been validated
-    p = np.divide(np.sum(np.multiply(w.reshape(100, 1), aa), axis=0), np.pi**0.5)
+    # Pi have been validated
+    p = np.divide(np.sum(np.multiply(w.reshape(100, 1), aa), axis=0), np.pi ** 0.5)
     return p
 
 
-def divisive_normalization(
-    user_item_scores,
-    sigma=0.0,
-    omega=0.2376,
-    beta=0.9739):
+def divisive_normalization(user_item_scores, sigma=0.0, omega=0.2376, beta=0.9739):
     """
     Scores items according to divisive normalization.
 
@@ -56,9 +52,15 @@ def divisive_normalization(
             The element at index :math:`i,j` should represent user :math:`i`'s
             context-independent value for item :math:`j`.
             Dimension: :math:`|U|\times|I|`
+
+    Returns
+    --------
+        probs: :obj:`numpy.ndarray`
+            Probabilities of a user making a particular choice. All probabilities
+            for a given row will sum up to 1.
     """
     denom = sigma + np.multiply(omega, np.linalg.norm(user_item_scores, ord=beta, axis=1))
-    normed_values = np.divide(user_item_scores.T, denom) # now |I| x |U|
+    normed_values = np.divide(user_item_scores.T, denom)  # now |I| x |U|
 
     # precalculate image matrices for choices
     num_choices = normed_values.shape[0]
@@ -75,6 +77,31 @@ def divisive_normalization(
     for i in range(normed_values.shape[0]):
         choices = (np.ones(normed_values.shape[1]) * i).astype(int)
         probs[i, :] = calc_choice_probabilities(image_mats[choices], normed_values)
+    return probs.T
+
+
+def sample_from_items(user_item_probabilities):
+    """
+    Given a matrix of user-item selection probabilities, where each
+    row is a vector of item probabilities for a particular user, returns the
+    indices of each user's chosen item.
+
+    Parameters
+    -----------
+        user_item_probabilities: :obj:`array_like`
+            The element at index :math:`i,j` should represent user :math:`i`'s
+            probability of choosing item :math:`j`. (Note that item `j` in one
+            row may not refer to the same item as item `j` in another row, since
+            each user may be shown different items in their recommendation
+            set.)
+            Dimension: :math:`|U|\times|I|`
+    """
+    num_users = user_item_probabilities.shape[0]
+    num_items = user_item_probabilities.shape[1]
+    chosen_indices = np.zeros(num_users)
+    for u in range(num_users):
+        chosen_indices[u] = np.random.sample(num_items, p=user_item_probabilities[u])
+    return chosen_indices
 
 
 def inner_product(user_profiles, item_attributes, normalize=True):
