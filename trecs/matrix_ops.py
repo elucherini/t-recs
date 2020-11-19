@@ -1,6 +1,80 @@
 """ Common matrix operations
 """
 import numpy as np
+from scipy.stats import norm
+
+
+def calc_choice_probabilities(image_matrices, values):
+    """
+    Scores items according to divisive normalization.
+
+    Parameters
+    -----------
+        image_matrices: :obj:`numpy.ndarray`
+            Image matrices that are used for transforming covariance matrix
+            of errors into covariance matrix of error differences. Dimension:
+            :math:`|U|\times|I|-1\times|I|`, where :math:`|I|` is the total number
+            of items and :math:`|U|` is the total number of users. Note:
+            these image matrices should correspond to a particular candidate
+            choice for each user.
+
+        values: :obj:`numpy.ndarray`
+            Normalized values (see divisive_normalization) of each item
+            for each user. Should be dimension :math: `|I|\times|U|`.
+
+    """
+    imat_T = np.transpose(image_matrices, axes=(0, 2, 1))
+    [x, w] = np.polynomial.hermite.hermgauss(100)
+
+    # TODO: verify correctness / understand mathematical operations
+    c = np.tensordot(imat_T, values, axes=([1, 0]))
+    c_T = np.transpose(c, axes=(0, 2, 1))
+    vi = c_T.diagonal()
+
+    z1 = np.multiply(-2**0.5, vi)
+    z2 = np.multiply(-2**0.5, x)
+    zz = [z1 - e for e in z2]
+
+    aa = np.prod(norm.cdf(zz), axis=1)
+    #Pi have been validated
+    p = np.divide(np.sum(np.multiply(w.reshape(100, 1), aa), axis=0), np.pi**0.5)
+    return p
+
+
+def divisive_normalization(
+    user_item_scores,
+    sigma=0.0,
+    omega=0.2376,
+    beta=0.9739):
+    """
+    Scores items according to divisive normalization.
+
+    Parameters
+    -----------
+
+        user_item_scores: :obj:`array_like`
+            The element at index :math:`i,j` should represent user :math:`i`'s
+            context-independent value for item :math:`j`.
+            Dimension: :math:`|U|\times|I|`
+    """
+    denom = sigma + np.multiply(omega, np.linalg.norm(user_item_scores, ord=beta, axis=1))
+    normed_values = np.divide(user_item_scores.T, denom) # now |I| x |U|
+
+    # precalculate image matrices for choices
+    num_choices = normed_values.shape[0]
+    eye_mats = np.identity(num_choices - 1)
+    image_mats = np.empty((num_choices, num_choices - 1, num_choices))
+    negative_one_vec = -1 * np.ones((num_choices - 1, 1))
+
+    for i in range(num_choices):
+        mat_parts = (eye_mats[:, :i], negative_one_vec, eye_mats[:, i:])
+        image_mats[i] = np.concatenate(mat_parts, axis=1)
+
+    # naive approach: iterate over all possible choice indices
+    probs = np.zeros(normed_values.shape)
+    for i in range(normed_values.shape[0]):
+        choices = (np.ones(normed_values.shape[1]) * i).astype(int)
+        probs[i, :] = calc_choice_probabilities(image_mats[choices], normed_values)
 
 
 def inner_product(user_profiles, item_attributes, normalize=True):
