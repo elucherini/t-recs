@@ -460,6 +460,29 @@ class DNUsers(Users):
             self.compute_user_scores(item_attributes)
         return interactions
 
+    def normalize_values(self, user_item_scores):
+        """
+        Calculating the expression for :math:`z(\textbf{v})` in the equation
+        :math:`z(\textbf{v})+\textbf{\eta}`.
+
+        Parameters
+        -----------
+
+        user_item_scores: :obj:`array_like`
+            The element at index :math:`i,j` should represent user :math:`i`'s
+            context-independent value for item :math:`j`.
+            Dimension: :math:`|U|\times|I|`
+
+        Returns
+        --------
+            normed_values: :obj:`numpy.ndarray`
+                Probabilities of a user making a particular choice. All probabilities
+                for a given row will sum up to 1.
+        """
+        summed_norms = np.linalg.norm(user_item_scores, ord=self.beta, axis=1)
+        denom = self.sigma + np.multiply(self.omega, summed_norms)
+        return np.divide(user_item_scores.T, denom)  # now |I| x |U|
+
     def dn_utilities(self, user_item_scores):
         """
         Scores items according to divisive normalization. Note that the parameters
@@ -491,9 +514,7 @@ class DNUsers(Users):
                 Probabilities of a user making a particular choice. All probabilities
                 for a given row will sum up to 1.
         """
-        denom = self.sigma + np.multiply(self.omega, np.linalg.norm(user_item_scores, ord=self.beta, axis=1))
-        normed_values = np.divide(user_item_scores.T, denom)  # now |I| x |U|
-
+        normed_values = self.normalize_values(user_item_scores)
         num_choices, num_users = normed_values.shape
         # in accordance with the DN model from Webb et al.,
         # the following covariance matrix has the structure

@@ -82,4 +82,21 @@ class TestUsers:
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(shown_scores, dn_utilities)
 
+    def test_value_normalization(self):
+        users = DNUsers(np.array([[0, 1, 2, 3, 4]]), sigma=0.05, omega=0.25, beta=0.9)
+        items = np.arange(20).reshape(5, 4)
+        users.compute_user_scores(items)
+        # should be: [120, 130, 140, 150]
+        user_item_scores = np.dot(users.actual_user_profiles, items)
+        normed_values = users.normalize_values(user_item_scores)
+
+        # these are manually calculated
+        normed_scores = np.array([
+            [0.7620146 ],
+            [0.82551582],
+            [0.88901703],
+            [0.95251825]
+        ])
+
+        np.testing.assert_array_almost_equal(normed_values, normed_scores)
 
