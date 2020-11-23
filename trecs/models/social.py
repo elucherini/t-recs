@@ -224,7 +224,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being
-                added into the system. Should be :math:`|A|\times|I|`
+                added into the system. Should be :math:`|A|\\times|I|`
         """
         # users have never interacted with new items
         new_representation = np.zeros((self.num_users, new_items.shape[1]))

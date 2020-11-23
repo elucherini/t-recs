@@ -1,7 +1,6 @@
 """ Common matrix operations
 """
 import numpy as np
-from scipy.stats import norm
 
 
 def inner_product(user_profiles, item_attributes, normalize=True):
