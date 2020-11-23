@@ -383,6 +383,7 @@ class DNUsers(Users):
             Parameter for the DN model (see docstring). Default value is fitted
             parameter from Webb et al. (2020).
     """
+
     def __init__(
         self,
         actual_user_profiles=None,
@@ -398,7 +399,18 @@ class DNUsers(Users):
         verbose=False,
         seed=None,
     ):  # pylint: disable=too-many-arguments
-        Users.__init__(self, actual_user_profiles, actual_user_scores, interact_with_items, size, num_users, drift, score_fn, verbose, seed)
+        Users.__init__(
+            self,
+            actual_user_profiles,
+            actual_user_scores,
+            interact_with_items,
+            size,
+            num_users,
+            drift,
+            score_fn,
+            verbose,
+            seed,
+        )
         self.sigma = sigma
         self.omega = omega
         self.beta = beta
@@ -447,7 +459,6 @@ class DNUsers(Users):
         sorted_user_preferences = item_utilities.argsort()[:, -1]
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + str(interactions))
-
 
         if self.drift > 0:
             if item_attributes is None:

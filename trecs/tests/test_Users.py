@@ -67,7 +67,7 @@ class TestUsers:
         users = DNUsers(size=(num_users, num_attr), seed=seed)
         items = np.random.uniform(size=(num_attr, num_items))
         user_item_scores = np.dot(users.actual_user_profiles, items)
-        users.compute_user_scores(items) # calculate underlying values
+        users.compute_user_scores(items)  # calculate underlying values
 
         # have a random sample of 5 num_items shown to each user
         items_shown = np.random.choice(num_items, size=(num_users, 5))
@@ -91,12 +91,6 @@ class TestUsers:
         normed_values = users.normalize_values(user_item_scores)
 
         # these are manually calculated
-        normed_scores = np.array([
-            [0.7620146 ],
-            [0.82551582],
-            [0.88901703],
-            [0.95251825]
-        ])
+        normed_scores = np.array([[0.7620146], [0.82551582], [0.88901703], [0.95251825]])
 
         np.testing.assert_array_almost_equal(normed_values, normed_scores)
-
