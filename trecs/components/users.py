@@ -315,8 +315,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
-            self.log("User scores for given items are:\n" + str(user_interactions))
-            self.log("Users interact with the following items respectively:\n" + str(interactions))
+            self.log(f"User scores for given items are:\n{str(user_interactions)}")
+            self.log(f"Users interact with the following items respectively:\n{str(interactions)}")
         if self.drift > 0:
             if item_attributes is None:
                 raise ValueError("Item attributes can't be None if user preferences are dynamic")

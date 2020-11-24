@@ -243,11 +243,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
         if self.is_verbose():
             self.log("Recommender system ready")
-            self.log("Num items: %d" % self.num_items)
-            self.log("Users: %d" % self.num_users)
-            self.log("Items per iter: %d" % self.num_items_per_iter)
+            self.log(f"Num items: {self.num_items}")
+            self.log(f"Users: {self.num_users}")
+            self.log(f"Items per iter: {self.num_items_per_iter}")
             if seed is not None:
-                self.log("Set seed to %d" % seed)
+                self.log(f"Set seed to {seed}")
             else:
                 self.log("Seed was not set.")
 
