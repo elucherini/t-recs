@@ -222,6 +222,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.items_hat,
                 self.predicted_scores,
             )
+            if self.creators is not None:
+                self.add_state_variable(self.creators)
         if system_state is not None:
             self.add_state_variable(*system_state)
 

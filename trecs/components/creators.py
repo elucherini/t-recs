@@ -92,7 +92,6 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
             raise ValueError("Creation probability cannot be less than 0 or greater than 1")
         self.actual_creator_profiles = np.asarray(actual_creator_profiles)
         self.creation_probability = creation_probability
-        self.score_fn = None  # function that dictates how items will be scored
         self.name = "actual_creator_profiles"
         BaseComponent.__init__(
             self, verbose=verbose, init_value=self.actual_creator_profiles, seed=seed
