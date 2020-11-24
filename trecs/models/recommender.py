@@ -319,6 +319,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 raise ValueError(
                     f"There are not enough items left to recommend {k} items to each user."
                 )
+        if k == 0:
+            return np.array([]).reshape((self.num_users, 0)).astype(int)
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
         s_filtered = self.predicted_scores[row, item_indices]
@@ -401,18 +403,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             item_indices = item_indices[np.where(item_indices >= 0)]
             item_indices = item_indices.reshape((self.num_users, -1))
 
-        if num_recommended > 0:
-            recommended = self.generate_recommendations(
-                k=num_recommended, item_indices=item_indices
-            )
-        else:
-            recommended = None
+        recommended = self.generate_recommendations(k=num_recommended, item_indices=item_indices)
 
         if self.is_verbose():
             self.log(f"Choice among {item_indices.shape[0]} items")
             if item_indices.shape[1] < num_new_items:
                 self.log("Insufficient number of items left!")
 
+        new_items = np.array([]).reshape((self.num_users, 0)).astype(int)
         if num_new_items:
             # no guarantees that randomly interleaved items do not overlap
             # with recommended items
@@ -422,12 +420,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = item_indices[row, col]
 
-        if num_recommended and num_new_items:
-            items = np.concatenate((recommended, new_items), axis=1)
-        elif num_new_items:
-            items = new_items
-        else:
-            items = recommended
+        items = np.concatenate((recommended, new_items), axis=1)
         if self.is_verbose():
             self.log(
                 "System picked these items (cols) randomly for each user "
