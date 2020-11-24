@@ -317,6 +317,17 @@
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
+<div class="viewcode-block" id="BassModel.initialize_user_scores"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.initialize_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the Users object does not already have known user-item scores,</span>
+<span class="sd">        then we calculate these scores.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># users compute their own scores using the true item attributes,</span>
+        <span class="c1"># unless their own scores are already known to them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">set_score_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_probabilities</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_actual_user_scores</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Private function that updates user profiles with data from</span>
 <span class="sd">            latest interactions.</span>

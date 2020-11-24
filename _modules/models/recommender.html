@@ -221,6 +221,11 @@
 <span class="sd">        system_state: list</span>
 <span class="sd">            List of system state components to monitor.</span>
 
+<span class="sd">        score_fn: callable</span>
+<span class="sd">            Function that is used to calculate each user&#39;s predicted scores for</span>
+<span class="sd">            each candidate item. The score function should take as input</span>
+<span class="sd">            user_profiles and item_attributes.</span>
+
 <span class="sd">        verbose: bool (optional, default: False)</span>
 <span class="sd">            If True, it enables verbose mode.</span>
 
@@ -280,10 +285,8 @@
 <span class="sd">            `repeated_items` are not allowed.</span>
 
 <span class="sd">        score_fn: callable</span>
-<span class="sd">            Function that is used to calculate each user&#39;s scores for each</span>
-<span class="sd">            candidate item. Note that this function can be the same function</span>
-<span class="sd">            used by the recommender system to generate its predictions for</span>
-<span class="sd">            user-item scores. The score function should take as input</span>
+<span class="sd">            Function that is used to calculate each user&#39;s predicted scores for</span>
+<span class="sd">            each candidate item. The score function should take as input</span>
 <span class="sd">            user_profiles and item_attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -302,8 +305,8 @@
         <span class="n">measurements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">record_base_state</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">system_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">score_fn</span><span class="o">=</span><span class="n">inner_product</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># Init logger</span>
@@ -378,13 +381,7 @@
         <span class="k">if</span> <span class="n">system_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span><span class="o">*</span><span class="n">system_state</span><span class="p">)</span>
 
-        <span class="c1"># initialize actual user scores for items</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">set_score_function</span><span class="p">(</span><span class="n">score_fn</span><span class="p">)</span>
-        <span class="c1"># users compute their own scores using the true item attributes,</span>
-        <span class="c1"># unless their own scores are already known to them</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_actual_user_scores</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_user_scores</span><span class="p">()</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="p">,</span> <span class="n">Users</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="o">=</span> <span class="n">num_users</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span> <span class="o">=</span> <span class="n">num_items</span>
@@ -407,6 +404,16 @@
 <span class="sd">        Closes the logging handler upon garbage collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseRecommender.initialize_user_scores"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.initialize_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the Users object does not already have known user-item scores,</span>
+<span class="sd">        then we calculate these scores.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># users compute their own scores using the true item attributes,</span>
+        <span class="c1"># unless their own scores are already known to them</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_actual_user_scores</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseRecommender.update_predicted_scores"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.update_predicted_scores">[docs]</a>    <span class="k">def</span> <span class="nf">update_predicted_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

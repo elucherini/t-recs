@@ -156,7 +156,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">trecs.matrix_ops</span> <span class="kn">import</span> <span class="n">contains_row</span><span class="p">,</span> <span class="n">slerp</span>
+<span class="kn">from</span> <span class="nn">trecs.matrix_ops</span> <span class="kn">import</span> <span class="n">contains_row</span><span class="p">,</span> <span class="n">slerp</span><span class="p">,</span> <span class="n">inner_product</span>
 <span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">BaseComponent</span>
 
@@ -248,6 +248,11 @@
 <span class="sd">            vector of the item they just interacted with. If 0, user profiles</span>
 <span class="sd">            are generated once at initialization and never change.</span>
 
+<span class="sd">        score_fn: callable</span>
+<span class="sd">            Function that is used to calculate each user&#39;s scores for each</span>
+<span class="sd">            candidate item. The score function should take as input</span>
+<span class="sd">            user_profiles and item_attributes.</span>
+
 <span class="sd">        verbose: bool (optional, default: False)</span>
 <span class="sd">            If True, enables verbose mode. Disabled by default.</span>
 
@@ -277,6 +282,11 @@
 <span class="sd">        user_vector: :obj:`numpy.ndarray`</span>
 <span class="sd">            A ```|U|``` array of user indices.</span>
 
+<span class="sd">        score_fn: callable</span>
+<span class="sd">            Function that is used to calculate each user&#39;s scores for each</span>
+<span class="sd">            candidate item. The score function should take as input</span>
+<span class="sd">            user_profiles and item_attributes.</span>
+
 <span class="sd">    Raises</span>
 <span class="sd">    --------</span>
 
@@ -295,9 +305,11 @@
         <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">num_users</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">drift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">score_fn</span><span class="o">=</span><span class="n">inner_product</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="c1"># general input checks</span>
         <span class="k">if</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
@@ -315,12 +327,12 @@
             <span class="n">row_zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># one row vector of zeroes</span>
             <span class="k">while</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">contains_row</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">row_zeros</span><span class="p">):</span>
                 <span class="c1"># generate matrix until no row is the zero vector</span>
-                <span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+                <span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="n">ActualUserProfiles</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="o">=</span> <span class="n">interact_with_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">=</span> <span class="n">drift</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># function that dictates how scores will be generated</span>
-        <span class="c1"># this will be initialized by the system</span>
+        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">score_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span> <span class="o">=</span> <span class="n">score_fn</span>  <span class="c1"># function that dictates how scores will be generated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">actual_user_scores</span>
         <span class="k">if</span> <span class="n">num_users</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -440,7 +452,7 @@
 <span class="sd">            :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
 <span class="sd">            recommendations and new items.</span>
 <span class="sd">        item_attributes: :obj:`numpy.ndarray`):</span>
-<span class="sd">            A :math:`|A|\times|I|` matrix with item attributes.</span>
+<span class="sd">            A :math:`|A|\\times|I|` matrix with item attributes.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ---------</span>
@@ -500,6 +512,188 @@
 <div class="viewcode-block" id="Users.store_state"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.store_state">[docs]</a>    <span class="k">def</span> <span class="nf">store_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Store the actual user scores in the state history &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="DNUsers"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers">[docs]</a><span class="k">class</span> <span class="nc">DNUsers</span><span class="p">(</span><span class="n">Users</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Subclass of :class:`~components.users.Users` in which user agents perform</span>
+<span class="sd">    choices in accordance with the Divisive Normalization model of choice</span>
+<span class="sd">    from `Webb et al., 2020`_.</span>
+
+<span class="sd">    .. _Webb et al., 2020: https://pubsonline.informs.org/doi/pdf/10.1287/mnsc.2019.3536</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">        sigma: float</span>
+<span class="sd">            Parameter for the DN model (see docstring). Default value is fitted</span>
+<span class="sd">            parameter from Webb et al. (2020).</span>
+
+<span class="sd">        omega: float</span>
+<span class="sd">            Parameter for the DN model (see docstring). Default value is fitted</span>
+<span class="sd">            parameter from Webb et al. (2020).</span>
+
+<span class="sd">        beta: float</span>
+<span class="sd">            Parameter for the DN model (see docstring). Default value is fitted</span>
+<span class="sd">            parameter from Webb et al. (2020).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">actual_user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">actual_user_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">interact_with_items</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_users</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">drift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">score_fn</span><span class="o">=</span><span class="n">inner_product</span><span class="p">,</span>
+        <span class="n">sigma</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">omega</span><span class="o">=</span><span class="mf">0.2376</span><span class="p">,</span>
+        <span class="n">beta</span><span class="o">=</span><span class="mf">0.9739</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
+        <span class="n">Users</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">actual_user_profiles</span><span class="p">,</span>
+            <span class="n">actual_user_scores</span><span class="p">,</span>
+            <span class="n">interact_with_items</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">,</span>
+            <span class="n">num_users</span><span class="p">,</span>
+            <span class="n">drift</span><span class="p">,</span>
+            <span class="n">score_fn</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+            <span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+
+<div class="viewcode-block" id="DNUsers.get_user_feedback"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.get_user_feedback">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates user interactions at a given timestep, generally called by a</span>
+<span class="sd">        model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+
+<span class="sd">        args, kwargs:</span>
+<span class="sd">            Parameters needed by the model&#39;s train function.</span>
+
+<span class="sd">        items_shown: :obj:`numpy.ndarray`): A</span>
+<span class="sd">            :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
+<span class="sd">            recommendations and new items.</span>
+
+<span class="sd">        item_attributes: :obj:`numpy.ndarray`):</span>
+<span class="sd">            A :math:`|A|\\times|I|` matrix with item attributes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">            Array of interactions s.t. element :math:`interactions_{u(t)}` represents the</span>
+<span class="sd">            index of the item selected by user `u` at time `t`. Shape: |U|</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        ValueError</span>
+<span class="sd">            If :attr:`interact_with_items` is None and there is not `item`</span>
+<span class="sd">            parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">item_attributes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;item_attributes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Items can&#39;t be None&quot;</span><span class="p">)</span>
+        <span class="n">reshaped_user_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">interaction_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User scores for given items are:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interaction_scores</span><span class="p">))</span>
+        <span class="n">item_utilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_dn_utilities</span><span class="p">(</span><span class="n">interaction_scores</span><span class="p">)</span>
+        <span class="n">sorted_user_preferences</span> <span class="o">=</span> <span class="n">item_utilities</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">interactions</span> <span class="o">=</span> <span class="n">items_shown</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">sorted_user_preferences</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Users interact with the following items respectively:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interactions</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Item attributes can&#39;t be None if user preferences are dynamic&quot;</span><span class="p">)</span>
+            <span class="c1"># update user profiles based on the attributes of items they</span>
+            <span class="c1"># interacted with</span>
+            <span class="n">interact_attrs</span> <span class="o">=</span> <span class="n">item_attributes</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">interactions</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interact_attrs</span><span class="p">)</span>
+            <span class="c1"># update user scores</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="n">item_attributes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interactions</span></div>
+
+<div class="viewcode-block" id="DNUsers.normalize_values"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.normalize_values">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_item_scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculating the expression for :math:`z(\\textbf{v})` in the equation</span>
+<span class="sd">        :math:`z(\\textbf{v})+\\mathbf{\\eta}`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">        user_item_scores: :obj:`array_like`</span>
+<span class="sd">            The element at index :math:`i,j` should represent user :math:`i`&#39;s</span>
+<span class="sd">            context-independent value for item :math:`j`.</span>
+<span class="sd">            Dimension: :math:`|U|\\times|I|`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            normed_values: :obj:`numpy.ndarray`</span>
+<span class="sd">                Probabilities of a user making a particular choice. All probabilities</span>
+<span class="sd">                for a given row will sum up to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">summed_norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">user_item_scores</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">,</span> <span class="n">summed_norms</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">user_item_scores</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span>  <span class="c1"># now |I| x |U|</span></div>
+
+<div class="viewcode-block" id="DNUsers.calc_dn_utilities"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.calc_dn_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">calc_dn_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_item_scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scores items according to divisive normalization. Note that the parameters</span>
+<span class="sd">        / matrix operations we perform here are directly taken from</span>
+<span class="sd">        https://github.com/UofT-Neuroecon-1/Normalization. For more information,</span>
+<span class="sd">        see Webb, R., Glimcher, P. W., &amp; Louie, K. (2020). The Normalization of</span>
+<span class="sd">        Consumer Valuations: Context-Dependent Preferences from Neurobiological</span>
+<span class="sd">        Constraints. Management Science.</span>
+
+<span class="sd">        Note that the generalized DN model takes the following functional form:</span>
+<span class="sd">        :math:`z_i(\\textbf{v})=\\frac{v_i}{\\sigma+\\omega(\\sum_n v_n^{\\beta})^</span>
+<span class="sd">        {\\frac{1}{\\beta}}}`, where :math:`\\sigma, \\omega, \\beta` are all</span>
+<span class="sd">        parameters that specify the exact choice model. After the original values</span>
+<span class="sd">        :math:`\\textbf{v}` are transformed this way, the choice is determined by</span>
+<span class="sd">        choosing the maximum value over :math:`z(\\textbf{v})+\\mathbf{\\eta}`,</span>
+<span class="sd">        which in our case is generated by a multivariate normal distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">        user_item_scores: :obj:`array_like`</span>
+<span class="sd">            The element at index :math:`i,j` should represent user :math:`i`&#39;s</span>
+<span class="sd">            context-independent value for item :math:`j`.</span>
+<span class="sd">            Dimension: :math:`|U|\\times|I|`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            utility: :obj:`numpy.ndarray`</span>
+<span class="sd">                Normalized &amp; randomly perturbed utilities for different each</span>
+<span class="sd">                pair of users and items in the recommendation set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">normed_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_values</span><span class="p">(</span><span class="n">user_item_scores</span><span class="p">)</span>
+        <span class="n">num_choices</span><span class="p">,</span> <span class="n">num_users</span> <span class="o">=</span> <span class="n">normed_values</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># in accordance with the DN model from Webb et al.,</span>
+        <span class="c1"># the following covariance matrix has the structure</span>
+        <span class="c1"># [ 1     0.5   ...   0.5   0.5 ]</span>
+        <span class="c1"># [ 0.5    1    ...   0.5   0.5 ]</span>
+        <span class="c1"># [ 0.5   0.5   ...    1    0.5 ]</span>
+        <span class="c1"># [ 0.5   0.5   ...   0.5    1  ]</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_choices</span><span class="p">)</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_choices</span><span class="p">,</span> <span class="n">num_choices</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.5</span>
+        <span class="n">cov</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_choices</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_choices</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="c1"># generate |I| x |U| multivariate normal</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_users</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">utility</span> <span class="o">=</span> <span class="n">normed_values</span> <span class="o">+</span> <span class="n">eps</span>
+        <span class="c1"># transform so |U| x |I|</span>
+        <span class="k">return</span> <span class="n">utility</span><span class="o">.</span><span class="n">T</span></div></div>
 </pre></div>
 
            </div>

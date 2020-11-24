@@ -267,7 +267,7 @@ Likewise, one cannot pass in <cite>num_items=1000</cite> but have
 <blockquote>
 <div><dl class="simple">
 <dt>new_items: numpy.ndarray</dt><dd><p>An array of items that represents new items that are being
-added into the system. Should be <span class="math notranslate nohighlight">\(|A|     imes|I|\)</span></p>
+added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -386,7 +386,7 @@ we simply return the new item attributes.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>new_items: numpy.ndarray</dt><dd><p>An array of items that represents new items that are being
-added into the system. Should be <span class="math notranslate nohighlight">\(|A|     imes|I|\)</span></p>
+added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -506,7 +506,7 @@ we simply return the new item attributes.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>new_items: numpy.ndarray</dt><dd><p>An array of items that represents new items that are being
-added into the system. Should be <span class="math notranslate nohighlight">\(|A|     imes|I|\)</span></p>
+added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -549,6 +549,13 @@ representation of users.</p>
 representation of items.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="models.bass.BassModel.initialize_user_scores">
+<code class="sig-name descname">initialize_user_scores</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.initialize_user_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.bass.BassModel.initialize_user_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the Users object does not already have known user-item scores,
+then we calculate these scores.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -598,7 +605,7 @@ threshold for infection</p>
 implementable in our simulation library</p>
 <dl class="py class">
 <dt id="models.recommender.BaseRecommender">
-<em class="property">class </em><code class="sig-prename descclassname">models.recommender.</code><code class="sig-name descname">BaseRecommender</code><span class="sig-paren">(</span><em class="sig-param">users_hat</em>, <em class="sig-param">items_hat</em>, <em class="sig-param">users</em>, <em class="sig-param">items</em>, <em class="sig-param">num_users</em>, <em class="sig-param">num_items</em>, <em class="sig-param">num_items_per_iter</em>, <em class="sig-param">creators=None</em>, <em class="sig-param">probabilistic_recommendations=False</em>, <em class="sig-param">measurements=None</em>, <em class="sig-param">record_base_state=False</em>, <em class="sig-param">system_state=None</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">score_fn=&lt;function inner_product&gt;</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">models.recommender.</code><code class="sig-name descname">BaseRecommender</code><span class="sig-paren">(</span><em class="sig-param">users_hat</em>, <em class="sig-param">items_hat</em>, <em class="sig-param">users</em>, <em class="sig-param">items</em>, <em class="sig-param">num_users</em>, <em class="sig-param">num_items</em>, <em class="sig-param">num_items_per_iter</em>, <em class="sig-param">creators=None</em>, <em class="sig-param">probabilistic_recommendations=False</em>, <em class="sig-param">measurements=None</em>, <em class="sig-param">record_base_state=False</em>, <em class="sig-param">system_state=None</em>, <em class="sig-param">score_fn=&lt;function inner_product&gt;</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract class representing a recommender system.</p>
 <p>The attributes and methods in this class can be generalized beyond
 recommender systems and are currently common to all pre-loaded models.</p>
@@ -626,6 +633,9 @@ representation of users profiles and item profiles, as well as the
 true user profiles and item profiles. It will also record the
 predicted user-item scores at each time step.</p></li>
 <li><p><strong>system_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – List of system state components to monitor.</p></li>
+<li><p><strong>score_fn</strong> (<em>callable</em>) – Function that is used to calculate each user’s predicted scores for
+each candidate item. The score function should take as input
+user_profiles and item_attributes.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
 <li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator used</p></li>
 </ul>
@@ -771,10 +781,8 @@ with, so that it won’t be presented to the user again if
 <dl class="py attribute">
 <dt id="models.recommender.BaseRecommender.score_fn">
 <code class="sig-name descname">score_fn</code><a class="headerlink" href="#models.recommender.BaseRecommender.score_fn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that is used to calculate each user’s scores for each
-candidate item. Note that this function can be the same function
-used by the recommender system to generate its predictions for
-user-item scores. The score function should take as input
+<dd><p>Function that is used to calculate each user’s predicted scores for
+each candidate item. The score function should take as input
 user_profiles and item_attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -857,6 +865,13 @@ components stored in <a class="reference internal" href="components.html#compone
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="models.recommender.BaseRecommender.initialize_user_scores">
+<code class="sig-name descname">initialize_user_scores</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.initialize_user_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.initialize_user_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the Users object does not already have known user-item scores,
+then we calculate these scores.</p>
 </dd></dl>
 
 <dl class="py method">
