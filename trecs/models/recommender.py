@@ -241,14 +241,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
-        self.log("Recommender system ready")
-        self.log("Num items: %d" % self.num_items)
-        self.log("Users: %d" % self.num_users)
-        self.log("Items per iter: %d" % self.num_items_per_iter)
-        if seed is not None:
-            self.log("Set seed to %d" % seed)
-        else:
-            self.log("Seed was not set.")
+        if self.is_verbose():
+            self.log("Recommender system ready")
+            self.log("Num items: %d" % self.num_items)
+            self.log("Users: %d" % self.num_users)
+            self.log("Items per iter: %d" % self.num_items_per_iter)
+            if seed is not None:
+                self.log("Set seed to %d" % seed)
+            else:
+                self.log("Seed was not set.")
 
     def __del__(self):
         """
@@ -269,11 +270,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         user_profiles = self.users_hat
         item_attributes = self.items_hat
         predicted_scores = self.score_fn(user_profiles, item_attributes)
-        self.log(
-            "System updates predicted scores given by users (rows) "
-            + "to items (columns):\n"
-            + str(predicted_scores)
-        )
+        if self.is_verbose():
+            self.log(
+                "System updates predicted scores given by users (rows) "
+                + "to items (columns):\n"
+                + str(predicted_scores)
+            )
         assert predicted_scores is not None
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
@@ -319,14 +321,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 )
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
-        self.log("Row:\n" + str(row))
-        self.log("Item indices:\n" + str(item_indices))
         s_filtered = self.predicted_scores[row, item_indices]
         # scores are U x I; we can use argsort to sort the item indices
         # from low to high scores
         permutation = s_filtered.argsort()
         rec = item_indices[row, permutation]
-        self.log("Items ordered by preference (low to high) for each user:\n" + str(rec))
+        if self.is_verbose():
+            self.log("Row:\n" + str(row))
+            self.log("Item indices:\n" + str(item_indices))
+            self.log("Items ordered by preference (low to high) for each user:\n" + str(rec))
         if self.probabilistic_recommendations:
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
@@ -402,17 +405,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             recommended = self.generate_recommendations(
                 k=num_recommended, item_indices=item_indices
             )
-            self.log(
-                "System recommended these items (cols) to each user "
-                + "(rows):\n"
-                + str(recommended)
-            )
         else:
             recommended = None
 
-        self.log("Choice among %d items" % (item_indices.shape[0]))
-        if item_indices.shape[1] < num_new_items:
-            self.log("Insufficient number of items left!")
+        if self.is_verbose():
+            self.log(f"Choice among {item_indices.shape[0]} items")
+            if item_indices.shape[1] < num_new_items:
+                self.log("Insufficient number of items left!")
 
         if num_new_items:
             # no guarantees that randomly interleaved items do not overlap
@@ -422,11 +421,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = item_indices[row, col]
-            self.log(
-                "System picked these items (cols) randomly for each user "
-                + "(rows):\n"
-                + str(new_items)
-            )
 
         if num_recommended and num_new_items:
             items = np.concatenate((recommended, new_items), axis=1)
@@ -434,6 +428,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             items = new_items
         else:
             items = recommended
+        if self.is_verbose():
+            self.log(
+                "System picked these items (cols) randomly for each user "
+                + "(rows):\n"
+                + str(items)
+            )
         self.random_state.shuffle(items.T)
         return items
 
@@ -497,10 +497,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 If True, repeated items are allowed in the system -- that is,
                 users can interact with the same item more than once.
         """
-        if not startup:
-            self.log("Run -- interleave recommendations and random items " + "from now on")
+        if not startup and self.is_verbose():
+            self.log("Running recommendation simulation using recommendation algorithm...")
         for timestep in tqdm(range(timesteps)):
-            self.log("Step %d" % timestep)
+            if self.is_verbose():
+                self.log(f"Step {timestep}")
             if self.creators is not None:
                 self.create_and_process_items()
             item_idxs = self.recommend(
@@ -516,9 +517,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if not repeated_items:
                 self.indices[self.users.user_vector, interactions] = -1
             self._update_user_profiles(interactions)
-            self.log(
-                "System updates user profiles based on last interaction:\n" + str(self.users_hat)
-            )
+            if self.is_verbose():
+                self.log(
+                    "System updates user profiles based on last interaction:\n"
+                    + str(self.users_hat)
+                )
             # update creators if any
             if self.creators is not None:
                 self.creators.update_profiles(interactions, self.items)
@@ -543,7 +546,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             timestep : int (optional, default: 50)
                 Number of timesteps for simulation
         """
-        self.log("Startup -- recommend random items")
+        if self.is_verbose():
+            self.log("Startup -- recommend random items")
         return self.run(timesteps, startup=True, train_between_steps=False)
 
     def create_and_process_items(self):

@@ -45,7 +45,7 @@ class BinarySocialGraph(VerboseMode):
             )
         if self.users_hat[following_index, user_index] == 0:
             self.users_hat[following_index, user_index] = 1
-        else:
+        elif self.is_verbose():
             self.log("User %d was already following user %d" % (following_index, user_index))
 
     def unfollow(self, user_index, following_index):
@@ -75,7 +75,7 @@ class BinarySocialGraph(VerboseMode):
             )
         if self.users_hat[following_index, user_index] == 1:
             self.users_hat[following_index, user_index] = 0
-        else:
+        elif self.is_verbose():
             self.log("User %d was not following user %d" % (following_index, user_index))
 
     def add_friends(self, user1_index, user2_index):
@@ -105,11 +105,11 @@ class BinarySocialGraph(VerboseMode):
             )
         if self.users_hat[user1_index, user2_index] == 0:
             self.users_hat[user1_index, user2_index] = 1
-        else:
+        elif self.is_verbose():
             self.log("User %d was already following user %d" % (user2_index, user1_index))
         if self.users_hat[user2_index, user1_index] == 0:
             self.users_hat[user2_index, user1_index] = 1
-        else:
+        elif self.is_verbose():
             self.log("User %d was already following user %d" % (user1_index, user2_index))
 
     def remove_friends(self, user1_index, user2_index):
@@ -139,9 +139,9 @@ class BinarySocialGraph(VerboseMode):
             )
         if self.users_hat[user1_index, user2_index] == 1:
             self.users_hat[user1_index, user2_index] = 0
-        else:
+        elif self.is_verbose():
             self.log("User %d was not following user %d" % (user2_index, user1_index))
         if self.users_hat[user2_index, user1_index] == 1:
             self.users_hat[user2_index, user1_index] = 0
-        else:
+        elif self.is_verbose():
             self.log("User %d was not following user %d" % (user1_index, user2_index))
