@@ -273,8 +273,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
-                + "to items (columns):\n"
-                + str(predicted_scores)
+                "to items (columns):\n"
+                f"{str(predicted_scores)}"
             )
         assert predicted_scores is not None
         if self.predicted_scores is None:
@@ -329,9 +329,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         permutation = s_filtered.argsort()
         rec = item_indices[row, permutation]
         if self.is_verbose():
-            self.log("Row:\n" + str(row))
-            self.log("Item indices:\n" + str(item_indices))
-            self.log("Items ordered by preference (low to high) for each user:\n" + str(rec))
+            self.log(f"Row:\n{str(row)}")
+            self.log(f"Item indices:\n{str(item_indices)}")
+            self.log(f"Items ordered by preference (low to high) for each user:\n{str(rec)}")
         if self.probabilistic_recommendations:
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
