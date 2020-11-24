@@ -455,7 +455,7 @@ class DNUsers(Users):
         interaction_scores = self.actual_user_scores[reshaped_user_vector, items_shown]
 
         self.log("User scores for given items are:\n" + str(interaction_scores))
-        item_utilities = self.dn_utilities(interaction_scores)
+        item_utilities = self.calc_dn_utilities(interaction_scores)
         sorted_user_preferences = item_utilities.argsort()[:, -1]
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + str(interactions))
@@ -494,7 +494,7 @@ class DNUsers(Users):
         denom = self.sigma + np.multiply(self.omega, summed_norms)
         return np.divide(user_item_scores.T, denom)  # now |I| x |U|
 
-    def dn_utilities(self, user_item_scores):
+    def calc_dn_utilities(self, user_item_scores):
         """
         Scores items according to divisive normalization. Note that the parameters
         / matrix operations we perform here are directly taken from

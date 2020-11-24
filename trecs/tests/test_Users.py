@@ -73,7 +73,7 @@ class TestUsers:
         items_shown = np.random.choice(num_items, size=(num_users, 5))
         shown_scores = user_item_scores[np.arange(num_users).reshape(-1, 1), items_shown]
 
-        dn_utilities = users.dn_utilities(shown_scores)
+        dn_utilities = users.calc_dn_utilities(shown_scores)
         # each of the 5 items should have an associated utility
         assert dn_utilities.shape == (num_users, 5)
 
