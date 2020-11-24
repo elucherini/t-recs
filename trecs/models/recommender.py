@@ -70,6 +70,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         system_state: list
             List of system state components to monitor.
 
+        score_fn: callable
+            Function that is used to calculate each user's predicted scores for
+            each candidate item. The score function should take as input
+            user_profiles and item_attributes.
+
         verbose: bool (optional, default: False)
             If True, it enables verbose mode.
 
@@ -129,10 +134,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             `repeated_items` are not allowed.
 
         score_fn: callable
-            Function that is used to calculate each user's scores for each
-            candidate item. Note that this function can be the same function
-            used by the recommender system to generate its predictions for
-            user-item scores. The score function should take as input
+            Function that is used to calculate each user's predicted scores for
+            each candidate item. The score function should take as input
             user_profiles and item_attributes.
     """
 
@@ -151,8 +154,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         measurements=None,
         record_base_state=False,
         system_state=None,
-        verbose=False,
         score_fn=inner_product,
+        verbose=False,
         seed=None,
     ):
         # Init logger
@@ -227,13 +230,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if system_state is not None:
             self.add_state_variable(*system_state)
 
-        # initialize actual user scores for items
-        self.users.set_score_function(score_fn)
-        # users compute their own scores using the true item attributes,
-        # unless their own scores are already known to them
-        if self.users.get_actual_user_scores() is None:
-            self.users.compute_user_scores(self.items)
-
+        self.initialize_user_scores()
         assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
         self.num_items = num_items
@@ -256,6 +253,16 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Closes the logging handler upon garbage collection.
         """
         self.close()
+
+    def initialize_user_scores(self):
+        """
+        If the Users object does not already have known user-item scores,
+        then we calculate these scores.
+        """
+        # users compute their own scores using the true item attributes,
+        # unless their own scores are already known to them
+        if self.users.get_actual_user_scores() is None:
+            self.users.compute_user_scores(self.items)
 
     def update_predicted_scores(self):
         """

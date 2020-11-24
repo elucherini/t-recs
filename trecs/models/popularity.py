@@ -177,7 +177,7 @@ class PopularityRecommender(BaseRecommender):
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being
-                added into the system. Should be :math:`|A|\times|I|`
+                added into the system. Should be :math:`|A|\\times|I|`
         """
         # start popularity of new items as 0
         new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)

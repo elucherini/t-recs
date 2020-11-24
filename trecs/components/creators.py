@@ -107,7 +107,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
 
         Returns
         ---------
-            A numpy matrix of dimension :math:`|I_n|\times|A|`, where
+            A numpy matrix of dimension :math:`|I_n|\\times|A|`, where
             :math:`|I_n|` represents the number of new items, and :math:`|A|`
             represents the number of attributes for each item.
         """

@@ -5,7 +5,7 @@ encapsulates some of these concepts)
 """
 import numpy as np
 
-from trecs.matrix_ops import contains_row, slerp
+from trecs.matrix_ops import contains_row, slerp, inner_product
 from trecs.random import Generator
 from .base_components import Component, BaseComponent
 
@@ -97,6 +97,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             vector of the item they just interacted with. If 0, user profiles
             are generated once at initialization and never change.
 
+        score_fn: callable
+            Function that is used to calculate each user's scores for each
+            candidate item. The score function should take as input
+            user_profiles and item_attributes.
+
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
 
@@ -126,6 +131,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         user_vector: :obj:`numpy.ndarray`
             A ```|U|``` array of user indices.
 
+        score_fn: callable
+            Function that is used to calculate each user's scores for each
+            candidate item. The score function should take as input
+            user_profiles and item_attributes.
+
     Raises
     --------
 
@@ -144,9 +154,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         size=None,
         num_users=None,
         drift=0,
+        score_fn=inner_product,
         verbose=False,
         seed=None,
     ):  # pylint: disable=too-many-arguments
+        self.rng = Generator(seed=seed)
         # general input checks
         if actual_user_profiles is not None:
             if not isinstance(actual_user_profiles, (list, np.ndarray)):
@@ -164,12 +176,12 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
             while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
                 # generate matrix until no row is the zero vector
-                actual_user_profiles = Generator(seed=seed).normal(size=size)
+                actual_user_profiles = self.rng.normal(size=size)
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         self.drift = drift
-        self.score_fn = None  # function that dictates how scores will be generated
-        # this will be initialized by the system
+        assert callable(score_fn)
+        self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
         if num_users is not None:
             self.user_vector = np.arange(num_users, dtype=int)
@@ -289,7 +301,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
         item_attributes: :obj:`numpy.ndarray`):
-            A :math:`|A|\times|I|` matrix with item attributes.
+            A :math:`|A|\\times|I|` matrix with item attributes.
 
         Returns
         ---------
@@ -349,3 +361,185 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     def store_state(self):
         """ Store the actual user scores in the state history """
         self.state_history.append(np.copy(self.actual_user_scores))
+
+
+class DNUsers(Users):
+    """
+    Subclass of :class:`~components.users.Users` in which user agents perform
+    choices in accordance with the Divisive Normalization model of choice
+    from `Webb et al., 2020`_.
+
+    .. _Webb et al., 2020: https://pubsonline.informs.org/doi/pdf/10.1287/mnsc.2019.3536
+
+    Parameters
+    -----------
+        sigma: float
+            Parameter for the DN model (see docstring). Default value is fitted
+            parameter from Webb et al. (2020).
+
+        omega: float
+            Parameter for the DN model (see docstring). Default value is fitted
+            parameter from Webb et al. (2020).
+
+        beta: float
+            Parameter for the DN model (see docstring). Default value is fitted
+            parameter from Webb et al. (2020).
+    """
+
+    def __init__(
+        self,
+        actual_user_profiles=None,
+        actual_user_scores=None,
+        interact_with_items=None,
+        size=None,
+        num_users=None,
+        drift=0,
+        score_fn=inner_product,
+        sigma=0.0,
+        omega=0.2376,
+        beta=0.9739,
+        verbose=False,
+        seed=None,
+    ):  # pylint: disable=too-many-arguments
+        Users.__init__(
+            self,
+            actual_user_profiles,
+            actual_user_scores,
+            interact_with_items,
+            size,
+            num_users,
+            drift,
+            score_fn,
+            verbose,
+            seed,
+        )
+        self.sigma = sigma
+        self.omega = omega
+        self.beta = beta
+
+    def get_user_feedback(self, *args, **kwargs):
+        """
+        Generates user interactions at a given timestep, generally called by a
+        model.
+
+        Parameters
+        ------------
+
+        args, kwargs:
+            Parameters needed by the model's train function.
+
+        items_shown: :obj:`numpy.ndarray`): A
+            :math:`|U|\\times\\text{num_items_per_iter}` matrix with
+            recommendations and new items.
+
+        item_attributes: :obj:`numpy.ndarray`):
+            A :math:`|A|\\times|I|` matrix with item attributes.
+
+        Returns
+        ---------
+            Array of interactions s.t. element :math:`interactions_{u(t)}` represents the
+            index of the item selected by user `u` at time `t`. Shape: |U|
+
+        Raises
+        -------
+
+        ValueError
+            If :attr:`interact_with_items` is None and there is not `item`
+            parameter.
+        """
+        if self.interact_with_items is not None:
+            return self.interact_with_items(*args, **kwargs)
+        items_shown = kwargs.pop("items_shown", None)
+        item_attributes = kwargs.pop("item_attributes", None)
+        if items_shown is None:
+            raise ValueError("Items can't be None")
+        reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
+        interaction_scores = self.actual_user_scores[reshaped_user_vector, items_shown]
+
+        self.log("User scores for given items are:\n" + str(interaction_scores))
+        item_utilities = self.calc_dn_utilities(interaction_scores)
+        sorted_user_preferences = item_utilities.argsort()[:, -1]
+        interactions = items_shown[self.user_vector, sorted_user_preferences]
+        self.log("Users interact with the following items respectively:\n" + str(interactions))
+
+        if self.drift > 0:
+            if item_attributes is None:
+                raise ValueError("Item attributes can't be None if user preferences are dynamic")
+            # update user profiles based on the attributes of items they
+            # interacted with
+            interact_attrs = item_attributes.T[interactions, :]
+            self.update_profiles(interact_attrs)
+            # update user scores
+            self.compute_user_scores(item_attributes)
+        return interactions
+
+    def normalize_values(self, user_item_scores):
+        """
+        Calculating the expression for :math:`z(\\textbf{v})` in the equation
+        :math:`z(\\textbf{v})+\\mathbf{\\eta}`.
+
+        Parameters
+        -----------
+
+        user_item_scores: :obj:`array_like`
+            The element at index :math:`i,j` should represent user :math:`i`'s
+            context-independent value for item :math:`j`.
+            Dimension: :math:`|U|\\times|I|`
+
+        Returns
+        --------
+            normed_values: :obj:`numpy.ndarray`
+                Probabilities of a user making a particular choice. All probabilities
+                for a given row will sum up to 1.
+        """
+        summed_norms = np.linalg.norm(user_item_scores, ord=self.beta, axis=1)
+        denom = self.sigma + np.multiply(self.omega, summed_norms)
+        return np.divide(user_item_scores.T, denom)  # now |I| x |U|
+
+    def calc_dn_utilities(self, user_item_scores):
+        """
+        Scores items according to divisive normalization. Note that the parameters
+        / matrix operations we perform here are directly taken from
+        https://github.com/UofT-Neuroecon-1/Normalization. For more information,
+        see Webb, R., Glimcher, P. W., & Louie, K. (2020). The Normalization of
+        Consumer Valuations: Context-Dependent Preferences from Neurobiological
+        Constraints. Management Science.
+
+        Note that the generalized DN model takes the following functional form:
+        :math:`z_i(\\textbf{v})=\\frac{v_i}{\\sigma+\\omega(\\sum_n v_n^{\\beta})^
+        {\\frac{1}{\\beta}}}`, where :math:`\\sigma, \\omega, \\beta` are all
+        parameters that specify the exact choice model. After the original values
+        :math:`\\textbf{v}` are transformed this way, the choice is determined by
+        choosing the maximum value over :math:`z(\\textbf{v})+\\mathbf{\\eta}`,
+        which in our case is generated by a multivariate normal distribution.
+
+        Parameters
+        -----------
+
+        user_item_scores: :obj:`array_like`
+            The element at index :math:`i,j` should represent user :math:`i`'s
+            context-independent value for item :math:`j`.
+            Dimension: :math:`|U|\\times|I|`
+
+        Returns
+        --------
+            utility: :obj:`numpy.ndarray`
+                Normalized & randomly perturbed utilities for different each
+                pair of users and items in the recommendation set.
+        """
+        normed_values = self.normalize_values(user_item_scores)
+        num_choices, num_users = normed_values.shape
+        # in accordance with the DN model from Webb et al.,
+        # the following covariance matrix has the structure
+        # [ 1     0.5   ...   0.5   0.5 ]
+        # [ 0.5    1    ...   0.5   0.5 ]
+        # [ 0.5   0.5   ...    1    0.5 ]
+        # [ 0.5   0.5   ...   0.5    1  ]
+        mean = np.zeros(num_choices)
+        cov = np.ones((num_choices, num_choices)) * 0.5
+        cov[np.arange(num_choices), np.arange(num_choices)] = 1
+        # generate |I| x |U| multivariate normal
+        eps = self.rng.multivariate_normal(mean, cov, size=num_users).T
+        utility = normed_values + eps
+        # transform so |U| x |I|
+        return utility.T
