@@ -373,6 +373,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creators</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">system_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span><span class="o">*</span><span class="n">system_state</span><span class="p">)</span>
 
