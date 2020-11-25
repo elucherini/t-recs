@@ -488,6 +488,7 @@ class DNUsers(Users):
 
         Returns
         --------
+
             normed_values: :obj:`numpy.ndarray`
                 The transformed utility values (i.e., :math:`z(\\textbf{v})`).
         """
@@ -514,7 +515,6 @@ class DNUsers(Users):
 
         Parameters
         -----------
-
         user_item_scores: :obj:`array_like`
             The element at index :math:`i,j` should represent user :math:`i`'s
             context-independent value for item :math:`j`.
@@ -522,23 +522,50 @@ class DNUsers(Users):
 
         Returns
         --------
-            utility: :obj:`numpy.ndarray`
-                Normalized & randomly perturbed utilities for different each
-                pair of users and items in the recommendation set.
+        utility: :obj:`numpy.ndarray`
+            Normalized & randomly perturbed utilities for different each
+            pair of users and items in the recommendation set.
         """
         normed_values = self.normalize_values(user_item_scores)
         num_choices, num_users = normed_values.shape
+        eps = self.sample_from_error_dist(num_choices, num_users)
+        utility = normed_values + eps
+        # transform so |U| x |I|
+        return utility.T
+
+    def sample_from_error_dist(self, num_choices, num_users):
+        """
+        The second stage of generating the divisive normalization utilities
+        :math:`interactions_{u(t)} is adding the error term
+        :math:`\\textbf{\\eta}`. In this implementation, we sample from
+        a specific multivariate normal distribution used by Webb et al.
+        (see https://github.com/UofT-Neuroecon-1/Normalization).
+
+        Parameters
+        -----------
+
+        num_choices: int
+            Number of items every user is choosing between.
+
+        num_users: int
+            Number of users in the system.
+
+        Returns
+        --------
+
+        eps: :obj:`numpy.ndarray`
+            Randomly sampled errors from the error distribution. Should have
+            shape :math:`|I|\\times|U|`.
+        """
+        mean = np.zeros(num_choices)
         # in accordance with the DN model from Webb et al.,
         # the following covariance matrix has the structure
         # [ 1     0.5   ...   0.5   0.5 ]
         # [ 0.5    1    ...   0.5   0.5 ]
         # [ 0.5   0.5   ...    1    0.5 ]
         # [ 0.5   0.5   ...   0.5    1  ]
-        mean = np.zeros(num_choices)
         cov = np.ones((num_choices, num_choices)) * 0.5
         cov[np.arange(num_choices), np.arange(num_choices)] = 1
         # generate |I| x |U| multivariate normal
         eps = self.rng.multivariate_normal(mean, cov, size=num_users).T
-        utility = normed_values + eps
-        # transform so |U| x |I|
-        return utility.T
+        return eps
