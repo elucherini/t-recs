@@ -639,6 +639,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
+
 <span class="sd">            normed_values: :obj:`numpy.ndarray`</span>
 <span class="sd">                The transformed utility values (i.e., :math:`z(\\textbf{v})`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -665,7 +666,6 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
-
 <span class="sd">        user_item_scores: :obj:`array_like`</span>
 <span class="sd">            The element at index :math:`i,j` should represent user :math:`i`&#39;s</span>
 <span class="sd">            context-independent value for item :math:`j`.</span>
@@ -673,26 +673,53 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
-<span class="sd">            utility: :obj:`numpy.ndarray`</span>
-<span class="sd">                Normalized &amp; randomly perturbed utilities for different each</span>
-<span class="sd">                pair of users and items in the recommendation set.</span>
+<span class="sd">        utility: :obj:`numpy.ndarray`</span>
+<span class="sd">            Normalized &amp; randomly perturbed utilities for different each</span>
+<span class="sd">            pair of users and items in the recommendation set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">normed_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_values</span><span class="p">(</span><span class="n">user_item_scores</span><span class="p">)</span>
         <span class="n">num_choices</span><span class="p">,</span> <span class="n">num_users</span> <span class="o">=</span> <span class="n">normed_values</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_from_error_dist</span><span class="p">(</span><span class="n">num_choices</span><span class="p">,</span> <span class="n">num_users</span><span class="p">)</span>
+        <span class="n">utility</span> <span class="o">=</span> <span class="n">normed_values</span> <span class="o">+</span> <span class="n">eps</span>
+        <span class="c1"># transform so |U| x |I|</span>
+        <span class="k">return</span> <span class="n">utility</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="DNUsers.sample_from_error_dist"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.sample_from_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">sample_from_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_choices</span><span class="p">,</span> <span class="n">num_users</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The second stage of generating the divisive normalization utilities</span>
+<span class="sd">        :math:`interactions_{u(t)} is adding the error term</span>
+<span class="sd">        :math:`\\textbf{\\eta}`. In this implementation, we sample from</span>
+<span class="sd">        a specific multivariate normal distribution used by Webb et al.</span>
+<span class="sd">        (see https://github.com/UofT-Neuroecon-1/Normalization).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">        num_choices: int</span>
+<span class="sd">            Number of items every user is choosing between.</span>
+
+<span class="sd">        num_users: int</span>
+<span class="sd">            Number of users in the system.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        eps: :obj:`numpy.ndarray`</span>
+<span class="sd">            Randomly sampled errors from the error distribution. Should have</span>
+<span class="sd">            shape :math:`|I|\\times|U|`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_choices</span><span class="p">)</span>
         <span class="c1"># in accordance with the DN model from Webb et al.,</span>
         <span class="c1"># the following covariance matrix has the structure</span>
         <span class="c1"># [ 1     0.5   ...   0.5   0.5 ]</span>
         <span class="c1"># [ 0.5    1    ...   0.5   0.5 ]</span>
         <span class="c1"># [ 0.5   0.5   ...    1    0.5 ]</span>
         <span class="c1"># [ 0.5   0.5   ...   0.5    1  ]</span>
-        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_choices</span><span class="p">)</span>
         <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_choices</span><span class="p">,</span> <span class="n">num_choices</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.5</span>
         <span class="n">cov</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_choices</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_choices</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="c1"># generate |I| x |U| multivariate normal</span>
         <span class="n">eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_users</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-        <span class="n">utility</span> <span class="o">=</span> <span class="n">normed_values</span> <span class="o">+</span> <span class="n">eps</span>
-        <span class="c1"># transform so |U| x |I|</span>
-        <span class="k">return</span> <span class="n">utility</span><span class="o">.</span><span class="n">T</span></div></div>
+        <span class="k">return</span> <span class="n">eps</span></div></div>
 </pre></div>
 
            </div>

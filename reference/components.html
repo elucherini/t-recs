@@ -281,6 +281,31 @@ Dimension: <span class="math notranslate nohighlight">\(|U|\times|I|\)</span></p
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="components.users.DNUsers.sample_from_error_dist">
+<code class="sig-name descname">sample_from_error_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_choices</span></em>, <em class="sig-param"><span class="n">num_users</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#DNUsers.sample_from_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.DNUsers.sample_from_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>The second stage of generating the divisive normalization utilities
+<span class="math notranslate nohighlight">\(interactions_{u(t)} is adding the error term
+:math:\)</span>textbf{eta}`. In this implementation, we sample from
+a specific multivariate normal distribution used by Webb et al.
+(see <a class="reference external" href="https://github.com/UofT-Neuroecon-1/Normalization">https://github.com/UofT-Neuroecon-1/Normalization</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_choices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of items every user is choosing between.</p></li>
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of users in the system.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>eps</strong> – Randomly sampled errors from the error distribution. Should have
+shape <span class="math notranslate nohighlight">\(|I|\times|U|\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
