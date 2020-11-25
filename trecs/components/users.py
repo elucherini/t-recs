@@ -489,8 +489,7 @@ class DNUsers(Users):
         Returns
         --------
             normed_values: :obj:`numpy.ndarray`
-                Probabilities of a user making a particular choice. All probabilities
-                for a given row will sum up to 1.
+                The transformed utility values (i.e., :math:`z(\\textbf{v})`).
         """
         summed_norms = np.linalg.norm(user_item_scores, ord=self.beta, axis=1)
         denom = self.sigma + np.multiply(self.omega, summed_norms)
