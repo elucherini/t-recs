@@ -640,8 +640,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
 <span class="sd">            normed_values: :obj:`numpy.ndarray`</span>
-<span class="sd">                Probabilities of a user making a particular choice. All probabilities</span>
-<span class="sd">                for a given row will sum up to 1.</span>
+<span class="sd">                The transformed utility values (i.e., :math:`z(\\textbf{v})`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">summed_norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">user_item_scores</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">denom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">,</span> <span class="n">summed_norms</span><span class="p">)</span>
