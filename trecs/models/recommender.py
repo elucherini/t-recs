@@ -555,7 +555,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Creates and processes items made by content creators
         """
         # generate new items
-        new_items = self.creators.generate_items().T  # transpose so its A x I
+        new_items = self.creators.generate_items()  # should be A x I
         self.num_items += new_items.shape[1]  # increment number of items
         # concatenate old items with new items
         self.items = np.hstack([self.items, new_items])

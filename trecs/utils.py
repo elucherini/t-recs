@@ -1,15 +1,15 @@
-"""Various utility functions, mainly for matrices and input validation"""
+"""Various utility functions, mainly used for input validation"""
 import numpy as np
-from trecs.components import Users
 
 # Common input validation functions
-def validate_user_item_inputs(  # pylint: disable=too-many-arguments
+def check_consistency(  # pylint: disable=too-many-arguments
     num_users=None,
     num_items=None,
     users_hat=None,
     items_hat=None,
     users=None,
     items=None,
+    user_item_scores=None,
     default_num_users=None,
     default_num_items=None,
     num_attributes=None,
@@ -49,6 +49,10 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
         A 2D matrix whose second dimension should be equal to the number of
         items in the system. This is the "true" underlying item attribute
         matrix.
+
+    user_item_scores: :obj:`numpy.ndarray` or None (optional, default: None)
+        A 2D matrix whose first dimension is the number of users in the system
+        and whose second dimension is the number of items in the system.
 
     default_num_users: int or None (optional, default: None)
         If the number of users is not specified anywhere in the inputs, we return
@@ -90,24 +94,18 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
     num_items_vals = non_none_values(
         getattr(items_hat, "shape", [None, None])[1],
         getattr(items, "shape", [None, None])[1],
+        getattr(user_item_scores, "shape", [None, None])[1],
         num_items,
     )
 
     # if users is a Users object, we check to make sure it contains consistent
 
     num_users_vals = non_none_values(
-        getattr(users, "shape", [None])[0], getattr(users_hat, "shape", [None])[0], num_users
+        getattr(users, "shape", [None])[0],
+        getattr(users_hat, "shape", [None])[0],
+        getattr(user_item_scores, "shape", [None])[0],
+        num_users,
     )
-
-    if isinstance(users, Users):
-        num_users_vals = num_users_vals.union(
-            non_none_values(
-                get_first_valid(
-                    getattr(users.actual_user_scores, "shape", [None])[0],
-                    getattr(users.actual_user_profiles, "shape", [None])[0],
-                )
-            )
-        )
 
     if len(num_users_vals) == 0:  # number of users not specified anywhere
         num_users = default_num_users

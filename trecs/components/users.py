@@ -7,6 +7,7 @@ import numpy as np
 
 from trecs.matrix_ops import contains_row, slerp, inner_product
 from trecs.random import Generator
+from trecs.utils import check_consistency
 from .base_components import Component, BaseComponent
 
 
@@ -177,14 +178,17 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = self.rng.normal(size=size)
+
+        num_users, _ = check_consistency(
+            users=actual_user_profiles, user_item_scores=actual_user_scores, num_users=num_users
+        )
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         self.drift = drift
         assert callable(score_fn)
         self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
-        if num_users is not None:
-            self.user_vector = np.arange(num_users, dtype=int)
+        self.user_vector = np.arange(num_users, dtype=int)
         self.name = "actual_user_scores"
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 

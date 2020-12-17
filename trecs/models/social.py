@@ -7,7 +7,8 @@ import numpy as np
 from trecs.metrics import MSEMeasurement
 from trecs.components import BinarySocialGraph
 from trecs.random import SocialGraphGenerator
-from trecs.utils import get_first_valid, non_none_values, validate_user_item_inputs
+from trecs.utils import get_first_valid, non_none_values
+from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
 
