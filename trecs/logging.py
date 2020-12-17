@@ -11,6 +11,12 @@ class VerboseMode(ABC):
     def __init__(self, name, verbose=False):
         self._logger = DebugLogger(name, verbose)
 
+    def __del__(self):
+        """
+        Closes the logging handler upon garbage collection.
+        """
+        self.close()
+
     def set_verbose(self, toggle):
         """Toggle verbosity"""
         try:
