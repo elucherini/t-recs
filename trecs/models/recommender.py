@@ -274,9 +274,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        user_profiles = self.users_hat
-        item_attributes = self.items_hat
-        predicted_scores = self.score_fn(user_profiles, item_attributes)
+        predicted_scores = self.score_fn(self.users_hat, self.items_hat)
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
