@@ -107,7 +107,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
 
         Returns
         ---------
-            A numpy matrix of dimension :math:`|I_n|\\times|A|`, where
+            A numpy matrix of dimension :math:`|A|\\times|I_n|`, where
             :math:`|I_n|` represents the number of new items, and :math:`|A|`
             represents the number of attributes for each item.
         """
@@ -124,7 +124,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         items = Generator(seed=self.seed).binomial(
             1, chosen_profiles.reshape(-1), chosen_profiles.size
         )
-        return items.reshape(chosen_profiles.shape)
+        return items.reshape(chosen_profiles.shape).T
 
     def update_profiles(self, interactions, items):
         """
