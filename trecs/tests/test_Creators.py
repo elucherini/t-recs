@@ -30,8 +30,8 @@ class TestCreators:
 
         for _ in range(5):
             new_items = c.generate_items()
-            assert new_items.shape[0] <= 10
-            assert new_items.shape[1] == 5
+            assert new_items.shape[1] <= 10  # number of items created should be at most 10
+            assert new_items.shape[0] == 5  # number of attributes should always be 5
 
     def test_invalid_item_creation(self):
         profiles = -1 * np.random.uniform(size=(10, 5))

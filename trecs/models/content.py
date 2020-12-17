@@ -1,13 +1,12 @@
 """ Content filtering class """
 import numpy as np
-from scipy.optimize import nnls
 from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.utils import (
     non_none_values,
     is_valid_or_none,
-    validate_user_item_inputs,
 )
+from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
 

@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 import test_helpers
-from trecs.utils import validate_user_item_inputs
+from trecs.validate import validate_user_item_inputs
 
 
-class TestUtils:
+class TestValidate:
     def test_validate_good_user_item_inputs(self):
         num_users = 300
         num_items = 600

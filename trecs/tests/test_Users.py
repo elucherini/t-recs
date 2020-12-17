@@ -20,7 +20,7 @@ class TestUsers:
         s = Users(actual_user_profiles=np.random.randint(5, size=(num_users, num_attr)))
         assert s.actual_user_profiles.shape == (num_users, num_attr)
         # can't normalize a vector that isn't a matrix
-        s = Users(actual_user_profiles=[1, 2, 3])
+        s = Users(actual_user_profiles=np.array([[1, 2, 3]]))
 
     def test_content(self, num_items=10, num_attr=5, num_users=6, expand_items_by=2):
         """WARNING Before running this, make sure ContentFiltering is working properly"""
