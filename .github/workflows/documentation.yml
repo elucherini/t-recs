@@ -1,0 +1,37 @@
+# This workflow will deploy the documentation to the gh-pages branch upon a push to the main branch
+
+name: Documentation
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install sphinx and build html docs
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U sphinx
+          pip install sphinx-rtd-theme
+          pip install -r requirements.txt
+          pip install -e .
+          cd docs && make html
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.6.2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ../t-recs-docs/html
