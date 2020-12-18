@@ -533,6 +533,7 @@ class StructuralVirality(DiffusionTreeMeasurement):
         num_nodes = self.diffusion_tree.number_of_nodes()
         return wiener_index(self.diffusion_tree) / (num_nodes * (num_nodes - 1))
 
+
 class AverageFeatureScoreRange(Measurement):
     """
     Measures the average range (across users) of item attributes for items
