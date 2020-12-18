@@ -169,11 +169,11 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create --name py37 <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
 </pre></div>
 </div>
-<p>To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow <a class="reference external" href="https://medium.com/&#64;nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084">the instructions from this blog post</a>.</p>
+<p>To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow <a class="reference external" href="https://medium.com/&#64;nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084">the instructions from this blog post</a>. <strong>Note</strong>: you will also need <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to run the example notebooks. As of December 2020, we recommend installing <code class="docutils literal notranslate"><span class="pre">pandas</span> <span class="pre">v1.0.5</span></code> using the command: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'pandas==1.0.5'</span></code>. This will help avoid package conflicts between <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and <code class="docutils literal notranslate"><span class="pre">pylint</span></code> if you also plan on contributing to <code class="docutils literal notranslate"><span class="pre">trecs</span></code> and running tests.</p>
 <blockquote>
 <div></div></blockquote>
-<p>Currently, the simulator has only been tested extensively on MacOS 10.15.</p>
-<p>To install the simulator, you will need the Python package manager, pip. After activating your virtual environment, run the following commands in a terminal:</p>
+<p>Currently, the simulator has only been tested extensively on MacOS 10.15 and Ubuntu 20.04.</p>
+<p>To install the simulator, you will need the Python package manager, <code class="docutils literal notranslate"><span class="pre">pip</span></code>. After activating your virtual environment, run the following commands in a terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/elucherini/t-recs.git
 <span class="nb">cd</span> t-recs
 pip install -e .
