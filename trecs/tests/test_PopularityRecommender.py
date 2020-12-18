@@ -128,9 +128,9 @@ class TestPopularityRecommender:
         test_helpers.assert_equal_system_state(systate1, systate2)
 
         if items is None:
-            items = np.random.randint(10, 1000)
+            items = np.random.randint(20, 1000)
         if users is None:
-            users = np.random.randint(10, 100)
+            users = np.random.randint(20, 100)
         s1 = PopularityRecommender(
             seed=seed, num_users=users, num_items=items, record_base_state=True
         )
