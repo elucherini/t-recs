@@ -34,8 +34,11 @@ class VerboseMode(ABC):
 
     def close(self):
         """ Close the logging file handler """
-        self._logger.handler.close()
-        self._logger.logger.removeHandler(self._logger.handler)
+        # occasionally verbose objects are created incidentally
+        # when performing matrix operations
+        if hasattr(self, "_logger"):
+            self._logger.handler.close()
+            self._logger.logger.removeHandler(self._logger.handler)
 
 
 class DebugLogger:
