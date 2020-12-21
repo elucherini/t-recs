@@ -19,3 +19,12 @@ class TestComponents:
         np.testing.assert_array_equal(profiles.state_history[0], np.zeros((5, 5)))
         np.testing.assert_array_equal(profiles.state_history[1], 1 * np.ones((5, 5)))
         np.testing.assert_array_equal(profiles.state_history[2], 2 * np.ones((5, 5)))
+
+    def test_closed_logger(self):
+        profiles = PredictedUserProfiles(np.zeros((5, 5)))
+        logger = profiles._logger.logger  # pylint: disable=protected-access
+        handler = profiles._logger.handler  # pylint: disable=protected-access
+        assert len(logger.handlers) > 0  # before garbage collection
+        del profiles
+        # after garbage collection, handler should be closed
+        assert handler not in logger.handlers

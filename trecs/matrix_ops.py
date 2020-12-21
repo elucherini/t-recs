@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def inner_product(user_profiles, item_attributes, normalize=True):
+def inner_product(user_profiles, item_attributes, normalize_users=True, normalize_items=False):
     """
     Performs a dot product multiplication between user profiles and
     item attributes to return the scores (utility) each item possesses
@@ -26,10 +26,12 @@ def inner_product(user_profiles, item_attributes, normalize=True):
     --------
         scores: :obj:`numpy.ndarray`
     """
-    if normalize:
+    if normalize_users:
         # this is purely an optimization that prevents numpy from having
         # to multiply huge numbers
         user_profiles = normalize_matrix(user_profiles, axis=1)
+    if normalize_items:
+        item_attributes = normalize_matrix(item_attributes.T, axis=1).T
     assert user_profiles.shape[1] == item_attributes.shape[0]
     scores = np.dot(user_profiles, item_attributes)
     return scores

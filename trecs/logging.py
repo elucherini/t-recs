@@ -11,6 +11,12 @@ class VerboseMode(ABC):
     def __init__(self, name, verbose=False):
         self._logger = DebugLogger(name, verbose)
 
+    def __del__(self):
+        """
+        Closes the logging handler upon garbage collection.
+        """
+        self.close()
+
     def set_verbose(self, toggle):
         """Toggle verbosity"""
         try:
@@ -28,8 +34,11 @@ class VerboseMode(ABC):
 
     def close(self):
         """ Close the logging file handler """
-        self._logger.handler.close()
-        self._logger.logger.removeHandler(self._logger.handler)
+        # occasionally verbose objects are created incidentally
+        # when performing matrix operations
+        if hasattr(self, "_logger"):
+            self._logger.handler.close()
+            self._logger.logger.removeHandler(self._logger.handler)
 
 
 class DebugLogger:
