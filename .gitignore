@@ -122,6 +122,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+#PyCharm
+.idea/
+
 # Other
 .DS_Store
 ssh.sh

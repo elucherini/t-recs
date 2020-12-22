@@ -579,7 +579,7 @@ class AverageFeatureScoreRange(Measurement):
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
                 `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index
+                that is, an array of length `|U|` s.t. element `u` is the index.ide
                 of the item with which user `u` interacted.
         """
         interactions = kwargs.pop("interactions", None)
