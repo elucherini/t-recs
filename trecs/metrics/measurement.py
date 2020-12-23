@@ -586,7 +586,7 @@ class AverageFeatureScoreRange(Measurement):
         assert interactions.size == recommender.num_users
         interacted_item_attr = recommender.items_hat[:, interactions]
 
-        if {item for sublist in interacted_item_attr for item in sublist} == set([0, 1]):
+        if {item for sublist in interacted_item_attr for item in sublist} == {0, 1}:
             raise ValueError("AFSR is not intended for binary features.")
 
         afsr = (
