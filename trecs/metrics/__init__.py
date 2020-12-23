@@ -8,4 +8,5 @@ from .measurement import (
     DiffusionTreeMeasurement,
     StructuralVirality,
     InteractionMeasurement,
+    AverageFeatureScoreRange,
 )
