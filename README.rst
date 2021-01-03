@@ -73,3 +73,11 @@ A first draft of the documentation is available `here`_. In its current version,
 
 .. _here: https://elucherini.github.io/t-recs/index.html
 .. _examples: examples/
+
+
+Contributing
+--------------
+
+Thanks for your interest in contributing! Check out the guidelines for contributors in `CONTRIBUTING.md`_. 
+
+.. _CONTRIBUTING.md: https://github.com/elucherini/t-recs/blob/main/CONTRIBUTING.md
