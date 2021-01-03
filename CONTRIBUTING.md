@@ -7,7 +7,9 @@ If you find a bug while using any tools in this repository, consider creating a 
 ## Writing new code
 
 ### Getting up and running with your dev environment
-Before actually writing any code, you'll want to run `pip install -r requirements-dev.txt` from the root directory of this repository. The packages included will enable you to run unit tests and lint your code easily. Once you install those packages, try running `./scripts/lint_and_test.sh`. If that script finishes with no errors, you're good to go; otherwise, feel free to open up a new issue alerting us to what went wrong. **N.B.** As of December 2020, we are aware of some package conflicts between `pylint` and `pandas` that may result in a `MaximumRecursionError` when you run unit tests; if you have `pandas` in your environment, one fix is to up/downgrade `pandas` to `v1.0.5`. For more information, see the discussion [here](https://github.com/PyCQA/pylint/issues/3746).
+Before actually writing any code, you'll want to run `pip install -r requirements-dev.txt` from the root directory of this repository. The packages included will enable you to run unit tests and lint your code easily. Once you install those packages, try running `./scripts/lint_and_test.sh`. If that script finishes with no errors, you're good to go; otherwise, feel free to open up a new issue alerting us to what went wrong.
+
+**N.B. (December 2020)** We are aware of some package conflicts between `pylint` and `pandas` that may result in a `MaximumRecursionError` when you run unit tests; if you have `pandas` in your environment, one fix is to up/downgrade `pandas` to `v1.0.5`. For more information, see the discussion [here](https://github.com/PyCQA/pylint/issues/3746).
 
 ### Updating documentation
 If you find any documentation that is lacking or in error, submit a pull request that updates it.
