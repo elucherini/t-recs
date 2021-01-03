@@ -36,4 +36,4 @@ If you're reviewing a PR:
 * If the person submitting the PR is not a core contributor, the reviewer should merge the PR.
 
 ### Style guide
-We follow the [PEP 8 style guide](https://www.python.org/dev/peps/pep-0008/) by way of the `black` auto-formatter tool. To run `black` on any file you've written, run `python -m black --line-length 100 trecs/[path/to/file]`. We also use `pylint` to check for errors, like unused imports or variables.
+We follow the [PEP 8 style guide](https://www.python.org/dev/peps/pep-0008/) by way of the `black` auto-formatter tool. To run `black` on any file you've written, run `python -m black trecs/[path/to/file]`. We also use `pylint` to check for errors, like unused imports or variables.
