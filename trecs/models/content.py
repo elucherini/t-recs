@@ -7,6 +7,7 @@ from trecs.utils import (
     is_valid_or_none,
 )
 from trecs.validate import validate_user_item_inputs
+from trecs.matrix_ops import normalize_matrix, slerp
 from .recommender import BaseRecommender
 
 
@@ -172,7 +173,9 @@ class ContentFiltering(BaseRecommender):
         # generate recommender's initial "beliefs" about user profiles
         # and item attributes
         if user_representation is None:
-            user_representation = np.zeros((num_users, num_attributes))
+            # randomly sample unit vectors
+            user_representation = Generator(seed=seed).uniform(low=-1.0, high=1.0, size=(num_users, num_attributes))
+            user_representation = normalize_matrix(user_representation)
         if item_representation is None:
             item_representation = Generator(seed=seed).binomial(
                 n=1, p=0.5, size=(num_attributes, num_items)
@@ -221,10 +224,9 @@ class ContentFiltering(BaseRecommender):
                 the item that the user has interacted with.
 
         """
-        interactions_per_user = np.zeros((self.num_users, self.num_items))
-        interactions_per_user[self.users.user_vector, interactions] = 1
-        user_attributes = np.dot(interactions_per_user, self.items_hat.T)
-        self.users_hat += user_attributes
+        # update each user vector so it points in the direction of the item
+        updated_users = slerp(self.users_hat, self.items_hat.T[interactions, :])
+        self.users_hat[:, :] = updated_users[:, :]
 
     def process_new_items(self, new_items):
         """
