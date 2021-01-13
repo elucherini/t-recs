@@ -12,7 +12,7 @@ class DummyRecommender(BaseRecommender):
             users_hat, items_hat, users, items, num_users, num_items, num_items_per_iter, **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         pass
 
     def process_new_items(self, new_items):

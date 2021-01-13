@@ -2,7 +2,10 @@
 Implicit MF recommender system
 """
 import numpy as np
+from lenskit.algorithms import als
+import pandas as pd
 from trecs.metrics import MSEMeasurement
+from trecs.random import Generator
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
@@ -18,7 +21,7 @@ class ImplicitMF(BaseRecommender):
     (column). After training data is collected, the MF model performs a "fitting"
     operation to produce latent feature vectors for both the users and the
     items. These latent feature vectors are used as the basis for future
-    recommendations. The MF model may be "refit"
+    recommendations. The MF model may be "refit".
 
     Item attributes are represented by a :math:`k\\times|I|` array, where
     :math:`|I|` is the number of items in the system and :math:`k` is the
@@ -39,6 +42,10 @@ class ImplicitMF(BaseRecommender):
 
         num_items: int (optional, default: 1250)
             The number of items :math:`|I|` in the system.
+
+        num_latent_factors: int (optional, default: 10)
+            The number of latent factors that will be used to fit the Implicit MF
+            model.
 
         item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
             A :math:`|A|\\times|I|` matrix representing the similarity between
@@ -96,6 +103,7 @@ class ImplicitMF(BaseRecommender):
         seed=None,
         verbose=False,
         num_items_per_iter=10,
+        model_params={},
         **kwargs
     ):
         num_users, num_items, num_attributes = validate_user_item_inputs(
@@ -111,7 +119,8 @@ class ImplicitMF(BaseRecommender):
             num_latent_factors,
         )
         self.num_latent_factors = num_attributes
-        self.training_interactions = np.zeros((num_users, num_items))
+        self.model_params = model_params
+        self.all_interactions = pd.DataFrame(columns=["user", "item"])
 
         if user_representation is None:
             user_representation = np.zeros((num_users, num_attributes))
@@ -135,21 +144,60 @@ class ImplicitMF(BaseRecommender):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """
-        TODO: fill in
+        At each training timestep, we keep track of the user/item interactions.
         """
-        pass
+        user_item_ids = tuple(zip(self.users.user_vector, interactions))
+        interaction_df = pd.DataFrame(user_item_ids, columns=["user", "item"])
+        self.all_interactions = self.all_interactions.append(interaction_df, ignore_index=True)
+
+    def update_predicted_scores(self):
+        """
+        Calculates predicted scores for every user-item pair by first running an
+        implicit MF algorithm on the interaction data. A glorified wrapper function,
+        but necessary to keep the functionality in BaseRecommender working.
+        """
+        self.fit_mf()
+
+
+    def run(self, train_between_steps=False, **kwargs):
+        """
+        Just a simple wrapper so that by default, the RS does not refit the ImplicitMF model
+        at every timestep of the simulation.
+        """
+        # reset interactions tracker so that interactions captured
+        # are only for the duration of this particular run
+        self.all_interactions = pd.DataFrame(columns=["user", "item"])
+        super().run(
+            train_between_steps=train_between_steps,
+            **kwargs
+        )
+
+    def fit_mf(self):
+        """
+        Run LensKit ImplicitMF training procedure to extract user/item latent
+        representations from interaction data.
+        """
+        self.model_params["features"] = self.num_latent_factors
+        model = als.ImplicitMF(**self.model_params)
+        model.fit(self.all_interactions)
+        # update latent representations
+        self.users_hat, self.items_hat = model.user_features_, model.item_features_.T
+        # update predicted scores
+        super().update_predicted_scores()
 
     def process_new_items(self, new_items):
         """
         TODO: fill in
         """
-        pass
+        raise RuntimeError(
+            "ImplicitMF has not been designed to work with dynamic items generation yet"
+        )

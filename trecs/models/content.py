@@ -187,7 +187,7 @@ class ContentFiltering(BaseRecommender):
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """
         Private function that updates user profiles with data from latest
         interactions.

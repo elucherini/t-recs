@@ -236,7 +236,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if self.users.get_actual_user_scores() is None:
             self.users.compute_user_scores(self.items)
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """Private function that updates user profiles with data from
             latest interactions.
 

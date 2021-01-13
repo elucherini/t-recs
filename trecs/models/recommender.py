@@ -430,7 +430,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         return items
 
     @abstractmethod
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """
         Updates user profiles based on last interaction.
 
@@ -508,7 +508,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             if not repeated_items:
                 self.indices[self.users.user_vector, interactions] = -1
-            self._update_user_profiles(interactions)
+            self._update_internal_state(interactions)
             if self.is_verbose():
                 self.log(
                     "System updates user profiles based on last interaction:\n"

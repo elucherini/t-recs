@@ -165,7 +165,7 @@ class PopularityRecommender(BaseRecommender):
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
         self.items_hat[:, :] = np.add(self.items_hat, histogram)
