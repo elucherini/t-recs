@@ -12,8 +12,10 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
     items=None,
     default_num_users=None,
     default_num_items=None,
+    default_num_attributes=None,
     num_attributes=None,
     user_item_scores=None,
+    attributes_must_match=True,
 ):
     """ Mostly a wrapper around `check_consistency`. The reason we
     have this method is that this method "accepts" different classes
@@ -61,13 +63,24 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
         If the number of items is not specified anywhere in the inputs, we return
         this value as the number of items to be returned.
 
+    default_num_attributes: int or None (optional, default: None)
+        If the number of attributes in the item/user representations is not
+        specified or cannot be inferred, this is the default number
+        of attributes that should be used. (This applies only to users_hat
+        and items_hat.)
+
     num_attributes: int or None (optional, default: None)
         Check that the number of attributes per user & per item are equal to
-        this specified number.
+        this specified number. (This applies only to users_hat and items_hat.)
 
     user_item_scores: :obj:`numpy.ndarray` or None (optional, default: None)
         A 2D matrix whose first dimension is the number of users in the system
         and whose second dimension is the number of items in the system.
+
+    attributes_must_match: bool (optional, default: True)
+        Check that the user and item matrices match up on the attribute dimension.
+        If False, the number of columns in the user matrix and the number of
+        rows in the item matrix are allowed to be different.
 
     Returns
     --------
@@ -76,6 +89,10 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
 
         num_items: int
             Number of items, inferred from the inputs (or provided default).
+
+        num_attributes: int (optional)
+            Number of attributes per item/user profile, inferred from inputs
+            (or provided default).
     """
     if isinstance(users, Users):  # assume member of Users class
         if user_item_scores is not None and users.actual_user_scores is not None:
@@ -95,6 +112,8 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
         items=items,
         default_num_users=default_num_users,
         default_num_items=default_num_items,
+        default_num_attributes=default_num_attributes,
         num_attributes=num_attributes,
         user_item_scores=user_item_scores,
+        attributes_must_match=attributes_must_match,
     )

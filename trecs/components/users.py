@@ -179,9 +179,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = self.rng.normal(size=size)
 
-        num_users, _ = check_consistency(
+        num_users = check_consistency(
             users=actual_user_profiles, user_item_scores=actual_user_scores, num_users=num_users
-        )
+        )[
+            0
+        ]  # check_consistency also returns num_items and num_attributes, which are not needed
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         self.drift = drift

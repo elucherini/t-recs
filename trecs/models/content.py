@@ -140,11 +140,7 @@ class ContentFiltering(BaseRecommender):
         **kwargs
     ):
         # pylint: disable=duplicate-code
-        # check values for number of attributes
-        if not is_valid_or_none(num_attributes, int):
-            raise TypeError("num_attributes must be an int")
-
-        num_users, num_items = validate_user_item_inputs(
+        num_users, num_items, num_attributes = validate_user_item_inputs(
             num_users,
             num_items,
             user_representation,
@@ -153,21 +149,9 @@ class ContentFiltering(BaseRecommender):
             actual_item_representation,
             100,
             1250,
+            1000,
             num_attributes=num_attributes,
         )
-
-        # infer the number of attributes based on the dimensions of the
-        # matrices, otherwise, use the default value
-        num_attrs_vals = non_none_values(
-            getattr(user_representation, "shape", [None, None])[1],
-            getattr(item_representation, "shape", [None])[0],
-            num_attributes,
-        )
-
-        if len(num_attrs_vals) == 0:
-            num_attributes = 1000
-        else:
-            num_attributes = list(num_attrs_vals)[0]
 
         # generate recommender's initial "beliefs" about user profiles
         # and item attributes
