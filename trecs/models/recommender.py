@@ -521,10 +521,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if train_between_steps:
                 self.update_predicted_scores()
             self.measure_content(interactions, item_idxs, step=timestep)
-        # If no training in between steps, train at the end:
-        if not train_between_steps:
-            self.update_predicted_scores()
-            self.measure_content(interactions, item_idxs, step=timesteps)
 
     def startup_and_train(self, timesteps=50):
         """
@@ -540,7 +536,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         """
         if self.is_verbose():
             self.log("Startup -- recommend random items")
-        return self.run(timesteps, startup=True, train_between_steps=False)
+        self.run(timesteps, startup=True, train_between_steps=False)
+        self.update_predicted_scores()
 
     def create_and_process_items(self):
         """
