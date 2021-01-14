@@ -167,7 +167,6 @@ class ContentFiltering(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        self.num_attributes = num_attributes
         measurements = [MSEMeasurement()]
 
         # Initialize recommender system

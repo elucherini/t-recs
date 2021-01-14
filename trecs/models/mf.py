@@ -7,6 +7,7 @@ import pandas as pd
 from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.validate import validate_user_item_inputs
+from trecs.utils import non_none_values
 from .recommender import BaseRecommender
 
 
@@ -106,6 +107,7 @@ class ImplicitMF(BaseRecommender):
         model_params={},
         **kwargs
     ):
+        # check inputs
         num_users, num_items, num_attributes = validate_user_item_inputs(
             num_users,
             num_items,
@@ -118,8 +120,17 @@ class ImplicitMF(BaseRecommender):
             10,
             num_latent_factors,
         )
+        num_features_vals = non_none_values(
+            model_params.get("features"),
+            num_latent_factors,
+            num_attributes
+        )
+        if len(num_features_vals) > 1:
+            raise ValueError("Number of latent factors is not the same across inputs.")
+
         self.num_latent_factors = num_attributes
         self.model_params = model_params
+        self.als_model = None
         self.all_interactions = pd.DataFrame(columns=["user", "item"])
 
         if user_representation is None:
@@ -165,10 +176,22 @@ class ImplicitMF(BaseRecommender):
         implicit MF algorithm on the interaction data. A glorified wrapper function,
         but necessary to keep the functionality in BaseRecommender working.
         """
-        self.fit_mf()
+        # if no interactions have happened yet, do a simple dot product
+        if self.all_interactions.size == 0:
+            super().update_predicted_scores()
+        else:
+            self.fit_mf()
 
 
-    def run(self, train_between_steps=False, **kwargs):
+    def run(self,
+        timesteps=50,
+        startup=False,
+        train_between_steps=False,
+        random_items_per_iter=0,
+        vary_random_items_per_iter=False,
+        repeated_items=True,
+        no_new_items=False
+    ):
         """
         Just a simple wrapper so that by default, the RS does not refit the ImplicitMF model
         at every timestep of the simulation.
@@ -177,8 +200,13 @@ class ImplicitMF(BaseRecommender):
         # are only for the duration of this particular run
         self.all_interactions = pd.DataFrame(columns=["user", "item"])
         super().run(
-            train_between_steps=train_between_steps,
-            **kwargs
+            timesteps,
+            startup,
+            train_between_steps,
+            random_items_per_iter,
+            vary_random_items_per_iter,
+            repeated_items,
+            no_new_items=no_new_items
         )
 
     def fit_mf(self):
@@ -189,15 +217,21 @@ class ImplicitMF(BaseRecommender):
         self.model_params["features"] = self.num_latent_factors
         model = als.ImplicitMF(**self.model_params)
         model.fit(self.all_interactions)
+        self.als_model = model
         # update latent representations
-        self.users_hat, self.items_hat = model.user_features_, model.item_features_.T
+        user_index, item_index = list(set(model.user_index_)), list(set(model.item_index_))
+        self.users_hat[user_index, :] = model.user_features_
+        self.items_hat[:, item_index] =  model.item_features_.T
         # update predicted scores
         super().update_predicted_scores()
 
     def process_new_items(self, new_items):
         """
-        TODO: fill in
+        Currently, ImplicitMF processes new items by performing a simple mean imputation
+        over the latent representations of the existing items. Note: this requires that
+        a model has already been fit prior to new items being created.
         """
-        raise RuntimeError(
-            "ImplicitMF has not been designed to work with dynamic items generation yet"
-        )
+        num_new_items = new_items.shape[1]
+        avg_item = self.als_model.item_features_.T.mean(axis=1)
+        new_items = np.tile(avg_item, (num_new_items, 1)).T
+        self.items_hat = np.hstack([self.items_hat, new_items])
