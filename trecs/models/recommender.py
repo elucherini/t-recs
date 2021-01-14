@@ -457,7 +457,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         vary_random_items_per_iter=False,
         repeated_items=True,
         no_new_items=False,
-    ):
+    ):  # pylint: disable=too-many-arguments
         """
         Runs simulation for the given timesteps.
 
