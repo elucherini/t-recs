@@ -44,8 +44,11 @@ class TestImplicitMF:
             # latent factors
             users_hat = np.random.random(size=(num_users, 101))
             items_hat = np.random.random(size=(101, num_items))
-            mf = ImplicitMF(user_representation=users_hat, item_representation=items_hat, num_latent_factors=num_features)
-
+            mf = ImplicitMF(
+                user_representation=users_hat,
+                item_representation=items_hat,
+                num_latent_factors=num_features,
+            )
 
     def test_startup_run(self):
         mf = ImplicitMF(seed=123)
@@ -91,13 +94,15 @@ class TestImplicitMF:
         users = np.random.random(size=(num_users, num_attrs))
         items = np.random.random(size=(num_attrs, num_items))
         # 10 content creators
-        creators = Creators(np.random.uniform(size=(num_creators, num_attrs)), creation_probability=1)
+        creators = Creators(
+            np.random.uniform(size=(num_creators, num_attrs)), creation_probability=1
+        )
         num_factors = 3
         mf = ImplicitMF(
             num_latent_factors=num_factors,
             actual_user_representation=users,
             actual_item_representation=items,
-            creators=creators
+            creators=creators,
         )
         # disallow content creators from making new items during startup phase
         mf.startup_and_train(5, no_new_items=True)
@@ -106,7 +111,3 @@ class TestImplicitMF:
         # there should be 5 new items with the same latent feature representation
         new_items_hat = mf.items_hat[:, -5:]
         test_helpers.assert_equal_arrays(np.tile(avg_item, (num_creators, 1)).T, new_items_hat)
-
-
-
-

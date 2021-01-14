@@ -121,9 +121,7 @@ class ImplicitMF(BaseRecommender):
             num_latent_factors,
         )
         num_features_vals = non_none_values(
-            model_params.get("features"),
-            num_latent_factors,
-            num_attributes
+            model_params.get("features"), num_latent_factors, num_attributes
         )
         if len(num_features_vals) > 1:
             raise ValueError("Number of latent factors is not the same across inputs.")
@@ -182,15 +180,15 @@ class ImplicitMF(BaseRecommender):
         else:
             self.fit_mf()
 
-
-    def run(self,
+    def run(
+        self,
         timesteps=50,
         startup=False,
         train_between_steps=False,
         random_items_per_iter=0,
         vary_random_items_per_iter=False,
         repeated_items=True,
-        no_new_items=False
+        no_new_items=False,
     ):
         """
         Just a simple wrapper so that by default, the RS does not refit the ImplicitMF model
@@ -206,7 +204,7 @@ class ImplicitMF(BaseRecommender):
             random_items_per_iter,
             vary_random_items_per_iter,
             repeated_items,
-            no_new_items=no_new_items
+            no_new_items=no_new_items,
         )
 
     def fit_mf(self):
@@ -221,7 +219,7 @@ class ImplicitMF(BaseRecommender):
         # update latent representations
         user_index, item_index = list(set(model.user_index_)), list(set(model.item_index_))
         self.users_hat[user_index, :] = model.user_features_
-        self.items_hat[:, item_index] =  model.item_features_.T
+        self.items_hat[:, item_index] = model.item_features_.T
         # update predicted scores
         super().update_predicted_scores()
 
