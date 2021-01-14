@@ -49,13 +49,12 @@ class ImplicitMF(BaseRecommender):
             model.
 
         item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A :math:`|A|\\times|I|` matrix representing the similarity between
-            each item and attribute. If this is not None, `num_items` is ignored.
+            A :math:`|A|\\times|I|` matrix representing the latent representations
+            of the items. If this is not None, `num_items` is ignored.
 
         user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A :math:`|U|\\times|A|` matrix representing the similarity between
-            each item and attribute, as interpreted by the system. If this is not
-            None, `num_users` is ignored.
+            A :math:`|U|\\times|A|` matrix representing the latent reprsentations
+            of the users. If this is not None, `num_users` is ignored.
 
         actual_user_representation: :obj:`numpy.ndarray` or None or \
                             :class:`~components.users.Users` (optional, default: None)
@@ -78,6 +77,10 @@ class ImplicitMF(BaseRecommender):
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
+        model_params: dict (optional, default: None)
+            Arguments that can be passed to `lenskit.algorithms.als.ImplicitMF()` that
+            dictate model training. For example: `{'iterations':40, 'reg':0.01}`.
+
         seed: int, None (optional, default: None)
             Seed for random generator.
 
@@ -87,7 +90,60 @@ class ImplicitMF(BaseRecommender):
 
     Examples
     ---------
-        TODO: fill in
+        ImplicitMF can be instantiated with no arguments -- in which case,
+        it will be initialized with the default parameters and the number of
+        latent features and the item/user representations will be assigned randomly.
+
+        >>> mf = ImplicitMF()
+        >>> mf.users_hat.shape
+        (100, 99)   # <-- 100 users (default), 99 attributes (randomly generated)
+        >>> mf.items_hat.shape
+        (99, 1250) # <-- 99 attributes (randomly generated), 1250 items (default)
+
+        >>> mf = ImplicitMF()
+        >>> mf.users_hat.shape
+        (100, 582) # <-- 100 users (default), 582 attributes (randomly generated)
+
+        This class can be customized either by defining the number of users/items
+        in the system. The number of latent features will still be random, unless
+        specified.
+
+        >>> mf = ImplicitMF(num_users=1200, num_items=5000)
+        >>> mf.users_hat.shape
+        (1200, 2341) # <-- 1200 users, 2341 attributes
+
+        >>> mf = ImplicitMF(num_users=1200, num_items=5000, num_latent_features=2000)
+        >>> mf.users_hat.shape
+        (1200, 2000) # <-- 1200 users, 2000 attributes
+
+        Or by generating representations for items and/or users. In the example
+        below, items are uniformly distributed. We indirectly define 100
+        attributes by defining the following `item_representation`:
+
+        Note that all arguments passed in at initialization must be consistent -
+        otherwise, an error is thrown. For example, one cannot pass in
+        `num_users=200` but have `user_representation.shape` be `(300, 100)`.
+        Likewise, one cannot pass in `num_items=1000` but have
+        `item_representation.shape` be `(100, 500)`.
+
+        To use the model, it's advised to use the `startup_and_train` method, which
+        will collect user interaction data from random recommendations. At the end
+        of the startup period, an implicit matrix factorization model is fit to the
+        interaction data, generating new user/item latent representations. These
+        representations are fixed and used for future calls to `run`.
+
+        >>> mf = ImplicitMF(num_latent_features=10) # 10 latent features
+        >>> mf.startup_and_train(50) # 50 timesteps of training
+        >>> mf.run(100)
+
+        If you'd like to retrain the matrix factorization model at any point, you
+        may use the `fit_mf` method. It will fit a new set of latent user/item
+        representations based on the interaction data from the *most recent* call to
+        `run()`.
+
+        >>> mf.run(50) # data from this will not be used in fitting a new MF model
+        >>> mf.run(50) # data from this WILL be used in fitting a new MF model
+        >>> mf.fit_mf()
 
     """
 
@@ -104,7 +160,7 @@ class ImplicitMF(BaseRecommender):
         seed=None,
         verbose=False,
         num_items_per_iter=10,
-        model_params={},
+        model_params=None,
         **kwargs
     ):
         # check inputs
@@ -120,6 +176,8 @@ class ImplicitMF(BaseRecommender):
             10,
             num_latent_factors,
         )
+        if model_params is None:
+            model_params = {}
         num_features_vals = non_none_values(
             model_params.get("features"), num_latent_factors, num_attributes
         )
@@ -206,6 +264,13 @@ class ImplicitMF(BaseRecommender):
             repeated_items,
             no_new_items=no_new_items,
         )
+
+    def startup_and_train(self, timesteps=50, no_new_items=True):
+        """
+        Wrapper for :class:`~models.recommender.BaseRecommender` `startup_and_train` method.
+        Ensures that by default, no new items are created during the startup training period.
+        """
+        super().startup_and_train(timesteps, no_new_items=no_new_items)
 
     def fit_mf(self):
         """

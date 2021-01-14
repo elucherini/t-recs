@@ -74,7 +74,7 @@ class TestImplicitMF:
         assert mf.all_interactions.shape[0] == mf.num_users
 
         prior_scores = mf.predicted_scores.copy()
-        mf.fit_mf()
+        mf.fit_mf()  # fit to interaction data from the most recent run
         with pytest.raises(AssertionError):
             # we should see new predicted scores
             test_helpers.assert_equal_arrays(prior_scores, mf.predicted_scores)
@@ -105,7 +105,9 @@ class TestImplicitMF:
             creators=creators,
         )
         # disallow content creators from making new items during startup phase
-        mf.startup_and_train(5, no_new_items=True)
+        mf.startup_and_train(5)
+        # no new items should have been created during startup
+        assert mf.items.shape[1] == num_items
         avg_item = mf.als_model.item_features_.T.mean(axis=1)
         mf.run(1)
         # there should be 5 new items with the same latent feature representation
