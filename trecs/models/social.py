@@ -186,7 +186,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             seed=seed,
             measurements=measurements,
             verbose=verbose,
