@@ -186,9 +186,10 @@ class ImplicitMF(BaseRecommender):
 
         self.num_latent_factors = num_attributes
         self.model_params = model_params
-        self.als_model = None
-        self.all_interactions = pd.DataFrame(columns=["user", "item"])
+        self.als_model = None  # initialize empty model
+        self.all_interactions = pd.DataFrame(columns=["user", "item"])  # empty interactions matrix
 
+        # generate user and item representations as needed
         if user_representation is None:
             user_representation = np.zeros((num_users, num_attributes))
         if item_representation is None:
@@ -250,7 +251,8 @@ class ImplicitMF(BaseRecommender):
     ):
         """
         Just a simple wrapper so that by default, the RS does not refit the ImplicitMF model
-        at every timestep of the simulation.
+        at every timestep of the simulation. See the `run` method in
+        :`~models.recommender.BaseRecommender` for more details about what this does.
         """
         # reset interactions tracker so that interactions captured
         # are only for the duration of this particular run
@@ -267,7 +269,7 @@ class ImplicitMF(BaseRecommender):
 
     def startup_and_train(self, timesteps=50, no_new_items=True):
         """
-        Wrapper for :class:`~models.recommender.BaseRecommender` `startup_and_train` method.
+        Wrapper for :`~models.recommender.BaseRecommender` `startup_and_train` method.
         Ensures that by default, no new items are created during the startup training period.
         """
         super().startup_and_train(timesteps, no_new_items=no_new_items)

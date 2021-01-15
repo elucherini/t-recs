@@ -69,8 +69,14 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         num_items: int (optional, default: 1250)
             The number of items :math:`|I|` in the system.
 
-        num_attributes: int (optional, default: 1000)
-            The number of attributes :math:`|A|` in the system.
+        infection_state: :obj:`numpy.ndarray` or None (optional, default: None)
+            Component that tracks infection state, which is a binary (0/1) array with
+            an element recording whether each user is infected. Should be of
+            dimension :math:`|U|\\times|I|`.
+
+        infection_thresholds: :obj:`numpy.ndarray` or None (optional, default: None)
+            Component that tracks infection thresholds for each user. Should be of
+            dimension :math:`1\\times|U|`.
 
         user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
             A :math:`|U|\\times|A|` matrix representing the similarity between
@@ -216,7 +222,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             measurements=measurements,
             system_state=system_state,
             verbose=verbose,
