@@ -132,9 +132,9 @@ class ImplicitMF(BaseRecommender):
         representations based on the interaction data from the *most recent* call to
         `run()`.
 
-        >>> mf.run(50) # data from this will not be used in fitting a new MF model
-        >>> mf.run(50) # data from this WILL be used in fitting a new MF model
-        >>> mf.fit_mf()
+        >>> mf.run(50)
+        >>> mf.run(50) # on new call to `run`, interaction data from previous `run` is discarded
+        >>> mf.fit_mf() # MF model fit to data from most recent call to `run`
 
     """
 
@@ -181,12 +181,13 @@ class ImplicitMF(BaseRecommender):
         self.all_interactions = pd.DataFrame(columns=["user", "item"])  # empty interactions matrix
 
         # generate user and item representations as needed
+        # note that these will be overwritten for all users/items with at least
+        # one interaction by a future call to `fit_mf`
+        gen = Generator(seed=seed)
         if user_representation is None:
-            user_representation = np.zeros((num_users, num_attributes))
+            user_representation = gen.normal(size=(num_users, num_attributes))
         if item_representation is None:
-            item_representation = Generator(seed=seed).binomial(
-                n=1, p=0.5, size=(num_attributes, num_items)
-            )
+            item_representation = gen.normal(size=(num_attributes, num_items))
         # if the actual item representation is not specified, we assume
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
