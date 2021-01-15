@@ -91,34 +91,25 @@ class ImplicitMF(BaseRecommender):
     Examples
     ---------
         ImplicitMF can be instantiated with no arguments -- in which case,
-        it will be initialized with the default parameters and the number of
-        latent features and the item/user representations will be assigned randomly.
+        it will be initialized with the default parameters and the item/user
+        representations will be assigned randomly.
 
         >>> mf = ImplicitMF()
         >>> mf.users_hat.shape
-        (100, 99)   # <-- 100 users (default), 99 attributes (randomly generated)
-        >>> mf.items_hat.shape
-        (99, 1250) # <-- 99 attributes (randomly generated), 1250 items (default)
+        (100, 10)   # <-- 100 users (default), 10 latent features (default)
+        >>> mf.items.shape
+        (10, 1250) # <-- 10 latent features (default), 1250 items (default)
 
-        >>> mf = ImplicitMF()
-        >>> mf.users_hat.shape
-        (100, 582) # <-- 100 users (default), 582 attributes (randomly generated)
-
-        This class can be customized either by defining the number of users/items
-        in the system. The number of latent features will still be random, unless
-        specified.
+        This class can be customized either by defining the number of users/items/latent
+        features in the system.
 
         >>> mf = ImplicitMF(num_users=1200, num_items=5000)
         >>> mf.users_hat.shape
-        (1200, 2341) # <-- 1200 users, 2341 attributes
+        (1200, 10) # <-- 1200 users, 10 attributes
 
         >>> mf = ImplicitMF(num_users=1200, num_items=5000, num_latent_features=2000)
         >>> mf.users_hat.shape
         (1200, 2000) # <-- 1200 users, 2000 attributes
-
-        Or by generating representations for items and/or users. In the example
-        below, items are uniformly distributed. We indirectly define 100
-        attributes by defining the following `item_representation`:
 
         Note that all arguments passed in at initialization must be consistent -
         otherwise, an error is thrown. For example, one cannot pass in
