@@ -128,13 +128,13 @@ class ImplicitMF(BaseRecommender):
         >>> mf.run(100)
 
         If you'd like to retrain the matrix factorization model at any point, you
-        may use the `fit_mf` method. It will fit a new set of latent user/item
+        may use the `train` method. It will fit a new set of latent user/item
         representations based on the interaction data from the *most recent* call to
         `run()`.
 
         >>> mf.run(50)
         >>> mf.run(50) # on new call to `run`, interaction data from previous `run` is discarded
-        >>> mf.fit_mf() # MF model fit to data from most recent call to `run`
+        >>> mf.train() # MF model fit to data from most recent call to `run`
 
     """
 
@@ -182,7 +182,7 @@ class ImplicitMF(BaseRecommender):
 
         # generate user and item representations as needed
         # note that these will be overwritten for all users/items with at least
-        # one interaction by a future call to `fit_mf`
+        # one interaction by a future call to `train`
         gen = Generator(seed=seed)
         if user_representation is None:
             user_representation = gen.normal(size=(num_users, num_attributes))
@@ -219,17 +219,29 @@ class ImplicitMF(BaseRecommender):
         interaction_df = pd.DataFrame(user_item_ids, columns=["user", "item"])
         self.all_interactions = self.all_interactions.append(interaction_df, ignore_index=True)
 
-    def update_predicted_scores(self):
+    def train(self):
         """
         Calculates predicted scores for every user-item pair by first running an
-        implicit MF algorithm on the interaction data. A glorified wrapper function,
-        but necessary to keep the functionality in BaseRecommender working.
+        implicit MF algorithm on the interaction data. If there are no interactions
+        yet (such as when the system is first initialized), scores are generated
+        using the initialized user & item representations.
         """
-        # if no interactions have happened yet, do a simple dot product
-        if self.all_interactions.size == 0:
-            super().update_predicted_scores()
-        else:
-            self.fit_mf()
+        # if there are new interactions present, retrain the
+        if self.all_interactions.size > 0:
+            # run LensKit ImplicitMF training procedure to extract user/item latent
+            # representations from interaction data.
+            self.model_params["features"] = self.num_latent_factors
+            model = als.ImplicitMF(**self.model_params)
+            model.fit(self.all_interactions)
+            self.als_model = model
+            # update latent representations
+            user_index, item_index = list(set(model.user_index_)), list(set(model.item_index_))
+            self.users_hat[user_index, :] = model.user_features_
+            self.items_hat[:, item_index] = model.item_features_.T
+        # update predicted scores
+        # when there are no new interactions to refit an MF from, it simply uses the
+        # existing representation of user & item attributes to predict scores
+        super().train()
 
     def run(
         self,
@@ -265,22 +277,6 @@ class ImplicitMF(BaseRecommender):
         Ensures that by default, no new items are created during the startup training period.
         """
         super().startup_and_train(timesteps, no_new_items=no_new_items)
-
-    def fit_mf(self):
-        """
-        Run LensKit ImplicitMF training procedure to extract user/item latent
-        representations from interaction data.
-        """
-        self.model_params["features"] = self.num_latent_factors
-        model = als.ImplicitMF(**self.model_params)
-        model.fit(self.all_interactions)
-        self.als_model = model
-        # update latent representations
-        user_index, item_index = list(set(model.user_index_)), list(set(model.item_index_))
-        self.users_hat[user_index, :] = model.user_features_
-        self.items_hat[:, item_index] = model.item_features_.T
-        # update predicted scores
-        super().update_predicted_scores()
 
     def process_new_items(self, new_items):
         """

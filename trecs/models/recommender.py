@@ -172,7 +172,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.score_fn = score_fn
         # set predicted scores
         self.predicted_scores = None
-        self.update_predicted_scores()
+        self.train()
         assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
@@ -258,11 +258,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.users.get_actual_user_scores() is None:
             self.users.compute_user_scores(self.items)
 
-    def update_predicted_scores(self):
+    def train(self):
         """
-        Updates scores predicted by the system based on past interactions for
-        better user predictions. Specifically, it updates :attr:`predicted_scores`
-        with a dot product.
+        Updates scores predicted by the system based on the internal state of the
+        recommender system. Under default initialization, it updates
+        :attr:`predicted_scores` with a dot product of user and item attributes.
 
         Returns
         --------
@@ -525,7 +525,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.creators.update_profiles(interactions, self.items)
             # train between steps:
             if train_between_steps:
-                self.update_predicted_scores()
+                self.train()
             self.measure_content(interactions, item_idxs, step=timestep)
 
     def startup_and_train(self, timesteps=50, no_new_items=False):
@@ -548,7 +548,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.is_verbose():
             self.log("Startup -- recommend random items")
         self.run(timesteps, startup=True, train_between_steps=False, no_new_items=no_new_items)
-        self.update_predicted_scores()
+        self.train()
 
     def create_and_process_items(self):
         """
@@ -563,7 +563,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.process_new_items(new_items)
         self.add_new_item_indices(new_items.shape[1])
         # create new predicted scores
-        self.update_predicted_scores()
+        self.train()
         # have users update their own scores too
         self.users.score_new_items(new_items)
 

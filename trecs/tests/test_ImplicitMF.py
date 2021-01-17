@@ -74,7 +74,7 @@ class TestImplicitMF:
         assert mf.all_interactions.shape[0] == mf.num_users
 
         prior_scores = mf.predicted_scores.copy()
-        mf.fit_mf()  # fit to interaction data from the most recent run
+        mf.train()  # fit to interaction data from the most recent run
         with pytest.raises(AssertionError):
             # we should see new predicted scores
             test_helpers.assert_equal_arrays(prior_scores, mf.predicted_scores)
