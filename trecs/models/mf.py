@@ -261,9 +261,9 @@ class ImplicitMF(BaseRecommender):
         """
         if train_between_steps:
             warnings.warn(
-                "train_between_steps has been set to True. Note that this will cause "
-                "the MF model to be refit at every iteration, which may be unintended "
-                "behavior."
+                "train_between_steps is set to True. Note that, at each step, this "
+                "overwrites the MF model with a model fit only to the latest interaction. "
+                "To avoid this behavior, set train_between_steps to False."
             )
         # reset interactions tracker so that interactions captured
         # are only for the duration of this particular run
