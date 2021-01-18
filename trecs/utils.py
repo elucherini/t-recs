@@ -12,7 +12,9 @@ def check_consistency(  # pylint: disable=too-many-arguments
     user_item_scores=None,
     default_num_users=None,
     default_num_items=None,
+    default_num_attributes=None,
     num_attributes=None,
+    attributes_must_match=True,
 ):
     """Validate that the inputs to the recommender system are consistent
     based on their dimensions. Furthermore, if all of the inputs
@@ -60,11 +62,22 @@ def check_consistency(  # pylint: disable=too-many-arguments
 
     default_num_items: int or None (optional, default: None)
         If the number of items is not specified anywhere in the inputs, we return
-        this value as the number of items to be returned.
+        this value as the number of items to be returned.'
+
+    default_num_attributes: int or None (optional, default: None)
+        If the number of attributes in the item/user representations is not
+        specified or cannot be inferred, this is the default number
+        of attributes that should be used. (This applies only to users_hat
+        and items_hat.)
 
     num_attributes: int or None (optional, default: None)
         Check that the number of attributes per user & per item are equal to
-        this specified number.
+        this specified number. (This applies only to users_hat and items_hat.)
+
+    attributes_must_match: bool (optional, default: True)
+        Check that the user and item matrices match up on the attribute dimension.
+        If False, the number of columns in the user matrix and the number of
+        rows in the item matrix are allowed to be different.
 
     Returns
     --------
@@ -73,23 +86,17 @@ def check_consistency(  # pylint: disable=too-many-arguments
 
         num_items: int
             Number of items, inferred from the inputs (or provided default).
+
+        num_attributes: int (optional)
+            Number of attributes per item/user profile, inferred from inputs
+            (or provided default).
     """
     if not is_array_valid_or_none(items_hat, ndim=2):
         raise ValueError("items matrix must be a 2D matrix or None")
     if not is_array_valid_or_none(users_hat, ndim=2):
         raise ValueError("users matrix must be a 2D matrix or None")
-
-    # check attributes matching for users_hat and items_hat
-    num_attrs_vals = non_none_values(
-        getattr(users_hat, "shape", [None, None])[1],
-        getattr(items_hat, "shape", [None])[0],
-        num_attributes,
-    )
-    if len(num_attrs_vals) > 1:
-        raise ValueError(
-            "User representation and item representation matrices are not "
-            "compatible with each other"
-        )
+    if not is_valid_or_none(num_attributes, int):
+        raise TypeError("num_attributes must be an int")
 
     num_items_vals = non_none_values(
         getattr(items_hat, "shape", [None, None])[1],
@@ -98,8 +105,6 @@ def check_consistency(  # pylint: disable=too-many-arguments
         num_items,
     )
 
-    # if users is a Users object, we check to make sure it contains consistent
-
     num_users_vals = non_none_values(
         getattr(users, "shape", [None])[0],
         getattr(users_hat, "shape", [None])[0],
@@ -107,19 +112,42 @@ def check_consistency(  # pylint: disable=too-many-arguments
         num_users,
     )
 
-    if len(num_users_vals) == 0:  # number of users not specified anywhere
-        num_users = default_num_users
-    elif len(num_users_vals) == 1:
-        num_users = list(num_users_vals)[0]  # should be the single number of users
+    num_users = resolve_set_to_value(
+        num_users_vals, default_num_users, "Number of users is not the same across inputs"
+    )
+
+    num_items = resolve_set_to_value(
+        num_items_vals, default_num_items, "Number of items is not the same across inputs"
+    )
+
+    if attributes_must_match:
+        # check attributes matching for users_hat and items_hat
+        num_attrs_vals = non_none_values(
+            getattr(users_hat, "shape", [None, None])[1],
+            getattr(items_hat, "shape", [None])[0],
+            num_attributes,
+        )
+        num_attrs = resolve_set_to_value(
+            num_attrs_vals,
+            default_num_attributes,
+            "User representation and item representation matrices are not "
+            "compatible with each other",
+        )
+        return num_users, num_items, num_attrs
     else:
-        raise ValueError("Number of users is not the same across inputs")
-    if len(num_items_vals) == 0:  # number of items not specified anywhere
-        num_items = default_num_items
-    elif len(num_items_vals) == 1:
-        num_items = list(num_items_vals)[0]  # should be the single number of users
-    else:
-        raise ValueError("Number of items is not the same across inputs")
-    return num_users, num_items
+        return num_users, num_items
+
+
+def resolve_set_to_value(value_set, default_value, error_message):
+    """Resolve a set of values to a single value, falling back to
+    a default value if needed. If it is unresolvable, produce
+    an error message.
+    """
+    if len(value_set) == 0:
+        return default_value
+    elif len(value_set) == 1:
+        return list(value_set)[0]  # should be single value
+    raise ValueError(error_message)
 
 
 def is_array_valid_or_none(array, ndim=2):

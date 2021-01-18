@@ -126,7 +126,7 @@ class PopularityRecommender(BaseRecommender):
         num_items_per_iter=10,
         **kwargs
     ):
-        num_users, num_items = validate_user_item_inputs(
+        num_users, num_items, num_attributes = validate_user_item_inputs(
             num_users,
             num_items,
             user_representation,
@@ -135,17 +135,18 @@ class PopularityRecommender(BaseRecommender):
             actual_item_representation,
             100,
             1250,
+            num_attributes=1,
         )
-
+        # num_attributes should always be 1
         if item_representation is None:
-            item_representation = np.zeros((1, num_items), dtype=int)
+            item_representation = np.zeros((num_attributes, num_items), dtype=int)
         # if the actual item representation is not specified, we assume
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
         if user_representation is None:
-            user_representation = np.ones((num_users, 1), dtype=int)
+            user_representation = np.ones((num_users, num_attributes), dtype=int)
 
         measurements = [MSEMeasurement()]
 
@@ -157,14 +158,14 @@ class PopularityRecommender(BaseRecommender):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         histogram = np.zeros(self.num_items)
         np.add.at(histogram, interactions, 1)
         self.items_hat[:, :] = np.add(self.items_hat, histogram)

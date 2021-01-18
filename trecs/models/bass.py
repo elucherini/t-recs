@@ -13,7 +13,10 @@ from trecs.utils import (
     is_array_valid_or_none,
     all_besides_none_equal,
     all_none,
+    non_none_values,
+    resolve_set_to_value,
 )
+from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
 
@@ -46,17 +49,80 @@ class InfectionThresholds(Component):  # pylint: disable=too-many-ancestors
 
 
 class BassModel(BaseRecommender, BinarySocialGraph):
-    """Bass model that, for now, only supports one item at a time"""
+    """
+    Bass model that, for now, only supports one item at a time.
+
+    In this model, individuals are "infected" by an item, and then
+    infect their susceptible (i.e., not yet "infected") contacts independently
+    with a given infection probability. Contacts between users are modeled
+    with an adjacency graph that is :math:`|U|\\times|U|`. The model
+    stores state about which users are infected with :math:`|U|\\times|I|`
+    matrix, where :math:`|I|` is the number of items (currently, this is
+    always equal to 1).
+
+    Parameters
+    -----------
+
+        num_users: int (optional, default: 100)
+            The number of users :math:`|U|` in the system.
+
+        num_items: int (optional, default: 1250)
+            The number of items :math:`|I|` in the system.
+
+        infection_state: :obj:`numpy.ndarray` or None (optional, default: None)
+            Component that tracks infection state, which is a binary (0/1) array with
+            an element recording whether each user is infected. Should be of
+            dimension :math:`|U|\\times|I|`.
+
+        infection_thresholds: :obj:`numpy.ndarray` or None (optional, default: None)
+            Component that tracks infection thresholds for each user. Should be of
+            dimension :math:`1\\times|U|`.
+
+        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A :math:`|U|\\times|A|` matrix representing the similarity between
+            each item and attribute, as interpreted by the system.
+
+        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A :math:`|A|\\times|I|` matrix representing the similarity between
+            each item and attribute.
+
+        actual_user_representation: :obj:`numpy.ndarray` or None or \
+                            :class:`~components.users.Users` (optional, default: None)
+            Either a :math:`|U|\\times|T|` matrix representing the real user profiles, where
+            :math:`T` is the number of attributes in the real underlying user profile,
+            or a `Users` object that contains the real user profiles or real
+            user-item scores. This matrix is **not** used for recommendations. This
+            is only kept for measurements and the system is unaware of it.
+
+        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+            A :math:`|T|\\times|I|` matrix representing the real user profiles, where
+            :math:`T` is the number of attributes in the real underlying item profile.
+            This matrix is **not** used for recommendations. This
+            is only kept for measurements and the system is unaware of it.
+
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
+
+        num_items_per_iter: int (optional, default: 10)
+            Number of items presented to the user per iteration.
+
+        seed: int, None (optional, default: None)
+            Seed for random generator.
+
+    Attributes
+    -----------
+        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+    """
 
     def __init__(  # pylint: disable-all
         self,
-        num_users=100,
-        num_items=1,
+        num_users=None,
+        num_items=None,
         infection_state=None,
         infection_thresholds=None,
         item_representation=None,
         user_representation=None,
-        actual_user_scores=None,
+        actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
         verbose=False,
@@ -64,39 +130,38 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         seed=None,
         **kwargs
     ):
-        # these are not allowed to be None at the same time
-        if all_none(user_representation, num_users, infection_state):
-            raise ValueError(
-                "user_representation, num_users, and infection_state can't be all None"
-            )
-        if all_none(item_representation, num_items, infection_state):
-            raise ValueError(
-                "item_representation, num_items, and infection_state can't be all None"
-            )
-        if not is_array_valid_or_none(user_representation, ndim=2):
-            raise ValueError("user_representation is invalid")
+        default_num_users = 100
+        default_num_items = 1
+        num_users, num_items = validate_user_item_inputs(
+            num_users,
+            num_items,
+            user_representation,
+            item_representation,
+            actual_user_representation,
+            actual_item_representation,
+            attributes_must_match=False,
+        )
+
         if not is_array_valid_or_none(infection_state, ndim=2):
             raise TypeError("infection_state is invalid")
-        if not is_array_valid_or_none(item_representation, ndim=2):
-            raise ValueError("item_representation is invalid")
         if not is_array_valid_or_none(infection_thresholds, ndim=2):
             raise ValueError("infection_thresholds is invalid")
 
-        # Determine num_users, give priority to user_representation
-        # At the end of this, user_representation and num_users should not be None
-        # In the arguments, I either get shape[0], or None if the matrix is None
-        num_users = get_first_valid(
-            getattr(user_representation, "shape", [None])[0],
-            getattr(infection_state, "shape", [None])[0],
-            num_users,
+        # we need to separately check infection_state, which should have
+        # dimensions |U| x |I|
+
+        num_user_vals = non_none_values(getattr(infection_state, "shape", [None])[0], num_users)
+        num_users = resolve_set_to_value(
+            num_user_vals, default_num_users, "Number of users is not the same across inputs"
         )
-        # Determine num_items, give priority to item_representation
-        # At the end of this, item_representation should not be None
-        num_items = get_first_valid(
-            getattr(item_representation, "shape", [None, None])[1],
-            getattr(infection_state, "shape", [None, None])[1],
-            num_items,
+
+        num_item_vals = non_none_values(
+            getattr(infection_state, "shape", [None, None])[1], num_items
         )
+        num_items = resolve_set_to_value(
+            num_item_vals, default_num_items, "Number of items is not the same across inputs"
+        )
+
         generator = Generator(seed)
         if item_representation is None:
             item_representation = generator.uniform(size=(1, num_items))
@@ -152,12 +217,12 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             self,
             user_representation,
             item_representation,
-            actual_user_scores,
+            actual_user_representation,
             actual_item_representation,
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             measurements=measurements,
             system_state=system_state,
             verbose=verbose,
@@ -177,7 +242,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         if self.users.get_actual_user_scores() is None:
             self.users.compute_user_scores(self.items)
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """Private function that updates user profiles with data from
             latest interactions.
 

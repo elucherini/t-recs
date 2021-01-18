@@ -141,7 +141,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         seed=None,
         **kwargs
     ):
-        num_users, num_items = validate_user_item_inputs(
+        num_users, num_items, num_attributes = validate_user_item_inputs(
             num_users,
             num_items,
             user_representation,
@@ -149,13 +149,18 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             actual_user_representation,
             actual_item_representation,
             None,  # see if we can get the default number of users from the items array
-            1250,
+            num_attributes=num_users,  # number of attributes should be equal to the number of users
+            default_num_items=1250,
+            default_num_attributes=100,
         )
         if num_users is None:
             # get user representation from items instead
-            num_users = get_first_valid(
-                getattr(item_representation, "shape", [None])[0], 100  # default to 100 users
-            )
+            num_users = num_attributes  # num_attributes by default is 100
+
+        # verify that the user representation is an adjacency matrix and that
+        # the item representation aligns
+        if not num_users == num_attributes:
+            raise ValueError("Number of users must be consistent across all inputs")
 
         if user_representation is None:
             user_representation = SocialGraphGenerator.generate_random_graph(
@@ -164,15 +169,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         if item_representation is None:
             item_representation = np.zeros((num_users, num_items), dtype=int)
 
-        # verify that the user representation is an adjacency matrix and that
-        # the item representation aligns
-        users_vals = non_none_values(
-            getattr(user_representation, "shape", [None, None])[1],
-            getattr(item_representation, "shape", [None])[0],
-            num_users,
-        )
-        if len(users_vals) > 1:
-            raise ValueError("Number of users must be consistent across all inputs")
         # if the actual item representation is not specified, we assume
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
@@ -190,14 +186,14 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             seed=seed,
             measurements=measurements,
             verbose=verbose,
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """Private function that updates user profiles with data from
             latest interactions.
 

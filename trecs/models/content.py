@@ -77,26 +77,21 @@ class ContentFiltering(BaseRecommender):
     Examples
     ---------
         ContentFiltering can be instantiated with no arguments -- in which case,
-        it will be initialized with the default parameters and the number of
-        attributes and the item/user representations will be assigned randomly.
+        it will be initialized with the default parameters and the item/user
+        representations will be assigned randomly.
 
         >>> cf = ContentFiltering()
         >>> cf.users_hat.shape
-        (100, 99)   # <-- 100 users (default), 99 attributes (randomly generated)
+        (100, 1000)   # <-- 100 users (default), 1000 attributes (default)
         >>> cf.items.shape
-        (99, 1250) # <-- 99 attributes (randomly generated), 1250 items (default)
+        (1000, 1250) # <-- 1000 attributes (default), 1250 items (default)
 
-        >>> cf1 = ContentFiltering()
-        >>> cf.users_hat.shape
-        (100, 582) # <-- 100 users (default), 582 attributes (randomly generated)
-
-        This class can be customized either by defining the number of users/items
-        in the system. The number of attributes will still be random, unless
-        specified.
+        This class can be customized either by defining the number of users/items/attributes
+        in the system.
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000)
         >>> cf.users_hat.shape
-        (1200, 2341) # <-- 1200 users, 2341 attributes
+        (1200, 1000) # <-- 1200 users, 1000 attributes
 
         >>> cf = ContentFiltering(num_users=1200, num_items=5000, num_attributes=2000)
         >>> cf.users_hat.shape
@@ -140,11 +135,7 @@ class ContentFiltering(BaseRecommender):
         **kwargs
     ):
         # pylint: disable=duplicate-code
-        # check values for number of attributes
-        if not is_valid_or_none(num_attributes, int):
-            raise TypeError("num_attributes must be an int")
-
-        num_users, num_items = validate_user_item_inputs(
+        num_users, num_items, num_attributes = validate_user_item_inputs(
             num_users,
             num_items,
             user_representation,
@@ -153,21 +144,9 @@ class ContentFiltering(BaseRecommender):
             actual_item_representation,
             100,
             1250,
+            1000,
             num_attributes=num_attributes,
         )
-
-        # infer the number of attributes based on the dimensions of the
-        # matrices, otherwise, use the default value
-        num_attrs_vals = non_none_values(
-            getattr(user_representation, "shape", [None, None])[1],
-            getattr(item_representation, "shape", [None])[0],
-            num_attributes,
-        )
-
-        if len(num_attrs_vals) == 0:
-            num_attributes = 1000
-        else:
-            num_attributes = list(num_attrs_vals)[0]
 
         # generate recommender's initial "beliefs" about user profiles
         # and item attributes
@@ -183,7 +162,6 @@ class ContentFiltering(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        self.num_attributes = num_attributes
         measurements = [MSEMeasurement()]
 
         # Initialize recommender system
@@ -196,14 +174,14 @@ class ContentFiltering(BaseRecommender):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=False,
+            probabilistic_recommendations=probabilistic_recommendations,
             measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs
         )
 
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """
         Private function that updates user profiles with data from latest
         interactions.

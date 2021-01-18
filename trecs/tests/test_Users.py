@@ -34,7 +34,7 @@ class TestUsers:
         s = Users(actual_user_repr)
         s.set_score_function(model.score_fn)
         s.compute_user_scores(item_repr)
-        model.update_predicted_scores()
+        model.train()
         test_helpers.assert_equal_arrays(s.actual_user_scores, model.predicted_scores)
 
         # user_repr != actual_user_repr
@@ -44,7 +44,7 @@ class TestUsers:
         s = Users(actual_user_repr)
         s.set_score_function(model.score_fn)
         s.compute_user_scores(item_repr)
-        model.update_predicted_scores()
+        model.train()
         with np.testing.assert_raises(AssertionError):
             np.testing.assert_array_equal(s.actual_user_scores, model.predicted_scores)
 

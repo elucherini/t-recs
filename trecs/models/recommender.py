@@ -172,7 +172,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.score_fn = score_fn
         # set predicted scores
         self.predicted_scores = None
-        self.update_predicted_scores()
+        self.train()
         assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
@@ -258,11 +258,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.users.get_actual_user_scores() is None:
             self.users.compute_user_scores(self.items)
 
-    def update_predicted_scores(self):
+    def train(self):
         """
-        Updates scores predicted by the system based on past interactions for
-        better user predictions. Specifically, it updates :attr:`predicted_scores`
-        with a dot product.
+        Updates scores predicted by the system based on the internal state of the
+        recommender system. Under default initialization, it updates
+        :attr:`predicted_scores` with a dot product of user and item attributes.
 
         Returns
         --------
@@ -430,7 +430,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         return items
 
     @abstractmethod
-    def _update_user_profiles(self, interactions):
+    def _update_internal_state(self, interactions):
         """
         Updates user profiles based on last interaction.
 
@@ -456,7 +456,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         random_items_per_iter=0,
         vary_random_items_per_iter=False,
         repeated_items=True,
-    ):
+        no_new_items=False,
+    ):  # pylint: disable=too-many-arguments
         """
         Runs simulation for the given timesteps.
 
@@ -488,13 +489,18 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             repeated_items : bool (optional, default: True)
                 If True, repeated items are allowed in the system -- that is,
                 users can interact with the same item more than once.
+
+            no_new_items : bool (optional, default: False)
+                If True, then no new items are created during these timesteps. This
+                can be helpful, say, during a "training" period where no new items should be
+                made.
         """
         if not startup and self.is_verbose():
             self.log("Running recommendation simulation using recommendation algorithm...")
         for timestep in tqdm(range(timesteps)):
             if self.is_verbose():
                 self.log(f"Step {timestep}")
-            if self.creators is not None:
+            if self.creators is not None and not no_new_items:
                 self.create_and_process_items()
             item_idxs = self.recommend(
                 startup=startup,
@@ -508,7 +514,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             if not repeated_items:
                 self.indices[self.users.user_vector, interactions] = -1
-            self._update_user_profiles(interactions)
+            self._update_internal_state(interactions)
             if self.is_verbose():
                 self.log(
                     "System updates user profiles based on last interaction:\n"
@@ -519,14 +525,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.creators.update_profiles(interactions, self.items)
             # train between steps:
             if train_between_steps:
-                self.update_predicted_scores()
+                self.train()
             self.measure_content(interactions, item_idxs, step=timestep)
-        # If no training in between steps, train at the end:
-        if not train_between_steps:
-            self.update_predicted_scores()
-            self.measure_content(interactions, item_idxs, step=timesteps)
 
-    def startup_and_train(self, timesteps=50):
+    def startup_and_train(self, timesteps=50, no_new_items=False):
         """
         Runs simulation in startup mode by calling :func:`run` with
         startup=True. For more information about startup mode, see :func:`run`
@@ -535,12 +537,18 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            timestep : int (optional, default: 50)
+            timesteps : int (optional, default: 50)
                 Number of timesteps for simulation
+
+            no_new_items : bool (optional, default: False)
+                If True, then no new items are created during these timesteps. This
+                can be helpful, say, during a "training" period where no new items should be
+                made.
         """
         if self.is_verbose():
             self.log("Startup -- recommend random items")
-        return self.run(timesteps, startup=True, train_between_steps=False)
+        self.run(timesteps, startup=True, train_between_steps=False, no_new_items=no_new_items)
+        self.train()
 
     def create_and_process_items(self):
         """
@@ -555,7 +563,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.process_new_items(new_items)
         self.add_new_item_indices(new_items.shape[1])
         # create new predicted scores
-        self.update_predicted_scores()
+        self.train()
         # have users update their own scores too
         self.users.score_new_items(new_items)
 
