@@ -4,6 +4,7 @@ Implicit MF recommender system
 import numpy as np
 from lenskit.algorithms import als
 import pandas as pd
+import warnings
 from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.validate import validate_user_item_inputs
@@ -258,6 +259,12 @@ class ImplicitMF(BaseRecommender):
         at every timestep of the simulation. See the `run` method in
         :`~models.recommender.BaseRecommender` for more details about what this does.
         """
+        if train_between_steps:
+            warnings.warn(
+                "train_between_steps has been set to True. Note that this will cause "
+                "the MF model to be refit at every iteration, which may be unintended "
+                "behavior."
+            )
         # reset interactions tracker so that interactions captured
         # are only for the duration of this particular run
         self.all_interactions = pd.DataFrame(columns=["user", "item"])
