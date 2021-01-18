@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>models.recommender &mdash; T-RECS 0.1.0b documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -49,7 +52,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> T-RECS
+            <a href="../../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -109,6 +112,8 @@
         <div class="rst-content">
         
           
+
+
 
 
 
@@ -322,7 +327,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span> <span class="o">=</span> <span class="n">score_fn</span>
         <span class="c1"># set predicted scores</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_predicted_scores</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="c1"># determine whether recommendations should be randomized, rather than</span>
         <span class="c1"># top-k by predicted score</span>
@@ -408,11 +413,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_actual_user_scores</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseRecommender.update_predicted_scores"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.update_predicted_scores">[docs]</a>    <span class="k">def</span> <span class="nf">update_predicted_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseRecommender.train"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Updates scores predicted by the system based on past interactions for</span>
-<span class="sd">        better user predictions. Specifically, it updates :attr:`predicted_scores`</span>
-<span class="sd">        with a dot product.</span>
+<span class="sd">        Updates scores predicted by the system based on the internal state of the</span>
+<span class="sd">        recommender system. Under default initialization, it updates</span>
+<span class="sd">        :attr:`predicted_scores` with a dot product of user and item attributes.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
@@ -580,7 +585,7 @@
         <span class="k">return</span> <span class="n">items</span></div>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates user profiles based on last interaction.</span>
 
@@ -606,7 +611,8 @@
         <span class="n">random_items_per_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">no_new_items</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs simulation for the given timesteps.</span>
 
@@ -638,13 +644,18 @@
 <span class="sd">            repeated_items : bool (optional, default: True)</span>
 <span class="sd">                If True, repeated items are allowed in the system -- that is,</span>
 <span class="sd">                users can interact with the same item more than once.</span>
+
+<span class="sd">            no_new_items : bool (optional, default: False)</span>
+<span class="sd">                If True, then no new items are created during these timesteps. This</span>
+<span class="sd">                can be helpful, say, during a &quot;training&quot; period where no new items should be</span>
+<span class="sd">                made.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">startup</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Running recommendation simulation using recommendation algorithm...&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">timestep</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">timestep</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_new_items</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">create_and_process_items</span><span class="p">()</span>
             <span class="n">item_idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span>
                 <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
@@ -658,7 +669,7 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">repeated_items</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_user_profiles</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_internal_state</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="s2">&quot;System updates user profiles based on last interaction:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -669,14 +680,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">creators</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
             <span class="c1"># train between steps:</span>
             <span class="k">if</span> <span class="n">train_between_steps</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">update_predicted_scores</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">item_idxs</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
-        <span class="c1"># If no training in between steps, train at the end:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">train_between_steps</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_predicted_scores</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">item_idxs</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">item_idxs</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseRecommender.startup_and_train"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.startup_and_train">[docs]</a>    <span class="k">def</span> <span class="nf">startup_and_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseRecommender.startup_and_train"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.startup_and_train">[docs]</a>    <span class="k">def</span> <span class="nf">startup_and_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">no_new_items</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs simulation in startup mode by calling :func:`run` with</span>
 <span class="sd">        startup=True. For more information about startup mode, see :func:`run`</span>
@@ -685,12 +692,18 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            timestep : int (optional, default: 50)</span>
+<span class="sd">            timesteps : int (optional, default: 50)</span>
 <span class="sd">                Number of timesteps for simulation</span>
+
+<span class="sd">            no_new_items : bool (optional, default: False)</span>
+<span class="sd">                If True, then no new items are created during these timesteps. This</span>
+<span class="sd">                can be helpful, say, during a &quot;training&quot; period where no new items should be</span>
+<span class="sd">                made.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Startup -- recommend random items&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_new_items</span><span class="o">=</span><span class="n">no_new_items</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseRecommender.create_and_process_items"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.create_and_process_items">[docs]</a>    <span class="k">def</span> <span class="nf">create_and_process_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -705,7 +718,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">process_new_items</span><span class="p">(</span><span class="n">new_items</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_new_item_indices</span><span class="p">(</span><span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="c1"># create new predicted scores</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_predicted_scores</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
         <span class="c1"># have users update their own scores too</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">score_new_items</span><span class="p">(</span><span class="n">new_items</span><span class="p">)</span></div>
 
@@ -797,28 +810,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Elena Lucherini
+        &#169; Copyright 2020, Elena Lucherini.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

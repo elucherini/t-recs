@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>models.social &mdash; T-RECS 0.1.0b documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -49,7 +52,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> T-RECS
+            <a href="../../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -109,6 +112,8 @@
         <div class="rst-content">
         
           
+
+
 
 
 
@@ -291,7 +296,7 @@
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="n">validate_user_item_inputs</span><span class="p">(</span>
+        <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">,</span> <span class="n">num_attributes</span> <span class="o">=</span> <span class="n">validate_user_item_inputs</span><span class="p">(</span>
             <span class="n">num_users</span><span class="p">,</span>
             <span class="n">num_items</span><span class="p">,</span>
             <span class="n">user_representation</span><span class="p">,</span>
@@ -299,13 +304,18 @@
             <span class="n">actual_user_representation</span><span class="p">,</span>
             <span class="n">actual_item_representation</span><span class="p">,</span>
             <span class="kc">None</span><span class="p">,</span>  <span class="c1"># see if we can get the default number of users from the items array</span>
-            <span class="mi">1250</span><span class="p">,</span>
+            <span class="n">num_attributes</span><span class="o">=</span><span class="n">num_users</span><span class="p">,</span>  <span class="c1"># number of attributes should be equal to the number of users</span>
+            <span class="n">default_num_items</span><span class="o">=</span><span class="mi">1250</span><span class="p">,</span>
+            <span class="n">default_num_attributes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">num_users</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># get user representation from items instead</span>
-            <span class="n">num_users</span> <span class="o">=</span> <span class="n">get_first_valid</span><span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">100</span>  <span class="c1"># default to 100 users</span>
-            <span class="p">)</span>
+            <span class="n">num_users</span> <span class="o">=</span> <span class="n">num_attributes</span>  <span class="c1"># num_attributes by default is 100</span>
+
+        <span class="c1"># verify that the user representation is an adjacency matrix and that</span>
+        <span class="c1"># the item representation aligns</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">num_users</span> <span class="o">==</span> <span class="n">num_attributes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of users must be consistent across all inputs&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">user_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">user_representation</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span>
@@ -314,15 +324,6 @@
         <span class="k">if</span> <span class="n">item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
-        <span class="c1"># verify that the user representation is an adjacency matrix and that</span>
-        <span class="c1"># the item representation aligns</span>
-        <span class="n">users_vals</span> <span class="o">=</span> <span class="n">non_none_values</span><span class="p">(</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">user_representation</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">item_representation</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">num_users</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">users_vals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of users must be consistent across all inputs&quot;</span><span class="p">)</span>
         <span class="c1"># if the actual item representation is not specified, we assume</span>
         <span class="c1"># that the recommender system&#39;s beliefs about the item attributes</span>
         <span class="c1"># are the same as the &quot;true&quot; item attributes</span>
@@ -340,14 +341,14 @@
             <span class="n">num_users</span><span class="p">,</span>
             <span class="n">num_items</span><span class="p">,</span>
             <span class="n">num_items_per_iter</span><span class="p">,</span>
-            <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="n">probabilistic_recommendations</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
             <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_user_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Private function that updates user profiles with data from</span>
 <span class="sd">            latest interactions.</span>
 
@@ -386,28 +387,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Elena Lucherini
+        &#169; Copyright 2020, Elena Lucherini.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

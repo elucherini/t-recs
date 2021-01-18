@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>components.users &mdash; T-RECS 0.1.0b documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -49,7 +52,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> T-RECS
+            <a href="../../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -109,6 +112,8 @@
         <div class="rst-content">
         
           
+
+
 
 
 
@@ -329,9 +334,10 @@
                 <span class="c1"># generate matrix until no row is the zero vector</span>
                 <span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
-        <span class="n">num_users</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">check_consistency</span><span class="p">(</span>
+        <span class="c1"># check_consistency also returns num_items and num_attributes, which are not needed</span>
+        <span class="n">num_users</span> <span class="o">=</span> <span class="n">check_consistency</span><span class="p">(</span>
             <span class="n">users</span><span class="o">=</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">user_item_scores</span><span class="o">=</span><span class="n">actual_user_scores</span><span class="p">,</span> <span class="n">num_users</span><span class="o">=</span><span class="n">num_users</span>
-        <span class="p">)</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="n">ActualUserProfiles</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="o">=</span> <span class="n">interact_with_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">=</span> <span class="n">drift</span>
@@ -729,28 +735,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Elena Lucherini
+        &#169; Copyright 2020, Elena Lucherini.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

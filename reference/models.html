@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Models &mdash; T-RECS 0.1.0b documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -51,7 +54,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> T-RECS
+            <a href="../index.html" class="icon icon-home"> T-RECS
           
 
           
@@ -139,6 +142,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -152,7 +157,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/reference/models.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -329,26 +334,20 @@ is only kept for measurements and the system is unaware of it.</p></li>
 
 <p class="rubric">Examples</p>
 <p>ContentFiltering can be instantiated with no arguments – in which case,
-it will be initialized with the default parameters and the number of
-attributes and the item/user representations will be assigned randomly.</p>
+it will be initialized with the default parameters and the item/user
+representations will be assigned randomly.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span> <span class="o">=</span> <span class="n">ContentFiltering</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(100, 99)   # &lt;-- 100 users (default), 99 attributes (randomly generated)</span>
+<span class="go">(100, 1000)   # &lt;-- 100 users (default), 1000 attributes (default)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(99, 1250) # &lt;-- 99 attributes (randomly generated), 1250 items (default)</span>
+<span class="go">(1000, 1250) # &lt;-- 1000 attributes (default), 1250 items (default)</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cf1</span> <span class="o">=</span> <span class="n">ContentFiltering</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(100, 582) # &lt;-- 100 users (default), 582 attributes (randomly generated)</span>
-</pre></div>
-</div>
-<p>This class can be customized either by defining the number of users/items
-in the system. The number of attributes will still be random, unless
-specified.</p>
+<p>This class can be customized either by defining the number of users/items/attributes
+in the system.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span> <span class="o">=</span> <span class="n">ContentFiltering</span><span class="p">(</span><span class="n">num_users</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">num_items</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(1200, 2341) # &lt;-- 1200 users, 2341 attributes</span>
+<span class="go">(1200, 1000) # &lt;-- 1200 users, 1000 attributes</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span> <span class="o">=</span> <span class="n">ContentFiltering</span><span class="p">(</span><span class="n">num_users</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">num_items</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">num_attributes</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
@@ -520,8 +519,54 @@ added into the system. Should be <span class="math notranslate nohighlight">\(|A
 virality in online communications.</p>
 <dl class="py class">
 <dt id="models.bass.BassModel">
-<em class="property">class </em><code class="sig-prename descclassname">models.bass.</code><code class="sig-name descname">BassModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_users</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">num_items</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">infection_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">infection_thresholds</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">item_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">user_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_user_scores</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_item_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_items_per_iter</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.bass.BassModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bass model that, for now, only supports one item at a time</p>
+<em class="property">class </em><code class="sig-prename descclassname">models.bass.</code><code class="sig-name descname">BassModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_users</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_items</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">infection_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">infection_thresholds</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">item_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">user_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_user_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">actual_item_representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_items_per_iter</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.bass.BassModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bass model that, for now, only supports one item at a time.</p>
+<p>In this model, individuals are “infected” by an item, and then
+infect their susceptible (i.e., not yet “infected”) contacts independently
+with a given infection probability. Contacts between users are modeled
+with an adjacency graph that is <span class="math notranslate nohighlight">\(|U|\times|U|\)</span>. The model
+stores state about which users are infected with <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>
+matrix, where <span class="math notranslate nohighlight">\(|I|\)</span> is the number of items (currently, this is
+always equal to 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>infection_state</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – Component that tracks infection state, which is a binary (0/1) array with
+an element recording whether each user is infected. Should be of
+dimension <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>.</p></li>
+<li><p><strong>infection_thresholds</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – Component that tracks infection thresholds for each user. Should be of
+dimension <span class="math notranslate nohighlight">\(1\times|U|\)</span>.</p></li>
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
+each item and attribute, as interpreted by the system.</p></li>
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
+each item and attribute.</p></li>
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user profiles, where
+<span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying user profile,
+or a <cite>Users</cite> object that contains the real user profiles or real
+user-item scores. This matrix is <strong>not</strong> used for recommendations. This
+is only kept for measurements and the system is unaware of it.</p></li>
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
+<span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
+This matrix is <strong>not</strong> used for recommendations. This
+is only kept for measurements and the system is unaware of it.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 10</em><em>)</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">Inherited by BaseRecommender</code></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="models.bass.BassModel.draw_diffusion_tree">
 <code class="sig-name descname">draw_diffusion_tree</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.draw_diffusion_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.bass.BassModel.draw_diffusion_tree" title="Permalink to this definition">¶</a></dt>
@@ -926,7 +971,7 @@ users can interact with the same item more than once.</p></li>
 
 <dl class="py method">
 <dt id="models.recommender.BaseRecommender.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timesteps</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">startup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">train_between_steps</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">random_items_per_iter</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">repeated_items</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timesteps</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">startup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">train_between_steps</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">random_items_per_iter</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">repeated_items</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">no_new_items</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs simulation for the given timesteps.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -945,6 +990,9 @@ randomly is itself randomly generated between 0 and
 <cite>random_items_per_iter</cite>, inclusive.</p></li>
 <li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, repeated items are allowed in the system – that is,
 users can interact with the same item more than once.</p></li>
+<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, then no new items are created during these timesteps. This
+can be helpful, say, during a “training” period where no new items should be
+made.</p></li>
 </ul>
 </dd>
 </dl>
@@ -952,23 +1000,28 @@ users can interact with the same item more than once.</p></li>
 
 <dl class="py method">
 <dt id="models.recommender.BaseRecommender.startup_and_train">
-<code class="sig-name descname">startup_and_train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timesteps</span><span class="o">=</span><span class="default_value">50</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.startup_and_train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.startup_and_train" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">startup_and_train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timesteps</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">no_new_items</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.startup_and_train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.startup_and_train" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs simulation in startup mode by calling <a class="reference internal" href="#models.recommender.BaseRecommender.run" title="models.recommender.BaseRecommender.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a> with
 startup=True. For more information about startup mode, see <a class="reference internal" href="#models.recommender.BaseRecommender.run" title="models.recommender.BaseRecommender.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a>
 and <a class="reference internal" href="#models.recommender.BaseRecommender.recommend" title="models.recommender.BaseRecommender.recommend"><code class="xref py py-func docutils literal notranslate"><span class="pre">recommend()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 50</em><em>)</em>) – Number of timesteps for simulation</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timesteps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 50</em><em>)</em>) – Number of timesteps for simulation</p></li>
+<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, then no new items are created during these timesteps. This
+can be helpful, say, during a “training” period where no new items should be
+made.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="models.recommender.BaseRecommender.update_predicted_scores">
-<code class="sig-name descname">update_predicted_scores</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.update_predicted_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.update_predicted_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates scores predicted by the system based on past interactions for
-better user predictions. Specifically, it updates <a class="reference internal" href="#models.recommender.BaseRecommender.predicted_scores" title="models.recommender.BaseRecommender.predicted_scores"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_scores</span></code></a>
-with a dot product.</p>
+<dt id="models.recommender.BaseRecommender.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#models.recommender.BaseRecommender.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates scores predicted by the system based on the internal state of the
+recommender system. Under default initialization, it updates
+<a class="reference internal" href="#models.recommender.BaseRecommender.predicted_scores" title="models.recommender.BaseRecommender.predicted_scores"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_scores</span></code></a> with a dot product of user and item attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>predicted_scores</strong></p>
@@ -989,37 +1042,29 @@ with a dot product.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="components.html" class="btn btn-neutral float-left" title="Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="components.html" class="btn btn-neutral float-left" title="Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Elena Lucherini
+        &#169; Copyright 2020, Elena Lucherini.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
