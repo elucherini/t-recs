@@ -253,6 +253,7 @@ class ImplicitMF(BaseRecommender):
         vary_random_items_per_iter=False,
         repeated_items=True,
         no_new_items=False,
+        reset_interactions=True,
     ):
         """
         Just a simple wrapper so that by default, the RS does not refit the ImplicitMF model
@@ -267,7 +268,8 @@ class ImplicitMF(BaseRecommender):
             )
         # reset interactions tracker so that interactions captured
         # are only for the duration of this particular run
-        self.all_interactions = pd.DataFrame(columns=["user", "item"])
+        if reset_interactions:
+            self.all_interactions = pd.DataFrame(columns=["user", "item"])
         super().run(
             timesteps,
             startup,
