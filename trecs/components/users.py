@@ -342,7 +342,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
         if self.attention_exp != 0:
             idxs = np.arange(items_shown.shape[1]) + 1
-            multiplier = np.power(idxs, self.attemption)
+            multiplier = np.power(idxs, self.attention_exp)
             # multiply each row by the attention coefficient
             user_interactions = user_interactions * multiplier
         sorted_user_preferences = user_interactions.argsort()[:, -1]
