@@ -103,7 +103,10 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             in the recommendation set affects the user's choice, in that
             the item chosen will be a function of its index in the recommendation
             set and the underlying user-item score. (See Chaney et al. 2018
-            for a description of this mechanism.)
+            for a description of this mechanism.) Concretely, the item chosen will
+            be according to :math:`i_u(t)=\\mathrm{argmax}_i( \\mathrm{rank}_{u,t}(i)^{\\alpha} \cdot S_{u,i}(t) )`,
+            where :math:`\\alpha` is the attention exponent and :math:`S_{u,i}(t)`
+            is the underlying user-item score.
 
         score_fn: callable
             Function that is used to calculate each user's scores for each
