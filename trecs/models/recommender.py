@@ -341,7 +341,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
             return rec[:, picks]
         else:
-            return rec[:, -k:]
+            # ensure that the highest scored items show up first
+            return np.fliplr(rec[:, -k:], )
 
     def recommend(
         self,
@@ -413,20 +414,26 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if num_new_items:
             # no guarantees that randomly interleaved items do not overlap
             # with recommended items
+            # also possible that item indices are repeated
             col = self.random_state.integers(
                 item_indices.shape[1], size=(self.num_users, num_new_items)
             )
             row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
             new_items = item_indices[row, col]
 
-        items = np.concatenate((recommended, new_items), axis=1)
+        items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
+        # generate indices for recommended and randomly interleaved columns
+        col_idxs = np.zeros(self.num_items_per_iter, dtype=bool)
+        rand_col_idxs = self.random_state.choice(self.num_items_per_iter, size=num_new_items, replace=False)
+        col_idxs[rand_col_idxs] = True
+        items[:, ~col_idxs] = recommended # preserving relative order of recommended items
+        items[:, col_idxs] = new_items
         if self.is_verbose():
             self.log(
                 "System picked these items (cols) randomly for each user "
                 + "(rows):\n"
                 + str(items)
             )
-        self.random_state.shuffle(items.T)
         return items
 
     @abstractmethod
