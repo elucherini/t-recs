@@ -342,7 +342,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             return rec[:, picks]
         else:
             # ensure that the highest scored items show up first
-            return np.fliplr(rec[:, -k:], )
+            return np.fliplr(
+                rec[:, -k:],
+            )
 
     def recommend(
         self,
@@ -424,9 +426,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
         # generate indices for recommended and randomly interleaved columns
         col_idxs = np.zeros(self.num_items_per_iter, dtype=bool)
-        rand_col_idxs = self.random_state.choice(self.num_items_per_iter, size=num_new_items, replace=False)
+        rand_col_idxs = self.random_state.choice(
+            self.num_items_per_iter, size=num_new_items, replace=False
+        )
         col_idxs[rand_col_idxs] = True
-        items[:, ~col_idxs] = recommended # preserving relative order of recommended items
+        items[:, ~col_idxs] = recommended  # preserving relative order of recommended items
         items[:, col_idxs] = new_items
         if self.is_verbose():
             self.log(

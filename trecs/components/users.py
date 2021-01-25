@@ -98,6 +98,13 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             vector of the item they just interacted with. If 0, user profiles
             are generated once at initialization and never change.
 
+        attention_exp: float (optional, default: 0)
+            If this parameter is non-zero, then the order of the items
+            in the recommendation set affects the user's choice, in that
+            the item chosen will be a function of its index in the recommendation
+            set and the underlying user-item score. (See Chaney et al. 2018
+            for a description of this mechanism.)
+
         score_fn: callable
             Function that is used to calculate each user's scores for each
             candidate item. The score function should take as input
@@ -158,6 +165,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         score_fn=inner_product,
         verbose=False,
         seed=None,
+        attention_exp=0.0,
     ):  # pylint: disable=too-many-arguments
         self.rng = Generator(seed=seed)
         # general input checks
@@ -186,6 +194,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
         self.interact_with_items = interact_with_items
         self.drift = drift
+        self.attention_exp = attention_exp
         assert callable(score_fn)
         self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
@@ -328,6 +337,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             raise ValueError("Items can't be None")
         reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
         user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
+        if self.attention_exp != 0:
+            idxs = np.arange(items_shown.shape[1]) + 1
+            multiplier = np.power(idxs, self.attemption)
+            # multiply each row by the attention coefficient
+            user_interactions = user_interactions * multiplier
         sorted_user_preferences = user_interactions.argsort()[:, -1]
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
