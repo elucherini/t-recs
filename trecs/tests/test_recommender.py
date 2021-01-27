@@ -49,6 +49,23 @@ class TestBaseRecommender:
             # each user interacts with one new item
             assert (dummy.indices == -1).sum() == (i + 1) * 10
 
+    def test_item_order(self):
+        # items should be recommended in order of increasing user-item scores
+        self.items_hat = np.zeros(self.items_hat.shape)
+        self.items_hat[:, 0] = 100
+        self.items_hat[:, 1] = 200
+        self.items_hat[:, 2] = 300
+        self.items_hat[:, 3] = 400
+        self.items_hat[:, 4] = 500
+        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)
+        num_users = self.users.shape[0]
+        # we expect every user to be recommended: 4, 3, 2, 1, 0
+        expected_rec = np.fliplr(np.tile(np.arange(5), (num_users, 1)))
+        recommended = dummy.generate_recommendations(k=5, item_indices=dummy.indices)
+        np.testing.assert_array_equal(recommended, expected_rec)
+        recommended = dummy.recommend()
+        np.testing.assert_array_equal(recommended, expected_rec)
+
     def test_repeated_items(self):
         # show 5 items per iteration
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)

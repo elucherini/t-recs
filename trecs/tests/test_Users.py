@@ -94,3 +94,24 @@ class TestUsers:
         normed_scores = np.array([[0.7620146], [0.82551582], [0.88901703], [0.95251825]])
 
         np.testing.assert_array_almost_equal(normed_values, normed_scores)
+
+    def test_attention(self):
+        num_users = 5
+        num_attr = 4
+        num_items = 5
+        users = Users(np.ones((num_users, num_attr)), attention_exp=-0.8)
+        items = np.ones((num_attr, num_items))
+        # item at index 1 has a slightly higher score, without the attentional
+        # mechanism, all users would score it the highest
+        items[:, 1] = 1.5
+        users.compute_user_scores(items)
+        items_shown = np.tile(np.arange(num_items), (num_users, 1))
+        feedback = users.get_user_feedback(items_shown=items_shown)
+        np.testing.assert_array_equal(feedback, np.zeros(num_users))
+
+        # when we turn user attention off, we should see that all users
+        # interact with item 1
+        users.attention_exp = 0
+        users.compute_user_scores(items)
+        feedback = users.get_user_feedback(items_shown=items_shown)
+        np.testing.assert_array_equal(feedback, np.ones(num_users))
