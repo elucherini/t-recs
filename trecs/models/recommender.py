@@ -335,24 +335,25 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
             return rec[:, picks]
         else:
-<<<<<<< HEAD
             # scores are U x I; we can use argpartition to take the top k scores
-            top_k = (-1 * s_filtered).argpartition(k - 1)[:, :k] # negate scores so indices go from highest to lowest
+            top_k = (-1 * s_filtered).argpartition(k - 1)[
+                :, :k
+            ]  # negate scores so indices go from highest to lowest
             # now we sort within the top k
             row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
-            sort_top_k = (-1 * s_filtered)[row, top_k].argsort() # again, indices should go from highest to lowest
-            rec = item_indices[row, top_k[row, sort_top_k]] # extract items such that rows go from highest scored to lowest-scored of top-k
+            sort_top_k = (-1 * s_filtered)[
+                row, top_k
+            ].argsort()  # again, indices should go from highest to lowest
+            rec = item_indices[
+                row, top_k[row, sort_top_k]
+            ]  # extract items such that rows go from highest scored to lowest-scored of top-k
             if self.is_verbose():
                 self.log(f"Row:\n{str(row)}")
                 self.log(f"Item indices:\n{str(item_indices)}")
-                self.log(f"Top-k items ordered by preference (low to high) for each user:\n{str(rec)}")
+                self.log(
+                    f"Top-k items ordered by preference (low to high) for each user:\n{str(rec)}"
+                )
             return rec
-=======
-            # ensure that the highest scored items show up first
-            return np.fliplr(
-                rec[:, -k:],
-            )
->>>>>>> main
 
     def recommend(
         self,
