@@ -336,14 +336,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             return rec[:, picks]
         else:
             # scores are U x I; we can use argpartition to take the top k scores
-            top_k = (-1 * s_filtered).argpartition(k - 1)[
-                :, :k
-            ]  # negate scores so indices go from highest to lowest
+            negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
+            top_k = negated_scores.argpartition(k - 1)[:, :k]
             # now we sort within the top k
             row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
-            sort_top_k = (-1 * s_filtered)[
-                row, top_k
-            ].argsort()  # again, indices should go from highest to lowest
+            # again, indices should go from highest to lowest
+            sort_top_k = negated_scores[row, top_k].argsort()
             rec = item_indices[
                 row, top_k[row, sort_top_k]
             ]  # extract items such that rows go from highest scored to lowest-scored of top-k
