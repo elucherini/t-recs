@@ -327,12 +327,12 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if items_shown is None:
             raise ValueError("Items can't be None")
         reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
-        user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
-        sorted_user_preferences = user_interactions.argsort()[:, -1]
+        rec_item_scores = self.actual_user_scores[reshaped_user_vector, items_shown]
+        sorted_user_preferences = rec_item_scores.argmax(axis=1)
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
-            self.log(f"User scores for given items are:\n{str(user_interactions)}")
+            self.log(f"User scores for given items are:\n{str(rec_item_scores)}")
             self.log(f"Users interact with the following items respectively:\n{str(interactions)}")
         if self.drift > 0:
             if item_attributes is None:
