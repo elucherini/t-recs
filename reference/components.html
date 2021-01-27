@@ -330,7 +330,7 @@ size of the representation.</p>
 
 <dl class="py class">
 <dt id="components.users.Users">
-<em class="property">class </em><code class="sig-prename descclassname">components.users.</code><code class="sig-name descname">Users</code><span class="sig-paren">(</span><em class="sig-param">actual_user_profiles=None</em>, <em class="sig-param">actual_user_scores=None</em>, <em class="sig-param">interact_with_items=None</em>, <em class="sig-param">size=None</em>, <em class="sig-param">num_users=None</em>, <em class="sig-param">drift=0</em>, <em class="sig-param">score_fn=&lt;function inner_product&gt;</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">components.users.</code><code class="sig-name descname">Users</code><span class="sig-paren">(</span><em class="sig-param">actual_user_profiles=None</em>, <em class="sig-param">actual_user_scores=None</em>, <em class="sig-param">interact_with_items=None</em>, <em class="sig-param">size=None</em>, <em class="sig-param">num_users=None</em>, <em class="sig-param">drift=0</em>, <em class="sig-param">score_fn=&lt;function inner_product&gt;</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">attention_exp=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#components.users.Users" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing users in the system.</p>
 <p>This class contains the real user preferences, which are unknown to the
 system, and the behavior of users when interacting with items.</p>
@@ -361,6 +361,15 @@ controls the degree of rotational drift. If <cite>t=1</cite>, then the user
 profile vector takes on the exact same direction as the attribute
 vector of the item they just interacted with. If 0, user profiles
 are generated once at initialization and never change.</p></li>
+<li><p><strong>attention_exp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – If this parameter is non-zero, then the order of the items
+in the recommendation set affects the user’s choice, in that
+the item chosen will be a function of its index in the recommendation
+set and the underlying user-item score. (See Chaney et al. 2018
+for a description of this mechanism.) Concretely, the item chosen will
+be according to
+<span class="math notranslate nohighlight">\(i_u(t)=\mathrm{argmax}_i( \mathrm{rank}_{u,t}(i)^{\alpha}
+\cdot S_{u,i}(t) )\)</span>, where <span class="math notranslate nohighlight">\(\alpha\)</span> is the attention exponent
+and <span class="math notranslate nohighlight">\(S_{u,i}(t)\)</span> is the underlying user-item score.</p></li>
 <li><p><strong>score_fn</strong> (<em>callable</em>) – Function that is used to calculate each user’s scores for each
 candidate item. The score function should take as input
 user_profiles and item_attributes.</p></li>
