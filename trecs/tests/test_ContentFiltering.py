@@ -259,13 +259,13 @@ class TestContentFiltering:
     def test_recommendations(self):
         num_users = 5
         num_items = 5
-        users = np.eye(num_users) # 5 users, 5 attributes
-        items = np.eye(num_items) # 5 users, 5 attributes
+        users = np.eye(num_users)  # 5 users, 5 attributes
+        items = np.eye(num_items)  # 5 users, 5 attributes
 
         model = ContentFiltering(
             actual_user_representation=users,
             actual_item_representation=items,
-            num_items_per_iter=num_items
+            num_items_per_iter=num_items,
         )
         init_pred_scores = np.copy(model.predicted_scores)
         # after one iteration of training, the model should have perfect
@@ -282,7 +282,6 @@ class TestContentFiltering:
         recommendations = model.recommend()
         correct_rec = np.array([[0], [1], [2], [3], [4]])
         test_helpers.assert_equal_arrays(recommendations, correct_rec)
-
 
     def test_drift(self, seed=None, items=None, users=None):
         # user_repr:

@@ -209,16 +209,18 @@ class TestBassModel:
     def test_infection(self):
         num_users = 5
         infection_thresholds = np.zeros(num_users).reshape((1, -1))
-        items = np.eye(1) * 0.99 # 0.99 infectiousness
+        items = np.eye(1) * 0.99  # 0.99 infectiousness
         infection_state = np.zeros((num_users, 1))
         # user 0 is infected
         infection_state[0, 0] = 1
-        social_network = np.roll(np.eye(num_users), 1, axis=1) # every user i is connected to (i+1) % 5
+        social_network = np.roll(
+            np.eye(num_users), 1, axis=1
+        )  # every user i is connected to (i+1) % 5
         bass = BassModel(
             user_representation=social_network,
             item_representation=items,
             infection_thresholds=infection_thresholds,
-            infection_state=infection_state
+            infection_state=infection_state,
         )
 
         bass.run(1)

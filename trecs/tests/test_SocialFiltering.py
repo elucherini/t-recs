@@ -220,15 +220,15 @@ class TestSocialFiltering:
     def test_recommendations(self):
         num_users = 5
         num_items = 5
-        users = np.eye(num_users) # 5 users, 5 attributes
-        items = np.eye(num_items) # 5 users, 5 attributes
-        social_network = np.roll(users, 1, axis=1) # every user i is connected to (i+1) % 5
+        users = np.eye(num_users)  # 5 users, 5 attributes
+        items = np.eye(num_items)  # 5 users, 5 attributes
+        social_network = np.roll(users, 1, axis=1)  # every user i is connected to (i+1) % 5
 
         model = SocialFiltering(
             user_representation=social_network,
             actual_item_representation=items,
             actual_user_representation=users,
-            num_items_per_iter=num_items
+            num_items_per_iter=num_items,
         )
         init_pred_scores = np.copy(model.predicted_scores)
         model.run(1)
