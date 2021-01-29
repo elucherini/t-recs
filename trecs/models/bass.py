@@ -258,9 +258,15 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
         """
         infection_probabilities = self.predicted_scores[self.users.user_vector, interactions]
+        recovered_users = np.where(self.infection_state == -1)
+        currently_infected = np.where(self.infection_state == 1)
         newly_infected = np.where(infection_probabilities > self.infection_thresholds)
         if newly_infected[0].shape[0] > 0:
             self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
+
+        # remove already infected individuals
+        self.infection_state[recovered_users] = -1
+        self.infection_state[currently_infected] = -1
 
     def infection_probabilities(self, user_profiles, item_attributes):
         """Calculates the infection probabilities for each user at the current
@@ -276,7 +282,9 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             representation of items.
         """
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
-        dot_product = np.dot(user_profiles, self.infection_state * np.log(1 - item_attributes))
+        infection_state = np.copy(self.infection_state)
+        infection_state[np.where(infection_state == -1)] = 0 # make all recovered users 0 instead of -1
+        dot_product = np.dot(user_profiles, infection_state * np.log(1 - item_attributes))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
         return predicted_scores
