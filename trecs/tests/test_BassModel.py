@@ -205,3 +205,25 @@ class TestBassModel:
         systate1 = s1.get_system_state()
         systate2 = s2.get_system_state()
         test_helpers.assert_equal_system_state(systate1, systate2)
+
+    def test_infections(self):
+        num_users = 5
+        user_rep = np.zeros((num_users, num_users))
+        user_rep[1, 0] = 1 # user 1 is connected to user 0
+        user_rep[0, 1] = 1 # user 1 is connected to user 0
+        user_rep[2, 1] = 1 # user 2 is connected ot user 1
+        infection_state = np.zeros((num_users, 1))
+        infection_state[0] = 1 # user 0 is infected at the outset
+        item_rep = np.array([[0.9999]]) # combined with random seed, this should guarantee  infection
+        bass = BassModel(
+            user_representation=user_rep,
+            item_representation=item_rep,
+            infection_state=infection_state,
+            seed=1234
+        )
+        bass.run(1) # after 1st step, user 1 should be infected, and user 0 should be recovered
+        correct_infections = np.array([-1, 1, 0, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        bass.run(1) # after 2nd step, users 0 and 1 should be recovered, and user 2 should be infected
+        correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)

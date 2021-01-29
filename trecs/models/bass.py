@@ -260,9 +260,11 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         infection_probabilities = self.predicted_scores[self.users.user_vector, interactions]
         recovered_users = np.where(self.infection_state == -1)
         currently_infected = np.where(self.infection_state == 1)
-        newly_infected = np.where(infection_probabilities > self.infection_thresholds)
-        if newly_infected[0].shape[0] > 0:
-            self.infection_state[newly_infected[1], interactions[newly_infected[1]]] = 1
+        # independent infections
+        infection_trials = self.random_state.binomial(1, p=infection_probabilities)
+        newly_infected_users = np.where(infection_trials == 1)[0]
+        if len(newly_infected_users) > 0:
+            self.infection_state[newly_infected_users, interactions[newly_infected_users]] = 1
 
         # remove already infected individuals
         self.infection_state[recovered_users] = -1
