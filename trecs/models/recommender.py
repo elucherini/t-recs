@@ -468,6 +468,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         vary_random_items_per_iter=False,
         repeated_items=True,
         no_new_items=False,
+        disable_tqdm=False
     ):  # pylint: disable=too-many-arguments
         """
         Runs simulation for the given timesteps.
@@ -508,7 +509,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         """
         if not startup and self.is_verbose():
             self.log("Running recommendation simulation using recommendation algorithm...")
-        for timestep in tqdm(range(timesteps)):
+        for timestep in tqdm(range(timesteps), disable=disable_tqdm):
             if self.is_verbose():
                 self.log(f"Step {timestep}")
             if self.creators is not None and not no_new_items:

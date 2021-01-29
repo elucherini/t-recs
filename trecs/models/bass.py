@@ -291,7 +291,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         predicted_scores = 1 - np.exp(dot_product)
         return predicted_scores
 
-    def run(self, timesteps=50, startup=False, train_between_steps=True, repeated_items=True):
+    def run(self, timesteps="until_completion", startup=False, train_between_steps=True, repeated_items=True):
         """Overrides run method of parent class :class:`Recommender`, so that
         repeated_items defaults to True in Bass models.
 
@@ -313,13 +313,27 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """
         # NOTE: force repeated_items to True
         repeated_items = True
-        BaseRecommender.run(
-            self,
-            timesteps=timesteps,
-            startup=startup,
-            train_between_steps=train_between_steps,
-            repeated_items=repeated_items,
-        )
+        # option to run until cascade completes
+        if timesteps == "until_completion":
+            num_infected = 1
+            while num_infected > 0:
+                BaseRecommender.run(
+                    self,
+                    timesteps=timesteps,
+                    startup=startup,
+                    train_between_steps=train_between_steps,
+                    repeated_items=repeated_items,
+                    disable_tqdm=True
+                )
+                num_infected = (self.infection_state == 1).sum()
+        else:
+            BaseRecommender.run(
+                self,
+                timesteps=timesteps,
+                startup=startup,
+                train_between_steps=train_between_steps,
+                repeated_items=repeated_items,
+            )
 
     def draw_diffusion_tree(self):
         """ Draw diffusion tree using matplotlib """
