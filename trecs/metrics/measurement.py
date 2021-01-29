@@ -444,7 +444,9 @@ class DiffusionTreeMeasurement(Measurement):
         prev_infected_users = np.where(self._old_infection_state > 0)[0]
         # candidates must be connected to newly infected users
         candidate_parents = user_profiles[:, prev_infected_users][new_infected_users]
-        parents = prev_infected_users[np.argsort(candidate_parents)[:, -1]]
+        # randomly select parent out of those who were infected, use random multiplication
+        candidate_parents = candidate_parents * np.random.rand(*candidate_parents.shape)
+        parents = prev_infected_users[np.argmax(candidate_parents, axis=1)]
         return parents
 
     def _add_to_graph(self, user_profiles, new_infected_users):
@@ -464,14 +466,13 @@ class DiffusionTreeMeasurement(Measurement):
         """
         if self._old_infection_state is None:
             self._old_infection_state = np.zeros(current_infection_state.shape)
-        new_infections = current_infection_state - self._old_infection_state
-        if (new_infections == 0).all():
+        new_infections = np.where(current_infection_state == 1)[0] # only extract user indices
+        if len(new_infections) == 0:
             # no new infections
             return 0
-        new_infected_users = np.where(new_infections > 0)[0]  # only the rows
-        self._add_to_graph(user_profiles, new_infected_users)
+        self._add_to_graph(user_profiles, new_infections)
         # return number of new infections
-        return new_infected_users.shape[0]
+        return len(new_infections)
 
     def measure(self, recommender, **kwargs):
         """

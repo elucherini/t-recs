@@ -319,7 +319,6 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             while num_infected > 0:
                 BaseRecommender.run(
                     self,
-                    timesteps=timesteps,
                     startup=startup,
                     train_between_steps=train_between_steps,
                     repeated_items=repeated_items,
