@@ -4,16 +4,19 @@
 import inspect
 from abc import ABC, abstractmethod
 import numpy as np
+from scipy.sparse import csr_matrix
 from trecs.logging import VerboseMode
 from trecs.random import Generator
 
 
-class FromNdArray(np.ndarray, VerboseMode):
+class FromNdArray:
     """Subclass for Numpy's ndarrays."""
 
     def __new__(cls, input_array, verbose=False):
-        obj = np.asarray(input_array).view(cls)
-        obj.verbose = verbose
+        if not isinstance(input_array, csr_matrix): # default to cast to numpy array
+            obj = np.asarray(input_array)
+        else:
+            obj = input_array
         return obj
 
     def __init__(self, *args, **kwargs):  # pylint: disable=super-init-not-called
@@ -41,8 +44,8 @@ def register_observables(observer, observables=None, observable_type=None):
     for observable in observables:
         if isinstance(observable, observable_type):
             new_observables.append(observable)
-        else:
-            raise ValueError(f"Observables must be of type {observable_type}")
+        # else:
+        #     raise ValueError(f"Observables must be of type {observable_type}")
     observer.extend(new_observables)
 
 
@@ -114,8 +117,8 @@ class Component(FromNdArray, BaseComponent):
     ):  # pylint: disable=super-init-not-called
         # general input checks
         if current_state is not None:
-            if not isinstance(current_state, (list, np.ndarray)):
-                raise TypeError("current_state must be a list or numpy.ndarray")
+            if not isinstance(current_state, (list, np.ndarray, csr_matrix)):
+                raise TypeError("current_state must be a list, numpy.ndarray, or sparse matrix")
         if current_state is None and size is None:
             raise ValueError("current_state and size can't both be None")
         if current_state is None and not isinstance(size, tuple):
@@ -124,6 +127,7 @@ class Component(FromNdArray, BaseComponent):
             current_state = Generator(seed).binomial(n=0.3, p=1, size=size)
         self.current_state = current_state
         # Initialize component state
+        self.verbose = verbose
         BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
 
     def store_state(self):

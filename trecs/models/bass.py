@@ -174,6 +174,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             user_representation = SocialGraphGenerator.generate_random_graph(
                 num=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
             )
+        if actual_user_representation is None:
+            actual_user_representation = np.zeros(num_users).reshape((-1, 1))
 
         # Define infection_state
         if infection_state is None:
@@ -238,7 +240,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         """
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
-        self.users.set_score_function(self.infection_probabilities)
+        # self.users.set_score_function(self.infection_probabilities)
         if self.users.get_actual_user_scores() is None:
             self.users.compute_user_scores(self.items)
 
@@ -286,7 +288,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         infection_state = np.copy(self.infection_state)
         infection_state[np.where(infection_state == -1)] = 0 # make all recovered users 0 instead of -1
-        dot_product = np.dot(user_profiles, infection_state * np.log(1 - item_attributes))
+        dot_product = user_profiles.dot(infection_state * np.log(1 - item_attributes))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
         return predicted_scores
