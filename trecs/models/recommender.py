@@ -578,6 +578,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # have users update their own scores too
         self.users.score_new_items(new_items)
 
+    def set_num_items_per_iter(self, num_items_per_iter):
+        """ Change the number of items that will be shown
+            to each user per iteration.
+        """
+        self.num_items_per_iter = num_items_per_iter
+
     def add_new_item_indices(self, num_new_items):
         """
         Expands the indices matrix to include entries for new items that
