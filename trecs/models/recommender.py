@@ -346,6 +346,42 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 rec[:, -k:],
             )
 
+    def choose_interleaved_items(self, k, item_indices):
+        """
+        Chooses k items out of the item set to "interleave" into
+        the system's recommendations.
+
+        Parameters
+        -----------
+
+            k : int
+                Number of items that should be interleaved in the
+                recommendation set for each user.
+
+            item_indices : :obj:`numpy.ndarray`
+                Array that contains the valid item indices for each user;
+                that is, the indices of items that they have not yet
+                interacted with.
+
+        Returns
+        ---------
+            interleaved_items: :obj:`numpy.ndarray`
+        """
+        if k == 0:
+            return np.array([]).reshape((self.num_users, 0)).astype(int)
+
+        # NOTE: there is no guarantee that randomly interleaved items do not overlap
+        # with recommended items, since we do not have visibility into the recommended
+        # set of items.
+        # it's also possible that item indices are repeated
+        col = self.random_state.integers(
+            item_indices.shape[1], size=(self.num_users, k)
+        )
+        row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
+        interleaved_items = item_indices[row, col]
+        return interleaved_items
+
+
     def recommend(
         self,
         startup=False,
@@ -412,16 +448,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if item_indices.shape[1] < num_new_items:
                 self.log("Insufficient number of items left!")
 
-        new_items = np.array([]).reshape((self.num_users, 0)).astype(int)
-        if num_new_items:
-            # no guarantees that randomly interleaved items do not overlap
-            # with recommended items
-            # also possible that item indices are repeated
-            col = self.random_state.integers(
-                item_indices.shape[1], size=(self.num_users, num_new_items)
-            )
-            row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
-            new_items = item_indices[row, col]
+        interleaved_items = self.choose_interleaved_items(num_new_items, item_indices)
 
         items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
         # generate indices for recommended and randomly interleaved columns
@@ -431,11 +458,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         )
         col_idxs[rand_col_idxs] = True
         items[:, ~col_idxs] = recommended  # preserving relative order of recommended items
-        items[:, col_idxs] = new_items
+        items[:, col_idxs] = interleaved_items
         if self.is_verbose():
             self.log(
-                "System picked these items (cols) randomly for each user "
-                + "(rows):\n"
+                "System picked these items (cols) for each user (rows):\n"
                 + str(items)
             )
         return items
