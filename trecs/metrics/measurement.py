@@ -272,7 +272,9 @@ class InteractionSimilarity(Measurement):
         if self.interaction_hist is None:
             self.interaction_hist = np.copy(interactions).reshape((-1, 1))
         else:
-            self.interaction_hist = np.hstack([self.interaction_hist, interactions.reshape((-1, 1))])
+            self.interaction_hist = np.hstack(
+                [self.interaction_hist, interactions.reshape((-1, 1))]
+            )
         for pair in self.pairs:
             itemset_1 = set(self.interaction_hist[pair[0], :])
             itemset_2 = set(self.interaction_hist[pair[1], :])
