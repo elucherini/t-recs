@@ -245,10 +245,10 @@ class InteractionSimilarity(Measurement):
 
     def measure(self, recommender, **kwargs):
         """
-        Measures the average Jaccard index of items shown to pairs of users in
-        the system. Intuitively, a higher average Jaccard index corresponds to
-        increasing "homogenization" in that the recommender system is starting
-        to treat each user the same way (i.e., show them the same items).
+        Measures the average Jaccard index of items that pairs of users have interacted
+        with in the system. Intuitively, a higher average Jaccard index corresponds to
+        increasing "homogenization" in that user behavior is becoming more and more
+        similar (i.e., users have all interacted with the same items).
 
         Parameters
         ------------
@@ -257,9 +257,9 @@ class InteractionSimilarity(Measurement):
                 :class:`~models.recommender.BaseRecommender`.
 
             **kwargs
-                Keyword arguments, one of which must be `items_shown`, a |U| x
-                num_items_per_iter matrix that contains the indices of every
-                item shown to every user at a particular timestep.
+                Keyword arguments, one of which must be `interactions`, a |U| x
+                1 array that contains the index of the items that each user has
+                interacted with at this timestep.
         """
         similarity = 0
         interactions = kwargs.pop("interactions", None)
