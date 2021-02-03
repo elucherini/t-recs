@@ -8,7 +8,8 @@ from trecs.metrics import (
     DiffusionTreeMeasurement,
     StructuralVirality,
     InteractionMeasurement,
-    JaccardSimilarity,
+    RecSimilarity,
+    InteractionSimilarity,
 )
 import pytest
 
@@ -112,16 +113,63 @@ class TestHomogeneityMeasurement:
         )
 
 
-class TestJaccardSimilarity:
+class TestRecSimilarity:
     def test_generic(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
         # default # of users is 100
         pairs = [np.random.choice(100, 2, replace=False) for i in range(50)]
-        MeasurementUtils.test_generic_metric(SocialFiltering(), JaccardSimilarity(pairs), timesteps)
+        MeasurementUtils.test_generic_metric(SocialFiltering(), RecSimilarity(pairs), timesteps)
+        MeasurementUtils.test_generic_metric(ContentFiltering(), RecSimilarity(pairs), timesteps)
+
+
+class TestInteractionSimilarity:
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        # default # of users is 100
+        pairs = [np.random.choice(100, 2, replace=False) for i in range(50)]
         MeasurementUtils.test_generic_metric(
-            ContentFiltering(), JaccardSimilarity(pairs), timesteps
+            SocialFiltering(), InteractionSimilarity(pairs), timesteps
         )
+        MeasurementUtils.test_generic_metric(ContentFiltering(), RecSimilarity(pairs), timesteps)
+
+    def test_functionality(self):
+        num_users = 2
+        users = np.eye(num_users)
+        items = np.zeros((2, 1))
+        # only one item so the jaccard similarity should be 1
+        pairs = [(0, 1)]
+        content = ContentFiltering(
+            actual_user_representation=users, actual_item_representation=items, num_items_per_iter=1
+        )
+        content.add_metrics(InteractionSimilarity(pairs))
+        content.run(5)
+        final_jacc = content.get_measurements()["interaction_similarity"][-1]
+        assert final_jacc == 1  # both users have the item interaction index
+
+        new_items = np.eye(num_users)
+        content = ContentFiltering(
+            user_representation=users,
+            item_representation=new_items,
+            actual_user_representation=users,
+            actual_item_representation=new_items,
+            num_items_per_iter=2,
+        )
+        content.add_metrics(InteractionSimilarity(pairs))
+        content.run(5)
+        final_jacc = content.get_measurements()["interaction_similarity"][-1]
+        assert final_jacc == 0  # users have no interactions in common
+
+        # alter items such that both users prefer the first item
+        new_items[:, 0] = np.ones(2)
+        new_items[:, 1] = np.zeros(2)
+        content.items = new_items
+        # force users to recalculate scores
+        content.users.compute_user_scores(content.items)
+        content.run(1)
+        final_jacc = content.get_measurements()["interaction_similarity"][-1]
+        assert final_jacc == 0.5  # users should now have 1 interaction item in common
 
 
 class TestMSEMeasurement:

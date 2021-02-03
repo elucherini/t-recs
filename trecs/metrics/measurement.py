@@ -214,7 +214,77 @@ class InteractionMeasurement(Measurement):
         self.observe(histogram, copy=True)
 
 
-class JaccardSimilarity(Measurement):
+class InteractionSimilarity(Measurement):
+    """
+    Keeps track of the average Jaccard similarity between interactions with items
+    between pairs of users at each timestep. The pairs of users must be passed
+    in by the user.
+
+    Parameters
+    -----------
+        pairs: iterable of tuples
+            Contains tuples representing each pair of users. Each user should
+            be represented as an index into the user profiles matrix.
+
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
+
+    Attributes
+    -----------
+        Inherited by Measurement: :class:`.Measurement`
+
+        name: str (optional, default: "interaction_similarity")
+            Name of the measurement component.
+    """
+
+    def __init__(self, pairs, name="interaction_similarity", verbose=False):
+        self.pairs = pairs
+        # will eventually be a matrix where each row corresponds to 1 user
+        self.interaction_hist = None
+        Measurement.__init__(self, name, verbose, init_value=None)
+
+    def measure(self, recommender, **kwargs):
+        """
+        Measures the average Jaccard index of items that pairs of users have interacted
+        with in the system. Intuitively, a higher average Jaccard index corresponds to
+        increasing "homogenization" in that user behavior is becoming more and more
+        similar (i.e., users have all interacted with the same items).
+
+        Parameters
+        ------------
+            recommender: :class:`~models.recommender.BaseRecommender`
+                Model that inherits from
+                :class:`~models.recommender.BaseRecommender`.
+
+            **kwargs
+                Keyword arguments, one of which must be `interactions`, a |U| x
+                1 array that contains the index of the items that each user has
+                interacted with at this timestep.
+        """
+        similarity = 0
+        interactions = kwargs.pop("interactions", None)
+        if interactions is None:
+            raise ValueError(
+                "interactions must be passed in to InteractionSimilarity's `measure` "
+                "method as a keyword argument"
+            )
+
+        if self.interaction_hist is None:
+            self.interaction_hist = np.copy(interactions).reshape((-1, 1))
+        else:
+            self.interaction_hist = np.hstack(
+                [self.interaction_hist, interactions.reshape((-1, 1))]
+            )
+        for pair in self.pairs:
+            itemset_1 = set(self.interaction_hist[pair[0], :])
+            itemset_2 = set(self.interaction_hist[pair[1], :])
+            common = len(itemset_1.intersection(itemset_2))
+            union = len(itemset_1.union(itemset_2))
+            similarity += common / union / len(self.pairs)
+        self.observe(similarity)
+
+
+class RecSimilarity(Measurement):
     """
     Keeps track of the average Jaccard similarity between items seen by pairs
     of users at each timestep. The pairs of users must be passed in by the
@@ -233,11 +303,11 @@ class JaccardSimilarity(Measurement):
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "jaccard_similarity")
+        name: str (optional, default: "rec_similarity")
             Name of the measurement component.
     """
 
-    def __init__(self, pairs, name="jaccard_similarity", verbose=False):
+    def __init__(self, pairs, name="rec_similarity", verbose=False):
         self.pairs = pairs
         Measurement.__init__(self, name, verbose, init_value=None)
 
@@ -263,7 +333,7 @@ class JaccardSimilarity(Measurement):
         items_shown = kwargs.pop("items_shown", None)
         if items_shown is None:
             raise ValueError(
-                "items_shown must be passed in to JaccardSimilarity's `measure` "
+                "items_shown must be passed in to RecSimilarity's `measure` "
                 "method as a keyword argument"
             )
         for pair in self.pairs:
