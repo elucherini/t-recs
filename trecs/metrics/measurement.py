@@ -444,6 +444,8 @@ class DiffusionTreeMeasurement(Measurement):
         prev_infected_users = np.where(self._old_infection_state > 0)[0]
         # candidates must be connected to newly infected users
         candidate_parents = user_profiles[:, prev_infected_users][new_infected_users]
+        if not isinstance(candidate_parents, np.ndarray):
+            candidate_parents = candidate_parents.toarray() # convert sparse to numpy if needed
         # randomly select parent out of those who were infected, use random multiplication
         candidate_parents = candidate_parents * np.random.rand(*candidate_parents.shape)
         parents = prev_infected_users[np.argmax(candidate_parents, axis=1)]
