@@ -155,6 +155,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         record_base_state=False,
         system_state=None,
         score_fn=inner_product,
+        interleaving_fn=None,
         verbose=False,
         seed=None,
     ):
@@ -170,6 +171,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.items_hat = Items(items_hat)
         assert callable(score_fn)  # score function must be a function
         self.score_fn = score_fn
+        if interleaving_fn:
+            # make sure interleaving function (if passed) is callable
+            assert callable(interleaving_fn)
+        self.interleaving_fn = interleaving_fn
         # set predicted scores
         self.predicted_scores = None
         self.train()
@@ -367,6 +372,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         ---------
             interleaved_items: :obj:`numpy.ndarray`
         """
+        if self.interleaving_fn:
+            return self.interleaving_fn(k, item_indices)
+
         if k == 0:
             return np.array([]).reshape((self.num_users, 0)).astype(int)
 
@@ -374,13 +382,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # with recommended items, since we do not have visibility into the recommended
         # set of items.
         # it's also possible that item indices are repeated
-        col = self.random_state.integers(
-            item_indices.shape[1], size=(self.num_users, k)
-        )
+        col = self.random_state.integers(item_indices.shape[1], size=(self.num_users, k))
         row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
         interleaved_items = item_indices[row, col]
         return interleaved_items
-
 
     def recommend(
         self,
@@ -460,10 +465,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         items[:, ~col_idxs] = recommended  # preserving relative order of recommended items
         items[:, col_idxs] = interleaved_items
         if self.is_verbose():
-            self.log(
-                "System picked these items (cols) for each user (rows):\n"
-                + str(items)
-            )
+            self.log("System picked these items (cols) for each user (rows):\n" + str(items))
         return items
 
     @abstractmethod
@@ -605,8 +607,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.users.score_new_items(new_items)
 
     def set_num_items_per_iter(self, num_items_per_iter):
-        """ Change the number of items that will be shown
-            to each user per iteration.
+        """Change the number of items that will be shown
+        to each user per iteration.
         """
         self.num_items_per_iter = num_items_per_iter
 
