@@ -115,3 +115,21 @@ class TestUsers:
         users.compute_user_scores(items)
         feedback = users.get_user_feedback(items_shown=items_shown)
         np.testing.assert_array_equal(feedback, np.ones(num_users))
+
+    def test_no_repeated_items(self):
+        num_users = 5
+        num_attr = 4
+        num_items = 5
+        users = Users(np.ones((num_users, num_attr)), repeat_items=False)
+        # first item is most desirable because its attributes are all 0,
+        # second item is second most desirable because attributes are all -1, etc.
+        items = np.tile(np.arange(num_items) * -1, (num_attr, 1))
+        users.compute_user_scores(items)
+        items_shown = np.tile(np.arange(num_items), (num_users, 1)) # all items shown to all users
+        # all users should like the 0th item best
+        feedback = users.get_user_feedback(items_shown=items_shown)
+        np.testing.assert_array_equal(feedback, np.zeros(num_users))
+        # all users should then like the 1st item, since they're not
+        # allowed to repeat interactions
+        feedback = users.get_user_feedback(items_shown=items_shown)
+        np.testing.assert_array_equal(feedback, np.ones(num_users))
