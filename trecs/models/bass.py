@@ -126,6 +126,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         actual_item_representation=None,
         probabilistic_recommendations=False,
         verbose=False,
+        measurements=None,
         num_items_per_iter=1,
         seed=None,
         **kwargs
@@ -208,7 +209,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
         self.infection_state = InfectionState(infection_state)
         self.infection_thresholds = InfectionThresholds(infection_thresholds)
-        measurements = [StructuralVirality(np.copy(infection_state))]
+        if measurements is None:
+            measurements = [StructuralVirality(np.copy(infection_state))]
         system_state = [self.infection_state]
         # Initialize recommender system
         # NOTE: Forcing to 1 item per iteration

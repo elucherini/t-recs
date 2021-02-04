@@ -195,8 +195,6 @@ class ImplicitMF(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        measurements = [MSEMeasurement()]
-
         super().__init__(
             user_representation,
             item_representation,
@@ -206,7 +204,6 @@ class ImplicitMF(BaseRecommender):
             num_items,
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
-            measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs

@@ -175,7 +175,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        measurements = [MSEMeasurement()]
         # Initialize recommender system
         BaseRecommender.__init__(
             self,
@@ -188,7 +187,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
             seed=seed,
-            measurements=measurements,
             verbose=verbose,
             **kwargs
         )

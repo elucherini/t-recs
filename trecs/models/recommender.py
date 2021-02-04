@@ -137,6 +137,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             Function that is used to calculate each user's predicted scores for
             each candidate item. The score function should take as input
             user_profiles and item_attributes.
+
+        interleaving_fn: callable
+            Function that is used to determine the indices of items that will be
+            interleaved into the recommender system's recommendations. The
+            interleaving function should take as input an integer `k` (representing
+            the number of items to be interleaved in every recommendation set) and
+            a matrix `item_indices` (representing which items are eligible to be
+            interleaved). The function should return a :math:`|U|\\times k` matrix
+            representing the interleaved items for each user.
     """
 
     @abstractmethod
