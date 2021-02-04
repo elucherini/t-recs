@@ -148,6 +148,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             candidate item. The score function should take as input
             user_profiles and item_attributes.
 
+        repeat_items: bool (optional, default: True)
+            If `True`, then users will interact with items regardless of whether
+            they have already interacted with them before. If `False`, users
+            will not perform repeat interactions.
+
     Raises
     --------
 
@@ -170,6 +175,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         verbose=False,
         seed=None,
         attention_exp=0.0,
+        repeat_items=True
     ):  # pylint: disable=too-many-arguments
         self.rng = Generator(seed=seed)
         # general input checks
@@ -203,6 +209,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
         self.user_vector = np.arange(num_users, dtype=int)
+        self.repeat_items = repeat_items
+        if not repeat_items:
+            self.user_interactions = np.array([], dtype=int).reshape((num_users, 0))
         self.name = "actual_user_scores"
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
 
@@ -339,14 +348,22 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         item_attributes = kwargs.pop("item_attributes", None)
         if items_shown is None:
             raise ValueError("Items can't be None")
-        reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
-        user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
+        reshaped_user_vector = self.user_vector.reshape((-1, 1)) # turn into column
+
+        user_item_scores = self.actual_user_scores
+        if not self.repeat_items:
+            # scores for items already interacted with go to negative infinity
+            num_past_interactions = self.user_interactions.shape[1]
+            user_rows = np.tile(reshaped_user_vector, num_past_interactions)
+            user_item_scores[user_rows, self.user_interactions] = float('-inf')
+
+        item_scores = user_item_scores[reshaped_user_vector, items_shown]
         if self.attention_exp != 0:
             idxs = np.arange(items_shown.shape[1]) + 1
             multiplier = np.power(idxs, self.attention_exp)
             # multiply each row by the attention coefficient
-            user_interactions = user_interactions * multiplier
-        sorted_user_preferences = user_interactions.argsort()[:, -1]
+            item_scores = item_scores * multiplier
+        sorted_user_preferences = item_scores.argsort()[:, -1]
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
@@ -361,6 +378,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             self.update_profiles(interact_attrs)
             # update user scores
             self.compute_user_scores(item_attributes)
+        # record interactions if needed to ensure users don't repeat interactions
+        if not self.repeat_items:
+            interactions_col = interactions.reshape((-1, 1))
+            # append interactions as column of user interactions
+            self.user_interactions = np.hstack([self.user_interactions, interactions_col])
         return interactions
 
     def update_profiles(self, item_attributes):
