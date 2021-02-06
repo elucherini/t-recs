@@ -293,12 +293,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            # resize for new items if necessary
-            new_items = predicted_scores.shape[1] - self.predicted_scores.shape[1]
-            if new_items != 0:
-                self.predicted_scores = np.hstack(
-                    [self.predicted_scores, np.zeros((self.num_users, new_items))]
-                )
             self.predicted_scores[:, :] = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
@@ -342,9 +336,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         permutation = s_filtered.argsort()
         rec = item_indices[row, permutation]
         if self.is_verbose():
-            self.log(f"Row:\n{str(row)}")
-            self.log(f"Item indices:\n{str(item_indices)}")
-            self.log(f"Items ordered by preference (low to high) for each user:\n{str(rec)}")
+            self.log(f"Indices of eligible item set for all users:\n{str(item_indices)}")
+            self.log(
+                f"Items ordered by predicted preference (low to high) for each user:\n{str(rec)}"
+            )
         if self.probabilistic_recommendations:
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
@@ -464,7 +459,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         interleaved_items = self.choose_interleaved_items(num_new_items, item_indices)
 
-        items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
+        items = np.random_state.rand((self.num_users, self.num_items_per_iter))
         # generate indices for recommended and randomly interleaved columns
         col_idxs = np.zeros(self.num_items_per_iter, dtype=bool)
         rand_col_idxs = self.random_state.choice(
@@ -564,6 +559,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.indices[self.users.user_vector, interactions] = -1
             self._update_internal_state(interactions)
             if self.is_verbose():
+                self.log("Recorded user interaction:\n" + str(interactions))
                 self.log(
                     "System updates user profiles based on last interaction:\n"
                     + str(self.users_hat)
@@ -608,10 +604,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # concatenate old items with new items
         self.items = np.hstack([self.items, new_items])
         # generate new internal system representations of the items
-        self.process_new_items(new_items)
+        new_items_hat = self.process_new_items(new_items)
+        self.items_hat = np.hstack([self.items_hat, new_items_hat])
+
         self.add_new_item_indices(new_items.shape[1])
-        # create new predicted scores
-        self.train()
+        # create new predicted scores if not in startup
+        predicted_scores = self.score_fn(self.users_hat, self.items_hat)
+        score_placeholder = np.zeros((self.num_users, new_items.shape[1]))
+        self.predicted_scores = np.hstack([self.predicted_scores, score_placeholder])
+        self.predicted_scores[:, :] = predicted_scores
         # have users update their own scores too
         self.users.score_new_items(new_items)
 
