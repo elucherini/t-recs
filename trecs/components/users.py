@@ -175,7 +175,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         verbose=False,
         seed=None,
         attention_exp=0.0,
-        repeat_items=True
+        repeat_items=True,
     ):  # pylint: disable=too-many-arguments
         self.rng = Generator(seed=seed)
         # general input checks
@@ -348,14 +348,14 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         item_attributes = kwargs.pop("item_attributes", None)
         if items_shown is None:
             raise ValueError("Items can't be None")
-        reshaped_user_vector = self.user_vector.reshape((-1, 1)) # turn into column
+        reshaped_user_vector = self.user_vector.reshape((-1, 1))  # turn into column
 
         user_item_scores = self.actual_user_scores
         if not self.repeat_items:
             # scores for items already interacted with go to negative infinity
             num_past_interactions = self.user_interactions.shape[1]
             user_rows = np.tile(reshaped_user_vector, num_past_interactions)
-            user_item_scores[user_rows, self.user_interactions] = float('-inf')
+            user_item_scores[user_rows, self.user_interactions] = float("-inf")
 
         item_scores = user_item_scores[reshaped_user_vector, items_shown]
         if self.attention_exp != 0:
