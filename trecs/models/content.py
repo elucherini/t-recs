@@ -213,4 +213,4 @@ class ContentFiltering(BaseRecommender):
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """
-        self.items_hat = np.hstack([self.items_hat, new_items])
+        return new_items

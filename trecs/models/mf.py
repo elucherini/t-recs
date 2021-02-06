@@ -296,4 +296,4 @@ class ImplicitMF(BaseRecommender):
         else:
             avg_item = np.zeros((num_new_items, self.num_latent_factors))
         new_items = np.tile(avg_item, (num_new_items, 1)).T
-        self.items_hat = np.hstack([self.items_hat, new_items])
+        return new_items

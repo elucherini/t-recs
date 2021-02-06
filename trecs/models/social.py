@@ -211,9 +211,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
     def process_new_items(self, new_items):
         """
-        We assume the content filtering system has perfect knowledge
-        of the new items; therefore, when new items are created,
-        we simply return the new item attributes.
+        New items are simply represented as zeros, since they have not received
+        interactions from any users yet.
 
         Parameters:
         ------------
@@ -223,4 +222,4 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         """
         # users have never interacted with new items
         new_representation = np.zeros((self.num_users, new_items.shape[1]))
-        self.items_hat = np.hstack([self.items_hat, new_representation])
+        return new_representation
