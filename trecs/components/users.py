@@ -357,17 +357,17 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             user_rows = np.tile(reshaped_user_vector, num_past_interactions)
             user_item_scores[user_rows, self.user_interactions] = float("-inf")
 
-        item_scores = user_item_scores[reshaped_user_vector, items_shown]
+        rec_item_scores = user_item_scores[reshaped_user_vector, items_shown]
         if self.attention_exp != 0:
             idxs = np.arange(items_shown.shape[1]) + 1
             multiplier = np.power(idxs, self.attention_exp)
             # multiply each row by the attention coefficient
-            item_scores = item_scores * multiplier
-        sorted_user_preferences = item_scores.argsort()[:, -1]
+            rec_item_scores = rec_item_scores * multiplier
+        sorted_user_preferences = rec_item_scores.argmax(axis=1)
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
-            self.log(f"User scores for given items are:\n{str(item_scores)}")
+            self.log(f"User scores for given items are:\n{str(rec_item_scores)}")
             self.log(f"Users interact with the following items respectively:\n{str(interactions)}")
         if self.drift > 0:
             if item_attributes is None:
