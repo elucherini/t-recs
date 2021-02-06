@@ -323,15 +323,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
         s_filtered = self.predicted_scores[row, item_indices]
-        # scores are U x I; we can use argsort to sort the item indices
-        # from low to high scores
-        permutation = s_filtered.argsort()
-        rec = item_indices[row, permutation]
-        if self.is_verbose():
-            self.log(f"Row:\n{str(row)}")
-            self.log(f"Item indices:\n{str(item_indices)}")
-            self.log(f"Items ordered by preference (low to high) for each user:\n{str(rec)}")
         if self.probabilistic_recommendations:
+            permutation = s_filtered.argsort()
+            rec = item_indices[row, permutation]
             # the recommended items will not be exactly determined by
             # predicted score; instead, we will sample from the sorted list
             # such that higher-preference items get more probability mass
@@ -341,10 +335,23 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
             return rec[:, picks]
         else:
-            # ensure that the highest scored items show up first
-            return np.fliplr(
-                rec[:, -k:],
-            )
+            # scores are U x I; we can use argpartition to take the top k scores
+            negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
+            top_k = negated_scores.argpartition(k - 1)[:, :k]
+            # now we sort within the top k
+            row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
+            # again, indices should go from highest to lowest
+            sort_top_k = negated_scores[row, top_k].argsort()
+            rec = item_indices[
+                row, top_k[row, sort_top_k]
+            ]  # extract items such that rows go from highest scored to lowest-scored of top-k
+            if self.is_verbose():
+                self.log(f"Row:\n{str(row)}")
+                self.log(f"Item indices:\n{str(item_indices)}")
+                self.log(
+                    f"Top-k items ordered by preference (low to high) for each user:\n{str(rec)}"
+                )
+            return rec
 
     def recommend(
         self,
