@@ -125,7 +125,7 @@ class TestUsers:
         # second item is second most desirable because attributes are all -1, etc.
         items = np.tile(np.arange(num_items) * -1, (num_attr, 1))
         users.compute_user_scores(items)
-        items_shown = np.tile(np.arange(num_items), (num_users, 1)) # all items shown to all users
+        items_shown = np.tile(np.arange(num_items), (num_users, 1))  # all items shown to all users
         # all users should like the 0th item best
         feedback = users.get_user_feedback(items_shown=items_shown)
         np.testing.assert_array_equal(feedback, np.zeros(num_users))

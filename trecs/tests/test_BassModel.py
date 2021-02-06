@@ -1,3 +1,4 @@
+from trecs.metrics.measurement import MSEMeasurement
 import test_helpers
 import numpy as np
 from trecs.models import BassModel
@@ -175,7 +176,9 @@ class TestBassModel:
         if seed is None:
             seed = np.random.randint(100000)
         s1 = BassModel(seed=seed, record_base_state=True)
+        s1.add_metrics(MSEMeasurement())
         s2 = BassModel(seed=seed, record_base_state=True)
+        s2.add_metrics(MSEMeasurement())
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
         s1.run(timesteps=5)
@@ -193,7 +196,9 @@ class TestBassModel:
         if users is None:
             users = np.random.randint(1, 100)
         s1 = BassModel(seed=seed, num_users=users, num_items=items, record_base_state=True)
+        s1.add_metrics(MSEMeasurement())
         s2 = BassModel(seed=seed, num_users=users, num_items=items, record_base_state=True)
+        s2.add_metrics(MSEMeasurement())
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
         s1.run(timesteps=5)
