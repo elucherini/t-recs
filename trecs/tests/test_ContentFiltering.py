@@ -256,6 +256,33 @@ class TestContentFiltering:
         systate2 = s2.get_system_state()
         test_helpers.assert_equal_system_state(systate1, systate2)
 
+    def test_recommendations(self):
+        num_users = 5
+        num_items = 5
+        users = np.eye(num_users)  # 5 users, 5 attributes
+        items = np.eye(num_items)  # 5 users, 5 attributes
+
+        model = ContentFiltering(
+            actual_user_representation=users,
+            actual_item_representation=items,
+            num_items_per_iter=num_items,
+        )
+        init_pred_scores = np.copy(model.predicted_scores)
+        # after one iteration of training, the model should have perfect
+        # predictions, since each user was shown all the items in the item set
+        model.run(1)
+
+        # assert new scores have changed
+        trained_preds = np.copy(model.predicted_scores)
+        with pytest.raises(AssertionError):
+            test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
+
+        # assert that recommendations are now "perfect"
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[0], [1], [2], [3], [4]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
     def test_drift(self, seed=None, items=None, users=None):
         # user_repr:
         # [ [ 1 , 0 , ... , 0 ]
