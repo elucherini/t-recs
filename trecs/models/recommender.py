@@ -345,11 +345,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             # scores are U x I; we can use argpartition to take the top k scores
             negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
-            top_k = negated_scores.argpartition(k - 1)[:, :k]
+            # break ties using a random score component
+            scores_tiebreak = np.zeros(negated_scores.shape, dtype=[('score', 'f8'), ('random', 'f8')])
+            scores_tiebreak['score'] = negated_scores
+            scores_tiebreak['random'] = self.random_state.random(negated_scores.shape)
+            top_k = scores_tiebreak.argpartition(k - 1, order=['score', 'random'])[:, :k]
             # now we sort within the top k
             row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
             # again, indices should go from highest to lowest
-            sort_top_k = negated_scores[row, top_k].argsort()
+            sort_top_k = scores_tiebreak[row, top_k].argsort(order=['score', 'random'])
             rec = item_indices[
                 row, top_k[row, sort_top_k]
             ]  # extract items such that rows go from highest scored to lowest-scored of top-k
@@ -464,15 +468,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         interleaved_items = self.choose_interleaved_items(num_new_items, item_indices)
 
-        items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
-        # generate indices for recommended and randomly interleaved columns
-        col_idxs = np.zeros(self.num_items_per_iter, dtype=bool)
-        rand_col_idxs = self.random_state.choice(
-            self.num_items_per_iter, size=num_new_items, replace=False
-        )
-        col_idxs[rand_col_idxs] = True
-        items[:, ~col_idxs] = recommended  # preserving relative order of recommended items
-        items[:, col_idxs] = interleaved_items
+        if num_new_items > 0:
+            items = self.random_state.random((self.num_users, self.num_items_per_iter))
+            interleave_mask = np.zeros(items.shape).astype(bool)
+            rand_col_idxs = items.argpartition(-num_new_items)[:, -num_new_items:]
+            np.put_along_axis(interleave_mask, rand_col_idxs, True, axis=1)
+            items[interleave_mask] = interleaved_items.flatten()
+            items[~interleave_mask] = recommended.flatten()
+            items = items.astype(int)
+        else:
+            items = recommended
+
         if self.is_verbose():
             self.log("System picked these items (cols) for each user (rows):\n" + str(items))
         return items
