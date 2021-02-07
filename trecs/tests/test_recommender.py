@@ -101,3 +101,10 @@ class TestBaseRecommender:
         # the predicted scores normalize the user arrays before doing the dot product,
         # so instead we verify the sorted position of each item
         test_helpers.assert_equal_arrays(true_scores.argsort(), predicted_scores.argsort())
+
+    def test_random_tiebreak(self):
+        self.items_hat = np.zeros(self.items_hat.shape) # all item/users should have the same score
+        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, seed=1234)
+        recommended = dummy.generate_recommendations(k=5, item_indices=dummy.indices)
+        # we expect every user to be recommended items in a different order
+        assert not (recommended == recommended[0]).all()

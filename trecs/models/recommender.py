@@ -464,7 +464,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         interleaved_items = self.choose_interleaved_items(num_new_items, item_indices)
 
-        items = np.random_state.rand((self.num_users, self.num_items_per_iter))
+        items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
         # generate indices for recommended and randomly interleaved columns
         col_idxs = np.zeros(self.num_items_per_iter, dtype=bool)
         rand_col_idxs = self.random_state.choice(
