@@ -294,6 +294,6 @@ class ImplicitMF(BaseRecommender):
         if self.als_model:
             avg_item = self.als_model.item_features_.T.mean(axis=1)
         else:
-            avg_item = np.zeros((num_new_items, self.num_latent_factors))
+            avg_item = np.zeros(self.num_latent_factors)
         new_items = np.tile(avg_item, (num_new_items, 1)).T
         return new_items
