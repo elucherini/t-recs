@@ -360,7 +360,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if self.is_verbose():
                 self.log(f"Item indices:\n{str(item_indices)}")
                 self.log(
-                    f"Top-k items ordered by preference (low to high) for each user:\n{str(rec)}"
+                    f"Top-k items ordered by preference (high to low) for each user:\n{str(rec)}"
                 )
             return rec
 
