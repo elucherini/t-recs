@@ -102,6 +102,20 @@ class TestBaseRecommender:
         # so instead we verify the sorted position of each item
         test_helpers.assert_equal_arrays(true_scores.argsort(), predicted_scores.argsort())
 
+    def test_all_items_per_iter(self):
+        # 10 content creators
+        creators = Creators(np.random.uniform(size=(10, 5)), creation_probability=1)
+        dummy = DummyRecommender(
+            self.users_hat, self.items_hat, self.users, self.items, 10, 50, "all", creators=creators
+        )
+        assert dummy.num_items_per_iter == 50
+        dummy.run(1, repeated_items=True)  # run 5 timesteps
+        assert dummy.num_items_per_iter == 60
+        dummy.run(1, repeated_items=True)  # run 5 timesteps
+        assert dummy.num_items_per_iter == 70
+        recommended = dummy.recommend()
+        assert recommended.shape[1] == 70 # assert recommendaitons are proper length
+
     def test_random_tiebreak(self):
         self.items_hat = np.zeros(self.items_hat.shape) # all item/users should have the same score
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, seed=1234)

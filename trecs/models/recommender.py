@@ -115,8 +115,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_items: int
             The number of items in the system.
 
-        num_items_per_iter: int
-            Number of items presented to the user per iteration.
+        num_items_per_iter: int or str
+            Number of items presented to the user per iteration. If `"all"`, then
+            the system will serve recommendations from the set of all items in the
+            system.
 
         probabilistic_recommendations: bool (optional, default: False)
             When this flag is set to `True`, the recommendations (excluding
@@ -196,9 +198,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_users must be an int")
         if not is_valid_or_none(num_items, int):
             raise TypeError("num_items must be an int")
-        if not is_valid_or_none(num_items_per_iter, int):
-            raise TypeError("num_items_per_iter must be an int")
-        assert num_items_per_iter > 0  # check number of items per iteration is positive
+        if not is_valid_or_none(num_items_per_iter, (str, int)):
+            raise TypeError("num_items_per_iter must be an int or string 'all'")
+        if isinstance(num_items_per_iter, int):
+            assert num_items_per_iter > 0  # check number of items per iteration is positive
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
@@ -248,7 +251,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
         self.num_items = num_items
-        self.num_items_per_iter = num_items_per_iter
+        self.set_num_items_per_iter(num_items_per_iter)
         self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
@@ -556,6 +559,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.log(f"Step {timestep}")
             if self.creators is not None and not no_new_items:
                 self.create_and_process_items()
+                if self.expand_items_per_iter:
+                        # expand set of items recommended per iteration
+                        self.num_items_per_iter = self.num_items
             item_idxs = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,
@@ -620,10 +626,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         self.add_new_item_indices(new_items.shape[1])
         # create new predicted scores if not in startup
-        predicted_scores = self.score_fn(self.users_hat, self.items_hat)
-        score_placeholder = np.zeros((self.num_users, new_items.shape[1]))
-        self.predicted_scores = np.hstack([self.predicted_scores, score_placeholder])
-        self.predicted_scores[:, :] = predicted_scores
+        new_item_pred_score = self.score_fn(self.users_hat, new_items_hat)
+        self.predicted_scores = np.hstack([self.predicted_scores, new_item_pred_score])
         # have users update their own scores too
         self.users.score_new_items(new_items)
 
@@ -631,7 +635,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         """Change the number of items that will be shown
         to each user per iteration.
         """
-        self.num_items_per_iter = num_items_per_iter
+        if num_items_per_iter == "all":
+            self.num_items_per_iter = self.num_items
+            self.expand_items_per_iter = True
+        else:
+            self.expand_items_per_iter = False
+            self.num_items_per_iter = num_items_per_iter
 
     def add_new_item_indices(self, num_new_items):
         """
