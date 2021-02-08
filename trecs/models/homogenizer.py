@@ -148,14 +148,17 @@ class Homogenizer(BaseRecommender):
         #measurements = [MSEMeasurement()]
 
         super(self.__class__, self).__init__(
-                 user_representation=user_representation,
-                 item_representation=item_representation,
-                 actual_user_representation=actual_user_representation,
-                 actual_item_representation=actual_item_representation,
-                 num_attributes=num_attributes,
-                 num_users=num_users,
-                 num_items=num_items,
-                 num_items_per_iter=num_items_per_iter,
+                 num_users,
+                 num_items,
+                 num_attributes,
+                 user_representation,
+                 item_representation,
+                 actual_user_representation,
+                 actual_item_representation,
+                 probabilistic_recommendations,
+                 seed,
+                 verbose,
+                 num_items_per_iter,
                  **kwargs
         )
         print ('initializing Child instance')
