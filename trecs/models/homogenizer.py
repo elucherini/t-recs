@@ -280,3 +280,22 @@ class Homogenizer(BaseRecommender):
                 added into the system. Should be :math:`|A|\\times|I|`
         """
         self.items_hat = np.hstack([self.items_hat, new_items])
+
+
+# class Child(object):
+#     def __init__(self, baseclass):
+#         self.__class__ = type(self.__class__.__name__,
+#                               (baseclass, object),
+#                               dict(self.__class__.__dict__))
+#         super(self.__class__, self).__init__()
+#         print 'initializing Child instance'
+#         # continue with Child class' initialization...
+#
+# class SomeParentClass(object):
+#     def __init__(self):
+#         print 'initializing SomeParentClass instance'
+#     def hello(self):
+#         print 'in SomeParentClass.hello()'
+#
+# c = Child(SomeParentClass)
+# c.hello()
