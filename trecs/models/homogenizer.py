@@ -13,12 +13,12 @@ from .content import ContentFiltering
 
 class Homogenizer(BaseRecommender):
     """
-    A customizable content-filtering recommendation system.
+    A customizable recommendation system that takes another model class and forces incremental homogenization of user representation.
 
-    With content filtering, items and users are represented by a set of
+    With Homogenizer, items and users are represented by a set of
     attributes A. This class assumes that the attributes used for items and
-    users are the same. The recommendation system matches users to items with
-    similar attributes.
+    users are the same. The Homogenizer class can be used as a comparison
+    point for homogenization that "naturally" emerges in another model class.
 
     Item attributes are represented by a :math:`|A|\\times|I|` matrix, where
     :math:`|I|` is the number of items in the system. For each item, we define
@@ -80,41 +80,40 @@ class Homogenizer(BaseRecommender):
 
     Examples
     ---------
-        ContentFiltering can be instantiated with no arguments -- in which case,
+        Homogenizer can be instantiated with no arguments -- in which case,
         it will be initialized with the default parameters and the item/user
         representations will be assigned randomly.
 
-        >>> cf = ContentFiltering()
-        >>> cf.users_hat.shape
-        (100, 1000)   # <-- 100 users (default), 1000 attributes (default)
-        >>> cf.items.shape
-        (1000, 1250) # <-- 1000 attributes (default), 1250 items (default)
+        >>> hm = Homogenizer()
+        >>> hm.users_hat.shape
+        (100, 10)   # <-- 100 users (default), 10 attributes (default)
+        >>> hm.items.shape
+        (10, 1250) # <-- 10 attributes (default), 1250 items (default)
 
         This class can be customized either by defining the number of users/items/attributes
-        in the system.
+        in the system as well as by the specified model class.
 
-        >>> cf = ContentFiltering(num_users=1200, num_items=5000)
-        >>> cf.users_hat.shape
-        (1200, 1000) # <-- 1200 users, 1000 attributes
+        >>> hm = Homogenizer(num_users=1200, num_items=5000, model_class=ImplicitMF)
+        >>> hm.users_hat.shape
+        (1200, 10) # <-- 1200 users, 10 attributes
 
-        >>> cf = ContentFiltering(num_users=1200, num_items=5000, num_attributes=2000)
-        >>> cf.users_hat.shape
+        >>> hm = Homo(num_users=1200, num_items=5000, num_attributes=2000)
+        >>> hm.users_hat.shape
         (1200, 2000) # <-- 1200 users, 2000 attributes
 
         Or by generating representations for items and/or users. In the example
         below, items are uniformly distributed. We indirectly define 100
         attributes by defining the following `item_representation`:
-
-        >>> items = np.random.randint(0, 1, size=(100, 200))
-        # Users are represented by a power law distribution.
-        # This representation also uses 100 attributes.
-        >>> power_dist = Distribution(distr_type='powerlaw')
-        >>> users = power_dist.compute(a=1.16, size=(30, 100)).compute()
-        >>> cf = ContentFiltering(item_representation=items, user_representation=users)
-        >>> cf.items.shape
-        (100, 200)
-        >>> cf.users_hat.shape
-        (30, 100)
+        >>> number_of_users = 5
+        >>> number_of_attributes = 10
+        >>> number_of_items = 15
+        >>> users = np.random.randint(4, size=(number_of_users, number_of_attributes))
+        >>> items = Generator().binomial(n=1, p=.3,size=(number_of_attributes, number_of_items))
+        >>> hm = Homogenizer(item_representation=items, user_representation=users)
+        >>> hm.items.shape
+        (10, 15)
+        >>> hm.users_hat.shape
+        (5, 10)
 
         Note that all arguments passed in at initialization must be consistent -
         otherwise, an error is thrown. For example, one cannot pass in
@@ -141,38 +140,37 @@ class Homogenizer(BaseRecommender):
         **kwargs
     ):
 
-        self.__class__ = type(self.__class__.__name__,
-                                       (model_class, object),
-                                       dict(self.__class__.__dict__))
+        self.__class__ = type(
+            self.__class__.__name__, (model_class, object), dict(self.__class__.__dict__)
+        )
 
-        #measurements = [MSEMeasurement()]
+        # measurements = [MSEMeasurement()]
 
         super(self.__class__, self).__init__(
-                 num_users,
-                 num_items,
-                 num_attributes,
-                 user_representation,
-                 item_representation,
-                 actual_user_representation,
-                 actual_item_representation,
-                 probabilistic_recommendations,
-                 seed,
-                 verbose,
-                 num_items_per_iter,
-                 **kwargs
+            num_users,
+            num_items,
+            num_attributes,
+            user_representation,
+            item_representation,
+            actual_user_representation,
+            actual_item_representation,
+            probabilistic_recommendations,
+            seed,
+            verbose,
+            num_items_per_iter,
+            **kwargs
         )
 
         assert 0 < homogenization_increment < 1
 
-        # generate recommender's initial "beliefs" about user profiles
-        # and item attributes
         gen = Generator(seed=seed)
 
-
-        self.homogenized_users_hat = np.tile(gen.normal(size=(1, num_attributes)) , (self.num_users,1))
-        #attribute that retains the indivdiual users' preference representation in the algorithn
+        self.homogenized_users_hat = np.tile(
+            gen.normal(size=(1, num_attributes)), (self.num_users, 1)
+        )
+        # attribute that retains the indivdiual users' preference representation in the algorithn
         self.individual_users_hat = self.users_hat
-        #proportion of users_hat that will come from the homogenized representation
+        # proportion of users_hat that will come from the homogenized representation. Will be updated by homogenization_increment
         self.homogenization_proportion = 0
         self.homogenization_increment = homogenization_increment
 
@@ -194,7 +192,6 @@ class Homogenizer(BaseRecommender):
                 the item that the user has interacted with.
 
         """
-        #print("Homogenization proportion is {}".format(self.homogenization_proportion))
         interactions_per_user = np.zeros((self.num_users, self.num_items))
         interactions_per_user[self.users.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, self.items_hat.T)
@@ -202,12 +199,12 @@ class Homogenizer(BaseRecommender):
         self.individual_users_hat += user_attributes
 
         if self.homogenization_proportion < 1:
-            self.users_hat = (self.homogenization_proportion * self.homogenized_users_hat) + ((1-self.homogenization_proportion) * self.individual_users_hat)
+            self.users_hat = (self.homogenization_proportion * self.homogenized_users_hat) + (
+                (1 - self.homogenization_proportion) * self.individual_users_hat
+            )
             self.homogenization_proportion += self.homogenization_increment
         else:
             self.users_hat = self.homogenized_users_hat
-
-
 
     def process_new_items(self, new_items):
         """
