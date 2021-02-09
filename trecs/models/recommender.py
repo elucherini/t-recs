@@ -370,7 +370,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def choose_interleaved_items(self, k, item_indices):
         """
         Chooses k items out of the item set to "interleave" into
-        the system's recommendations.
+        the system's recommendations. **NOTE**: Currently, there
+        is no guarantee that items that are interleaved are distinct
+        from the recommended items. We do guarantee that within the
+        set of items interleaved for a particular user, there are no
+        repeats.
 
         Parameters
         -----------
@@ -394,13 +398,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if k == 0:
             return np.array([]).reshape((self.num_users, 0)).astype(int)
 
-        # NOTE: there is no guarantee that randomly interleaved items do not overlap
-        # with recommended items, since we do not have visibility into the recommended
-        # set of items.
-        # it's also possible that item indices are repeated
-        col = self.random_state.integers(item_indices.shape[1], size=(self.num_users, k))
+        # NOTE: there is currently no guarantee that randomly interleaved items do
+        # not overlap with recommended items, since we do not have visibility
+        # into the recommended set of items. we do guarantee that for every user,
+        # items will not be repeated within the set of interleaved items.
+        rand_item = self.random_state.random(item_indices.shape)
+        top_k = rand_item.argpartition(-k)[:, -k:]
         row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
-        interleaved_items = item_indices[row, col]
+        sort_top_k = rand_item[row, top_k].argsort()
+        interleaved_items = item_indices[row, top_k[row, sort_top_k]]
         return interleaved_items
 
     def recommend(

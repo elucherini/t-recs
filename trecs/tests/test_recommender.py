@@ -130,10 +130,17 @@ class TestBaseRecommender:
 
         items_per_iter = 15
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, items_per_iter, seed=1234, interleaving_fn=custom_interleaving_fn)
-        recommended = dummy.recommend(random_items_per_iter=items_per_iter) # all recommendations will be interleaved
-        # sort recommended items so they go from 0 to 14
+        recommended = dummy.recommend(random_items_per_iter=items_per_iter) # all recommendations will be interleaved items
+        # we expect every user to be recommended the expected recommendations
+        assert (recommended == recommended[0]).all() # assert all rows are the same
+
+    def test_random_interleaving(self):
+        items_per_iter = 50 # recommend from the entire item set
+        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, items_per_iter, seed=1234)
+        recommended = dummy.recommend(random_items_per_iter=items_per_iter) # all recommendations will be interleaved items
+        # we expect every user to be recommended the expected recommendations but in different orders
         rec_sort = np.sort(recommended, axis=1)
-        expected_rec = np.arange(15)
-        # we expect every user to be recommended items in a different order
-        assert (rec_sort == expected_rec).all()
+        assert not (recommended == recommended[0]).all() # interleaved recommendations should have a random order
+        assert (rec_sort == rec_sort[0]).all() # assert all rows have the same set of interleaved items
+
 
