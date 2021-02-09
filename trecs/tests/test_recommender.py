@@ -122,3 +122,18 @@ class TestBaseRecommender:
         recommended = dummy.generate_recommendations(k=5, item_indices=dummy.indices)
         # we expect every user to be recommended items in a different order
         assert not (recommended == recommended[0]).all()
+
+    def test_interleaving_fn(self):
+        def custom_interleaving_fn(k, item_indices):
+            # toy interleaving function that returns the first k indices
+            return item_indices[:, :k]
+
+        items_per_iter = 15
+        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, items_per_iter, seed=1234, interleaving_fn=custom_interleaving_fn)
+        recommended = dummy.recommend(random_items_per_iter=items_per_iter) # all recommendations will be interleaved
+        # sort recommended items so they go from 0 to 14
+        rec_sort = np.sort(recommended, axis=1)
+        expected_rec = np.arange(15)
+        # we expect every user to be recommended items in a different order
+        assert (rec_sort == expected_rec).all()
+
