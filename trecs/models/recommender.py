@@ -349,14 +349,16 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # scores are U x I; we can use argpartition to take the top k scores
             negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
             # break ties using a random score component
-            scores_tiebreak = np.zeros(negated_scores.shape, dtype=[('score', 'f8'), ('random', 'f8')])
-            scores_tiebreak['score'] = negated_scores
-            scores_tiebreak['random'] = self.random_state.random(negated_scores.shape)
-            top_k = scores_tiebreak.argpartition(k - 1, order=['score', 'random'])[:, :k]
+            scores_tiebreak = np.zeros(
+                negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")]
+            )
+            scores_tiebreak["score"] = negated_scores
+            scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
+            top_k = scores_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
             # now we sort within the top k
             row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
             # again, indices should go from highest to lowest
-            sort_top_k = scores_tiebreak[row, top_k].argsort(order=['score', 'random'])
+            sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
             rec = item_indices[
                 row, top_k[row, sort_top_k]
             ]  # extract items such that rows go from highest scored to lowest-scored of top-k
@@ -566,8 +568,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if self.creators is not None and not no_new_items:
                 self.create_and_process_items()
                 if self.expand_items_per_iter:
-                        # expand set of items recommended per iteration
-                        self.num_items_per_iter = self.num_items
+                    # expand set of items recommended per iteration
+                    self.num_items_per_iter = self.num_items
             item_idxs = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,
