@@ -569,7 +569,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.create_and_process_items()
                 if self.expand_items_per_iter:
                     # expand set of items recommended per iteration
-                    self.num_items_per_iter = self.num_items
+                    self.set_num_items_per_iter("all")
             item_idxs = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,
