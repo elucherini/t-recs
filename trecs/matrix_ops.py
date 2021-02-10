@@ -1,6 +1,163 @@
 """ Common matrix operations
 """
 import numpy as np
+import scipy.sparse as sp
+
+def to_dense(arr):
+    """
+    Convert a sparse array to a dense numpy array. If the
+    array is already a numpy array, just return it. If the
+    array passed in is a list, then we recursively apply this
+    method to its elements.
+
+    Parameters
+    -----------
+        arr : :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`, or list
+            Any matrix (or list of matrices) that must be converted
+            to a dense numpy array.
+
+    Raises
+    --------
+        TypeError
+            If the array provided is not a list, `numpy` array,
+            or `scipy.sparse` matrix.
+
+    Returns
+    --------
+        dense_args: tuple
+    """
+    if isinstance(arr, np.ndarray):
+        return arr
+    if isinstance(arr, list):
+        return [to_dense(el) for el in arr]
+    # assume it must be a `scipy.sparse.spmatrix`
+    if isinstance(arr, sp.spmatrix):
+        return arr.toarray()
+    error_msg = (
+        "Can only convert numpy matrices, scipy matrices, or "
+        "lists of those elements to dense arrays"
+    )
+    raise TypeError(error_msg)
+
+def all_to_dense(*args):
+    """
+    Returns the arguments converted to their `numpy` array
+    equivalents
+
+    Parameters
+    -----------
+        *args
+            Arbitrary arguments (`numpy` matrices, `scipy.sparse`
+            matrices, or lists containing elements of those tyeps)
+
+    Returns
+    --------
+        dense_args: tuple
+    """
+    return (to_dense(arg) for arg in args)
+
+def all_dense(*args):
+    """
+    Returns `True` if all of the arguments in the provided
+    arguments (and all nested arguments) are numpy matrices.
+
+    Parameters
+    -----------
+        *args
+            Arbitrary arguments (`numpy` matrices, `scipy.sparse`
+            matrices, or lists containing elements of those tyeps)
+
+    Returns
+    --------
+        all_dense: bool
+    """
+    for arg in args:
+        if isinstance(arg, list):
+            if not all_dense(*arg):
+                return False
+        elif not isinstance(arg, np.ndarray):
+            return False
+    return True
+
+def any_dense(*args):
+    """
+    Returns `True` if any of the arguments in the provided
+    arguments (or any nested arguments) are numpy matrices.
+
+    Parameters
+    -----------
+        *args
+            Arbitrary arguments
+
+    Returns
+    --------
+        all_dense: bool
+    """
+    for arg in args:
+        if isinstance(arg, list):
+            if any_dense(*arg):
+                return True
+        elif isinstance(arg, np.ndarray):
+            return True
+    return False
+
+def generic_matrix_op(dense_fn, sparse_fn, *matrix_args, **kwargs):
+    """
+    Applies the supplied dense function if the arguments provided are
+    numpy arrays, or applies the supplied sparse function if the
+    arguments provided are sparse matrices. Accepts optional keyword
+    arguments which are passed to the sparse/dense functions. If at least
+    one of the arguments in `matrix_args` is a numpy array, then all of
+    the `matrix_args` will be converted to numpy arrays and
+    `dense_fn` will be called; otherwise, if all of the arguments in
+    `matrix_args` are `scipy` sparse arrays, then `sparse_fn` will
+    be called.
+
+    Parameters
+    -----------
+        dense_fn: callable
+            A function that is intended to be called on `numpy`
+            arrays.
+
+        sparse_fn: callable
+            A function that is intended to be called on `scipy`
+            sparse matrices.
+
+        *args
+            Arguments for `dense_fn` or `sparse_fn`.
+
+        **kwargs
+            Optional keyword arguments that will be passed
+            to `dense_fn` or `sparse_fn`.
+
+    Returns
+    --------
+        matrix: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
+    """
+    if all_dense(*matrix_args):
+        return dense_fn(*matrix_args, **kwargs)
+    if any_dense(*matrix_args):
+        return dense_fn(*all_to_dense(*matrix_args), **kwargs)
+    return sparse_fn(*matrix_args, **kwargs)
+
+
+def hstack(matrix_list):
+    """
+    Wrapper for `numpy.hstack` and `scipy.sparse.hstack`. Horizontally
+    concatenates matrices and returns a `numpy` array or `scipy` sparse
+    matrix, depending on the arguments provided.
+
+    Parameters
+    -----------
+        matrix_list: list
+            List of matrices to be concatenated
+
+    Returns
+    --------
+        matrix: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
+            Resulting sparse matrix or dense matrix.
+    """
+    return generic_matrix_op(np.hstack, sp.hstack, matrix_list)
 
 
 def inner_product(user_profiles, item_attributes, normalize_users=True, normalize_items=False):

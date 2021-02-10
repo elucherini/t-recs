@@ -1,41 +1,42 @@
 import numpy as np
+import scipy.sparse as sp
 import test_helpers
-from trecs.matrix_ops import normalize_matrix, contains_row, slerp
+import trecs.matrix_ops as mo
 
 
 class TestMatrixOps:
     def test_normalize_matrix(self):
         # matrix that already has norm 1 columns/rows
         mat_1 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_1))
-        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_1, axis=0))
+        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_1))
+        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_1, axis=0))
 
         # matrix with norm 2 columns/rows
         mat_2 = np.array([[2, 0, 0, 0], [0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]])
-        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_2))
-        test_helpers.assert_equal_arrays(mat_1, normalize_matrix(mat_2, axis=0))
+        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_2))
+        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_2, axis=0))
 
         # check norm of all rows equals 1 after normalization
         mat_3 = np.arange(16).reshape((4, 4))
-        normalized = normalize_matrix(mat_3, axis=1)
+        normalized = mo.normalize_matrix(mat_3, axis=1)
         assert (np.linalg.norm(normalized, axis=1) == 1).all()
 
     def test_normalize_vector(self):
         vec = np.array([3, 4])
-        unit_vec = normalize_matrix(vec)
+        unit_vec = mo.normalize_matrix(vec)
         correct_unit_vec = np.array([[3 / 5, 4 / 5]])
         test_helpers.assert_equal_arrays(unit_vec, correct_unit_vec)
 
     def test_contains_row(self):
         mat = np.arange(16).reshape((4, 4))
-        assert contains_row(mat, [0, 1, 2, 3])
-        assert not contains_row(mat, [3, 2, 1, 0])
+        assert mo.contains_row(mat, [0, 1, 2, 3])
+        assert not mo.contains_row(mat, [3, 2, 1, 0])
 
     def test_slerp(self):
         # rotate unit vectors 45 degrees
         mat1 = np.array([[0, 1], [1, 0], [0, -1], [-1, 0]])
         mat2 = np.array([[1, 0], [0, -1], [-1, 0], [0, 1]])
-        rotated = slerp(mat1, mat2, perc=0.5)
+        rotated = mo.slerp(mat1, mat2, perc=0.5)
         correct_rotation = np.array(
             [
                 [np.sqrt(2) / 2, np.sqrt(2) / 2],
@@ -50,12 +51,12 @@ class TestMatrixOps:
         # increase norm of vectors and check that norm of rotated vectors
         # does not change
         mat1_big = np.array([[0, 2], [2, 0], [0, -2], [-2, 0]])
-        rotated = slerp(mat1_big, mat2, perc=0.5)
+        rotated = mo.slerp(mat1_big, mat2, perc=0.5)
         np.testing.assert_array_almost_equal(rotated, 2 * correct_rotation)
 
         # only rotate 5% and then verify that the angle between each row of the
         # resulting matrix and the target matrix is 0.95 * 90
-        rotated = slerp(mat1, mat2, perc=0.05)
+        rotated = mo.slerp(mat1, mat2, perc=0.05)
         theta = np.arccos((rotated * mat2).sum(axis=1))
         test_helpers.assert_equal_arrays(theta, np.repeat([np.pi / 2 * 0.95], 4))
 
@@ -63,5 +64,41 @@ class TestMatrixOps:
         vec1 = np.array([np.sqrt(2) / 2, np.sqrt(2) / 2])
         vec2 = np.array([np.sqrt(2) / 2, -np.sqrt(2) / 2])
         correct_rotation = np.array([[1, 0]])
-        rotated = slerp(vec1, vec2, perc=0.5)
+        rotated = mo.slerp(vec1, vec2, perc=0.5)
         test_helpers.assert_equal_arrays(rotated, correct_rotation)
+
+    def test_sparse_and_dense(self):
+        x = np.zeros((3, 4))
+        y = np.ones((3, 5))
+        assert mo.all_dense(x, y)
+        assert mo.all_dense([x, y])
+
+        y = sp.csr_matrix(y)
+
+        assert not mo.all_dense(x, y)
+        assert not mo.all_dense([x, y])
+        assert mo.any_dense(x, y)
+        assert mo.any_dense([x, y])
+
+        x = sp.csr_matrix(x)
+        assert not mo.all_dense(x, y)
+        assert not mo.all_dense([x, y])
+        assert not mo.any_dense(x, y)
+        assert not mo.any_dense([x, y])
+
+    def test_hstack(self):
+        x = np.zeros((3, 4))
+        y = np.ones((3, 5))
+        z = mo.hstack([x, y])
+        assert isinstance(z, np.ndarray)
+
+        y = sp.csr_matrix(y)
+        z = mo.hstack([x, y])
+        # if at least one argument is dense, all other arguments should be
+        # converted to dense, and the result returned should be dense
+        assert isinstance(z, np.ndarray)
+        # if all arguments are sparse, then the return value should be
+        # sparse
+        x = sp.coo_matrix(x)
+        z = mo.hstack([x, y])
+        assert isinstance(z, sp.spmatrix)
