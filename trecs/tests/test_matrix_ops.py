@@ -102,3 +102,16 @@ class TestMatrixOps:
         x = sp.coo_matrix(x)
         z = mo.hstack([x, y])
         assert isinstance(z, sp.spmatrix)
+
+    def test_add_empty_cols(self):
+        x = np.ones((3, 5))
+        y = mo.add_empty_cols(x, 5)
+        assert isinstance(y, np.ndarray)
+        assert y.shape == (3, 10)
+        assert (y[:, 5:] == 0).all()
+
+        x = sp.csr_matrix(x)
+        y = mo.add_empty_cols(x, 5)
+        assert isinstance(y, sp.spmatrix)
+        assert y.shape == (3, 10)
+        assert (y.toarray()[:, 5:] == 0).all()

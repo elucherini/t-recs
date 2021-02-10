@@ -160,6 +160,36 @@ def hstack(matrix_list):
     return generic_matrix_op(np.hstack, sp.hstack, matrix_list)
 
 
+def add_empty_cols(matrix, num_cols):
+    """
+    Adds empty columns to a matrix, which can be either a sparse
+    matrix or a dense `numpy` array. These columns will be filled
+    wiht zeroes.
+
+    Parameters
+    -----------
+        matrix: list
+            Matrix which we want to append empty columns to.
+
+    Raises
+    --------
+        TypeError
+            If the matrix provided is not a `numpy` array
+            or a `scipy.sparse` matrix.
+
+    Returns
+    --------
+        matrix: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
+            Resulting sparse matrix or dense matrix.
+    """
+    if not isinstance(matrix, (np.ndarray, sp.spmatrix)):
+        raise TypeError("Matrix must be a numpy array or scipy sparse matrix")
+    if any_dense(matrix):
+        return np.hstack([matrix, np.zeros((matrix.shape[0], num_cols))])
+    else:
+        return sp.hstack([matrix, sp.csr_matrix((matrix.shape[0], num_cols))])
+
+
 def inner_product(user_profiles, item_attributes, normalize_users=True, normalize_items=False):
     """
     Performs a dot product multiplication between user profiles and
