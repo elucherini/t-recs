@@ -148,7 +148,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             candidate item. The score function should take as input
             user_profiles and item_attributes.
 
-        repeat_items: bool (optional, default: True)
+        repeat_interactions: bool (optional, default: True)
             If `True`, then users will interact with items regardless of whether
             they have already interacted with them before. If `False`, users
             will not perform repeat interactions.
@@ -175,7 +175,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         verbose=False,
         seed=None,
         attention_exp=0.0,
-        repeat_items=True,
+        repeat_interactions=True,
     ):  # pylint: disable=too-many-arguments
         self.rng = Generator(seed=seed)
         # general input checks
@@ -209,8 +209,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
         self.user_vector = np.arange(num_users, dtype=int)
-        self.repeat_items = repeat_items
-        if not repeat_items:
+        self.repeat_interactions = repeat_interactions
+        if not repeat_interactions:
             self.user_interactions = np.array([], dtype=int).reshape((num_users, 0))
         self.name = "actual_user_scores"
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
@@ -351,7 +351,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         reshaped_user_vector = self.user_vector.reshape((-1, 1))  # turn into column
 
         user_item_scores = self.actual_user_scores
-        if not self.repeat_items:
+        if not self.repeat_interactions:
             # scores for items already interacted with go to negative infinity
             num_past_interactions = self.user_interactions.shape[1]
             user_rows = np.tile(reshaped_user_vector, num_past_interactions)
@@ -379,7 +379,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             # update user scores
             self.compute_user_scores(item_attributes)
         # record interactions if needed to ensure users don't repeat interactions
-        if not self.repeat_items:
+        if not self.repeat_interactions:
             interactions_col = interactions.reshape((-1, 1))
             # append interactions as column of user interactions
             self.user_interactions = np.hstack([self.user_interactions, interactions_col])

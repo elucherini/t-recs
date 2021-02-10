@@ -120,7 +120,7 @@ class TestUsers:
         num_users = 5
         num_attr = 4
         num_items = 5
-        users = Users(np.ones((num_users, num_attr)), repeat_items=False)
+        users = Users(np.ones((num_users, num_attr)), repeat_interactions=False)
         # first item is most desirable because its attributes are all 0,
         # second item is second most desirable because attributes are all -1, etc.
         items = np.tile(np.arange(num_items) * -1, (num_attr, 1))
