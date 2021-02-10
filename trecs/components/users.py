@@ -5,7 +5,7 @@ encapsulates some of these concepts)
 """
 import numpy as np
 
-from trecs.matrix_ops import contains_row, slerp, inner_product
+import trecs.matrix_ops as mo
 from trecs.random import Generator
 from trecs.utils import check_consistency
 from .base_components import Component, BaseComponent
@@ -166,7 +166,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         size=None,
         num_users=None,
         drift=0,
-        score_fn=inner_product,
+        score_fn=mo.inner_product,
         verbose=False,
         seed=None,
         attention_exp=0.0,
@@ -187,7 +187,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
-            while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
+            while actual_user_profiles is None or mo.contains_row(actual_user_profiles, row_zeros):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = self.rng.normal(size=size)
 
@@ -318,6 +318,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         items_shown: :obj:`numpy.ndarray`): A
             :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
+
         item_attributes: :obj:`numpy.ndarray`):
             A :math:`|A|\\times|I|` matrix with item attributes.
 
@@ -377,7 +378,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized
-        self.actual_user_profiles = slerp(
+        self.actual_user_profiles = mo.slerp(
             self.actual_user_profiles, item_attributes, perc=self.drift
         )
 
@@ -417,7 +418,7 @@ class DNUsers(Users):
         size=None,
         num_users=None,
         drift=0,
-        score_fn=inner_product,
+        score_fn=mo.inner_product,
         sigma=0.0,
         omega=0.2376,
         beta=0.9739,

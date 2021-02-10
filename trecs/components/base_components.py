@@ -9,28 +9,6 @@ from trecs.logging import VerboseMode
 from trecs.random import Generator
 
 
-class FromNdArray:
-    """Subclass for Numpy's ndarrays."""
-
-    def __new__(cls, input_array, verbose=False):
-        if not isinstance(input_array, csr_matrix): # default to cast to numpy array
-            obj = np.asarray(input_array)
-        else:
-            obj = input_array
-        return obj
-
-    def __init__(self, *args, **kwargs):  # pylint: disable=super-init-not-called
-        pass
-
-    def __array_finalize__(self, obj):
-        """ Set the verbosity based on the object passed in """
-        if obj is None:
-            return
-        self.verbose = getattr(  # pylint: disable=attribute-defined-outside-init
-            obj, "verbose", False
-        )
-
-
 # Observer methods for the observer design pattern
 def register_observables(observer, observables=None, observable_type=None):
     """Add items in observables to observer list"""
@@ -109,7 +87,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         return len(self.state_history)
 
 
-class Component(FromNdArray, BaseComponent):
+class Component(BaseComponent):
     """Class for components that make up the system state."""
 
     def __init__(

@@ -15,7 +15,7 @@ from trecs.components import (
     SystemStateModule,
 )
 from trecs.logging import VerboseMode
-from trecs.matrix_ops import inner_product
+import trecs.matrix_ops as mo
 from trecs.random import Generator
 from trecs.utils import is_valid_or_none
 
@@ -154,7 +154,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         measurements=None,
         record_base_state=False,
         system_state=None,
-        score_fn=inner_product,
+        score_fn=mo.inner_product,
         verbose=False,
         seed=None,
     ):
@@ -268,7 +268,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        predicted_scores = self.score_fn(self.users_hat, self.items_hat)
+        predicted_scores = self.score_fn(self.users_hat.current_state, self.items_hat.current_state)
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
@@ -570,7 +570,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         new_items = self.creators.generate_items()  # should be A x I
         self.num_items += new_items.shape[1]  # increment number of items
         # concatenate old items with new items
-        self.items = np.hstack([self.items, new_items])
+        self.items.append_items(new_items)
         # generate new internal system representations of the items
         self.process_new_items(new_items)
         self.add_new_item_indices(new_items.shape[1])

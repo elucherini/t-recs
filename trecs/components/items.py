@@ -1,6 +1,7 @@
 """ Class definition for Items in our recommender systems - can represent anything
     ranging from disease to consumer goods
 """
+import trecs.matrix_ops as mo
 from .base_components import Component
 
 
@@ -51,3 +52,6 @@ class Items(Component):  # pylint: disable=too-many-ancestors
         Component.__init__(
             self, current_state=item_attributes, size=size, verbose=verbose, seed=seed
         )
+
+    def append_items(self, new_items):
+        self.current_state = mo.hstack([self.current_state, new_items])

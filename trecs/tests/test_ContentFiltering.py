@@ -4,8 +4,7 @@ from trecs.components import Users, Creators
 import numpy as np
 import pytest
 import test_helpers
-from trecs.matrix_ops import normalize_matrix
-
+import trecs.matrix_ops as mo
 
 class TestContentFiltering:
     def test_default(self):
@@ -288,7 +287,7 @@ class TestContentFiltering:
         new_dist = np.linalg.norm(item_repr.T - users.actual_user_profiles, axis=1)
         assert (new_dist < orig_dist).all()
         # let's go further and check that angles are decreased by 50% too!
-        item_norm = normalize_matrix(item_repr.T)
+        item_norm = mo.normalize_matrix(item_repr.T)
         orig_angles = np.arccos((user_repr * item_norm).sum(axis=1))
         new_angles = np.arccos((users.actual_user_profiles * item_norm).sum(axis=1))
         np.testing.assert_array_almost_equal(0.5 * orig_angles, new_angles)

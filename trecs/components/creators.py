@@ -5,7 +5,7 @@ encapsulates some of these concepts)
 """
 import numpy as np
 
-from trecs.matrix_ops import contains_row
+import trecs.matrix_ops as mo
 from trecs.random import Generator
 from .base_components import BaseComponent
 
@@ -83,7 +83,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
             raise TypeError("size must be a tuple, is %s" % type(size))
         if actual_creator_profiles is None and size is not None:
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
-            while actual_creator_profiles is None or contains_row(
+            while actual_creator_profiles is None or mo.contains_row(
                 actual_creator_profiles, row_zeros
             ):
                 # generate matrix until no row is the zero vector
