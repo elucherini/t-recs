@@ -4,10 +4,10 @@ interacted with by users in their social networks
 """
 import networkx as nx
 import numpy as np
+import trecs.matrix_ops as mo
 from trecs.metrics import MSEMeasurement
 from trecs.components import BinarySocialGraph
 from trecs.random import SocialGraphGenerator
-from trecs.utils import get_first_valid, non_none_values
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 

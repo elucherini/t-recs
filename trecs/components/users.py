@@ -24,6 +24,19 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
             self, current_state=predicted_scores, size=None, verbose=verbose, seed=None
         )
 
+    def set_scores(self, new_scores):
+        """
+        Simply set the current state to the new scores.
+
+        Parameters
+        -------------
+
+        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            Score representation to update to.
+
+        """
+        self.current_state = new_scores
+
 
 class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """

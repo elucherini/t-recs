@@ -108,6 +108,9 @@ class Component(BaseComponent):
         self.verbose = verbose
         BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
 
+    def get_value(self):
+        return self.current_state
+
     def store_state(self):
         """ Store a copy of the component's value in the state history """
         self.observe(self, copy=True)

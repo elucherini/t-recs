@@ -268,7 +268,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        predicted_scores = self.score_fn(self.users_hat.current_state, self.items_hat.current_state)
+        predicted_scores = self.score_fn(self.users_hat.get_value(), self.items_hat.get_value())
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
@@ -279,13 +279,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            # resize for new items if necessary
-            new_items = predicted_scores.shape[1] - self.predicted_scores.shape[1]
-            if new_items != 0:
-                self.predicted_scores = np.hstack(
-                    [self.predicted_scores, np.zeros((self.num_users, new_items))]
-                )
-            self.predicted_scores[:, :] = predicted_scores
+            self.predicted_scores.set_scores(predicted_scores)
 
     def generate_recommendations(self, k=1, item_indices=None):
         """
