@@ -199,7 +199,7 @@ class ContentFiltering(BaseRecommender):
         interactions_per_user = np.zeros((self.num_users, self.num_items))
         interactions_per_user[self.users.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, self.items_hat.T)
-        self.users_hat += user_attributes
+        np.add(self.users_hat, user_attributes, out=self.users_hat, casting="unsafe")
 
     def process_new_items(self, new_items):
         """
