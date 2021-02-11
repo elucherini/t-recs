@@ -2,7 +2,7 @@
     ranging from disease to consumer goods
 """
 import trecs.matrix_ops as mo
-from .base_components import Component
+from trecs.base import Component
 
 
 class Items(Component):  # pylint: disable=too-many-ancestors
@@ -55,3 +55,38 @@ class Items(Component):  # pylint: disable=too-many-ancestors
 
     def append_items(self, new_items):
         self.current_state = mo.hstack([self.current_state, new_items])
+
+    @property
+    def num_attr(self):
+        # rows = attributes, cols = items
+        return self.current_state.shape[0]
+
+    @property
+    def num_items(self):
+        # rows = attributes, cols = items
+        return self.current_state.shape[1]
+
+
+class PredictedItems(Component):  # pylint: disable=too-many-ancestors
+    """
+    TODO: write docstring
+    """
+
+    def __init__(self, item_attributes=None, size=None, verbose=False, seed=None):
+        self.name = "predicted_items"
+        Component.__init__(
+            self, current_state=item_attributes, size=size, verbose=verbose, seed=seed
+        )
+
+    def append_items(self, new_items):
+        self.current_state = mo.hstack([self.current_state, new_items])
+
+    @property
+    def num_attr(self):
+        # rows = attributes, cols = items
+        return self.current_state.shape[0]
+
+    @property
+    def num_items(self):
+        # rows = attributes, cols = items
+        return self.current_state.shape[1]

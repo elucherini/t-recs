@@ -5,7 +5,7 @@ virality in online communications.
 import networkx as nx
 import numpy as np
 from trecs.components import BinarySocialGraph
-from trecs.components import Component
+from trecs.base import Component
 from trecs.random import Generator, SocialGraphGenerator
 from trecs.metrics import StructuralVirality
 from trecs.utils import (

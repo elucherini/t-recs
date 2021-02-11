@@ -6,13 +6,14 @@ from abc import ABC, abstractmethod
 import numpy as np
 from tqdm import tqdm
 from trecs.metrics import MeasurementModule
+from trecs.base import SystemStateModule
 from trecs.components import (
     Users,
     Items,
     Creators,
     PredictedScores,
-    PredictedUserProfiles,
-    SystemStateModule,
+    PredictedUsers,
+    PredictedItems
 )
 from trecs.logging import VerboseMode
 import trecs.matrix_ops as mo
@@ -84,7 +85,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     Attributes
     -----------
 
-        users_hat: :class:`~components.users.PredictedUserProfiles`
+        users_hat: :class:`~components.users.PredictedUsers`
             An array representing users, matching user_representation. The
             shape and meaning depends on the implementation of the concrete
             class.
@@ -166,8 +167,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.add_metrics(*measurements)
         # init the recommender system's internal representation of users
         # and items
-        self.users_hat = PredictedUserProfiles(users_hat)
-        self.items_hat = Items(items_hat)
+        self.users_hat = PredictedUsers(users_hat)
+        self.items_hat = PredictedItems(items_hat)
         assert callable(score_fn)  # score function must be a function
         self.score_fn = score_fn
         # set predicted scores
@@ -279,7 +280,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            self.predicted_scores.set_scores(predicted_scores)
+            self.predicted_scores.set_value(predicted_scores)
 
     def generate_recommendations(self, k=1, item_indices=None):
         """
@@ -314,9 +315,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 )
         if k == 0:
             return np.array([]).reshape((self.num_users, 0)).astype(int)
+        s_filtered = self.predicted_scores.filter_by_index(item_indices)
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
-        s_filtered = self.predicted_scores[row, item_indices]
         # scores are U x I; we can use argsort to sort the item indices
         # from low to high scores
         permutation = s_filtered.argsort()

@@ -3,6 +3,7 @@
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse.linalg import norm
+from trecs.base import Component
 
 def to_dense(arr):
     """
@@ -40,6 +41,7 @@ def to_dense(arr):
     )
     raise TypeError(error_msg)
 
+
 def all_to_dense(*args):
     """
     Returns the arguments converted to their `numpy` array
@@ -56,6 +58,7 @@ def all_to_dense(*args):
         dense_args: tuple
     """
     return (to_dense(arg) for arg in args)
+
 
 def all_dense(*args):
     """
@@ -127,6 +130,16 @@ def any_dense(*args):
             return True
     return False
 
+
+def extract_values(arg):
+    """
+    TODO: write documentation
+    """
+    if isinstance(arg, Component):
+        return arg.current_state
+    return arg
+
+
 def generic_matrix_op(dense_fn, sparse_fn, *matrix_args, **kwargs):
     """
     Applies the supplied dense function if the arguments provided are
@@ -160,6 +173,8 @@ def generic_matrix_op(dense_fn, sparse_fn, *matrix_args, **kwargs):
     --------
         matrix: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
     """
+    # if arguments are Components, we extract their matrix values
+    matrix_args = [extract_values(arg) for arg in matrix_args]
     if all_dense(*matrix_args):
         return dense_fn(*matrix_args, **kwargs)
     if any_dense(*matrix_args):

@@ -7,7 +7,7 @@ import networkx as nx
 from networkx import wiener_index
 import numpy as np
 from trecs.logging import VerboseMode
-from trecs.components import (
+from trecs.base import (
     BaseObservable,
     register_observables,
 )

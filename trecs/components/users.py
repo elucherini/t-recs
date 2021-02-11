@@ -8,7 +8,7 @@ import numpy as np
 import trecs.matrix_ops as mo
 from trecs.random import Generator
 from trecs.utils import check_consistency
-from .base_components import Component, BaseComponent
+from trecs.base import Component, BaseComponent
 
 
 class PredictedScores(Component):  # pylint: disable=too-many-ancestors
@@ -24,7 +24,7 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
             self, current_state=predicted_scores, size=None, verbose=verbose, seed=None
         )
 
-    def set_scores(self, new_scores):
+    def filter_by_index(self, item_indices):
         """
         Simply set the current state to the new scores.
 
@@ -35,10 +35,28 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
             Score representation to update to.
 
         """
-        self.current_state = new_scores
+        if item_indices.shape[0] != self.current_state.shape[0]:
+            error_msg = (
+                "Number of users does not match between score matrix "
+                "and item index matrix"
+            )
+            raise ValueError(error_msg)
+        # generates row matrix like the following:
+        # [0, 0, 0, ..., 0]
+        # [1, 1, 1, ..., 1]
+        # [     ...       ]
+        # [n, n, n, ..., n]
+        num_users = item_indices.shape[0]
+        row = np.repeat(np.arange(num_users), item_indices.shape[1]).reshape((num_users, -1))
+        # for now, we have to keep the score matrix a dense array because scipy
+        # sparse has no equivalent of argsort
+        # TODO: look into potential solutions using things like Numba to maintain
+        # speed?
+        # https://stackoverflow.com/questions/31790819/scipy-sparse-csr-matrix-how-to-get-top-ten-values-and-indices
+        return mo.to_dense(self.current_state)[row, item_indices]
 
 
-class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
+class PredictedUsers(Component):  # pylint: disable=too-many-ancestors
     """
     User profiles as predicted by the model. This class is a container
     compatible with Numpy operations and it does not make assumptions on the
@@ -46,7 +64,7 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
 
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
-        self.name = "predicted_user_profiles"
+        self.name = "predicted_users"
         Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
 
 
@@ -60,6 +78,36 @@ class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
         self.name = "actual_user_profiles"
         Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
+
+
+class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
+    """
+    Real matrix of user-item scores, unknown to the model.
+    """
+
+    def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
+        self.name = "actual_user_scores"
+        if user_profiles is not None:
+            num_users, num_items = user_profiles.shape
+            self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+        else:
+            self.user_rows = None
+        Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
+
+    def get_item_scores(self, items_shown):
+        """
+        Return the user scores for the items shown, in the correct
+        order specified.
+        """
+        if self.user_rows is None:
+            num_users, num_items = self.current_state.shape
+            self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+        num_items = items_shown.shape[1]
+        return self.current_state[self.user_rows[:, :num_items], items_shown]
+
+    def append_new_scores(self, new_scores):
+        self.current_state = mo.hstack([self.current_state, new_scores])
+
 
 
 class Users(BaseComponent):  # pylint: disable=too-many-ancestors
@@ -260,12 +308,14 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
         actual_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles, item_attributes=item_attributes
+            user_profiles=self.actual_user_profiles.get_value(),
+            item_attributes=item_attributes.get_value()
         )
         if self.actual_user_scores is None:
-            self.actual_user_scores = actual_scores
+            self.actual_user_scores = ActualUserScores(actual_scores)
         else:
-            self.actual_user_scores[:, :] = actual_scores
+            self.actual_user_scores.set_value(actual_scores)
+
 
         self.store_state()
 
@@ -287,7 +337,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         new_scores = self.score_fn(
             user_profiles=self.actual_user_profiles, item_attributes=new_items
         )
-        self.actual_user_scores = np.hstack([self.actual_user_scores, new_scores])
+        self.actual_user_scores.append_new_scores(new_scores)
         self.store_state()
 
     def get_actual_user_scores(self, user=None):
@@ -353,8 +403,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         item_attributes = kwargs.pop("item_attributes", None)
         if items_shown is None:
             raise ValueError("Items can't be None")
-        reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
-        user_interactions = self.actual_user_scores[reshaped_user_vector, items_shown]
+        user_interactions = self.actual_user_scores.get_item_scores(items_shown)
         if self.attention_exp != 0:
             idxs = np.arange(items_shown.shape[1]) + 1
             multiplier = np.power(idxs, self.attention_exp)

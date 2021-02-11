@@ -7,7 +7,7 @@ import numpy as np
 
 import trecs.matrix_ops as mo
 from trecs.random import Generator
-from .base_components import BaseComponent
+from trecs.base import BaseComponent
 
 
 class Creators(BaseComponent):  # pylint: disable=too-many-ancestors

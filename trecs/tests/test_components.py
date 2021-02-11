@@ -1,11 +1,11 @@
 from trecs.models.recommender import SystemStateModule
-from trecs.components import PredictedUserProfiles
+from trecs.components import PredictedUsers
 import numpy as np
 
 
 class TestComponents:
     def test_system_state(self):
-        profiles = PredictedUserProfiles(np.zeros((5, 5)))
+        profiles = PredictedUsers(np.zeros((5, 5)))
         sys = SystemStateModule()
         sys.add_state_variable(profiles)
 
@@ -21,7 +21,7 @@ class TestComponents:
         np.testing.assert_array_equal(profiles.state_history[2], 2 * np.ones((5, 5)))
 
     def test_closed_logger(self):
-        profiles = PredictedUserProfiles(np.zeros((5, 5)))
+        profiles = PredictedUsers(np.zeros((5, 5)))
         logger = profiles._logger.logger  # pylint: disable=protected-access
         handler = profiles._logger.handler  # pylint: disable=protected-access
         assert len(logger.handlers) > 0  # before garbage collection

@@ -111,6 +111,9 @@ class Component(BaseComponent):
     def get_value(self):
         return self.current_state
 
+    def set_value(self, state):
+        self.current_state = state
+
     def store_state(self):
         """ Store a copy of the component's value in the state history """
         self.observe(self, copy=True)
