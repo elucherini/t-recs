@@ -5,6 +5,7 @@ implementable in our simulation library
 from abc import ABC, abstractmethod
 import numpy as np
 from tqdm import tqdm
+import warnings
 from trecs.metrics import MeasurementModule
 from trecs.components import (
     Users,
@@ -560,6 +561,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 can be helpful, say, during a "training" period where no new items should be
                 made.
         """
+        if len(self.metrics) == 0: # warn user if no measurements are defined
+            error_msg = (
+                "No measurements are currently defined for the simulation. Please add "
+                "measurements if desired."
+            )
+            warnings.warn(error_msg)
         if not startup and self.is_verbose():
             self.log("Running recommendation simulation using recommendation algorithm...")
         for timestep in tqdm(range(timesteps)):
@@ -674,7 +681,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Monitored measurements: dict
         """
         if len(self.metrics) < 1:
-            raise ValueError("No measurement module defined")
+            return None
         measurements = dict()
         for metric in self.metrics:
             measurements = {**measurements, **metric.get_measurement()}
