@@ -8,11 +8,11 @@ import test_helpers
 class TestImplicitMF:
     def test_default(self):
         mf = ImplicitMF(seed=123)
-        test_helpers.assert_correct_num_users(mf.num_users, mf, mf.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(mf.num_items, mf, mf.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(mf.num_users, mf, mf.users_hat.num_users)
+        test_helpers.assert_correct_num_items(mf.num_items, mf, mf.items_hat.num_items)
         # assert dimensions match up to latent features
-        assert mf.num_latent_factors == mf.users_hat.shape[1]
-        assert mf.num_latent_factors == mf.items_hat.shape[0]
+        assert mf.num_latent_factors == mf.users_hat.num_attrs
+        assert mf.num_latent_factors == mf.items_hat.num_attrs
         assert mf.num_latent_factors == 10
         assert mf.num_users == 100
         assert mf.num_items == 1250

@@ -131,7 +131,7 @@ def any_dense(*args):
     return False
 
 
-def extract_values(arg):
+def extract_value(arg):
     """
     TODO: write documentation
     """
@@ -139,6 +139,21 @@ def extract_values(arg):
         return arg.current_state
     return arg
 
+def extract_values(*args):
+    """
+    TODO: write documentation
+    """
+    processed = [extract_value(arg) for arg in args]
+    if len(processed) == 1:
+        return processed[0]
+    return processed
+
+def transpose(mat):
+    """
+    TODO: write documentation
+    """
+    mat = extract_value(mat)
+    return mat.T
 
 def generic_matrix_op(dense_fn, sparse_fn, *matrix_args, **kwargs):
     """
@@ -174,7 +189,7 @@ def generic_matrix_op(dense_fn, sparse_fn, *matrix_args, **kwargs):
         matrix: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
     """
     # if arguments are Components, we extract their matrix values
-    matrix_args = [extract_values(arg) for arg in matrix_args]
+    matrix_args = extract_values(matrix_args)
     if all_dense(*matrix_args):
         return dense_fn(*matrix_args, **kwargs)
     if any_dense(*matrix_args):
@@ -344,6 +359,8 @@ def slerp(mat1, mat2, perc=0.05):
             Parameter in [0,1] inclusive that specifies the percentage
             of rotation.
     """
+    # in case Components were passed
+    mat1, mat2 = extract_values(mat1, mat2)
     assert 0 <= perc <= 1.0
     assert mat1.shape == mat2.shape  # arrays should have same dimension
     if len(mat1.shape) == 1:

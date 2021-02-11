@@ -377,7 +377,7 @@ class MSEMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        diff = recommender.predicted_scores - recommender.users.actual_user_scores
+        diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
 
 

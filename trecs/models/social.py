@@ -225,4 +225,4 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         """
         # users have never interacted with new items
         new_representation = np.zeros((self.num_users, new_items.shape[1]))
-        self.items_hat = np.hstack([self.items_hat, new_representation])
+        self.items_hat.append_items(new_representation)

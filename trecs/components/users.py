@@ -67,6 +67,14 @@ class PredictedUsers(Component):  # pylint: disable=too-many-ancestors
         self.name = "predicted_users"
         Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
 
+    @property
+    def num_users(self):
+        return self.current_state.shape[0]
+
+    @property
+    def num_attrs(self):
+        return self.current_state.shape[1]
+
 
 class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
@@ -265,7 +273,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.actual_user_scores = actual_user_scores
         self.user_vector = np.arange(num_users, dtype=int)
         self.name = "actual_user_scores"
-        BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_profiles.value)
 
     def set_score_function(self, score_fn):
         """Users "score" items before "deciding" which item to interact with.
@@ -308,16 +316,16 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
         actual_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles.get_value(),
-            item_attributes=item_attributes.get_value()
+            user_profiles=self.actual_user_profiles.value,
+            item_attributes=item_attributes
         )
         if self.actual_user_scores is None:
             self.actual_user_scores = ActualUserScores(actual_scores)
         else:
-            self.actual_user_scores.set_value(actual_scores)
+            self.actual_user_scores.value = actual_scores
 
 
-        self.store_state()
+        self.actual_user_scores.store_state()
 
     def score_new_items(self, new_items):
         """
@@ -335,10 +343,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             number of items and :math:`|A|` is the number of attributes.
         """
         new_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles, item_attributes=new_items
+            user_profiles=self.actual_user_profiles.value,
+            item_attributes=new_items
         )
         self.actual_user_scores.append_new_scores(new_scores)
-        self.store_state()
+        self.actual_user_scores.store_state()
 
     def get_actual_user_scores(self, user=None):
         """
@@ -440,13 +449,13 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized
-        self.actual_user_profiles = mo.slerp(
+        self.actual_user_profiles.value = mo.slerp(
             self.actual_user_profiles, item_attributes, perc=self.drift
         )
 
     def store_state(self):
         """ Store the actual user scores in the state history """
-        self.state_history.append(np.copy(self.actual_user_scores))
+        self.state_history.append(np.copy(self.actual_user_scores.value))
 
 
 class DNUsers(Users):

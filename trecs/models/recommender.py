@@ -193,7 +193,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if not is_valid_or_none(users, (list, np.ndarray, Users)):
             raise TypeError("users must be array_like or Users")
         if users is None:
-            self.users = Users(size=self.users_hat.shape, num_users=num_users, seed=seed)
+            shape = (self.users_hat.num_users, self.users_hat.num_attrs)
+            self.users = Users(size=shape, num_users=num_users, seed=seed)
         if isinstance(users, (list, np.ndarray)):
             # assume that's what passed in is the user's profiles
             self.users = Users(actual_user_profiles=users, num_users=num_users)
@@ -257,7 +258,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
         if self.users.get_actual_user_scores() is None:
-            self.users.compute_user_scores(self.items)
+            self.users.compute_user_scores(self.items.value)
 
     def train(self):
         """
@@ -269,7 +270,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        predicted_scores = self.score_fn(self.users_hat.get_value(), self.items_hat.get_value())
+        predicted_scores = self.score_fn(self.users_hat.value, self.items_hat.value)
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
@@ -280,7 +281,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            self.predicted_scores.set_value(predicted_scores)
+            self.predicted_scores.value = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
         """
@@ -517,7 +518,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
-                items_shown=item_idxs, item_attributes=self.items
+                items_shown=item_idxs, item_attributes=self.items.value
             )
             if not repeated_items:
                 self.indices[self.users.user_vector, interactions] = -1

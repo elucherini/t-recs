@@ -22,8 +22,8 @@ def register_observables(observer, observables=None, observable_type=None):
     for observable in observables:
         if isinstance(observable, observable_type):
             new_observables.append(observable)
-        # else:
-        #     raise ValueError(f"Observables must be of type {observable_type}")
+        else:
+            raise ValueError(f"Observables must be of type {observable_type}")
     observer.extend(new_observables)
 
 
@@ -108,15 +108,17 @@ class Component(BaseComponent):
         self.verbose = verbose
         BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
 
-    def get_value(self):
+    @property
+    def value(self):
         return self.current_state
 
-    def set_value(self, state):
+    @value.setter
+    def value(self, state):
         self.current_state = state
 
     def store_state(self):
         """ Store a copy of the component's value in the state history """
-        self.observe(self, copy=True)
+        self.observe(self.current_state, copy=True)
 
 
 class SystemStateModule:  # pylint: disable=too-few-public-methods

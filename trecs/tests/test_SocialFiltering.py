@@ -8,9 +8,9 @@ import pytest
 class TestSocialFiltering:
     def test_default(self):
         s = SocialFiltering()
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
         # did not set seed, show random behavior
         s1 = SocialFiltering()
@@ -24,9 +24,9 @@ class TestSocialFiltering:
         if users is None:
             users = np.random.randint(10, 100)
         s = SocialFiltering(num_users=users, num_items=items)
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
         # did not set seed, show random behavior
         s1 = SocialFiltering(num_users=users, num_items=items)
@@ -41,9 +41,9 @@ class TestSocialFiltering:
             users = np.random.randint(10, 100)
         # init with partially given arguments
         s = SocialFiltering(num_users=users)
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
@@ -53,9 +53,9 @@ class TestSocialFiltering:
             test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
 
         s = SocialFiltering(num_items=items)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
@@ -74,9 +74,9 @@ class TestSocialFiltering:
             user_repr = np.random.randint(2, size=(users, users))
         # test item representation
         s = SocialFiltering(item_representation=item_repr)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
@@ -88,21 +88,21 @@ class TestSocialFiltering:
 
         # test user representation
         s = SocialFiltering(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test item and user representations
         s = SocialFiltering(user_representation=user_repr, item_representation=item_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
@@ -122,9 +122,9 @@ class TestSocialFiltering:
         s = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter)
         assert num_items_per_iter == s.num_items_per_iter
         # also check other params
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
