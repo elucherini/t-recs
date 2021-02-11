@@ -373,7 +373,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def choose_interleaved_items(self, k, item_indices):
         """
         Chooses k items out of the item set to "interleave" into
-        the system's recommendations. **NOTE**: Currently, there
+        the system's recommendations. In this case, we define "interleaving"
+        as a process by which items can be inserted into the set of items
+        shown to the user, in addition to the recommended items that
+        maximize the predicted score. For example, users may want to insert
+        random interleaved items to increase the "exploration" of the
+        recommender system, or may want to ensure that new items are always
+        interleaved into the item set shown to users.
+        **NOTE**: Currently, there
         is no guarantee that items that are interleaved are distinct
         from the recommended items. We do guarantee that within the
         set of items interleaved for a particular user, there are no
