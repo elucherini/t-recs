@@ -2,6 +2,7 @@
 """
 import numpy as np
 import scipy.sparse as sp
+from scipy.sparse.linalg import norm
 
 def to_dense(arr):
     """
@@ -65,7 +66,7 @@ def all_dense(*args):
     -----------
         *args
             Arbitrary arguments (`numpy` matrices, `scipy.sparse`
-            matrices, or lists containing elements of those tyeps)
+            matrices, or lists containing elements of those types)
 
     Returns
     --------
@@ -78,6 +79,31 @@ def all_dense(*args):
         elif not isinstance(arg, np.ndarray):
             return False
     return True
+
+
+def all_sparse(*args):
+    """
+    Returns `True` if all of the arguments in the provided
+    arguments (and all nested arguments) are scipy sparse matrices.
+
+    Parameters
+    -----------
+        *args
+            Arbitrary arguments (`numpy` matrices, `scipy.sparse`
+            matrices, or lists containing elements of those types)
+
+    Returns
+    --------
+        all_sparse: bool
+    """
+    for arg in args:
+        if isinstance(arg, list):
+            if not all_sparse(*arg):
+                return False
+        elif not isinstance(arg, sp.spmatrix):
+            return False
+    return True
+
 
 def any_dense(*args):
     """
@@ -190,6 +216,28 @@ def add_empty_cols(matrix, num_cols):
         return sp.hstack([matrix, sp.csr_matrix((matrix.shape[0], num_cols))])
 
 
+def sparse_dot(mat1, mat2):
+    """
+    Returns the dot product of two sparse matrices.
+
+    Parameters
+    -----------
+
+        mat1: :obj:`scipy.sparse.spmatrix`
+            First factor of the dot product.
+
+        mat1: :obj:`scipy.sparse.spmatrix`
+            Second factor of the dot product.
+
+    Returns
+    --------
+        dot_product: :obj:`scipy.sparse.spmatrix`
+    """
+    if not all_sparse(mat1, mat2):
+        raise TypeError("sparse_inner_product can only operate on sparse matrices")
+    return mat1.dot(mat2)
+
+
 def inner_product(user_profiles, item_attributes, normalize_users=True, normalize_items=False):
     """
     Performs a dot product multiplication between user profiles and
@@ -219,22 +267,33 @@ def inner_product(user_profiles, item_attributes, normalize_users=True, normaliz
         user_profiles = normalize_matrix(user_profiles, axis=1)
     if normalize_items:
         item_attributes = normalize_matrix(item_attributes.T, axis=1).T
-    assert user_profiles.shape[1] == item_attributes.shape[0]
-    scores = np.dot(user_profiles, item_attributes)
+    if user_profiles.shape[1] != item_attributes.shape[0]:
+        error_message = (
+            "Number of attributes in user profile matrix must match number "
+            "of attributes in item profile matrix"
+        )
+        raise ValueError(error_message)
+    scores = generic_matrix_op(np.dot, sparse_dot, user_profiles, item_attributes)
     return scores
 
 
 def normalize_matrix(matrix, axis=1):
-    """Normalize a matrix so that each row vector has a Euclidean norm of 1.
+    """
+    Normalize a matrix so that each row vector has a Euclidean norm of 1.
     If a vector is passed in, we treat it as a matrix with a single row.
     """
     if len(matrix.shape) == 1:
         # turn vector into matrix with one row
         matrix = matrix[np.newaxis, :]
-    divisor = np.linalg.norm(matrix, axis=axis)[:, np.newaxis]
-    # only normalize where divisor is not zero
-    result = np.divide(matrix, divisor, out=np.zeros(matrix.shape), where=divisor != 0)
-    return result
+    if axis == 0:
+        return normalize_matrix(matrix.T, axis=1).T
+    divisor = generic_matrix_op(np.linalg.norm, norm, matrix, axis=axis)
+    divisor[divisor == 0] = -1 # sentinel value to avoid division by zero in next step
+    # row scale by diagonal matrix
+    divisor = 1 / divisor
+    divisor[divisor == -1] = 0
+    diag = generic_matrix_op(np.diag, sp.diags, divisor)
+    return generic_matrix_op(np.dot, sparse_dot, diag, matrix)
 
 
 def contains_row(matrix, row):

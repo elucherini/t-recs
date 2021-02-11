@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import scipy.sparse as sp
 import test_helpers
 import trecs.matrix_ops as mo
@@ -8,24 +9,28 @@ class TestMatrixOps:
     def test_normalize_matrix(self):
         # matrix that already has norm 1 columns/rows
         mat_1 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_1))
-        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_1, axis=0))
+        np.testing.assert_array_almost_equal(mat_1, mo.normalize_matrix(mat_1))
+        np.testing.assert_array_almost_equal(mat_1, mo.normalize_matrix(mat_1, axis=0))
 
         # matrix with norm 2 columns/rows
         mat_2 = np.array([[2, 0, 0, 0], [0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]])
-        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_2))
-        test_helpers.assert_equal_arrays(mat_1, mo.normalize_matrix(mat_2, axis=0))
+        np.testing.assert_array_almost_equal(mat_1, mo.normalize_matrix(mat_2))
+        np.testing.assert_array_almost_equal(mat_1, mo.normalize_matrix(mat_2, axis=0))
 
         # check norm of all rows equals 1 after normalization
         mat_3 = np.arange(16).reshape((4, 4))
         normalized = mo.normalize_matrix(mat_3, axis=1)
         assert (np.linalg.norm(normalized, axis=1) == 1).all()
 
+        # add additional column
+        mat_4 = np.hstack([mat_1, np.array([1, 0, 0, 0]).reshape(-1, 1)])
+        np.testing.assert_array_almost_equal(mat_4, mo.normalize_matrix(mat_4, axis=0))
+
     def test_normalize_vector(self):
         vec = np.array([3, 4])
         unit_vec = mo.normalize_matrix(vec)
         correct_unit_vec = np.array([[3 / 5, 4 / 5]])
-        test_helpers.assert_equal_arrays(unit_vec, correct_unit_vec)
+        np.testing.assert_array_almost_equal(unit_vec, correct_unit_vec)
 
     def test_contains_row(self):
         mat = np.arange(16).reshape((4, 4))
@@ -110,8 +115,39 @@ class TestMatrixOps:
         assert y.shape == (3, 10)
         assert (y[:, 5:] == 0).all()
 
+        # test sparse matrix
         x = sp.csr_matrix(x)
         y = mo.add_empty_cols(x, 5)
         assert isinstance(y, sp.spmatrix)
         assert y.shape == (3, 10)
         assert (y.toarray()[:, 5:] == 0).all()
+
+    def test_inner_product(self):
+        x = np.ones((3, 5))
+        y = np.eye(5) * 2
+        z = mo.inner_product(x, y, normalize_users=False, normalize_items=False)
+        assert isinstance(z, np.ndarray)
+        correct_answer = np.ones((3, 5)) * 2
+        np.testing.assert_array_almost_equal(z, correct_answer)
+
+        # if one array is dense, the final return value should be dense
+        y = sp.csr_matrix(y)
+        z = mo.inner_product(x, y, normalize_users=False, normalize_items=False)
+        assert isinstance(z, np.ndarray)
+        np.testing.assert_array_almost_equal(z, correct_answer)
+
+        # if both arrays are sparse, the final return value should be sparse
+        x = sp.csr_matrix(x)
+        z = mo.inner_product(x, y, normalize_users=False, normalize_items=False)
+        assert isinstance(z, sp.spmatrix)
+        correct_answer = sp.csr_matrix(correct_answer)
+        np.testing.assert_array_almost_equal(z.A, correct_answer.A)
+
+    def test_sparse_dot(self):
+        x = np.ones((3, 5))
+        y = sp.csr_matrix(np.eye(5) * 2)
+        with pytest.raises(TypeError):
+            mo.sparse_dot(x, y)
+
+
+
