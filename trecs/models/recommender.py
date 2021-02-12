@@ -3,9 +3,9 @@ BaseRecommender, the foundational class for all recommender systems
 implementable in our simulation library
 """
 from abc import ABC, abstractmethod
+import warnings
 import numpy as np
 from tqdm import tqdm
-import warnings
 from trecs.metrics import MeasurementModule
 from trecs.components import (
     Users,
@@ -568,7 +568,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 can be helpful, say, during a "training" period where no new items should be
                 made.
         """
-        if len(self.metrics) == 0: # warn user if no measurements are defined
+        if len(self.metrics) == 0:  # warn user if no measurements are defined
             error_msg = (
                 "No measurements are currently defined for the simulation. Please add "
                 "measurements if desired."
