@@ -32,7 +32,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -303,6 +302,11 @@
 <span class="sd">            candidate item. The score function should take as input</span>
 <span class="sd">            user_profiles and item_attributes.</span>
 
+<span class="sd">        repeat_interactions: bool (optional, default: True)</span>
+<span class="sd">            If `True`, then users will interact with items regardless of whether</span>
+<span class="sd">            they have already interacted with them before. If `False`, users</span>
+<span class="sd">            will not perform repeat interactions.</span>
+
 <span class="sd">    Raises</span>
 <span class="sd">    --------</span>
 
@@ -325,6 +329,7 @@
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">attention_exp</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">repeat_interactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="c1"># general input checks</span>
@@ -358,6 +363,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span> <span class="o">=</span> <span class="n">score_fn</span>  <span class="c1"># function that dictates how scores will be generated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">actual_user_scores</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span> <span class="o">=</span> <span class="n">repeat_interactions</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">repeat_interactions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;actual_user_scores&quot;</span>
         <span class="n">BaseComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">)</span>
 
@@ -494,8 +502,16 @@
         <span class="n">item_attributes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;item_attributes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Items can&#39;t be None&quot;</span><span class="p">)</span>
-        <span class="n">reshaped_user_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">]</span>
+        <span class="n">reshaped_user_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># turn into column</span>
+
+        <span class="n">user_item_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
+            <span class="c1"># scores for items already interacted with go to negative infinity</span>
+            <span class="n">num_past_interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">user_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">num_past_interactions</span><span class="p">)</span>
+            <span class="n">user_item_scores</span><span class="p">[</span><span class="n">user_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+
+        <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="n">user_item_scores</span><span class="p">[</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">multiplier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span><span class="p">)</span>
@@ -516,6 +532,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interact_attrs</span><span class="p">)</span>
             <span class="c1"># update user scores</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="n">item_attributes</span><span class="p">)</span>
+        <span class="c1"># record interactions if needed to ensure users don&#39;t repeat interactions</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
+            <span class="n">interactions_col</span> <span class="o">=</span> <span class="n">interactions</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="c1"># append interactions as column of user interactions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">,</span> <span class="n">interactions_col</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">interactions</span></div>
 
 <div class="viewcode-block" id="Users.update_profiles"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.update_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">update_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">):</span>

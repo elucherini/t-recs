@@ -32,7 +32,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -173,7 +172,7 @@
 <h2>Random Number Generator<a class="headerlink" href="#random-number-generator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="trecs.random.generators.Generator">
-<em class="property">class </em><code class="sig-prename descclassname">trecs.random.generators.</code><code class="sig-name descname">Generator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bit_generator</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trecs/random/generators.html#Generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trecs.random.generators.Generator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">trecs.random.generators.</span></code><code class="sig-name descname"><span class="pre">Generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bit_generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trecs/random/generators.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trecs.random.generators.Generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code>. Please see the
 <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html">Numpy documentation</a> for more details.</p>
 <dl class="field-list simple">
@@ -192,7 +191,7 @@
 <h2>Social Graph Generator<a class="headerlink" href="#social-graph-generator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="trecs.random.generators.SocialGraphGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">trecs.random.generators.</code><code class="sig-name descname">SocialGraphGenerator</code><a class="reference internal" href="../_modules/trecs/random/generators.html#SocialGraphGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trecs.random.generators.SocialGraphGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">trecs.random.generators.</span></code><code class="sig-name descname"><span class="pre">SocialGraphGenerator</span></code><a class="reference internal" href="../_modules/trecs/random/generators.html#SocialGraphGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trecs.random.generators.SocialGraphGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Thin wrapper around the <a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generators.html#module-networkx.generators.random_graphs">Networkx random graph generators</a>. We use this
 static class to generate random network adjacency matrices.</p>
 <p>By default, it generates a <a class="reference external" href="https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.fast_gnp_random_graph.html#networkx.generators.random_graphs.fast_gnp_random_graph">binomial graph</a>, but it can generate any other
@@ -200,7 +199,7 @@ random graph included in the Networkx API. Please refer to the Networkx
 documentation.</p>
 <dl class="py method">
 <dt id="trecs.random.generators.SocialGraphGenerator.generate_random_graph">
-<em class="property">static </em><code class="sig-name descname">generate_random_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trecs/random/generators.html#SocialGraphGenerator.generate_random_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#trecs.random.generators.SocialGraphGenerator.generate_random_graph" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">generate_random_graph</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trecs/random/generators.html#SocialGraphGenerator.generate_random_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trecs.random.generators.SocialGraphGenerator.generate_random_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Note:</strong> to change type of graph, please include the <cite>graph_type</cite>
 parameter.</p>
 <dl class="field-list simple">

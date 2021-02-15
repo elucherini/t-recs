@@ -32,7 +32,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -330,7 +329,6 @@
         <span class="k">if</span> <span class="n">actual_item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item_representation</span><span class="p">)</span>
 
-        <span class="n">measurements</span> <span class="o">=</span> <span class="p">[</span><span class="n">MSEMeasurement</span><span class="p">()]</span>
         <span class="c1"># Initialize recommender system</span>
         <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -343,7 +341,6 @@
             <span class="n">num_items_per_iter</span><span class="p">,</span>
             <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="n">probabilistic_recommendations</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
-            <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
@@ -368,9 +365,8 @@
 
 <div class="viewcode-block" id="SocialFiltering.process_new_items"><a class="viewcode-back" href="../../reference/models.html#models.social.SocialFiltering.process_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">process_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        We assume the content filtering system has perfect knowledge</span>
-<span class="sd">        of the new items; therefore, when new items are created,</span>
-<span class="sd">        we simply return the new item attributes.</span>
+<span class="sd">        New items are simply represented as zeros, since they have not received</span>
+<span class="sd">        interactions from any users yet.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">        ------------</span>
@@ -380,7 +376,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># users have never interacted with new items</span>
         <span class="n">new_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">new_representation</span><span class="p">])</span></div></div>
+        <span class="k">return</span> <span class="n">new_representation</span></div></div>
 </pre></div>
 
            </div>
