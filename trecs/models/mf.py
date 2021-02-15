@@ -195,8 +195,6 @@ class ImplicitMF(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        measurements = [MSEMeasurement()]
-
         super().__init__(
             user_representation,
             item_representation,
@@ -206,7 +204,6 @@ class ImplicitMF(BaseRecommender):
             num_items,
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
-            measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs
@@ -294,6 +291,9 @@ class ImplicitMF(BaseRecommender):
         a model has already been fit prior to new items being created.
         """
         num_new_items = new_items.shape[1]
-        avg_item = self.als_model.item_features_.T.mean(axis=1)
+        if self.als_model:
+            avg_item = self.als_model.item_features_.T.mean(axis=1)
+        else:
+            avg_item = np.zeros(self.num_latent_factors)
         new_items = np.tile(avg_item, (num_new_items, 1)).T
-        self.items_hat = np.hstack([self.items_hat, new_items])
+        return new_items

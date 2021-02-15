@@ -3,6 +3,7 @@ BaseRecommender, the foundational class for all recommender systems
 implementable in our simulation library
 """
 from abc import ABC, abstractmethod
+import warnings
 import numpy as np
 from tqdm import tqdm
 from trecs.metrics import MeasurementModule
@@ -115,8 +116,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_items: int
             The number of items in the system.
 
-        num_items_per_iter: int
-            Number of items presented to the user per iteration.
+        num_items_per_iter: int or str
+            Number of items presented to the user per iteration. If `"all"`, then
+            the system will serve recommendations from the set of all items in the
+            system.
 
         probabilistic_recommendations: bool (optional, default: False)
             When this flag is set to `True`, the recommendations (excluding
@@ -137,6 +140,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             Function that is used to calculate each user's predicted scores for
             each candidate item. The score function should take as input
             user_profiles and item_attributes.
+
+        interleaving_fn: callable
+            Function that is used to determine the indices of items that will be
+            interleaved into the recommender system's recommendations. The
+            interleaving function should take as input an integer `k` (representing
+            the number of items to be interleaved in every recommendation set) and
+            a matrix `item_indices` (representing which items are eligible to be
+            interleaved). The function should return a :math:`|U|\\times k` matrix
+            representing the interleaved items for each user.
     """
 
     @abstractmethod
@@ -155,6 +167,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         record_base_state=False,
         system_state=None,
         score_fn=inner_product,
+        interleaving_fn=None,
         verbose=False,
         seed=None,
     ):
@@ -170,6 +183,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.items_hat = Items(items_hat)
         assert callable(score_fn)  # score function must be a function
         self.score_fn = score_fn
+        if interleaving_fn:
+            # make sure interleaving function (if passed) is callable
+            assert callable(interleaving_fn)
+        self.interleaving_fn = interleaving_fn
         # set predicted scores
         self.predicted_scores = None
         self.train()
@@ -182,9 +199,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_users must be an int")
         if not is_valid_or_none(num_items, int):
             raise TypeError("num_items must be an int")
-        if not is_valid_or_none(num_items_per_iter, int):
-            raise TypeError("num_items_per_iter must be an int")
-        assert num_items_per_iter > 0  # check number of items per iteration is positive
+        if not is_valid_or_none(num_items_per_iter, (str, int)):
+            raise TypeError("num_items_per_iter must be an int or string 'all'")
+        if isinstance(num_items_per_iter, int):
+            assert num_items_per_iter > 0  # check number of items per iteration is positive
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
@@ -234,7 +252,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
         self.num_items = num_items
-        self.num_items_per_iter = num_items_per_iter
+        self.set_num_items_per_iter(num_items_per_iter)
         self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
@@ -279,12 +297,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            # resize for new items if necessary
-            new_items = predicted_scores.shape[1] - self.predicted_scores.shape[1]
-            if new_items != 0:
-                self.predicted_scores = np.hstack(
-                    [self.predicted_scores, np.zeros((self.num_users, new_items))]
-                )
             self.predicted_scores[:, :] = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
@@ -337,21 +349,75 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         else:
             # scores are U x I; we can use argpartition to take the top k scores
             negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
-            top_k = negated_scores.argpartition(k - 1)[:, :k]
+            # break ties using a random score component
+            scores_tiebreak = np.zeros(
+                negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")]
+            )
+            scores_tiebreak["score"] = negated_scores
+            scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
+            top_k = scores_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
             # now we sort within the top k
             row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
             # again, indices should go from highest to lowest
-            sort_top_k = negated_scores[row, top_k].argsort()
+            sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
             rec = item_indices[
                 row, top_k[row, sort_top_k]
             ]  # extract items such that rows go from highest scored to lowest-scored of top-k
             if self.is_verbose():
-                self.log(f"Row:\n{str(row)}")
                 self.log(f"Item indices:\n{str(item_indices)}")
                 self.log(
-                    f"Top-k items ordered by preference (low to high) for each user:\n{str(rec)}"
+                    f"Top-k items ordered by preference (high to low) for each user:\n{str(rec)}"
                 )
             return rec
+
+    def choose_interleaved_items(self, k, item_indices):
+        """
+        Chooses k items out of the item set to "interleave" into
+        the system's recommendations. In this case, we define "interleaving"
+        as a process by which items can be inserted into the set of items
+        shown to the user, in addition to the recommended items that
+        maximize the predicted score. For example, users may want to insert
+        random interleaved items to increase the "exploration" of the
+        recommender system, or may want to ensure that new items are always
+        interleaved into the item set shown to users.
+        **NOTE**: Currently, there
+        is no guarantee that items that are interleaved are distinct
+        from the recommended items. We do guarantee that within the
+        set of items interleaved for a particular user, there are no
+        repeats.
+
+        Parameters
+        -----------
+
+            k : int
+                Number of items that should be interleaved in the
+                recommendation set for each user.
+
+            item_indices : :obj:`numpy.ndarray`
+                Array that contains the valid item indices for each user;
+                that is, the indices of items that they have not yet
+                interacted with.
+
+        Returns
+        ---------
+            interleaved_items: :obj:`numpy.ndarray`
+        """
+        if self.interleaving_fn:
+            return self.interleaving_fn(k, item_indices)
+
+        if k == 0:
+            return np.array([]).reshape((self.num_users, 0)).astype(int)
+
+        # NOTE: there is currently no guarantee that randomly interleaved items do
+        # not overlap with recommended items, since we do not have visibility
+        # into the recommended set of items. we do guarantee that for every user,
+        # items will not be repeated within the set of interleaved items.
+        rand_item = self.random_state.random(item_indices.shape)
+        top_k = rand_item.argpartition(-k)[:, -k:]
+        row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
+        sort_top_k = rand_item[row, top_k].argsort()
+        interleaved_items = item_indices[row, top_k[row, sort_top_k]]
+        return interleaved_items
 
     def recommend(
         self,
@@ -419,32 +485,21 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             if item_indices.shape[1] < num_new_items:
                 self.log("Insufficient number of items left!")
 
-        new_items = np.array([]).reshape((self.num_users, 0)).astype(int)
-        if num_new_items:
-            # no guarantees that randomly interleaved items do not overlap
-            # with recommended items
-            # also possible that item indices are repeated
-            col = self.random_state.integers(
-                item_indices.shape[1], size=(self.num_users, num_new_items)
-            )
-            row = np.repeat(self.users.user_vector, num_new_items).reshape((self.num_users, -1))
-            new_items = item_indices[row, col]
+        interleaved_items = self.choose_interleaved_items(num_new_items, item_indices)
 
-        items = np.zeros((self.num_users, self.num_items_per_iter), dtype=int)
-        # generate indices for recommended and randomly interleaved columns
-        col_idxs = np.zeros(self.num_items_per_iter, dtype=bool)
-        rand_col_idxs = self.random_state.choice(
-            self.num_items_per_iter, size=num_new_items, replace=False
-        )
-        col_idxs[rand_col_idxs] = True
-        items[:, ~col_idxs] = recommended  # preserving relative order of recommended items
-        items[:, col_idxs] = new_items
+        if num_new_items > 0:
+            items = self.random_state.random((self.num_users, self.num_items_per_iter))
+            interleave_mask = np.zeros(items.shape).astype(bool)
+            rand_col_idxs = items.argpartition(-num_new_items)[:, -num_new_items:]
+            np.put_along_axis(interleave_mask, rand_col_idxs, True, axis=1)
+            items[interleave_mask] = interleaved_items.flatten()
+            items[~interleave_mask] = recommended.flatten()
+            items = items.astype(int)
+        else:
+            items = recommended
+
         if self.is_verbose():
-            self.log(
-                "System picked these items (cols) randomly for each user "
-                + "(rows):\n"
-                + str(items)
-            )
+            self.log("System picked these items (cols) for each user (rows):\n" + str(items))
         return items
 
     @abstractmethod
@@ -513,6 +568,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 can be helpful, say, during a "training" period where no new items should be
                 made.
         """
+        if len(self.metrics) == 0:  # warn user if no measurements are defined
+            error_msg = (
+                "No measurements are currently defined for the simulation. Please add "
+                "measurements if desired."
+            )
+            warnings.warn(error_msg)
         if not startup and self.is_verbose():
             self.log("Running recommendation simulation using recommendation algorithm...")
         for timestep in tqdm(range(timesteps)):
@@ -520,6 +581,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.log(f"Step {timestep}")
             if self.creators is not None and not no_new_items:
                 self.create_and_process_items()
+                if self.expand_items_per_iter:
+                    # expand set of items recommended per iteration
+                    self.set_num_items_per_iter("all")
             item_idxs = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,
@@ -534,6 +598,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.indices[self.users.user_vector, interactions] = -1
             self._update_internal_state(interactions)
             if self.is_verbose():
+                self.log("Recorded user interaction:\n" + str(interactions))
                 self.log(
                     "System updates user profiles based on last interaction:\n"
                     + str(self.users_hat)
@@ -578,12 +643,26 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # concatenate old items with new items
         self.items = np.hstack([self.items, new_items])
         # generate new internal system representations of the items
-        self.process_new_items(new_items)
+        new_items_hat = self.process_new_items(new_items)
+        self.items_hat = np.hstack([self.items_hat, new_items_hat])
+
         self.add_new_item_indices(new_items.shape[1])
-        # create new predicted scores
-        self.train()
+        # create new predicted scores if not in startup
+        new_item_pred_score = self.score_fn(self.users_hat, new_items_hat)
+        self.predicted_scores = np.hstack([self.predicted_scores, new_item_pred_score])
         # have users update their own scores too
         self.users.score_new_items(new_items)
+
+    def set_num_items_per_iter(self, num_items_per_iter):
+        """Change the number of items that will be shown
+        to each user per iteration.
+        """
+        if num_items_per_iter == "all":
+            self.num_items_per_iter = self.num_items
+            self.expand_items_per_iter = True
+        else:
+            self.expand_items_per_iter = False
+            self.num_items_per_iter = num_items_per_iter
 
     def add_new_item_indices(self, num_new_items):
         """
@@ -609,7 +688,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Monitored measurements: dict
         """
         if len(self.metrics) < 1:
-            raise ValueError("No measurement module defined")
+            return None
         measurements = dict()
         for metric in self.metrics:
             measurements = {**measurements, **metric.get_measurement()}

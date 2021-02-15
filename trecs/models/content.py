@@ -162,8 +162,6 @@ class ContentFiltering(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        measurements = [MSEMeasurement()]
-
         # Initialize recommender system
         BaseRecommender.__init__(
             self,
@@ -175,7 +173,6 @@ class ContentFiltering(BaseRecommender):
             num_items,
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
-            measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs
@@ -202,7 +199,7 @@ class ContentFiltering(BaseRecommender):
         interactions_per_user = np.zeros((self.num_users, self.num_items))
         interactions_per_user[self.users.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, self.items_hat.T)
-        self.users_hat += user_attributes
+        np.add(self.users_hat, user_attributes, out=self.users_hat, casting="unsafe")
 
     def process_new_items(self, new_items):
         """
@@ -216,4 +213,4 @@ class ContentFiltering(BaseRecommender):
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """
-        self.items_hat = np.hstack([self.items_hat, new_items])
+        return new_items
