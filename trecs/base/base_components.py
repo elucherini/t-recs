@@ -116,6 +116,16 @@ class Component(BaseComponent):
     def value(self, state):
         self.current_state = state
 
+    @property
+    def shape(self):
+        if not isinstance(self.current_state, (np.ndarray, csr_matrix)):
+            error_msg = (
+                "Cannot fetch shape of Component because it is not a numpy array "
+                "or sparse matrix"
+            )
+            raise TypeError(error_msgk)
+        return self.current_state.shape
+
     def store_state(self):
         """ Store a copy of the component's value in the state history """
         self.observe(self.current_state, copy=True)
