@@ -29,7 +29,7 @@ class MeasurementUtils:
             if key in measurements.keys():
                 assert np.array_equal(measurements[key][timesteps], value)
             else:
-                assert value not in s._system_state
+                assert value not in model_attribute
 
     @classmethod
     def test_generic_metric(self, model, metric, timesteps):
@@ -79,16 +79,16 @@ class TestMeasurementModule:
             timesteps = np.random.randint(2, 100)
 
         s = SocialFiltering(record_base_state=True)
-        state_mappings = {
-            "predicted_user_profiles": s.users_hat,
-            "actual_user_scores": s.users.actual_user_scores,
-            "items": s.items_hat,
-            "predicted_user_scores": s.predicted_scores,
-        }
 
         for t in range(1, timesteps + 1):
             s.run(timesteps=1)
             system_state = s.get_system_state()
+            state_mappings = {
+                "predicted_users": s.users_hat.value,
+                "actual_user_scores": s.users.actual_user_scores.value,
+                "predicted_items": s.items_hat.value,
+                "predicted_user_scores": s.predicted_scores.value,
+            }
             MeasurementUtils.assert_valid_final_measurements(
                 system_state, s._system_state, state_mappings, t
             )
