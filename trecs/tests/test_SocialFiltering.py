@@ -233,5 +233,5 @@ class TestSocialFiltering:
         assert sf.items.num_attrs == 10 # 10 true items
         assert sf.items_hat.num_items == 150
         assert sf.items_hat.num_attrs == 100 # 100 users
-        assert sf.users.actual_user_scores.num_users == 100s
+        assert sf.users.actual_user_scores.num_users == 100
         assert sf.users.actual_user_scores.num_items == 150
