@@ -52,7 +52,7 @@ class TestImplicitMF:
 
     def test_startup_run(self):
         mf = ImplicitMF(seed=123)
-        items_hat_0, users_hat_0 = mf.items_hat.copy(), mf.users_hat.copy()
+        items_hat_0, users_hat_0 = mf.items_hat.value.copy(), mf.users_hat.value.copy()
         num_startup_iters = 5
         mf.startup_and_train(num_startup_iters)
         # assert interactions are recorded
@@ -64,7 +64,7 @@ class TestImplicitMF:
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(users_hat_0, mf.users_hat)
 
-        latent_items, latent_users = mf.items_hat.copy(), mf.users_hat.copy()
+        latent_items, latent_users = mf.items_hat.value.copy(), mf.users_hat.value.copy()
         mf.run(1)
         # should not have refit
         test_helpers.assert_equal_arrays(latent_items, mf.items_hat)
@@ -73,17 +73,17 @@ class TestImplicitMF:
         # interactions are reset at every call to run()
         assert mf.all_interactions.shape[0] == mf.num_users
 
-        prior_scores = mf.predicted_scores.copy()
+        prior_scores = mf.predicted_scores.value.copy()
         mf.train()  # fit to interaction data from the most recent run
         with pytest.raises(AssertionError):
             # we should see new predicted scores
-            test_helpers.assert_equal_arrays(prior_scores, mf.predicted_scores)
+            test_helpers.assert_equal_arrays(prior_scores, mf.predicted_scores.value)
         with pytest.raises(AssertionError):
             # new item representation
-            test_helpers.assert_equal_arrays(latent_items, mf.items_hat)
+            test_helpers.assert_equal_arrays(latent_items, mf.items_hat.value)
         with pytest.raises(AssertionError):
             # new user representation
-            test_helpers.assert_equal_arrays(latent_users, mf.users_hat)
+            test_helpers.assert_equal_arrays(latent_users, mf.users_hat.value)
 
     def test_content_creators(self):
         # true users and true items
@@ -107,9 +107,9 @@ class TestImplicitMF:
         # disallow content creators from making new items during startup phase
         mf.startup_and_train(5)
         # no new items should have been created during startup
-        assert mf.items.shape[1] == num_items
+        assert mf.items.num_items == num_items
         avg_item = mf.als_model.item_features_.T.mean(axis=1)
         mf.run(1)
         # there should be 5 new items with the same latent feature representation
-        new_items_hat = mf.items_hat[:, -5:]
+        new_items_hat = mf.items_hat.value[:, -5:]
         test_helpers.assert_equal_arrays(np.tile(avg_item, (num_creators, 1)).T, new_items_hat)

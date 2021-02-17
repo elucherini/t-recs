@@ -237,8 +237,8 @@ class ImplicitMF(BaseRecommender):
             self.als_model = model
             # update latent representations
             user_index, item_index = list(set(model.user_index_)), list(set(model.item_index_))
-            self.users_hat[user_index, :] = model.user_features_
-            self.items_hat[:, item_index] = model.item_features_.T
+            self.users_hat.value[user_index, :] = model.user_features_
+            self.items_hat.value[:, item_index] = model.item_features_.T
         # update predicted scores
         # when there are no new interactions to refit an MF from, it simply uses the
         # existing representation of user & item attributes to predict scores
