@@ -401,8 +401,8 @@ class DiffusionTreeMeasurement(Measurement):
     Parameters
     -----------
 
-        infection_state: array_like
-            The initial "infection state"
+        infection_state: :class:`~models.bass.InfectionState`
+            The initial "infection state" of all users
 
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
@@ -428,8 +428,8 @@ class DiffusionTreeMeasurement(Measurement):
     def __init__(self, infection_state, verbose=False):
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
-        self._manage_new_infections(None, np.copy(infection_state))
-        self._old_infection_state = np.copy(infection_state)
+        self._manage_new_infections(None, infection_state)
+        self._old_infection_state = np.copy(infection_state.value)
         Measurement.__init__(
             self, "num_infected", verbose=verbose, init_value=self.diffusion_tree.number_of_nodes()
         )
@@ -465,10 +465,19 @@ class DiffusionTreeMeasurement(Measurement):
     def _manage_new_infections(self, user_profiles, current_infection_state):
         """Add new infected users to graph and return number of newly infected
         users
+
+        Parameters
+        ------------
+            user_profiles: :obj:`numpy.ndarray`
+                :math:`|U|\\times|A|` numpy adjacency matrix.
+
+            current_infection_state: :class:`~models.bass.InfectionState`
+                Matrix that contains state about recovered,
+                infected, and susceptible individuals.
         """
         if self._old_infection_state is None:
-            self._old_infection_state = np.zeros(current_infection_state.shape)
-        new_infections = np.where(current_infection_state == 1)[0] # only extract user indices
+            self._old_infection_state = np.zeros(current_infection_state.value.shape)
+        new_infections = current_infection_state.infected_users()[0] # only extract user indices
         if len(new_infections) == 0:
             # no new infections
             return 0
@@ -494,9 +503,9 @@ class DiffusionTreeMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        self._manage_new_infections(recommender.users_hat, recommender.infection_state)
+        self._manage_new_infections(recommender.users_hat.value, recommender.infection_state)
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
-        self._old_infection_state = np.copy(recommender.infection_state)
+        self._old_infection_state = np.copy(recommender.infection_state.value)
 
     def draw_tree(self):
         """
@@ -517,7 +526,7 @@ class StructuralVirality(DiffusionTreeMeasurement):
     Parameters
     ----------
 
-        infection_state: array_like
+        :obj:`numpy.ndarray`
             The initial "infection state" (see :class:`DiffusionTreeMeasurement`).
 
     """

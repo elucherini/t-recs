@@ -123,7 +123,7 @@ class Component(BaseComponent):
                 "Cannot fetch shape of Component because it is not a numpy array "
                 "or sparse matrix"
             )
-            raise TypeError(error_msgk)
+            raise TypeError(error_msg)
         return self.current_state.shape
 
     def store_state(self):

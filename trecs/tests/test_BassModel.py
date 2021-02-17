@@ -16,7 +16,7 @@ class TestBassModel:
         s1 = BassModel()
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_arguments(self, items=1, users=5):
         if items is None:
@@ -32,7 +32,7 @@ class TestBassModel:
         s1 = BassModel(num_users=users, num_items=items)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_partial_arguments(self, items=1, users=5):
         if items is None:
@@ -55,11 +55,11 @@ class TestBassModel:
         s1 = BassModel(num_users=users)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
         s1 = BassModel(num_items=items)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
@@ -101,7 +101,7 @@ class TestBassModel:
         s1 = BassModel(item_representation=item_repr)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_wrong_representations(self, bad_user_repr=None):
         if bad_user_repr is None or bad_user_repr.shape[0] == bad_user_repr.shape[1]:
@@ -136,41 +136,41 @@ class TestBassModel:
         while user1 == user2:
             user1 = np.random.randint(s.num_users)
         # test current graph
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow again -- nothing should change
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow again -- nothing should change
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
         # test friending
         s.add_friends(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test friending again -- nothing should change
         s.add_friends(user2, user1)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test unfriending
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfriending again -- nothing should change
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
     def test_seeding(self, seed=None, items=None, users=None):
         if seed is None:

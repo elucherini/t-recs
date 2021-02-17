@@ -26,13 +26,15 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
 
     def filter_by_index(self, item_indices):
         """
-        Simply set the current state to the new scores.
+        Return a subset of the predicted scores, filtered by the indices
+        of valid items.
 
         Parameters
         -------------
 
-        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
-            Score representation to update to.
+        item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            A matrix with |U| rows that specifies the indices of items
+            requested for each user.
 
         """
         if item_indices.shape[0] != self.current_state.shape[0]:

@@ -9,10 +9,8 @@ from trecs.base import Component
 from trecs.random import Generator, SocialGraphGenerator
 from trecs.metrics import StructuralVirality
 from trecs.utils import (
-    get_first_valid,
     is_array_valid_or_none,
     all_besides_none_equal,
-    all_none,
     non_none_values,
     resolve_set_to_value,
 )
@@ -30,6 +28,56 @@ class InfectionState(Component):  # pylint: disable=too-many-ancestors
         Component.__init__(
             self, current_state=infection_state, size=None, verbose=verbose, seed=None
         )
+
+    @property
+    def num_infected(self):
+        """
+        Return number of infected users.
+        """
+        return (self.value == 1).sum()
+
+    def recovered_users(self):
+        """
+        Return indices of users who have recovered (and are no longer susceptible
+        to infection).
+
+        Returns
+        --------
+            indices: tuple
+                The first element of the tuple returned is a numpy array with
+                the row indices (i.e., user indices) of those recovered, and the
+                second element is a numpy array of the column indices (i.e.,
+                item indices)
+        """
+        return np.where(self.value == -1)
+
+    def infected_users(self):
+        """
+        Return indices of users who are currently infected and not recovered.
+
+        Returns
+        --------
+            indices: tuple
+                The first element of the tuple returned is a numpy array with
+                the row indices (i.e., user indices) of those infected, and the
+                second element is a numpy array of the column indices (i.e.,
+                item indices)
+        """
+        return np.where(self.value == 1)
+
+    def infect_users(self, user_indices, item_indices):
+        """
+        Update infection state with users who have become newly infected.
+        """
+        recovered_users = self.recovered_users()
+        currently_infected = self.infected_users()
+
+        # infect new users
+        self.current_state[user_indices, item_indices] = 1
+
+        # remove already infected individuals
+        self.current_state[recovered_users] = -1
+        self.current_state[currently_infected] = -1
 
 
 class InfectionThresholds(Component):  # pylint: disable=too-many-ancestors
@@ -210,7 +258,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
         self.infection_state = InfectionState(infection_state)
         self.infection_thresholds = InfectionThresholds(infection_thresholds)
-        measurements = [StructuralVirality(np.copy(infection_state))]
+        measurements = [StructuralVirality(self.infection_state)]
         system_state = [self.infection_state]
         # Initialize recommender system
         # NOTE: Forcing to 1 item per iteration
@@ -242,7 +290,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # unless their own scores are already known to them
         # self.users.set_score_function(self.infection_probabilities)
         if self.users.get_actual_user_scores() is None:
-            self.users.compute_user_scores(self.items)
+            self.users.compute_user_scores(self.items.value)
 
     def _update_internal_state(self, interactions):
         """Private function that updates user profiles with data from
@@ -259,18 +307,16 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
 
         """
-        infection_probabilities = self.predicted_scores[self.users.user_vector, interactions]
-        recovered_users = np.where(self.infection_state == -1)
-        currently_infected = np.where(self.infection_state == 1)
+        # fetch infection probabilities for each user
+        infection_probabilities = self.predicted_scores.filter_by_index(interactions.reshape(-1, 1))
+        # flatten to 1D
+        infection_probabilities = infection_probabilities.reshape(self.num_users)
         # independent infections
         infection_trials = self.random_state.binomial(1, p=infection_probabilities)
         newly_infected_users = np.where(infection_trials == 1)[0]
         if len(newly_infected_users) > 0:
-            self.infection_state[newly_infected_users, interactions[newly_infected_users]] = 1
+            self.infection_state.infect_users(newly_infected_users, interactions[newly_infected_users])
 
-        # remove already infected individuals
-        self.infection_state[recovered_users] = -1
-        self.infection_state[currently_infected] = -1
 
     def infection_probabilities(self, user_profiles, item_attributes):
         """Calculates the infection probabilities for each user at the current
@@ -286,11 +332,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             representation of items.
         """
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
-        infection_state = np.copy(self.infection_state)
-        infection_state[np.where(infection_state == -1)] = 0 # make all recovered users 0 instead of -1
+        infection_state = np.copy(self.infection_state.value)
+        recovered_users = self.infection_state.recovered_users()
+        infection_state[recovered_users] = 0 # make all recovered users 0 instead of -1
         dot_product = user_profiles.dot(infection_state * np.log(1 - item_attributes))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
+        predicted_scores[recovered_users] = 0 # recovered users cannot be infected
         return predicted_scores
 
     def run(self, timesteps="until_completion", startup=False, train_between_steps=True, repeated_items=True):
@@ -326,7 +374,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                     repeated_items=repeated_items,
                     disable_tqdm=True
                 )
-                num_infected = (self.infection_state == 1).sum()
+                num_infected = self.infection_state.num_infected
         else:
             BaseRecommender.run(
                 self,
