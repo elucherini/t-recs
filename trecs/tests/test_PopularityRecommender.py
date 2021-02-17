@@ -161,6 +161,6 @@ class TestPopularityRecommender:
             creators=creator_profiles,
         )
         p.run(1, repeated_items=True)
-        assert p.items.shape[1] == 150  # 50 new items
+        assert p.items.num_items == 150  # 50 new items
         assert p.items_hat.num_items == 150
-        assert p.users.state_history[-1].shape[1] == 150
+        assert p.users.actual_user_scores.num_items == 150

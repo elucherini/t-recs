@@ -116,6 +116,16 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
     def append_new_scores(self, new_scores):
         self.current_state = mo.hstack([self.current_state, new_scores])
 
+    @property
+    def num_users(self):
+        # rows = users, cols = items
+        return self.current_state.shape[0]
+
+    @property
+    def num_items(self):
+        # rows = users, cols = items
+        return self.current_state.shape[1]
+
 
 
 class Users(BaseComponent):  # pylint: disable=too-many-ancestors
