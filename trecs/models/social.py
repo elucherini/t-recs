@@ -206,10 +206,15 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 interacted with in the latest step. Namely, interactions_u represents
                 the index of the item that the user has interacted with.
         """
-        interactions_per_user = np.zeros((self.num_users, self.num_items))
+        if self.num_users != self.items_hat.num_attrs or self.num_items != self.items_hat.num_items:
+            error_msg = (
+                "User-item interactions matrix must have same shape as internal "
+                "item representation"
+            )
+            raise ValueError(error_msg)
+        interactions_per_user = np.zeros((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
-        assert interactions_per_user.shape == self.items_hat.shape
-        self.items_hat[:, :] = np.add(self.items_hat, interactions_per_user)
+        self.items_hat.value += interactions_per_user
 
     def process_new_items(self, new_items):
         """

@@ -146,41 +146,41 @@ class TestSocialFiltering:
         while user1 == user2:
             user1 = np.random.randint(1, s.num_users)
         # test current graph
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow again -- nothing should change
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow again -- nothing should change
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
         # test friending
         s.add_friends(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test friending again -- nothing should change
         s.add_friends(user2, user1)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test unfriending
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfriending again -- nothing should change
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
     def test_seeding(self, seed=None, items=None, users=None):
         if seed is None:
@@ -229,6 +229,9 @@ class TestSocialFiltering:
             creators=creator_profiles,
         )
         sf.run(1, repeated_items=True)
-        assert sf.items.shape == (10, 150)  # 50 new items
-        assert sf.items_hat.shape == (100, 150)
-        assert sf.users.state_history[-1].shape == (100, 150)
+        assert sf.items.num_items == 150  # 50 new items
+        assert sf.items.num_attrs == 10 # 10 true items
+        assert sf.items_hat.num_items == 150
+        assert sf.items_hat.num_attrs == 100 # 100 users
+        assert sf.users.actual_user_scores.num_users == 100
+        assert sf.users.actual_user_scores.num_items == 150
