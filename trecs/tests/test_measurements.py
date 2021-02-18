@@ -1,5 +1,6 @@
 import test_helpers
 import numpy as np
+from trecs.components import Items
 from trecs.models import SocialFiltering, ContentFiltering, BassModel
 from trecs.metrics import (
     Measurement,
@@ -164,9 +165,9 @@ class TestInteractionSimilarity:
         # alter items such that both users prefer the first item
         new_items[:, 0] = np.ones(2)
         new_items[:, 1] = np.zeros(2)
-        content.items = new_items
+        content.items = Items(new_items)
         # force users to recalculate scores
-        content.users.compute_user_scores(content.items)
+        content.users.compute_user_scores(new_items)
         content.run(1)
         final_jacc = content.get_measurements()["interaction_similarity"][-1]
         assert final_jacc == 0.5  # users should now have 1 interaction item in common

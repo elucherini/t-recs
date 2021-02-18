@@ -247,7 +247,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def predicted_user_profiles(self):
         """
         Property that is an alias for the matrix representation of
-        predicted user profiles.
+        predicted user profiles. Returns a matrix of dimension
+        :math:`|U|\\times|\\hat{A}|`, where :math:`|\\hat{A}|` is the
+        number of attributes that the algorithm uses to represent each
+        item and user.
         """
         return self.users_hat.value
 
@@ -255,7 +258,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def predicted_item_attributes(self):
         """
         Property that is an alias for the matrix representation of
-        predicted item attributes.
+        predicted item attributes. Returns a matrix of dimension
+        :math:`|\\hat{A}|\\times|I|`,  where :math:`|\\hat{A}|` is the
+        number of attributes that the algorithm uses to represent each
+        item and user.
         """
         return self.items_hat.value
 
@@ -263,7 +269,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def actual_user_profiles(self):
         """
         Property that is an alias for the matrix representation of
-        true user profiles.
+        true user profiles. Returns a matrix of dimension
+        :math:`|U|\\times|A^*|`, where :math:`|A^*|` is the number
+        of attributes the "true" item/user representation has.
         """
         return self.users.actual_user_profiles.value
 
@@ -271,9 +279,29 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def actual_item_attributes(self):
         """
         Property that is an alias for the matrix representation of
-        actual item attributes.
+        actual item attributes. Returns a matrix of dimension
+        :math:`|A^*|\\times|I|`, where :math:`|A^*|` is the number
+        of attributes the "true" item representation has.
         """
-        return self.items_hat.value
+        return self.items.value
+
+    @property
+    def actual_user_item_scores(self):
+        """
+        Property that is an alias for the matrix representation of
+        the true user-item score matrix. Returns a matrix of
+        dimension :math:`|U|\\times|I|`.
+        """
+        return self.users.actual_user_scores.value
+
+    @property
+    def predicted_user_item_scores(self):
+        """
+        Property that is an alias for the matrix representation of
+        the RS algorithm's predicted user-item score matrix.  Returns
+        a matrix of dimension :math:`|U|\\times|I|`.
+        """
+        return self.predicted_scores.value
 
     def initialize_user_scores(self):
         """
@@ -283,7 +311,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
         if self.users.get_actual_user_scores() is None:
-            self.users.compute_user_scores(self.items.value)
+            self.users.compute_user_scores(self.actual_item_attributes)
 
     def train(self):
         """
@@ -295,7 +323,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        predicted_scores = self.score_fn(self.users_hat.value, self.items_hat.value)
+        predicted_scores = self.score_fn(
+            self.predicted_user_profiles, self.predicted_item_attributes
+        )
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
@@ -550,7 +580,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
-                items_shown=item_idxs, item_attributes=self.items.value
+                items_shown=item_idxs, item_attributes=self.actual_item_attributes
             )
             if not repeated_items:
                 self.indices[self.users.user_vector, interactions] = -1

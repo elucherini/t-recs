@@ -162,13 +162,13 @@ class TestPopularityRecommender:
             actual_item_representation=items,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_scores)
+        init_pred_scores = np.copy(model.predicted_scores.value)
         # after one iteration of training, the most popular item
         # should be the item at index 0
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_scores)
+        trained_preds = np.copy(model.predicted_scores.value)
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 
