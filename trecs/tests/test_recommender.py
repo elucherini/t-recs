@@ -63,6 +63,8 @@ class TestBaseRecommender:
         expected_rec = np.fliplr(np.tile(np.arange(5), (num_users, 1)))
         recommended = dummy.generate_recommendations(k=5, item_indices=dummy.indices)
         np.testing.assert_array_equal(recommended, expected_rec)
+        recommended = dummy.generate_recommendations(k=2, item_indices=dummy.indices)
+        np.testing.assert_array_equal(recommended, expected_rec[:, :2])
         recommended = dummy.recommend()
         np.testing.assert_array_equal(recommended, expected_rec)
 
