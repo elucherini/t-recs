@@ -10,6 +10,7 @@ from trecs.metrics import (
     InteractionMeasurement,
     RecSimilarity,
     InteractionSimilarity,
+    AverageFeatureScoreRange,
 )
 import pytest
 
@@ -179,6 +180,24 @@ class TestMSEMeasurement:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), MSEMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(ContentFiltering(), MSEMeasurement(), timesteps)
+
+
+class TestAFSRMeasurement:
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        # not intended for binary features, so generate item representation
+        item_representation = np.random.random((20, 100))
+        MeasurementUtils.test_generic_metric(
+            SocialFiltering(item_representation=item_representation),
+            AverageFeatureScoreRange(),
+            timesteps,
+        )
+        MeasurementUtils.test_generic_metric(
+            ContentFiltering(item_representation=item_representation),
+            AverageFeatureScoreRange(),
+            timesteps,
+        )
 
 
 class TestInteractionMeasurement:

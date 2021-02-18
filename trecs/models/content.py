@@ -197,7 +197,7 @@ class ContentFiltering(BaseRecommender):
                 the item that the user has interacted with.
 
         """
-        interactions_per_user = np.zeros((self.num_users, self.num_items))
+        interactions_per_user = np.zeros((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
         user_attributes = np.dot(interactions_per_user, mo.transpose(self.items_hat))
         self.users_hat.value += user_attributes

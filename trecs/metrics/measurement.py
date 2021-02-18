@@ -666,7 +666,7 @@ class AverageFeatureScoreRange(Measurement):
         """
         interactions = kwargs.pop("interactions", None)
         assert interactions.size == recommender.num_users
-        interacted_item_attr = recommender.items_hat[:, interactions]
+        interacted_item_attr = recommender.predicted_item_attributes[:, interactions]
 
         if {item for sublist in interacted_item_attr for item in sublist} == {0, 1}:
             raise ValueError("AFSR is not intended for binary features.")
