@@ -30,7 +30,7 @@ Here are some rules to follow for writing PRs:
 
 If you're reviewing a PR:
 * Don't accept commented out code.
-* Don't accept functions with documentation.
+* Don't accept functions without documentation.
 * If you see code that you don't understand, make liberal use of comments to clarify the author's intent.
 * If the person submitting the PR is a core contributor, do not merge the PR yourself, just approve it. The person submitting the PR should merge it.
 * If the person submitting the PR is not a core contributor, the reviewer should merge the PR.

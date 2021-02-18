@@ -81,6 +81,9 @@ def all_dense(*args):
             if not all_dense(*arg):
                 return False
         elif not isinstance(arg, np.ndarray):
+            if not isinstance(arg, sp.spmatrix):
+                error_msg = "Argument should be only a list, numpy array, or scipy sparse matrix"
+                raise TypeError(error_msg)
             return False
     return True
 
@@ -105,6 +108,9 @@ def all_sparse(*args):
             if not all_sparse(*arg):
                 return False
         elif not isinstance(arg, sp.spmatrix):
+            if not isinstance(arg, np.ndarray):
+                error_msg = "Argument should be only a list, numpy array, or scipy sparse matrix"
+                raise TypeError(error_msg)
             return False
     return True
 
@@ -129,21 +135,47 @@ def any_dense(*args):
                 return True
         elif isinstance(arg, np.ndarray):
             return True
+        elif not isinstance(arg, sp.spmatrix):
+            error_msg = "Argument should be only a list, numpy array, or scipy sparse matrix"
+            raise TypeError(error_msg)
     return False
 
 
 def extract_value(arg):
     """
-    TODO: write documentation
+    Extracts the value from an argument if it is a
+    :class:`~base.base_components.Component`; otherwise, returns
+    the argument itself.
+
+    Parameters
+    -----------
+        arg: any
+            Arbitrary variable. If `arg` is a
+            :class:`~base.base_components.Component`, then its
+            `current_state` will be returned. Otherwise, we return
+            arg.
+
+    Parameters
+    -----------
+        *args
+            Arbitrary arguments
+
+    Returns
+    --------
+        values: single value or list
     """
     if isinstance(arg, Component):
-        return arg.current_state
+        return arg.value
     return arg
 
 
 def extract_values(*args):
     """
-    TODO: write documentation
+    Wrapper around `extract_value`; iteratively applies that method to all items
+    in a list. If only one item was passed in, then we return that one item's
+    value; if multiple items were passed in, we return a list of the corresponding
+    item values.
+
     """
     processed = [extract_value(arg) for arg in args]
     if len(processed) == 1:
@@ -153,7 +185,17 @@ def extract_values(*args):
 
 def transpose(mat):
     """
-    TODO: write documentation
+    Performs a simple matrix transpose.
+
+    Parameters
+    -----------
+        mat: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`, or
+        `~base.base_components.Component`
+            Matrix to transpose.
+
+    Returns
+    --------
+        transpose: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
     """
     mat = extract_value(mat)
     return mat.T
@@ -283,11 +325,11 @@ def inner_product(user_profiles, item_attributes, normalize_users=True, normaliz
     Parameters
     -----------
 
-        user_profiles: :obj:`array_like`
+        user_profiles: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`
             First factor of the dot product, which should provide a
             representation of users.
 
-        item_attributes: :obj:`array_like`
+        item_attributes: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`
             Second factor of the dot product, which should provide a
             representation of items.
 

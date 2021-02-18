@@ -3,7 +3,6 @@ import numpy as np
 from trecs.components import Items
 from trecs.models import SocialFiltering, ContentFiltering, BassModel
 from trecs.metrics import (
-    Measurement,
     HomogeneityMeasurement,
     MSEMeasurement,
     DiffusionTreeMeasurement,
@@ -97,6 +96,7 @@ class TestMeasurementModule:
             MeasurementUtils.assert_valid_length(system_state, t)
 
         s = SocialFiltering()
+        s.add_metrics(MSEMeasurement())
 
         for t in range(1, timesteps + 1):
             s.run(timesteps=1)

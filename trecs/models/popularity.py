@@ -148,8 +148,6 @@ class PopularityRecommender(BaseRecommender):
         if user_representation is None:
             user_representation = np.ones((num_users, num_attributes), dtype=int)
 
-        measurements = [MSEMeasurement()]
-
         super().__init__(
             user_representation,
             item_representation,
@@ -159,7 +157,6 @@ class PopularityRecommender(BaseRecommender):
             num_items,
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
-            measurements=measurements,
             verbose=verbose,
             seed=seed,
             **kwargs
@@ -182,4 +179,4 @@ class PopularityRecommender(BaseRecommender):
         """
         # start popularity of new items as 0
         new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)
-        self.items_hat.append_new_items(new_representation)
+        return new_representation

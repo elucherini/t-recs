@@ -175,7 +175,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         if actual_item_representation is None:
             actual_item_representation = np.copy(item_representation)
 
-        measurements = [MSEMeasurement()]
         # Initialize recommender system
         BaseRecommender.__init__(
             self,
@@ -188,7 +187,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
             seed=seed,
-            measurements=measurements,
             verbose=verbose,
             **kwargs
         )
@@ -218,9 +216,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
     def process_new_items(self, new_items):
         """
-        We assume the content filtering system has perfect knowledge
-        of the new items; therefore, when new items are created,
-        we simply return the new item attributes.
+        New items are simply represented as zeros, since they have not received
+        interactions from any users yet.
 
         Parameters:
         ------------
@@ -230,4 +227,4 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         """
         # users have never interacted with new items
         new_representation = np.zeros((self.num_users, new_items.shape[1]))
-        self.items_hat.append_new_items(new_representation)
+        return new_representation

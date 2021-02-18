@@ -54,6 +54,20 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
         # https://stackoverflow.com/questions/31790819/scipy-sparse-csr-matrix-how-to-get-top-ten-values-and-indices
         return mo.to_dense(self.current_state)[row, item_indices]
 
+    def append_new_scores(self, new_scores):
+        """
+        Appends a set of scores for new items to the current set of scores.
+
+        Parameters
+        -------------
+
+        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,
+            where :math:`I_{new}` indicates the number of new items whose scores
+            are being to be appended.
+        """
+        self.current_state = mo.hstack([self.current_state, new_scores])
+
 
 class PredictedUsers(Component):  # pylint: disable=too-many-ancestors
     """
@@ -112,20 +126,48 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
         Return the user scores for the items shown, in the correct
         order specified.
         """
-        if self.user_rows is None:
+        if self.user_rows is None or self.user_rows.shape != self.current_state.shape:
             num_users, num_items = self.current_state.shape
             self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
         num_items = items_shown.shape[1]
         return self.current_state[self.user_rows[:, :num_items], items_shown]
 
+    def set_item_scores_to_value(self, item_indices, value):
+        """
+        Set scores for the specified user-item indices to the determined
+        value.
+
+        Parameters
+        -----------
+            item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+                A matrix with |U| rows that specifies the indices of items
+                requested for each user.
+
+            value: float
+                Single value with which to replace scores.
+        """
+        if self.user_rows is None or self.user_rows.shape != self.current_state.shape:
+            num_users, num_items = self.current_state.shape
+            self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+        num_items = item_indices.shape[1]
+        self.current_state[self.user_rows[:, :num_items], item_indices] = value
+
     def append_new_scores(self, new_scores):
         """
         Appends a set of scores for new items to the current set of scores.
-        Assumes the new scores have dimension :math:`|U|\\times|I_{new}|`,
-        where :math:`I_{new}` indicates the number of new items whose scores
-        are being to be appended.
+
+        Parameters
+        -------------
+
+        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,
+            where :math:`I_{new}` indicates the number of new items whose scores
+            are being to be appended.
         """
         self.current_state = mo.hstack([self.current_state, new_scores])
+        # update user rows matrix
+        num_users, num_items = self.current_state.shape
+        self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
 
     @property
     def num_users(self):
@@ -243,6 +285,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             candidate item. The score function should take as input
             user_profiles and item_attributes.
 
+        repeat_interactions: bool (optional, default: True)
+            If `True`, then users will interact with items regardless of whether
+            they have already interacted with them before. If `False`, users
+            will not perform repeat interactions.
+
     Raises
     --------
 
@@ -265,6 +312,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         verbose=False,
         seed=None,
         attention_exp=0.0,
+        repeat_interactions=True,
     ):  # pylint: disable=too-many-arguments
         self.rng = Generator(seed=seed)
         # general input checks
@@ -298,6 +346,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
         self.user_vector = np.arange(num_users, dtype=int)
+        self.repeat_interactions = repeat_interactions
+        if not repeat_interactions:
+            self.user_interactions = np.array([], dtype=int).reshape((num_users, 0))
         self.name = "actual_user_scores"
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_profiles.value)
 
@@ -435,6 +486,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         item_attributes = kwargs.pop("item_attributes", None)
         if items_shown is None:
             raise ValueError("Items can't be None")
+        if not self.repeat_interactions:
+            # "remove" items that have been interacted with by setting scores to negativve infinity
+            self.actual_user_scores.set_item_scores_to_value(self.user_interactions, float("-inf"))
         rec_item_scores = self.actual_user_scores.get_item_scores(items_shown)
         if self.attention_exp != 0:
             idxs = np.arange(items_shown.shape[1]) + 1
@@ -456,6 +510,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             self.update_profiles(interact_attrs)
             # update user scores
             self.compute_user_scores(item_attributes)
+        # record interactions if needed to ensure users don't repeat interactions
+        if not self.repeat_interactions:
+            interactions_col = interactions.reshape((-1, 1))
+            # append interactions as column of user interactions
+            self.user_interactions = np.hstack([self.user_interactions, interactions_col])
         return interactions
 
     def update_profiles(self, item_attributes):

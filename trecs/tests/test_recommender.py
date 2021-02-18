@@ -20,7 +20,7 @@ class DummyRecommender(BaseRecommender):
         # generate a representation of ones
         num_attr = self.items.num_attrs
         num_items = new_items.shape[1]
-        self.items_hat.append_new_items(np.random.uniform(size=(num_attr, num_items)))
+        return np.random.uniform(size=(num_attr, num_items))
 
 
 class TestBaseRecommender:
@@ -117,3 +117,73 @@ class TestBaseRecommender:
         true_scores = mo.inner_product(self.users, self.items)
         test_helpers.assert_equal_arrays(pred_scores, dummy.predicted_user_item_scores)
         test_helpers.assert_equal_arrays(true_scores, dummy.actual_user_item_scores)
+
+    def test_all_items_per_iter(self):
+        # 10 content creators
+        creators = Creators(np.random.uniform(size=(10, 5)), creation_probability=1)
+        dummy = DummyRecommender(
+            self.users_hat, self.items_hat, self.users, self.items, 10, 50, "all", creators=creators
+        )
+        assert dummy.num_items_per_iter == 50
+        dummy.run(1, repeated_items=True)  # run 5 timesteps
+        assert dummy.num_items_per_iter == 60
+        dummy.run(1, repeated_items=True)  # run 5 timesteps
+        assert dummy.num_items_per_iter == 70
+        recommended = dummy.recommend()
+        assert recommended.shape[1] == 70  # assert recommendaitons are proper length
+
+    def test_random_tiebreak(self):
+        self.items_hat = np.zeros(self.items_hat.shape)  # all item/users should have the same score
+        dummy = DummyRecommender(
+            self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5, seed=1234
+        )
+        recommended = dummy.generate_recommendations(k=5, item_indices=dummy.indices)
+        # we expect every user to be recommended items in a different order
+        assert not (recommended == recommended[0]).all()
+
+    def test_interleaving_fn(self):
+        def custom_interleaving_fn(k, item_indices):
+            # toy interleaving function that returns the first k indices
+            return item_indices[:, :k]
+
+        items_per_iter = 15
+        dummy = DummyRecommender(
+            self.users_hat,
+            self.items_hat,
+            self.users,
+            self.items,
+            10,
+            50,
+            items_per_iter,
+            seed=1234,
+            interleaving_fn=custom_interleaving_fn,
+        )
+        recommended = dummy.recommend(
+            random_items_per_iter=items_per_iter
+        )  # all recommendations will be interleaved items
+        # we expect every user to be recommended the expected recommendations
+        assert (recommended == recommended[0]).all()  # assert all rows are the same
+
+    def test_random_interleaving(self):
+        items_per_iter = 50  # recommend from the entire item set
+        dummy = DummyRecommender(
+            self.users_hat,
+            self.items_hat,
+            self.users,
+            self.items,
+            10,
+            50,
+            items_per_iter,
+            seed=1234,
+        )
+        recommended = dummy.recommend(
+            random_items_per_iter=items_per_iter
+        )  # all recommendations will be interleaved items
+        # we expect every user to be recommended the expected recommendations but in different orders
+        rec_sort = np.sort(recommended, axis=1)
+        assert not (
+            recommended == recommended[0]
+        ).all()  # interleaved recommendations should have a random order
+        assert (
+            rec_sort == rec_sort[0]
+        ).all()  # assert all rows have the same set of interleaved items

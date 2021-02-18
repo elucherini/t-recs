@@ -77,11 +77,13 @@ class TestMatrixOps:
         y = np.ones((3, 5))
         assert mo.all_dense(x, y)
         assert mo.all_dense([x, y])
+        assert mo.all_dense([x, y], x, y)
 
         y = sp.csr_matrix(y)
 
         assert not mo.all_dense(x, y)
         assert not mo.all_dense([x, y])
+        assert not mo.all_dense([x, y], y)
         assert mo.any_dense(x, y)
         assert mo.any_dense([x, y])
 
@@ -90,6 +92,16 @@ class TestMatrixOps:
         assert not mo.all_dense([x, y])
         assert not mo.any_dense(x, y)
         assert not mo.any_dense([x, y])
+
+        z = "hello"
+        with pytest.raises(TypeError):
+            mo.all_dense(z)
+
+        with pytest.raises(TypeError):
+            mo.all_dense(z)
+
+        with pytest.raises(TypeError):
+            mo.all_dense(z)
 
     def test_hstack(self):
         x = np.zeros((3, 4))
