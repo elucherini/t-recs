@@ -238,6 +238,11 @@ class TestBassModel:
         correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
         test_helpers.assert_equal_arrays(infection_state, correct_infections)
 
+        # test running to completion
+        bass.run()
+        correct_infections = np.array([-1, -1, -1, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+
     def test_sparse_matrix(self):
         num_users = 5
         user_rep = csr_matrix(np.zeros((num_users, num_users)))

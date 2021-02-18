@@ -316,10 +316,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # independent infections
         infection_trials = self.random_state.binomial(1, p=infection_probabilities)
         newly_infected_users = np.where(infection_trials == 1)[0]
-        if len(newly_infected_users) > 0:
-            self.infection_state.infect_users(
-                newly_infected_users, interactions[newly_infected_users]
-            )
+        self.infection_state.infect_users(newly_infected_users, interactions[newly_infected_users])
 
     def infection_probabilities(self, user_profiles, item_attributes):
         """Calculates the infection probabilities for each user at the current
