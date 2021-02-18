@@ -4,6 +4,7 @@ virality in online communications.
 """
 import networkx as nx
 import numpy as np
+import trecs.matrix_ops as mo
 from trecs.components import BinarySocialGraph
 from trecs.base import Component
 from trecs.random import Generator, SocialGraphGenerator
@@ -335,7 +336,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         infection_state = np.copy(self.infection_state.value)
         recovered_users = self.infection_state.recovered_users()
         infection_state[recovered_users] = 0  # make all recovered users 0 instead of -1
-        dot_product = user_profiles.dot(infection_state * np.log(1 - item_attributes))
+        dot_product = user_profiles.dot(infection_state * np.log(1 - mo.to_dense(item_attributes)))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
         predicted_scores[recovered_users] = 0  # recovered users cannot be infected

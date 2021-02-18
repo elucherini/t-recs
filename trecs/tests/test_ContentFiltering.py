@@ -272,13 +272,13 @@ class TestContentFiltering:
             actual_item_representation=items,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_scores.value)
+        init_pred_scores = np.copy(model.predicted_user_item_scores)
         # after one iteration of training, the model should have perfect
         # predictions, since each user was shown all the items in the item set
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_scores.value)
+        trained_preds = np.copy(model.predicted_user_item_scores)
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 

@@ -269,3 +269,6 @@ class TestBassModel:
         )  # after 2nd step, users 0 and 1 should be recovered, and user 2 should be infected
         correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
         test_helpers.assert_equal_arrays(infection_state, correct_infections)
+
+        # assert that the user representation is still sparse
+        assert isinstance(bass.users_hat.value, csr_matrix)

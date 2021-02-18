@@ -185,11 +185,11 @@ class TestPopularityRecommender:
 
         # assert that items_hat and users_hat are as expected
         user_rep = np.ones(num_users).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(model.users_hat, user_rep)
+        test_helpers.assert_equal_arrays(model.predicted_user_profiles, user_rep)
 
         item_rep = np.zeros(num_items).reshape(1, -1)
         item_rep[0, 0] = 5  # all users should have interacted with this item
-        test_helpers.assert_equal_arrays(model.items_hat, item_rep)
+        test_helpers.assert_equal_arrays(model.predicted_item_attributes, item_rep)
 
         # new model that only shows 2 items per iteration
         model = PopularityRecommender(
@@ -200,7 +200,7 @@ class TestPopularityRecommender:
         # assert that recommendations are now "perfect"
         model.num_items_per_iter = 1
         recommendations = model.recommend()
-        most_popular = np.argmax(model.items_hat)  # extract most popular item
+        most_popular = np.argmax(model.predicted_item_attributes)  # extract most popular item
         correct_rec = np.ones(num_users).reshape(-1, 1) * most_popular
         test_helpers.assert_equal_arrays(recommendations, correct_rec)
 
