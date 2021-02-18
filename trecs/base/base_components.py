@@ -110,14 +110,33 @@ class Component(BaseComponent):
 
     @property
     def value(self):
+        """
+        Returns the current state of the Component (e.g., a numpy ndarray, a scipy
+        sparse matrix, or list.)
+        """
         return self.current_state
 
     @value.setter
     def value(self, state):
+        """
+        Sets the current state of the Component to something new. The new state must
+        be a list, numpy array, or sparse matrix.
+        """
+        if not isinstance(state, (list, np.ndarray, csr_matrix)):
+            raise TypeError("current_state must be a list, numpy.ndarray, or sparse matrix")
         self.current_state = state
 
     @property
     def shape(self):
+        """
+        Returns the dimensions of the Component.
+
+        Returns
+        --------
+        shape: tuple
+            Tuple of arbitrary dimension indicating the dimension of the Component's
+            state.
+        """
         if not isinstance(self.current_state, (np.ndarray, csr_matrix)):
             error_msg = (
                 "Cannot fetch shape of Component because it is not a numpy array "

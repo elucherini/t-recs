@@ -38,10 +38,7 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
 
         """
         if item_indices.shape[0] != self.current_state.shape[0]:
-            error_msg = (
-                "Number of users does not match between score matrix "
-                "and item index matrix"
-            )
+            error_msg = "Number of users does not match between score matrix and item index matrix"
             raise ValueError(error_msg)
         # generates row matrix like the following:
         # [0, 0, 0, ..., 0]
@@ -71,10 +68,16 @@ class PredictedUsers(Component):  # pylint: disable=too-many-ancestors
 
     @property
     def num_users(self):
+        """
+        Shortcut getter method for the number of users.
+        """
         return self.current_state.shape[0]
 
     @property
     def num_attrs(self):
+        """
+        Shortcut getter method for the number of attributes in each user profile.
+        """
         return self.current_state.shape[1]
 
 
@@ -116,18 +119,29 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
         return self.current_state[self.user_rows[:, :num_items], items_shown]
 
     def append_new_scores(self, new_scores):
+        """
+        Appends a set of scores for new items to the current set of scores.
+        Assumes the new scores have dimension :math:`|U|\\times|I_{new}|`,
+        where :math:`I_{new}` indicates the number of new items whose scores
+        are being to be appended.
+        """
         self.current_state = mo.hstack([self.current_state, new_scores])
 
     @property
     def num_users(self):
+        """
+        Shortcut getter method for the number of users.
+        """
         # rows = users, cols = items
         return self.current_state.shape[0]
 
     @property
     def num_items(self):
+        """
+        Shortcut getter method for the number of items.
+        """
         # rows = users, cols = items
         return self.current_state.shape[1]
-
 
 
 class Users(BaseComponent):  # pylint: disable=too-many-ancestors
@@ -147,7 +161,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     Requirements vary across models and, unless specified, this class does not
     make assumptions on the real user components.
 
-    This class inherits from :class:`~components.base_components.BaseComponent`.
+    This class inherits from :class:`~base.base_components.BaseComponent`.
 
     Parameters
     ------------
@@ -328,14 +342,12 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
         actual_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles.value,
-            item_attributes=item_attributes
+            user_profiles=self.actual_user_profiles.value, item_attributes=item_attributes
         )
         if self.actual_user_scores is None:
             self.actual_user_scores = ActualUserScores(actual_scores)
         else:
             self.actual_user_scores.value = actual_scores
-
 
         self.actual_user_scores.store_state()
 
@@ -355,8 +367,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             number of items and :math:`|A|` is the number of attributes.
         """
         new_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles.value,
-            item_attributes=new_items
+            user_profiles=self.actual_user_profiles.value, item_attributes=new_items
         )
         self.actual_user_scores.append_new_scores(new_scores)
         self.actual_user_scores.store_state()

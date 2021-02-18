@@ -148,6 +148,3 @@ class TestMatrixOps:
         y = sp.csr_matrix(np.eye(5) * 2)
         with pytest.raises(TypeError):
             mo.sparse_dot(x, y)
-
-
-

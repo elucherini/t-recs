@@ -19,7 +19,7 @@ class DummyRecommender(BaseRecommender):
         # generate a representation of ones
         num_attr = self.items.num_attrs
         num_items = new_items.shape[1]
-        self.items_hat.append_items(np.random.uniform(size=(num_attr, num_items)))
+        self.items_hat.append_new_items(np.random.uniform(size=(num_attr, num_items)))
 
 
 class TestBaseRecommender:

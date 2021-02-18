@@ -7,14 +7,7 @@ import numpy as np
 from tqdm import tqdm
 from trecs.metrics import MeasurementModule
 from trecs.base import SystemStateModule
-from trecs.components import (
-    Users,
-    Items,
-    Creators,
-    PredictedScores,
-    PredictedUsers,
-    PredictedItems
-)
+from trecs.components import Users, Items, Creators, PredictedScores, PredictedUsers, PredictedItems
 from trecs.logging import VerboseMode
 import trecs.matrix_ops as mo
 from trecs.random import Generator
@@ -250,6 +243,38 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             else:
                 self.log("Seed was not set.")
 
+    @property
+    def predicted_user_profiles(self):
+        """
+        Property that is an alias for the matrix representation of
+        predicted user profiles.
+        """
+        return self.users_hat.value
+
+    @property
+    def predicted_item_attributes(self):
+        """
+        Property that is an alias for the matrix representation of
+        predicted item attributes.
+        """
+        return self.items_hat.value
+
+    @property
+    def actual_user_profiles(self):
+        """
+        Property that is an alias for the matrix representation of
+        true user profiles.
+        """
+        return self.users.actual_user_profiles.value
+
+    @property
+    def actual_item_attributes(self):
+        """
+        Property that is an alias for the matrix representation of
+        actual item attributes.
+        """
+        return self.items_hat.value
+
     def initialize_user_scores(self):
         """
         If the Users object does not already have known user-item scores,
@@ -464,7 +489,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         vary_random_items_per_iter=False,
         repeated_items=True,
         no_new_items=False,
-        disable_tqdm=False
+        disable_tqdm=False,
     ):  # pylint: disable=too-many-arguments
         """
         Runs simulation for the given timesteps.
@@ -566,7 +591,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         new_items = self.creators.generate_items()  # should be A x I
         self.num_items += new_items.shape[1]  # increment number of items
         # concatenate old items with new items
-        self.items.append_items(new_items)
+        self.items.append_new_items(new_items)
         # generate new internal system representations of the items
         self.process_new_items(new_items)
         self.add_new_item_indices(new_items.shape[1])
@@ -613,7 +638,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def get_system_state(self):
         """
         Return history of system state components stored in the
-        :attr:`~components.base_components.BaseComponent.state_history` of the
+        :attr:`~base.base_components.BaseComponent.state_history` of the
         components stored in :attr:`.SystemStateModule._system_state`.
 
         Returns

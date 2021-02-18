@@ -230,8 +230,8 @@ class TestSocialFiltering:
         )
         sf.run(1, repeated_items=True)
         assert sf.items.num_items == 150  # 50 new items
-        assert sf.items.num_attrs == 10 # 10 true items
+        assert sf.items.num_attrs == 10  # 10 true items
         assert sf.items_hat.num_items == 150
-        assert sf.items_hat.num_attrs == 100 # 100 users
+        assert sf.items_hat.num_attrs == 100  # 100 users
         assert sf.users.actual_user_scores.num_users == 100
         assert sf.users.actual_user_scores.num_items == 150

@@ -315,8 +315,9 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         infection_trials = self.random_state.binomial(1, p=infection_probabilities)
         newly_infected_users = np.where(infection_trials == 1)[0]
         if len(newly_infected_users) > 0:
-            self.infection_state.infect_users(newly_infected_users, interactions[newly_infected_users])
-
+            self.infection_state.infect_users(
+                newly_infected_users, interactions[newly_infected_users]
+            )
 
     def infection_probabilities(self, user_profiles, item_attributes):
         """Calculates the infection probabilities for each user at the current
@@ -334,14 +335,20 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
         infection_state = np.copy(self.infection_state.value)
         recovered_users = self.infection_state.recovered_users()
-        infection_state[recovered_users] = 0 # make all recovered users 0 instead of -1
+        infection_state[recovered_users] = 0  # make all recovered users 0 instead of -1
         dot_product = user_profiles.dot(infection_state * np.log(1 - item_attributes))
         # Probability of being infected at the current iteration
         predicted_scores = 1 - np.exp(dot_product)
-        predicted_scores[recovered_users] = 0 # recovered users cannot be infected
+        predicted_scores[recovered_users] = 0  # recovered users cannot be infected
         return predicted_scores
 
-    def run(self, timesteps="until_completion", startup=False, train_between_steps=True, repeated_items=True):
+    def run(
+        self,
+        timesteps="until_completion",
+        startup=False,
+        train_between_steps=True,
+        repeated_items=True,
+    ):
         """Overrides run method of parent class :class:`Recommender`, so that
         repeated_items defaults to True in Bass models.
 
@@ -372,7 +379,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                     startup=startup,
                     train_between_steps=train_between_steps,
                     repeated_items=repeated_items,
-                    disable_tqdm=True
+                    disable_tqdm=True,
                 )
                 num_infected = self.infection_state.num_infected
         else:

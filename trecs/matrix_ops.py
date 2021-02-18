@@ -5,6 +5,7 @@ import scipy.sparse as sp
 from scipy.sparse.linalg import norm
 from trecs.base import Component
 
+
 def to_dense(arr):
     """
     Convert a sparse array to a dense numpy array. If the
@@ -139,6 +140,7 @@ def extract_value(arg):
         return arg.current_state
     return arg
 
+
 def extract_values(*args):
     """
     TODO: write documentation
@@ -148,12 +150,14 @@ def extract_values(*args):
         return processed[0]
     return processed
 
+
 def transpose(mat):
     """
     TODO: write documentation
     """
     mat = extract_value(mat)
     return mat.T
+
 
 def generic_matrix_op(dense_fn, sparse_fn, *matrix_args, **kwargs):
     """
@@ -318,7 +322,7 @@ def normalize_matrix(matrix, axis=1):
     if axis == 0:
         return normalize_matrix(matrix.T, axis=1).T
     divisor = generic_matrix_op(np.linalg.norm, norm, matrix, axis=axis)
-    divisor[divisor == 0] = -1 # sentinel value to avoid division by zero in next step
+    divisor[divisor == 0] = -1  # sentinel value to avoid division by zero in next step
     # row scale by diagonal matrix
     divisor = 1 / divisor
     divisor[divisor == -1] = 0

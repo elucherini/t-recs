@@ -47,7 +47,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
     def get_measurement(self):
         """
         Returns measurements. See
-        :func:`~components.base_components.BaseObservable.get_observable`
+        :func:`~base.base_components.BaseObservable.get_observable`
         for more details.
 
         Returns
@@ -445,7 +445,7 @@ class DiffusionTreeMeasurement(Measurement):
         # candidates must be connected to newly infected users
         candidate_parents = user_profiles[:, prev_infected_users][new_infected_users]
         if not isinstance(candidate_parents, np.ndarray):
-            candidate_parents = candidate_parents.toarray() # convert sparse to numpy if needed
+            candidate_parents = candidate_parents.toarray()  # convert sparse to numpy if needed
         # randomly select parent out of those who were infected, use random multiplication
         candidate_parents = candidate_parents * np.random.rand(*candidate_parents.shape)
         parents = prev_infected_users[np.argmax(candidate_parents, axis=1)]
@@ -477,7 +477,7 @@ class DiffusionTreeMeasurement(Measurement):
         """
         if self._old_infection_state is None:
             self._old_infection_state = np.zeros(current_infection_state.value.shape)
-        new_infections = current_infection_state.infected_users()[0] # only extract user indices
+        new_infections = current_infection_state.infected_users()[0]  # only extract user indices
         if len(new_infections) == 0:
             # no new infections
             return 0

@@ -296,4 +296,4 @@ class ImplicitMF(BaseRecommender):
         num_new_items = new_items.shape[1]
         avg_item = self.als_model.item_features_.T.mean(axis=1)
         new_items = np.tile(avg_item, (num_new_items, 1)).T
-        self.items_hat.append_items(new_items)
+        self.items_hat.append_new_items(new_items)

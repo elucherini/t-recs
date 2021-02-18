@@ -182,4 +182,4 @@ class PopularityRecommender(BaseRecommender):
         """
         # start popularity of new items as 0
         new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)
-        self.items_hat.append_items(new_representation)
+        self.items_hat.append_new_items(new_representation)

@@ -3,6 +3,7 @@ import numpy as np
 import trecs.matrix_ops as mo
 from trecs.base import Component
 
+
 def assert_equal_arrays(a, b):
     a, b = mo.extract_values(a, b)
     assert np.array_equal(a, b)

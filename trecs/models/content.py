@@ -217,4 +217,4 @@ class ContentFiltering(BaseRecommender):
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """
-        self.items_hat.append_items(new_items)
+        self.items_hat.append_new_items(new_items)

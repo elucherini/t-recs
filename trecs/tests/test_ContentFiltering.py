@@ -6,6 +6,7 @@ import pytest
 import test_helpers
 import trecs.matrix_ops as mo
 
+
 class TestContentFiltering:
     def test_default(self):
         c = ContentFiltering()
