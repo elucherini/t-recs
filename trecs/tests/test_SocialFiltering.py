@@ -235,11 +235,11 @@ class TestSocialFiltering:
             actual_user_representation=users,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_user_item_scores)
+        init_pred_scores = model.predicted_user_item_scores.copy()
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_user_item_scores)
+        trained_preds = model.predicted_user_item_scores.copy()
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 

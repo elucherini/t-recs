@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 import networkx as nx
 from networkx import wiener_index
 import numpy as np
+import scipy.sparse as sp
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
@@ -40,8 +41,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
-        if isinstance(init_value, np.ndarray):
-            init_value = np.copy(init_value)
+        if isinstance(init_value, (np.ndarray, sp.spmatrix)):
+            init_value = init_value.copy()
         self.measurement_history.append(init_value)
 
     def get_measurement(self):
@@ -499,7 +500,7 @@ class DiffusionTreeMeasurement(Measurement):
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, infection_state)
-        self._old_infection_state = np.copy(infection_state.value)
+        self._old_infection_state = infection_state.value.copy()
         Measurement.__init__(
             self, "num_infected", verbose=verbose, init_value=self.diffusion_tree.number_of_nodes()
         )

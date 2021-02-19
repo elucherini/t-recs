@@ -5,6 +5,7 @@ implementable in our simulation library
 from abc import ABC, abstractmethod
 import warnings
 import numpy as np
+import scipy.sparse as sp
 from tqdm import tqdm
 from trecs.metrics import MeasurementModule
 from trecs.base import SystemStateModule
@@ -183,6 +184,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.interleaving_fn = interleaving_fn
         # set predicted scores
         self.predicted_scores = None
+        # import pdb; pdb.set_trace()
         self.train()
         assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
@@ -201,25 +203,23 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise ValueError("You must define at least one measurement module")
 
         # check users array
-        if not is_valid_or_none(users, (list, np.ndarray, Users)):
+        if not is_valid_or_none(users, (list, np.ndarray, sp.spmatrix, Users)):
             raise TypeError("users must be array_like or Users")
         if users is None:
             shape = (self.users_hat.num_users, self.users_hat.num_attrs)
             self.users = Users(size=shape, num_users=num_users, seed=seed)
-        if isinstance(users, (list, np.ndarray)):
+        if isinstance(users, (list, np.ndarray, sp.spmatrix)):
             # assume that's what passed in is the user's profiles
             self.users = Users(actual_user_profiles=users, num_users=num_users)
         if isinstance(users, Users):
             self.users = users
 
         # check items array
-        if not is_valid_or_none(items, (list, np.ndarray, Items)):
+        if not is_valid_or_none(items, (list, np.ndarray, sp.spmatrix, Items)):
             raise TypeError("items must be array_like or Items")
         if items is None:
             raise ValueError("true item attributes can't be None")
-        if isinstance(items, (list, np.ndarray)):
-            # will need to change this when Items no longer inherits from
-            # ndarray
+        if isinstance(items, (list, np.ndarray, sp.spmatrix)):
             self.items = Items(items)
         if isinstance(items, Items):
             self.items = items
@@ -326,6 +326,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         If the Users object does not already have known user-item scores,
         then we calculate these scores.
         """
+        # import pdb; pdb.set_trace()
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
         if self.users.get_actual_user_scores() is None:

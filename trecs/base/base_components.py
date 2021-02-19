@@ -65,7 +65,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
         if isinstance(init_value, np.ndarray):
-            init_value = np.copy(init_value)
+            init_value = init_value.copy()
         self.seed = seed
         self.state_history.append(init_value)
 
@@ -77,7 +77,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         """Append the current value of the variable (by default a copy) to the
         state history"""
         if copy:
-            to_append = np.copy(state)
+            to_append = state.copy()
         else:
             to_append = state
         self.state_history.append(to_append)

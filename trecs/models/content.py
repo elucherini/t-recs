@@ -161,7 +161,7 @@ class ContentFiltering(BaseRecommender):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
 
         # Initialize recommender system
         BaseRecommender.__init__(

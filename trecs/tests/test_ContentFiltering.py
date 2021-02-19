@@ -272,13 +272,13 @@ class TestContentFiltering:
             actual_item_representation=items,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_user_item_scores)
+        init_pred_scores = model.predicted_user_item_scores.copy()
         # after one iteration of training, the model should have perfect
         # predictions, since each user was shown all the items in the item set
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_user_item_scores)
+        trained_preds = model.predicted_user_item_scores.copy()
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 
@@ -306,9 +306,9 @@ class TestContentFiltering:
         # to test whether users are correctly drifting towards the items
         # vector
         item_repr = (user_repr + 0.1 * np.vstack([user_repr[1:], user_repr[0]])).T
-        users = Users(actual_user_profiles=np.copy(user_repr), num_users=10, drift=0.5)
+        users = Users(actual_user_profiles=user_repr.copy(), num_users=10, drift=0.5)
         model = ContentFiltering(
-            user_representation=np.copy(user_repr),
+            user_representation=user_repr.copy(),
             item_representation=item_repr,
             actual_user_representation=users,
         )

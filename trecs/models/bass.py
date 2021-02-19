@@ -219,7 +219,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
         if user_representation is None:
             user_representation = SocialGraphGenerator.generate_random_graph(
                 num=num_users, p=0.3, seed=seed, graph_type=nx.fast_gnp_random_graph
@@ -284,17 +284,6 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             **kwargs
         )
 
-    def initialize_user_scores(self):
-        """
-        If the Users object does not already have known user-item scores,
-        then we calculate these scores.
-        """
-        # users compute their own scores using the true item attributes,
-        # unless their own scores are already known to them
-        # self.users.set_score_function(self.infection_probabilities)
-        if self.users.get_actual_user_scores() is None:
-            self.users.compute_user_scores(self.items.value)
-
     def _update_internal_state(self, interactions):
         """Private function that updates user profiles with data from
             latest interactions.
@@ -333,7 +322,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             representation of items.
         """
         # This formula comes from Goel et al., The Structural Virality of Online Diffusion
-        infection_state = np.copy(self.infection_state.value)
+        infection_state = self.infection_state.value.copy()
         recovered_users = self.infection_state.recovered_users()
         infection_state[recovered_users] = 0  # make all recovered users 0 instead of -1
         dot_product = user_profiles.dot(infection_state * np.log(1 - mo.to_dense(item_attributes)))

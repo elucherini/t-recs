@@ -4,6 +4,7 @@ scores, predicted user profiles, actual creator profiles, and a Creators class (
 encapsulates some of these concepts)
 """
 import numpy as np
+import scipy.sparse as sp
 
 import trecs.matrix_ops as mo
 from trecs.random import Generator
@@ -75,7 +76,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
     ):  # pylint: disable=too-many-arguments
         # general input checks
         if actual_creator_profiles is not None:
-            if not isinstance(actual_creator_profiles, (list, np.ndarray)):
+            if not isinstance(actual_creator_profiles, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("actual_creator_profiles must be a list or numpy.ndarray")
         if actual_creator_profiles is None and size is None:
             raise ValueError("actual_creator_profiles and size can't both be None")

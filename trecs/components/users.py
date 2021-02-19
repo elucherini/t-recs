@@ -4,6 +4,7 @@ scores, predicted user profiles, actual user profiles, and a Users class (which
 encapsulates some of these concepts)
 """
 import numpy as np
+import scipy.sparse as sp
 
 import trecs.matrix_ops as mo
 from trecs.random import Generator
@@ -317,7 +318,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.rng = Generator(seed=seed)
         # general input checks
         if actual_user_profiles is not None:
-            if not isinstance(actual_user_profiles, (list, np.ndarray)):
+            if not isinstance(actual_user_profiles, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if interact_with_items is not None and not callable(interact_with_items):
             raise TypeError("interact_with_items must be callable")
@@ -326,7 +327,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if actual_user_profiles is None and not isinstance(size, tuple):
             raise TypeError("size must be a tuple, is %s" % type(size))
         if actual_user_scores is not None:
-            if not isinstance(actual_user_scores, (list, np.ndarray)):
+            if not isinstance(actual_user_scores, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
@@ -392,6 +393,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
+        # import pdb; pdb.set_trace()
         actual_scores = self.score_fn(
             user_profiles=self.actual_user_profiles.value, item_attributes=item_attributes
         )

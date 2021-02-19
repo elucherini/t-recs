@@ -27,8 +27,8 @@ class TestBaseRecommender:
     # 10 users and 50 items
     users = np.random.randint(10, size=(10, 5))
     items = np.random.randint(10, size=(5, 50))
-    users_hat = np.copy(users)
-    items_hat = np.copy(items)
+    users_hat = users.copy()
+    items_hat = items.copy()
 
     def test_generate_recommendations(self):
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)

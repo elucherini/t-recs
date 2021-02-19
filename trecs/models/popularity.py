@@ -144,7 +144,7 @@ class PopularityRecommender(BaseRecommender):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
         if user_representation is None:
             user_representation = np.ones((num_users, num_attributes), dtype=int)
 
