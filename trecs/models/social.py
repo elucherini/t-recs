@@ -4,8 +4,9 @@ interacted with by users in their social networks
 """
 import networkx as nx
 import numpy as np
+import scipy.sparse as sp
 import trecs.matrix_ops as mo
-from trecs.metrics import MSEMeasurement
+
 from trecs.components import BinarySocialGraph
 from trecs.random import SocialGraphGenerator
 from trecs.validate import validate_user_item_inputs
@@ -151,11 +152,17 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             None,  # see if we can get the default number of users from the items array
             num_attributes=num_users,  # number of attributes should be equal to the number of users
             default_num_items=1250,
-            default_num_attributes=100,
+            default_num_attributes=None,
         )
+        if num_users is None and num_attributes is None:
+            # number of users could not be inferred from any of the inputs
+            num_users = 100
+            num_attributes = 100
         if num_users is None:
             # get user representation from items instead
-            num_users = num_attributes  # num_attributes by default is 100
+            num_users = num_attributes
+        if num_attributes is None:
+            num_attributes = num_users
 
         # verify that the user representation is an adjacency matrix and that
         # the item representation aligns
@@ -210,8 +217,11 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 "item representation"
             )
             raise ValueError(error_msg)
-        interactions_per_user = np.zeros((self.num_users, self.num_items), dtype=int)
+        interactions_per_user = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
+        if mo.any_dense(self.items_hat.value):
+            # only add dense to dense and sparse to sparse
+            interactions_per_user = mo.to_dense(interactions_per_user)
         self.items_hat.value += interactions_per_user
 
     def process_new_items(self, new_items):
@@ -226,5 +236,5 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 added into the system. Should be :math:`|A|\\times|I|`
         """
         # users have never interacted with new items
-        new_representation = np.zeros((self.num_users, new_items.shape[1]))
+        new_representation = sp.csr_matrix((self.num_users, new_items.shape[1]))
         return new_representation

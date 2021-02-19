@@ -2,6 +2,7 @@ from trecs.metrics.measurement import MSEMeasurement
 from trecs.models import PopularityRecommender
 from trecs.components import Creators
 import numpy as np
+import scipy.sparse as sp
 import pytest
 import test_helpers
 
@@ -203,6 +204,56 @@ class TestPopularityRecommender:
         most_popular = np.argmax(model.predicted_item_attributes)  # extract most popular item
         correct_rec = np.ones(num_users).reshape(-1, 1) * most_popular
         test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        num_items = 5
+        num_attr = 5
+        users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
+        items = sp.csr_matrix(np.zeros((num_attr, num_items)))  # 5 items, 5 attributes
+        users_hat = sp.csr_matrix(np.ones((num_users, 1)))
+        items_hat = sp.csr_matrix((1, num_items))
+        items[:, 0] = 10  # this item will be most desirable to users
+
+        model = PopularityRecommender(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        # assert that recommendations are now "perfect"
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[0], [0], [0], [0], [0]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+        # test various combinations of sparse matrix arguments,
+        # ensure they run without error
+        model = PopularityRecommender(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = PopularityRecommender(
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = PopularityRecommender(
+            user_representation=users_hat.copy(),
+            num_items=num_items,
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+
 
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))

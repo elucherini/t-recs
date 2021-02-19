@@ -1,10 +1,10 @@
 from attr import attrs
-from trecs.metrics.measurement import MSEMeasurement
-from trecs.models import ContentFiltering
-from trecs.components import Users, Creators
 import numpy as np
 import scipy.sparse as sp
 import pytest
+from trecs.metrics.measurement import MSEMeasurement
+from trecs.models import ContentFiltering
+from trecs.components import Users, Creators
 import test_helpers
 import trecs.matrix_ops as mo
 
@@ -343,21 +343,26 @@ class TestContentFiltering:
     def test_sparse_matrix(self):
         num_users = 5
         num_items = 5
+        num_attrs = 10
         users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
         items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
+        users_hat = sp.csr_matrix((num_users, num_attrs))
+        items_hat = sp.csr_matrix(mo.normalize_matrix(np.random.random((num_attrs, num_items)), axis=0))
 
         model = ContentFiltering(
-            actual_user_representation=users,
-            actual_item_representation=items,
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
             num_items_per_iter=num_items,
         )
-        init_pred_scores = model.predicted_user_item_scores.copy()
+        init_pred_scores = mo.to_dense(model.predicted_user_item_scores.copy())
         # after one iteration of training, the model should have perfect
         # predictions, since each user was shown all the items in the item set
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = model.predicted_user_item_scores.copy()
+        trained_preds = mo.to_dense(model.predicted_user_item_scores.copy())
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 
@@ -366,4 +371,19 @@ class TestContentFiltering:
         recommendations = model.recommend()
         correct_rec = np.array([[0], [1], [2], [3], [4]])
         test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+        # ensure no errors when we pass in different sparse matrices
+        model = ContentFiltering(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = ContentFiltering(
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
 

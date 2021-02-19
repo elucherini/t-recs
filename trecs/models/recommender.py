@@ -388,7 +388,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 )
         if k == 0:
             return np.array([]).reshape((self.num_users, 0)).astype(int)
-        s_filtered = self.predicted_scores.filter_by_index(item_indices)
+        # convert to dense because scipy does not yet support argsort - consider
+        # implementing our own fast sparse version? see
+        # https://stackoverflow.com/questions/31790819/scipy-sparse-csr
+        # -matrix-how-to-get-top-ten-values-and-indices
+        s_filtered = mo.to_dense(self.predicted_scores.filter_by_index(item_indices))
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
         if self.probabilistic_recommendations:
