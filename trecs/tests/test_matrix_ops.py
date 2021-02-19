@@ -160,3 +160,15 @@ class TestMatrixOps:
         y = sp.csr_matrix(np.eye(5) * 2)
         with pytest.raises(TypeError):
             mo.sparse_dot(x, y)
+
+    def test_argmax(self):
+        x = np.eye(10)
+        y = sp.csr_matrix(x.copy())
+
+        z1 = mo.argmax(x, axis=0)
+        z2 = mo.argmax(y, axis=0)
+        np.testing.assert_array_equal(z1, z2)
+
+        z1 = mo.argmax(x, axis=1)
+        z2 = mo.argmax(y, axis=1)
+        np.testing.assert_array_equal(z1, z2)

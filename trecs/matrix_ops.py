@@ -262,6 +262,50 @@ def hstack(matrix_list):
     return generic_matrix_op(np.hstack, sp.hstack, matrix_list)
 
 
+def sparse_argmax(matrix, axis=None):
+    """
+    By default, the implementation of `argmax` in `scipy` returns
+    a `numpy.matrix` - no good! Here, we force the output of the
+    argmax function to be a 1D array.
+
+    Parameters
+    -----------
+        matrix: `scipy.sparse.spmatrix`
+            Matrix from which we want the argmax.
+
+        axis: int
+            Axis along which to take the argmax
+
+    Returns
+    --------
+        array: :obj:`numpy.ndarray`
+            Flattened 1D array of the row/col arg max.
+    """
+    mat = matrix.argmax(axis=axis)
+    return np.squeeze(np.asarray(mat))
+
+
+def argmax(matrix, axis=None):
+    """
+    Method that "standardizes" the output of
+    `numpy.argmax` and `scipy.sparse.argmax`.
+
+    Parameters
+    -----------
+        matrix: `scipy.sparse.spmatrix`
+            Matrix from which we want the argmax.
+
+        axis: int
+            Axis along which to take the argmax
+
+    Returns
+    --------
+        array: :obj:`numpy.ndarray`
+            Flattened 1D array of the row/col arg max.
+    """
+    return generic_matrix_op(np.argmax, sparse_argmax, matrix, axis=axis)
+
+
 def add_empty_cols(matrix, num_cols):
     """
     Adds empty columns to a matrix, which can be either a sparse
@@ -270,7 +314,7 @@ def add_empty_cols(matrix, num_cols):
 
     Parameters
     -----------
-        matrix: list
+        matrix: `numpy.ndarray` or `scipy.sparse.spmatrix`
             Matrix which we want to append empty columns to.
 
     Raises

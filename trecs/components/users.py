@@ -496,8 +496,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             multiplier = np.power(idxs, self.attention_exp)
             # multiply each row by the attention coefficient
             rec_item_scores = rec_item_scores * multiplier
-        # must flatten after argmax due to sparse matrices
-        sorted_user_preferences = rec_item_scores.argmax(axis=1).flatten()
+        sorted_user_preferences = mo.argmax(rec_item_scores, axis=1)
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
@@ -636,7 +635,7 @@ class DNUsers(Users):
         interaction_scores = self.actual_user_scores[reshaped_user_vector, items_shown]
 
         self.log("User scores for given items are:\n" + str(interaction_scores))
-        item_utilities = self.calc_dn_utilities(interaction_scores)
+        item_utilities = mo.to_dense(self.calc_dn_utilities(interaction_scores))
         sorted_user_preferences = item_utilities.argsort()[:, -1]
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + str(interactions))
