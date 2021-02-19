@@ -253,8 +253,6 @@ class TestPopularityRecommender:
         )
         model.run(1)
 
-
-
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
         items = np.random.randint(2, size=(10, 100))

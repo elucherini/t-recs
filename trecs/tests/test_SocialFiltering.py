@@ -258,7 +258,9 @@ class TestSocialFiltering:
         num_items = 5
         users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
         items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
-        social_network = sp.csr_matrix(np.roll(np.eye(num_users), 1, axis=1))  # every user i is connected to (i+1) % 5
+        social_network = sp.csr_matrix(
+            np.roll(np.eye(num_users), 1, axis=1)
+        )  # every user i is connected to (i+1) % 5
 
         model = SocialFiltering(
             user_representation=social_network.copy(),

@@ -202,7 +202,9 @@ class ContentFiltering(BaseRecommender):
         interactions_per_user = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
         # perform an inner product with no normalization of the arguments
-        user_attributes = mo.inner_product(interactions_per_user, mo.transpose(self.items_hat), False, False)
+        user_attributes = mo.inner_product(
+            interactions_per_user, mo.transpose(self.items_hat), False, False
+        )
         self.users_hat.value += user_attributes
 
     def process_new_items(self, new_items):

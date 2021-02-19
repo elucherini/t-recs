@@ -347,7 +347,9 @@ class TestContentFiltering:
         users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
         items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
         users_hat = sp.csr_matrix((num_users, num_attrs))
-        items_hat = sp.csr_matrix(mo.normalize_matrix(np.random.random((num_attrs, num_items)), axis=0))
+        items_hat = sp.csr_matrix(
+            mo.normalize_matrix(np.random.random((num_attrs, num_items)), axis=0)
+        )
 
         model = ContentFiltering(
             user_representation=users_hat.copy(),
@@ -386,4 +388,3 @@ class TestContentFiltering:
             num_items_per_iter=num_items,
         )
         model.run(1)
-
