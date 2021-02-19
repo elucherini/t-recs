@@ -353,6 +353,36 @@ def inner_product(user_profiles, item_attributes, normalize_users=True, normaliz
     return scores
 
 
+def scale_rows_dense_fn(vector):
+    """
+    Returns a function that scales the rows of an
+    arbitrary dense matrix by the elements of the vector.
+
+    Parameters
+    -----------
+
+        vector: :obj:`numpy.ndarray`
+            Should have length equal to the number of rows
+            of the matrix passed in to the return function.
+    """
+    return lambda m: np.multiply(m, vector[:, np.newaxis])
+
+
+def scale_rows_sparse_fn(vector):
+    """
+    Returns a function that scales the rows of an
+    arbitrary sparse matrix by the elements of the vector.
+
+    Parameters
+    -----------
+
+        vector: :obj:`numpy.ndarray`
+            Should have length equal to the number of rows
+            of the matrix passed in to the return function.
+    """
+    return lambda m: sparse_dot(sp.diags(vector), m)
+
+
 def normalize_matrix(matrix, axis=1):
     """
     Normalize a matrix so that each row vector has a Euclidean norm of 1.
@@ -368,8 +398,9 @@ def normalize_matrix(matrix, axis=1):
     # row scale by diagonal matrix
     divisor = 1 / divisor
     divisor[divisor == -1] = 0
-    diag = generic_matrix_op(np.diag, sp.diags, divisor)
-    return generic_matrix_op(np.dot, sparse_dot, diag, matrix)
+
+    dense_fn, sparse_fn = scale_rows_dense_fn(divisor), scale_rows_sparse_fn(divisor)
+    return generic_matrix_op(dense_fn, sparse_fn, matrix)
 
 
 def contains_row(matrix, row):
