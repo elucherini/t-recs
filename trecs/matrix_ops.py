@@ -337,14 +337,12 @@ def inner_product(user_profiles, item_attributes, normalize_users=True, normaliz
     --------
         scores: :obj:`numpy.ndarray`
     """
-    # import pdb; pdb.set_trace()
     if normalize_users:
         # this is purely an optimization that prevents numpy from having
         # to multiply huge numbers
         user_profiles = normalize_matrix(user_profiles, axis=1)
     if normalize_items:
         item_attributes = normalize_matrix(item_attributes.T, axis=1).T
-    # import pdb; pdb.set_trace()
     if user_profiles.shape[1] != item_attributes.shape[0]:
         error_message = (
             "Number of attributes in user profile matrix must match number "

@@ -3,6 +3,7 @@ from trecs.metrics.measurement import MSEMeasurement
 from trecs.models import ContentFiltering
 from trecs.components import Users, Creators
 import numpy as np
+import scipy.sparse as sp
 import pytest
 import test_helpers
 import trecs.matrix_ops as mo
@@ -338,3 +339,31 @@ class TestContentFiltering:
         assert cf.items.value.shape == (10, 150)  # 50 new items
         assert cf.items_hat.value.shape == (10, 150)
         assert cf.users.actual_user_scores.state_history[-1].shape == (100, 150)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        num_items = 5
+        users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
+        items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
+
+        model = ContentFiltering(
+            actual_user_representation=users,
+            actual_item_representation=items,
+            num_items_per_iter=num_items,
+        )
+        init_pred_scores = model.predicted_user_item_scores.copy()
+        # after one iteration of training, the model should have perfect
+        # predictions, since each user was shown all the items in the item set
+        model.run(1)
+
+        # assert new scores have changed
+        trained_preds = model.predicted_user_item_scores.copy()
+        with pytest.raises(AssertionError):
+            test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
+
+        # assert that recommendations are now "perfect"
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[0], [1], [2], [3], [4]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)
+

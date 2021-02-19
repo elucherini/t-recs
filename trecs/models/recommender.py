@@ -184,7 +184,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.interleaving_fn = interleaving_fn
         # set predicted scores
         self.predicted_scores = None
-        # import pdb; pdb.set_trace()
         self.train()
         assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
@@ -326,7 +325,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         If the Users object does not already have known user-item scores,
         then we calculate these scores.
         """
-        # import pdb; pdb.set_trace()
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
         if self.users.get_actual_user_scores() is None:

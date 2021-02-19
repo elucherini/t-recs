@@ -339,7 +339,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         num_users = check_consistency(
             users=actual_user_profiles, user_item_scores=actual_user_scores, num_users=num_users
         )[0]
-        self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
+        self.actual_user_profiles = ActualUserProfiles(actual_user_profiles)
         self.interact_with_items = interact_with_items
         self.drift = drift
         self.attention_exp = attention_exp
@@ -393,7 +393,6 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
-        # import pdb; pdb.set_trace()
         actual_scores = self.score_fn(
             user_profiles=self.actual_user_profiles.value, item_attributes=item_attributes
         )
@@ -497,7 +496,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             multiplier = np.power(idxs, self.attention_exp)
             # multiply each row by the attention coefficient
             rec_item_scores = rec_item_scores * multiplier
-        sorted_user_preferences = rec_item_scores.argmax(axis=1)
+        # must flatten after argmax due to sparse matrices
+        sorted_user_preferences = rec_item_scores.argmax(axis=1).flatten()
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
