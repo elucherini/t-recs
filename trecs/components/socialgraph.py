@@ -3,7 +3,7 @@
 """
 import numpy as np
 from trecs.logging import VerboseMode
-from .users import PredictedUsers
+from .users import PredictedUserProfiles
 
 
 class BinarySocialGraph(VerboseMode):
@@ -16,7 +16,7 @@ class BinarySocialGraph(VerboseMode):
     """
 
     # expect these to be initialized
-    users_hat = PredictedUsers(np.array([]))
+    users_hat = PredictedUserProfiles(np.array([]))
     num_users = 0
 
     def follow(self, user_index, following_index):

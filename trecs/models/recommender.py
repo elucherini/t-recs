@@ -9,7 +9,14 @@ import scipy.sparse as sp
 from tqdm import tqdm
 from trecs.metrics import MeasurementModule
 from trecs.base import SystemStateModule
-from trecs.components import Users, Items, Creators, PredictedScores, PredictedUsers, PredictedItems
+from trecs.components import (
+    Users,
+    Items,
+    Creators,
+    PredictedScores,
+    PredictedUserProfiles,
+    PredictedItems,
+)
 from trecs.logging import VerboseMode
 import trecs.matrix_ops as mo
 from trecs.random import Generator
@@ -80,7 +87,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     Attributes
     -----------
 
-        users_hat: :class:`~components.users.PredictedUsers`
+        users_hat: :class:`~components.users.PredictedUserProfiles`
             An array representing users, matching user_representation. The
             shape and meaning depends on the implementation of the concrete
             class.
@@ -174,7 +181,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.add_metrics(*measurements)
         # init the recommender system's internal representation of users
         # and items
-        self.users_hat = PredictedUsers(users_hat)
+        self.users_hat = PredictedUserProfiles(users_hat)
         self.items_hat = PredictedItems(items_hat)
         assert callable(score_fn)  # score function must be a function
         self.score_fn = score_fn

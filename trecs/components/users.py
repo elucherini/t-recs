@@ -70,7 +70,7 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
         self.current_state = mo.hstack([self.current_state, new_scores])
 
 
-class PredictedUsers(Component):  # pylint: disable=too-many-ancestors
+class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
     User profiles as predicted by the model. This class is a container
     compatible with Numpy operations and it does not make assumptions on the
