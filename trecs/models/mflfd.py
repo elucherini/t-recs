@@ -14,22 +14,37 @@ from .mf import ImplicitMF
 
 
 class ImplicitMFLFD(ImplicitMF):
-    def __init__(self):
-         super().__init__(
-             num_users=None,
-             num_items=None,
-             num_latent_factors=None,
-             user_representation=None,
-             item_representation=None,
-             actual_user_representation=None,
-             actual_item_representation=None,
-             probabilistic_recommendations=False,
-             seed=None,
-             verbose=False,
-             num_items_per_iter=10,
-             model_params=None,
-             **kwargs
-         )
+    def __init__(
+            self,
+            num_users=None,
+            num_items=None,
+            num_latent_factors=None,
+            user_representation=None,
+            item_representation=None,
+            actual_user_representation=None,
+            actual_item_representation=None,
+            probabilistic_recommendations=False,
+            seed=None,
+            verbose=False,
+            num_items_per_iter=10,
+            model_params=None,
+            **kwargs
+    ):
+        super().__init__(
+            num_users,
+            num_items,
+            num_latent_factors,
+            user_representation,
+            item_representation,
+            actual_user_representation,
+            actual_item_representation,
+            probabilistic_recommendations,
+            seed,
+            verbose,
+            num_items_per_iter,
+            model_params,
+            **kwargs,
+        )
 
     # def latent_factors_diversification(self, top_n_limit=None):
     #
