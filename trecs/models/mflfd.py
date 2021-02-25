@@ -46,6 +46,79 @@ class ImplicitMFLFD(ImplicitMF):
             **kwargs,
         )
 
+    def generate_recommendations(self, k=1, item_indices=None):
+        """
+        Generate recommendations for each user.
+
+        Parameters
+        -----------
+
+            k : int (optional, default: 1)
+                Number of items to recommend.
+
+            item_indices : :obj:`numpy.ndarray` or None (optional, default: None)
+                A matrix containing the indices of the items each user has not yet
+                interacted with. It is used to ensure that the user is presented
+                with items they have not already interacted with. If `None`,
+                then the user may be recommended items that they have already
+                interacted with.
+
+        Returns
+        ---------
+            Recommendations: :obj:`numpy.ndarray`
+        """
+        self.item_indices = item_indices
+        if item_indices is not None:
+            if item_indices.size < self.num_users:
+                raise ValueError(
+                    "At least one user has interacted with all items!"
+                    "To avoid this problem, you may want to allow repeated items."
+                )
+            if k > item_indices.shape[1]:
+                raise ValueError(
+                    f"There are not enough items left to recommend {k} items to each user."
+                )
+        if k == 0:
+            return np.array([]).reshape((self.num_users, 0)).astype(int)
+        row = np.repeat(self.users.user_vector, item_indices.shape[1])
+        row = row.reshape((self.num_users, -1))
+        s_filtered = self.predicted_scores[row, item_indices]
+        if self.probabilistic_recommendations:
+            permutation = s_filtered.argsort()
+            rec = item_indices[row, permutation]
+            # the recommended items will not be exactly determined by
+            # predicted score; instead, we will sample from the sorted list
+            # such that higher-preference items get more probability mass
+            num_items_unseen = rec.shape[1]  # number of items unseen per user
+            probabilities = np.logspace(0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2)
+            probabilities = probabilities / probabilities.sum()
+            picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
+            return rec[:, picks]
+        else:
+            # scores are U x I; we can use argpartition to take the top k scores
+            negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
+            # break ties using a random score component
+            scores_tiebreak = np.zeros(
+                negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")]
+            )
+            scores_tiebreak["score"] = negated_scores
+            scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
+            top_k = scores_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
+            # now we sort within the top k
+            row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
+            # again, indices should go from highest to lowest
+            sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
+            rec = item_indices[
+                row, top_k[row, sort_top_k]
+            ]  # extract items such that rows go from highest scored to lowest-scored of top-k
+            if self.is_verbose():
+                self.log(f"Item indices:\n{str(item_indices)}")
+                self.log(
+                    f"Top-k items ordered by preference (high to low) for each user:\n{str(rec)}"
+                )
+            self.rec = rec
+            return rec
+
     # def latent_factors_diversification(self, top_n_limit=None):
     #
     #         #(user_features, item_features, n_recs=10, top_n_limit=None):
@@ -115,5 +188,57 @@ class ImplicitMFLFD(ImplicitMF):
     #
     #     return all_recs, all_user_recs
 
-    def generate_recommendations(self, k=1, item_indices=None):
-        pass
+    # def generate_recommendations(self, k=1, item_indices=None):
+    #
+    #     if item_indices is not None:
+    #         if item_indices.size < self.num_users:
+    #             raise ValueError(
+    #                 "At least one user has interacted with all items!"
+    #                 "To avoid this problem, you may want to allow repeated items."
+    #             )
+    #         if k > item_indices.shape[1]:
+    #             raise ValueError(
+    #                 f"There are not enough items left to recommend {k} items to each user."
+    #             )
+    #     if k == 0:
+    #         return np.array([]).reshape((self.num_users, 0)).astype(int)
+    #     row = np.repeat(self.users.user_vector, item_indices.shape[1])
+    #     row = row.reshape((self.num_users, -1))
+    #     s_filtered = self.predicted_scores[row, item_indices]
+    #
+    #     if self.probabilistic_recommendations:
+    #         permutation = s_filtered.argsort()
+    #         rec = item_indices[row, permutation]
+    #         # the recommended items will not be exactly determined by
+    #         # predicted score; instead, we will sample from the sorted list
+    #         # such that higher-preference items get more probability mass
+    #         num_items_unseen = rec.shape[1]  # number of items unseen per user
+    #         probabilities = np.logspace(0.0, num_items_unseen / 10.0, num=num_items_unseen, base=2)
+    #         probabilities = probabilities / probabilities.sum()
+    #         picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
+    #         return rec[:, picks]
+    #     else:
+    #         # scores are U x I; we can use argpartition to take the top k scores
+    #         negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
+    #         # break ties using a random score component
+    #         scores_tiebreak = np.zeros(
+    #             negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")]
+    #         )
+    #         scores_tiebreak["score"] = negated_scores
+    #         scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
+    #         top_k = scores_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
+    #         # now we sort within the top k
+    #         row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
+    #         # again, indices should go from highest to lowest
+    #         sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
+    #
+    #
+    #         rec = item_indices[
+    #             row, top_k[row, sort_top_k]
+    #         ]  # extract items such that rows go from highest scored to lowest-scored of top-k
+    #         if self.is_verbose():
+    #             self.log(f"Item indices:\n{str(item_indices)}")
+    #             self.log(
+    #                 f"Top-k items ordered by preference (high to low) for each user:\n{str(rec)}"
+    #             )
+    #         return rec
