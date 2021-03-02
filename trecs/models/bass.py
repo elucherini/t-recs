@@ -300,11 +300,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
 
         """
-        # fetch infection status for each user
-        new_infections = self.predicted_scores.filter_by_index(interactions.reshape(-1, 1))
+        # fetch infection probabilities for each user
+        infection_probabilities = self.predicted_scores.filter_by_index(interactions.reshape(-1, 1))
         # flatten to 1D
-        new_infections = new_infections.reshape(self.num_users)
-        newly_infected_users = np.where(new_infections == 1)[0]
+        infection_probabilities = infection_probabilities.reshape(self.num_users)
+        # independent infections
+        infection_trials = self.random_state.binomial(1, p=infection_probabilities)
+        newly_infected_users = np.where(infection_trials == 1)[0]
         self.infection_state.infect_users(newly_infected_users, interactions[newly_infected_users])
 
     def infection_probabilities(self, user_profiles, item_attributes):
@@ -327,16 +329,17 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # get neighbors of all infected users
         infected_users = infection_state.nonzero()[0]
         neighbors = user_profiles[:, infected_users]
-        infection_trials = sp.csr_matrix(neighbors.shape)
-        total_neighbors = mo.count_nonzero(neighbors)
-        infection_trials[neighbors.nonzero()] = self.random_state.binomial(1, p=item_attributes, size=(1, total_neighbors))
-        infected_neighbors = infection_trials.nonzero()[0]
+        # for each user, get the total # of infected users they are connected to,
+        # use log trick to sum probabilities
+        infection_probs = neighbors.sum(axis=1) * np.log(1 - mo.to_dense(item_attributes))
+        infection_probs = infection_probs.reshape(-1, 1)  # reshape to column vector
+        could_be_infected = infection_probs[
+            infection_probs.nonzero()
+        ]  # users with a nonzero chance of being infected
+        infection_probs[infection_probs.nonzero()] = 1 - np.exp(could_be_infected)
 
-        newly_infected = np.zeros((self.num_users, 1))
-        newly_infected[infected_neighbors, :] = 1
-        newly_infected[recovered_users] = 0  # recovered users cannot be infected
-        # reshape scores
-        return newly_infected.reshape((-1, 1))
+        infection_probs[recovered_users] = 0  # recovered users cannot be infected
+        return np.asarray(infection_probs)
 
     def run(
         self,
