@@ -160,8 +160,9 @@
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">from</span> <span class="nn">networkx</span> <span class="kn">import</span> <span class="n">wiener_index</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">from</span> <span class="nn">trecs.logging</span> <span class="kn">import</span> <span class="n">VerboseMode</span>
-<span class="kn">from</span> <span class="nn">trecs.components</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">trecs.base</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseObservable</span><span class="p">,</span>
     <span class="n">register_observables</span><span class="p">,</span>
 <span class="p">)</span>
@@ -194,14 +195,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">VerboseMode</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measurement_history</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">init_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">init_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init_value</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">)):</span>
+            <span class="n">init_value</span> <span class="o">=</span> <span class="n">init_value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measurement_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">init_value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Measurement.get_measurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement.get_measurement">[docs]</a>    <span class="k">def</span> <span class="nf">get_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns measurements. See</span>
-<span class="sd">        :func:`~components.base_components.BaseObservable.get_observable`</span>
+<span class="sd">        :func:`~base.base_components.BaseObservable.get_observable`</span>
 <span class="sd">        for more details.</span>
 
 <span class="sd">        Returns</span>
@@ -601,7 +602,7 @@
 <span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
 <span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">diff</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="o">-</span> <span class="n">recommender</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">actual_user_scores</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">recommender</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">((</span><span class="n">diff</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
@@ -625,8 +626,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 
-<span class="sd">        infection_state: array_like</span>
-<span class="sd">            The initial &quot;infection state&quot;</span>
+<span class="sd">        infection_state: :class:`~models.bass.InfectionState`</span>
+<span class="sd">            The initial &quot;infection state&quot; of all users</span>
 
 <span class="sd">        verbose: bool (optional, default: False)</span>
 <span class="sd">            If True, enables verbose mode. Disabled by default.</span>
@@ -652,8 +653,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">infection_state</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">infection_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">infection_state</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_infected&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
         <span class="p">)</span>
@@ -668,7 +669,11 @@
         <span class="n">prev_infected_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># candidates must be connected to newly infected users</span>
         <span class="n">candidate_parents</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="p">[:,</span> <span class="n">prev_infected_users</span><span class="p">][</span><span class="n">new_infected_users</span><span class="p">]</span>
-        <span class="n">parents</span> <span class="o">=</span> <span class="n">prev_infected_users</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">candidate_parents</span><span class="p">)[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">candidate_parents</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">candidate_parents</span> <span class="o">=</span> <span class="n">candidate_parents</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>  <span class="c1"># convert sparse to numpy if needed</span>
+        <span class="c1"># randomly select parent out of those who were infected, use random multiplication</span>
+        <span class="n">candidate_parents</span> <span class="o">=</span> <span class="n">candidate_parents</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">candidate_parents</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">prev_infected_users</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">candidate_parents</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">parents</span>
 
     <span class="k">def</span> <span class="nf">_add_to_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infected_users</span><span class="p">):</span>
@@ -685,17 +690,25 @@
     <span class="k">def</span> <span class="nf">_manage_new_infections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">current_infection_state</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add new infected users to graph and return number of newly infected</span>
 <span class="sd">        users</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+<span class="sd">            user_profiles: :obj:`numpy.ndarray`</span>
+<span class="sd">                :math:`|U|\\times|A|` numpy adjacency matrix.</span>
+
+<span class="sd">            current_infection_state: :class:`~models.bass.InfectionState`</span>
+<span class="sd">                Matrix that contains state about recovered,</span>
+<span class="sd">                infected, and susceptible individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">current_infection_state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">new_infections</span> <span class="o">=</span> <span class="n">current_infection_state</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">new_infections</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">current_infection_state</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">new_infections</span> <span class="o">=</span> <span class="n">current_infection_state</span><span class="o">.</span><span class="n">infected_users</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># only extract user indices</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_infections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># no new infections</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">new_infected_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_infections</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># only the rows</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_graph</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infected_users</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_graph</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infections</span><span class="p">)</span>
         <span class="c1"># return number of new infections</span>
-        <span class="k">return</span> <span class="n">new_infected_users</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_infections</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DiffusionTreeMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -715,9 +728,9 @@
 <span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
 <span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">users_hat</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiffusionTreeMeasurement.draw_tree"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.draw_tree">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -738,7 +751,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 
-<span class="sd">        infection_state: array_like</span>
+<span class="sd">        :obj:`numpy.ndarray`</span>
 <span class="sd">            The initial &quot;infection state&quot; (see :class:`DiffusionTreeMeasurement`).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -808,7 +821,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">interactions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interactions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span>
-        <span class="n">interacted_item_attr</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="n">interactions</span><span class="p">]</span>
+        <span class="n">interacted_item_attr</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_item_attributes</span><span class="p">[:,</span> <span class="n">interactions</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="p">{</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">interacted_item_attr</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">}</span> <span class="o">==</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;AFSR is not intended for binary features.&quot;</span><span class="p">)</span>

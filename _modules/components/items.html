@@ -155,7 +155,8 @@
 <span></span><span class="sd">&quot;&quot;&quot; Class definition for Items in our recommender systems - can represent anything</span>
 <span class="sd">    ranging from disease to consumer goods</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">import</span> <span class="nn">trecs.matrix_ops</span> <span class="k">as</span> <span class="nn">mo</span>
+<span class="kn">from</span> <span class="nn">trecs.base</span> <span class="kn">import</span> <span class="n">Component</span>
 
 
 <div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../reference/components.html#components.items.Items">[docs]</a><span class="k">class</span> <span class="nc">Items</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -164,10 +165,9 @@
 
 <span class="sd">    Items are the objects with which users interact with models and with each other.</span>
 
-<span class="sd">    This class is essentially a container of Numpy&#39;s ndarray. Therefore, it</span>
-<span class="sd">    supports all the operations supported by ndarray. It inherits from</span>
-<span class="sd">    :class:`~.base_components.Component` and it contains all the attributes of</span>
-<span class="sd">    that class.</span>
+<span class="sd">    It inherits from :class:`~.base_components.Component` and it contains all the</span>
+<span class="sd">    attributes of that class. We support both numpy arrays or scipy sparse matrices</span>
+<span class="sd">    being used for the item representation.</span>
 
 <span class="sd">    The Items class does not specify any constraints on items. It is used</span>
 <span class="sd">    internally in :class:`~models.recommender.BaseRecommender`.</span>
@@ -177,11 +177,13 @@
 
 <span class="sd">    item_attributes: array_like, None (optional, default: None)</span>
 <span class="sd">        Representation of items. It expects an array_like object. If None, the</span>
-<span class="sd">        representation is generated randomly.</span>
+<span class="sd">        representation is generated randomly using a binomial distribution (see</span>
+<span class="sd">        :class:`~base.base_components.Component` for details). At least one of</span>
+<span class="sd">        `item_attributes` or `size` must be supplied.</span>
 
 <span class="sd">    size: tuple, None (optional, default: None)</span>
-<span class="sd">        Size of the item representation. It expects a tuple. If None, it is</span>
-<span class="sd">        chosen randomly.</span>
+<span class="sd">        Size of the item representation. It expects a tuple. At least one of</span>
+<span class="sd">        `item_attributes` or `size` must be supplied.</span>
 
 <span class="sd">    verbose: bool (optional, default: False)</span>
 <span class="sd">        If True, it enables verbose mode.</span>
@@ -193,7 +195,75 @@
 <span class="sd">    ------------</span>
 
 <span class="sd">    Attributes from Component</span>
-<span class="sd">        Inherited by :class:`~.base_components.Component`</span>
+<span class="sd">        Inherited by :class:`~base.base_components.Component`</span>
+
+<span class="sd">    name: str</span>
+<span class="sd">        Name of the component</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;items&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">item_attributes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Items.append_new_items"><a class="viewcode-back" href="../../reference/components.html#components.items.Items.append_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">append_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Appends a set of new items (represented as some kind of matrix) to the current</span>
+<span class="sd">        set of items. Assumes the new items have dimension :math:`|A|\\times|I_{new}|`,</span>
+<span class="sd">        where :math:`I_{new}` indicates the number of new items to be appended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">new_items</span><span class="p">])</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut getter method for the number of attributes of the items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># rows = attributes, cols = items</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut getter method for the number of items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># rows = attributes, cols = items</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="PredictedItems"><a class="viewcode-back" href="../../reference/components.html#components.items.PredictedItems">[docs]</a><span class="k">class</span> <span class="nc">PredictedItems</span><span class="p">(</span><span class="n">Items</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This component represents the item attributes, as predicted by the</span>
+<span class="sd">    recommender system. The only difference between the two is the intended</span>
+<span class="sd">    purpose - all functionality is identical to the Items class</span>
+<span class="sd">    and therefore PredictedItems inherits from it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -------------</span>
+
+<span class="sd">    item_attributes: array_like, None (optional, default: None)</span>
+<span class="sd">        Representation of items. It expects an array_like object. If None, the</span>
+<span class="sd">        representation is generated randomly using a binomial distribution (see</span>
+<span class="sd">        :class:`~base.base_components.Component` for details). At least one of</span>
+<span class="sd">        `item_attributes` or `size` must be supplied.</span>
+
+<span class="sd">    size: tuple, None (optional, default: None)</span>
+<span class="sd">        Size of the item representation. It expects a tuple. At least one of</span>
+<span class="sd">        `item_attributes` or `size` must be supplied.</span>
+
+<span class="sd">    verbose: bool (optional, default: False)</span>
+<span class="sd">        If True, it enables verbose mode.</span>
+
+<span class="sd">    seed: int, None (optional, default: None)</span>
+<span class="sd">        Seed for underlying random generator.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ------------</span>
+
+<span class="sd">    Attributes from Item</span>
+<span class="sd">        Inherited by :class:`~.items.Items`</span>
 
 <span class="sd">    name: str</span>
 <span class="sd">        Name of the component</span>
@@ -201,9 +271,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;items&quot;</span>
-        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">item_attributes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span>
+        <span class="n">Items</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">item_attributes</span><span class="o">=</span><span class="n">item_attributes</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;predicted_items&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 </pre></div>
 

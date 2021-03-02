@@ -158,15 +158,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">trecs.matrix_ops</span> <span class="k">as</span> <span class="nn">mo</span>
 <span class="kn">from</span> <span class="nn">trecs.components</span> <span class="kn">import</span> <span class="n">BinarySocialGraph</span>
-<span class="kn">from</span> <span class="nn">trecs.components</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">trecs.base</span> <span class="kn">import</span> <span class="n">Component</span>
 <span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">SocialGraphGenerator</span>
 <span class="kn">from</span> <span class="nn">trecs.metrics</span> <span class="kn">import</span> <span class="n">StructuralVirality</span>
 <span class="kn">from</span> <span class="nn">trecs.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">get_first_valid</span><span class="p">,</span>
     <span class="n">is_array_valid_or_none</span><span class="p">,</span>
     <span class="n">all_besides_none_equal</span><span class="p">,</span>
-    <span class="n">all_none</span><span class="p">,</span>
     <span class="n">non_none_values</span><span class="p">,</span>
     <span class="n">resolve_set_to_value</span><span class="p">,</span>
 <span class="p">)</span>
@@ -183,7 +182,57 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;infection_state&quot;</span>
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">infection_state</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return number of infected users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<div class="viewcode-block" id="InfectionState.recovered_users"><a class="viewcode-back" href="../../reference/models.html#models.bass.InfectionState.recovered_users">[docs]</a>    <span class="k">def</span> <span class="nf">recovered_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return indices of users who have recovered (and are no longer susceptible</span>
+<span class="sd">        to infection).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            indices: tuple</span>
+<span class="sd">                The first element of the tuple returned is a numpy array with</span>
+<span class="sd">                the row indices (i.e., user indices) of those recovered, and the</span>
+<span class="sd">                second element is a numpy array of the column indices (i.e.,</span>
+<span class="sd">                item indices)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InfectionState.infected_users"><a class="viewcode-back" href="../../reference/models.html#models.bass.InfectionState.infected_users">[docs]</a>    <span class="k">def</span> <span class="nf">infected_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return indices of users who are currently infected and not recovered.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">            indices: tuple</span>
+<span class="sd">                The first element of the tuple returned is a numpy array with</span>
+<span class="sd">                the row indices (i.e., user indices) of those infected, and the</span>
+<span class="sd">                second element is a numpy array of the column indices (i.e.,</span>
+<span class="sd">                item indices)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InfectionState.infect_users"><a class="viewcode-back" href="../../reference/models.html#models.bass.InfectionState.infect_users">[docs]</a>    <span class="k">def</span> <span class="nf">infect_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_indices</span><span class="p">,</span> <span class="n">item_indices</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update infection state with users who have become newly infected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">recovered_users</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recovered_users</span><span class="p">()</span>
+        <span class="n">currently_infected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infected_users</span><span class="p">()</span>
+
+        <span class="c1"># infect new users</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">[</span><span class="n">user_indices</span><span class="p">,</span> <span class="n">item_indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># remove already infected individuals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">[</span><span class="n">recovered_users</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">[</span><span class="n">currently_infected</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div></div>
 
 
 <div class="viewcode-block" id="InfectionThresholds"><a class="viewcode-back" href="../../reference/models.html#models.bass.InfectionThresholds">[docs]</a><span class="k">class</span> <span class="nc">InfectionThresholds</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -324,11 +373,13 @@
         <span class="c1"># that the recommender system&#39;s beliefs about the item attributes</span>
         <span class="c1"># are the same as the &quot;true&quot; item attributes</span>
         <span class="k">if</span> <span class="n">actual_item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item_representation</span><span class="p">)</span>
+            <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">item_representation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">user_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">user_representation</span> <span class="o">=</span> <span class="n">SocialGraphGenerator</span><span class="o">.</span><span class="n">generate_random_graph</span><span class="p">(</span>
                 <span class="n">num</span><span class="o">=</span><span class="n">num_users</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">fast_gnp_random_graph</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="n">actual_user_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">actual_user_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_users</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="c1"># Define infection_state</span>
         <span class="k">if</span> <span class="n">infection_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -364,7 +415,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span> <span class="o">=</span> <span class="n">InfectionState</span><span class="p">(</span><span class="n">infection_state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">infection_thresholds</span> <span class="o">=</span> <span class="n">InfectionThresholds</span><span class="p">(</span><span class="n">infection_thresholds</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">measurements</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">measurements</span> <span class="o">=</span> <span class="p">[</span><span class="n">StructuralVirality</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">infection_state</span><span class="p">))]</span>
+            <span class="n">measurements</span> <span class="o">=</span> <span class="p">[</span><span class="n">StructuralVirality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)]</span>
         <span class="n">system_state</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="p">]</span>
         <span class="c1"># Initialize recommender system</span>
         <span class="c1"># NOTE: Forcing to 1 item per iteration</span>
@@ -387,17 +438,6 @@
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="BassModel.initialize_user_scores"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.initialize_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If the Users object does not already have known user-item scores,</span>
-<span class="sd">        then we calculate these scores.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># users compute their own scores using the true item attributes,</span>
-        <span class="c1"># unless their own scores are already known to them</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">set_score_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_probabilities</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_actual_user_scores</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span></div>
-
     <span class="k">def</span> <span class="nf">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Private function that updates user profiles with data from</span>
 <span class="sd">            latest interactions.</span>
@@ -413,10 +453,14 @@
 <span class="sd">                the index of the item that the user has interacted with.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">infection_probabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span>
-        <span class="n">newly_infected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">infection_probabilities</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_thresholds</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">newly_infected</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="p">[</span><span class="n">newly_infected</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interactions</span><span class="p">[</span><span class="n">newly_infected</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="c1"># fetch infection probabilities for each user</span>
+        <span class="n">infection_probabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span><span class="o">.</span><span class="n">filter_by_index</span><span class="p">(</span><span class="n">interactions</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># flatten to 1D</span>
+        <span class="n">infection_probabilities</span> <span class="o">=</span> <span class="n">infection_probabilities</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">)</span>
+        <span class="c1"># independent infections</span>
+        <span class="n">infection_trials</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">infection_probabilities</span><span class="p">)</span>
+        <span class="n">newly_infected_users</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">infection_trials</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">infect_users</span><span class="p">(</span><span class="n">newly_infected_users</span><span class="p">,</span> <span class="n">interactions</span><span class="p">[</span><span class="n">newly_infected_users</span><span class="p">])</span>
 
 <div class="viewcode-block" id="BassModel.infection_probabilities"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.infection_probabilities">[docs]</a>    <span class="k">def</span> <span class="nf">infection_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates the infection probabilities for each user at the current</span>
@@ -432,12 +476,22 @@
 <span class="sd">            representation of items.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># This formula comes from Goel et al., The Structural Virality of Online Diffusion</span>
-        <span class="n">dot_product</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">item_attributes</span><span class="p">))</span>
+        <span class="n">infection_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">recovered_users</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">recovered_users</span><span class="p">()</span>
+        <span class="n">infection_state</span><span class="p">[</span><span class="n">recovered_users</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># make all recovered users 0 instead of -1</span>
+        <span class="n">dot_product</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">infection_state</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mo</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">item_attributes</span><span class="p">)))</span>
         <span class="c1"># Probability of being infected at the current iteration</span>
         <span class="n">predicted_scores</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">dot_product</span><span class="p">)</span>
+        <span class="n">predicted_scores</span><span class="p">[</span><span class="n">recovered_users</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># recovered users cannot be infected</span>
         <span class="k">return</span> <span class="n">predicted_scores</span></div>
 
-<div class="viewcode-block" id="BassModel.run"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="BassModel.run"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">timesteps</span><span class="o">=</span><span class="s2">&quot;until_completion&quot;</span><span class="p">,</span>
+        <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Overrides run method of parent class :class:`Recommender`, so that</span>
 <span class="sd">        repeated_items defaults to True in Bass models.</span>
 
@@ -459,13 +513,26 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># NOTE: force repeated_items to True</span>
         <span class="n">repeated_items</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">BaseRecommender</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">,</span>
-            <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
-            <span class="n">train_between_steps</span><span class="o">=</span><span class="n">train_between_steps</span><span class="p">,</span>
-            <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="c1"># option to run until cascade completes</span>
+        <span class="k">if</span> <span class="n">timesteps</span> <span class="o">==</span> <span class="s2">&quot;until_completion&quot;</span><span class="p">:</span>
+            <span class="n">num_infected</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="n">num_infected</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">BaseRecommender</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
+                    <span class="n">train_between_steps</span><span class="o">=</span><span class="n">train_between_steps</span><span class="p">,</span>
+                    <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
+                    <span class="n">disable_tqdm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">num_infected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">num_infected</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">BaseRecommender</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">,</span>
+                <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
+                <span class="n">train_between_steps</span><span class="o">=</span><span class="n">train_between_steps</span><span class="p">,</span>
+                <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BassModel.draw_diffusion_tree"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.draw_diffusion_tree">[docs]</a>    <span class="k">def</span> <span class="nf">draw_diffusion_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Draw diffusion tree using matplotlib &quot;&quot;&quot;</span>

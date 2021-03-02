@@ -158,11 +158,12 @@
 <span class="sd">encapsulates some of these concepts)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 
-<span class="kn">from</span> <span class="nn">trecs.matrix_ops</span> <span class="kn">import</span> <span class="n">contains_row</span><span class="p">,</span> <span class="n">slerp</span><span class="p">,</span> <span class="n">inner_product</span>
+<span class="kn">import</span> <span class="nn">trecs.matrix_ops</span> <span class="k">as</span> <span class="nn">mo</span>
 <span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">trecs.utils</span> <span class="kn">import</span> <span class="n">check_consistency</span>
-<span class="kn">from</span> <span class="nn">.base_components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">BaseComponent</span>
+<span class="kn">from</span> <span class="nn">trecs.base</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">BaseComponent</span>
 
 
 <div class="viewcode-block" id="PredictedScores"><a class="viewcode-back" href="../../reference/components.html#components.users.PredictedScores">[docs]</a><span class="k">class</span> <span class="nc">PredictedScores</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -176,7 +177,51 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;predicted_user_scores&quot;</span>
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">predicted_scores</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="PredictedScores.filter_by_index"><a class="viewcode-back" href="../../reference/components.html#components.users.PredictedScores.filter_by_index">[docs]</a>    <span class="k">def</span> <span class="nf">filter_by_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_indices</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a subset of the predicted scores, filtered by the indices</span>
+<span class="sd">        of valid items.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -------------</span>
+
+<span class="sd">        item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">            A matrix with |U| rows that specifies the indices of items</span>
+<span class="sd">            requested for each user.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">item_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Number of users does not match between score matrix and item index matrix&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="c1"># generates row matrix like the following:</span>
+        <span class="c1"># [0, 0, 0, ..., 0]</span>
+        <span class="c1"># [1, 1, 1, ..., 1]</span>
+        <span class="c1"># [     ...       ]</span>
+        <span class="c1"># [n, n, n, ..., n]</span>
+        <span class="n">num_users</span> <span class="o">=</span> <span class="n">item_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">),</span> <span class="n">item_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># for now, we have to keep the score matrix a dense array because scipy</span>
+        <span class="c1"># sparse has no equivalent of argsort</span>
+        <span class="c1"># TODO: look into potential solutions using things like Numba to maintain</span>
+        <span class="c1"># speed?</span>
+        <span class="c1"># https://stackoverflow.com/questions/31790819/scipy-sparse-csr-matrix-how-to-get-top-ten-values-and-indices</span>
+        <span class="k">return</span> <span class="n">mo</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)[</span><span class="n">row</span><span class="p">,</span> <span class="n">item_indices</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PredictedScores.append_new_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.PredictedScores.append_new_scores">[docs]</a>    <span class="k">def</span> <span class="nf">append_new_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Appends a set of scores for new items to the current set of scores.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -------------</span>
+
+<span class="sd">        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,</span>
+<span class="sd">            where :math:`I_{new}` indicates the number of new items whose scores</span>
+<span class="sd">            are being to be appended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">])</span></div></div>
 
 
 <div class="viewcode-block" id="PredictedUserProfiles"><a class="viewcode-back" href="../../reference/components.html#components.users.PredictedUserProfiles">[docs]</a><span class="k">class</span> <span class="nc">PredictedUserProfiles</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -187,8 +232,22 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;predicted_user_profiles&quot;</span>
-        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;predicted_users&quot;</span>
+        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut getter method for the number of users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut getter method for the number of attributes in each user profile.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ActualUserProfiles"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserProfiles">[docs]</a><span class="k">class</span> <span class="nc">ActualUserProfiles</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -201,6 +260,85 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;actual_user_profiles&quot;</span>
         <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ActualUserScores"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserScores">[docs]</a><span class="k">class</span> <span class="nc">ActualUserScores</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Real matrix of user-item scores, unknown to the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;actual_user_scores&quot;</span>
+        <span class="k">if</span> <span class="n">user_profiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="o">.</span><span class="n">shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">),</span> <span class="n">num_items</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="o">=</span><span class="n">user_profiles</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ActualUserScores.get_item_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserScores.get_item_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_item_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the user scores for the items shown, in the correct</span>
+<span class="sd">        order specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">),</span> <span class="n">num_items</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">num_items</span> <span class="o">=</span> <span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_items</span><span class="p">],</span> <span class="n">items_shown</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ActualUserScores.set_item_scores_to_value"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserScores.set_item_scores_to_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_item_scores_to_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_indices</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set scores for the specified user-item indices to the determined</span>
+<span class="sd">        value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">            item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">                A matrix with |U| rows that specifies the indices of items</span>
+<span class="sd">                requested for each user.</span>
+
+<span class="sd">            value: float</span>
+<span class="sd">                Single value with which to replace scores.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">),</span> <span class="n">num_items</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">num_items</span> <span class="o">=</span> <span class="n">item_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_items</span><span class="p">],</span> <span class="n">item_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ActualUserScores.append_new_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserScores.append_new_scores">[docs]</a>    <span class="k">def</span> <span class="nf">append_new_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Appends a set of scores for new items to the current set of scores.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -------------</span>
+
+<span class="sd">        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,</span>
+<span class="sd">            where :math:`I_{new}` indicates the number of new items whose scores</span>
+<span class="sd">            are being to be appended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">])</span>
+        <span class="c1"># update user rows matrix</span>
+        <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">),</span> <span class="n">num_items</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut getter method for the number of users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># rows = users, cols = items</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut getter method for the number of items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># rows = users, cols = items</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Users"><a class="viewcode-back" href="../../reference/components.html#components.users.Users">[docs]</a><span class="k">class</span> <span class="nc">Users</span><span class="p">(</span><span class="n">BaseComponent</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -220,7 +358,7 @@
 <span class="sd">    Requirements vary across models and, unless specified, this class does not</span>
 <span class="sd">    make assumptions on the real user components.</span>
 
-<span class="sd">    This class inherits from :class:`~components.base_components.BaseComponent`.</span>
+<span class="sd">    This class inherits from :class:`~base.base_components.BaseComponent`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ------------</span>
@@ -325,7 +463,7 @@
         <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">num_users</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">drift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">score_fn</span><span class="o">=</span><span class="n">inner_product</span><span class="p">,</span>
+        <span class="n">score_fn</span><span class="o">=</span><span class="n">mo</span><span class="o">.</span><span class="n">inner_product</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">attention_exp</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
@@ -334,7 +472,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="c1"># general input checks</span>
         <span class="k">if</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;actual_user_profiles must be a list or numpy.ndarray&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">interact_with_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">interact_with_items</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;interact_with_items must be callable&quot;</span><span class="p">)</span>
@@ -343,11 +481,11 @@
         <span class="k">if</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;size must be a tuple, is </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">actual_user_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actual_user_scores</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actual_user_scores</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;actual_user_profiles must be a list or numpy.ndarray&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">row_zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># one row vector of zeroes</span>
-            <span class="k">while</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">contains_row</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">row_zeros</span><span class="p">):</span>
+            <span class="k">while</span> <span class="n">actual_user_profiles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mo</span><span class="o">.</span><span class="n">contains_row</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">row_zeros</span><span class="p">):</span>
                 <span class="c1"># generate matrix until no row is the zero vector</span>
                 <span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
@@ -355,7 +493,7 @@
         <span class="n">num_users</span> <span class="o">=</span> <span class="n">check_consistency</span><span class="p">(</span>
             <span class="n">users</span><span class="o">=</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">user_item_scores</span><span class="o">=</span><span class="n">actual_user_scores</span><span class="p">,</span> <span class="n">num_users</span><span class="o">=</span><span class="n">num_users</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="n">ActualUserProfiles</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="n">ActualUserProfiles</span><span class="p">(</span><span class="n">actual_user_profiles</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="o">=</span> <span class="n">interact_with_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">=</span> <span class="n">drift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span> <span class="o">=</span> <span class="n">attention_exp</span>
@@ -367,7 +505,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">repeat_interactions</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;actual_user_scores&quot;</span>
-        <span class="n">BaseComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">)</span>
+        <span class="n">BaseComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Users.set_score_function"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.set_score_function">[docs]</a>    <span class="k">def</span> <span class="nf">set_score_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_fn</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Users &quot;score&quot; items before &quot;deciding&quot; which item to interact with.</span>
@@ -410,14 +548,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;score function must be callable&quot;</span><span class="p">)</span>
         <span class="n">actual_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span><span class="p">(</span>
-            <span class="n">user_profiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="n">item_attributes</span>
+            <span class="n">user_profiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="n">item_attributes</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">actual_scores</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">ActualUserScores</span><span class="p">(</span><span class="n">actual_scores</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">actual_scores</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">actual_scores</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Users.score_new_items"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.score_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">score_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -435,10 +573,10 @@
 <span class="sd">            number of items and :math:`|A|` is the number of attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">new_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span><span class="p">(</span>
-            <span class="n">user_profiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="n">new_items</span>
+            <span class="n">user_profiles</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="n">new_items</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">append_new_scores</span><span class="p">(</span><span class="n">new_scores</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Users.get_actual_user_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.get_actual_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_actual_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -481,6 +619,7 @@
 <span class="sd">        items_shown: :obj:`numpy.ndarray`): A</span>
 <span class="sd">            :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
 <span class="sd">            recommendations and new items.</span>
+
 <span class="sd">        item_attributes: :obj:`numpy.ndarray`):</span>
 <span class="sd">            A :math:`|A|\\times|I|` matrix with item attributes.</span>
 
@@ -502,22 +641,16 @@
         <span class="n">item_attributes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;item_attributes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Items can&#39;t be None&quot;</span><span class="p">)</span>
-        <span class="n">reshaped_user_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># turn into column</span>
-
-        <span class="n">user_item_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
-            <span class="c1"># scores for items already interacted with go to negative infinity</span>
-            <span class="n">num_past_interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">user_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">num_past_interactions</span><span class="p">)</span>
-            <span class="n">user_item_scores</span><span class="p">[</span><span class="n">user_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
-
-        <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="n">user_item_scores</span><span class="p">[</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">]</span>
+            <span class="c1"># &quot;remove&quot; items that have been interacted with by setting scores to negativve infinity</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">set_item_scores_to_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">))</span>
+        <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">get_item_scores</span><span class="p">(</span><span class="n">items_shown</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">multiplier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span><span class="p">)</span>
             <span class="c1"># multiply each row by the attention coefficient</span>
             <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="n">rec_item_scores</span> <span class="o">*</span> <span class="n">multiplier</span>
-        <span class="n">sorted_user_preferences</span> <span class="o">=</span> <span class="n">rec_item_scores</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sorted_user_preferences</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">rec_item_scores</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">interactions</span> <span class="o">=</span> <span class="n">items_shown</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">sorted_user_preferences</span><span class="p">]</span>
         <span class="c1"># logging information if requested</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
@@ -553,13 +686,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># we make no assumptions about whether the user profiles or item</span>
         <span class="c1"># attributes vectors are normalized</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span> <span class="o">=</span> <span class="n">slerp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">slerp</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">,</span> <span class="n">perc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">drift</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Users.store_state"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.store_state">[docs]</a>    <span class="k">def</span> <span class="nf">store_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Store the actual user scores in the state history &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="DNUsers"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers">[docs]</a><span class="k">class</span> <span class="nc">DNUsers</span><span class="p">(</span><span class="n">Users</span><span class="p">):</span>
@@ -593,7 +726,7 @@
         <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">num_users</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">drift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">score_fn</span><span class="o">=</span><span class="n">inner_product</span><span class="p">,</span>
+        <span class="n">score_fn</span><span class="o">=</span><span class="n">mo</span><span class="o">.</span><span class="n">inner_product</span><span class="p">,</span>
         <span class="n">sigma</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">omega</span><span class="o">=</span><span class="mf">0.2376</span><span class="p">,</span>
         <span class="n">beta</span><span class="o">=</span><span class="mf">0.9739</span><span class="p">,</span>
@@ -656,7 +789,7 @@
         <span class="n">interaction_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;User scores for given items are:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interaction_scores</span><span class="p">))</span>
-        <span class="n">item_utilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_dn_utilities</span><span class="p">(</span><span class="n">interaction_scores</span><span class="p">)</span>
+        <span class="n">item_utilities</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calc_dn_utilities</span><span class="p">(</span><span class="n">interaction_scores</span><span class="p">))</span>
         <span class="n">sorted_user_preferences</span> <span class="o">=</span> <span class="n">item_utilities</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">interactions</span> <span class="o">=</span> <span class="n">items_shown</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">sorted_user_preferences</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Users interact with the following items respectively:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interactions</span><span class="p">))</span>

@@ -158,10 +158,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">trecs.metrics</span> <span class="kn">import</span> <span class="n">MSEMeasurement</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">trecs.matrix_ops</span> <span class="k">as</span> <span class="nn">mo</span>
+
 <span class="kn">from</span> <span class="nn">trecs.components</span> <span class="kn">import</span> <span class="n">BinarySocialGraph</span>
 <span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">SocialGraphGenerator</span>
-<span class="kn">from</span> <span class="nn">trecs.utils</span> <span class="kn">import</span> <span class="n">get_first_valid</span><span class="p">,</span> <span class="n">non_none_values</span>
 <span class="kn">from</span> <span class="nn">trecs.validate</span> <span class="kn">import</span> <span class="n">validate_user_item_inputs</span>
 <span class="kn">from</span> <span class="nn">.recommender</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
 
@@ -305,11 +306,17 @@
             <span class="kc">None</span><span class="p">,</span>  <span class="c1"># see if we can get the default number of users from the items array</span>
             <span class="n">num_attributes</span><span class="o">=</span><span class="n">num_users</span><span class="p">,</span>  <span class="c1"># number of attributes should be equal to the number of users</span>
             <span class="n">default_num_items</span><span class="o">=</span><span class="mi">1250</span><span class="p">,</span>
-            <span class="n">default_num_attributes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">default_num_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_users</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">num_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># number of users could not be inferred from any of the inputs</span>
+            <span class="n">num_users</span> <span class="o">=</span> <span class="mi">100</span>
+            <span class="n">num_attributes</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="k">if</span> <span class="n">num_users</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># get user representation from items instead</span>
-            <span class="n">num_users</span> <span class="o">=</span> <span class="n">num_attributes</span>  <span class="c1"># num_attributes by default is 100</span>
+            <span class="n">num_users</span> <span class="o">=</span> <span class="n">num_attributes</span>
+        <span class="k">if</span> <span class="n">num_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">num_attributes</span> <span class="o">=</span> <span class="n">num_users</span>
 
         <span class="c1"># verify that the user representation is an adjacency matrix and that</span>
         <span class="c1"># the item representation aligns</span>
@@ -327,7 +334,7 @@
         <span class="c1"># that the recommender system&#39;s beliefs about the item attributes</span>
         <span class="c1"># are the same as the &quot;true&quot; item attributes</span>
         <span class="k">if</span> <span class="n">actual_item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item_representation</span><span class="p">)</span>
+            <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">item_representation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># Initialize recommender system</span>
         <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -358,10 +365,18 @@
 <span class="sd">                interacted with in the latest step. Namely, interactions_u represents</span>
 <span class="sd">                the index of the item that the user has interacted with.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">num_attrs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">num_items</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;User-item interactions matrix must have same shape as internal &quot;</span>
+                <span class="s2">&quot;item representation&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">interactions_per_user</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">assert</span> <span class="n">interactions_per_user</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">shape</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">,</span> <span class="n">interactions_per_user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mo</span><span class="o">.</span><span class="n">any_dense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="c1"># only add dense to dense and sparse to sparse</span>
+            <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">interactions_per_user</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="n">interactions_per_user</span>
 
 <div class="viewcode-block" id="SocialFiltering.process_new_items"><a class="viewcode-back" href="../../reference/models.html#models.social.SocialFiltering.process_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">process_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -375,7 +390,7 @@
 <span class="sd">                added into the system. Should be :math:`|A|\\times|I|`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># users have never interacted with new items</span>
-        <span class="n">new_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">new_representation</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">new_representation</span></div></div>
 </pre></div>
 

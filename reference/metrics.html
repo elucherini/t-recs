@@ -173,7 +173,7 @@
             
   <div class="section" id="metrics">
 <h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h1>
-<p><strong>Metrics</strong> are components that track and store a given quantity over the duration of the simulation. All metrics in this module are based on the <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> abstract class, which inherits from the <a class="reference internal" href="components.html#components.base_components.BaseObservable" title="components.base_components.BaseObservable"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseObservable</span></code></a> abstract class (refer to the <a class="reference external" href="https://en.wikipedia.org/wiki/Observer_pattern">Observer design pattern</a> for more details).</p>
+<p><strong>Metrics</strong> are components that track and store a given quantity over the duration of the simulation. All metrics in this module are based on the <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> abstract class, which inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseObservable</span></code> abstract class (refer to the <a class="reference external" href="https://en.wikipedia.org/wiki/Observer_pattern">Observer design pattern</a> for more details).</p>
 <p>This module comes with a number of pre-loaded metrics, as well as a simple programmer interface to develop new metrics.</p>
 <div class="section" id="interaction-measurement">
 <h2>Interaction Measurement<a class="headerlink" href="#interaction-measurement" title="Permalink to this headline">¶</a></h2>
@@ -370,7 +370,7 @@ Networkx’s <a class="reference external" href="https://networkx.github.io/docu
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>infection_state</strong> (<em>array_like</em>) – The initial “infection state”</p></li>
+<li><p><strong>infection_state</strong> (<a class="reference internal" href="models.html#models.bass.InfectionState" title="models.bass.InfectionState"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfectionState</span></code></a>) – The initial “infection state” of all users</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
@@ -460,11 +460,7 @@ of the item with which user <cite>u</cite> interacted.</p></li>
 structural virality developed by Goel, Anderson, Hofman, and Watts in
 <a class="reference external" href="https://5harad.com/papers/twiral.pdf">The Structural Virality of Online Diffusion</a>. It is used in
 <a class="reference internal" href="models.html#models.bass.BassModel" title="models.bass.BassModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BassModel</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>infection_state</strong> (<em>array_like</em>) – The initial “infection state” (see <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a>).</p>
-</dd>
-</dl>
+<p>:param <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>: The initial “infection state” (see <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a>).</p>
 <dl class="py method">
 <dt id="metrics.measurement.StructuralVirality.get_structural_virality">
 <code class="sig-name descname"><span class="pre">get_structural_virality</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality.get_structural_virality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality.get_structural_virality" title="Permalink to this definition">¶</a></dt>
@@ -522,7 +518,7 @@ structural virality developed by Goel, Anderson, Hofman, and Watts in
 <dt id="metrics.measurement.Measurement.get_measurement">
 <code class="sig-name descname"><span class="pre">get_measurement</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_measurement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns measurements. See
-<a class="reference internal" href="components.html#components.base_components.BaseObservable.get_observable" title="components.base_components.BaseObservable.get_observable"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_observable()</span></code></a>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">get_observable()</span></code>
 for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>

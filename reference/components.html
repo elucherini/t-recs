@@ -180,10 +180,64 @@ scores, predicted user profiles, actual user profiles, and a Users class (which
 encapsulates some of these concepts)</p>
 <dl class="py class">
 <dt id="components.users.ActualUserProfiles">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">ActualUserProfiles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserProfiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserProfiles" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">ActualUserProfiles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserProfiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserProfiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Real user profiles, unknown to the model. This class is a container
 compatible with Numpy operations and it does not make assumptions on the
 size of the representation.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.users.ActualUserScores">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">ActualUserScores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Real matrix of user-item scores, unknown to the model.</p>
+<dl class="py method">
+<dt id="components.users.ActualUserScores.append_new_scores">
+<code class="sig-name descname"><span class="pre">append_new_scores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores.append_new_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores.append_new_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends a set of scores for new items to the current set of scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – Matrix of new scores with dimension <span class="math notranslate nohighlight">\(|U|\times|I_{new}|\)</span>,
+where <span class="math notranslate nohighlight">\(I_{new}\)</span> indicates the number of new items whose scores
+are being to be appended.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.ActualUserScores.get_item_scores">
+<code class="sig-name descname"><span class="pre">get_item_scores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items_shown</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores.get_item_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores.get_item_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the user scores for the items shown, in the correct
+order specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.ActualUserScores.num_items">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_items</span></code><a class="headerlink" href="#components.users.ActualUserScores.num_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut getter method for the number of items.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.ActualUserScores.num_users">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_users</span></code><a class="headerlink" href="#components.users.ActualUserScores.num_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut getter method for the number of users.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.ActualUserScores.set_item_scores_to_value">
+<code class="sig-name descname"><span class="pre">set_item_scores_to_value</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores.set_item_scores_to_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores.set_item_scores_to_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set scores for the specified user-item indices to the determined
+value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – A matrix with <a href="#id2"><span class="problematic" id="id3">|U|</span></a> rows that specifies the indices of items
+requested for each user.</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Single value with which to replace scores.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -314,18 +368,56 @@ shape <span class="math notranslate nohighlight">\(|I|\times|U|\)</span>.</p>
 
 <dl class="py class">
 <dt id="components.users.PredictedScores">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">PredictedScores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedScores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.PredictedScores" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">PredictedScores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicted_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedScores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.PredictedScores" title="Permalink to this definition">¶</a></dt>
 <dd><p>User scores about items generated by the model. This class is a container
 compatible with Numpy operations and it does not make assumptions on the
 size of the representation.</p>
+<dl class="py method">
+<dt id="components.users.PredictedScores.append_new_scores">
+<code class="sig-name descname"><span class="pre">append_new_scores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedScores.append_new_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.PredictedScores.append_new_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends a set of scores for new items to the current set of scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – Matrix of new scores with dimension <span class="math notranslate nohighlight">\(|U|\times|I_{new}|\)</span>,
+where <span class="math notranslate nohighlight">\(I_{new}\)</span> indicates the number of new items whose scores
+are being to be appended.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.PredictedScores.filter_by_index">
+<code class="sig-name descname"><span class="pre">filter_by_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedScores.filter_by_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.PredictedScores.filter_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a subset of the predicted scores, filtered by the indices
+of valid items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – A matrix with <a href="#id4"><span class="problematic" id="id5">|U|</span></a> rows that specifies the indices of items
+requested for each user.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="components.users.PredictedUserProfiles">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">PredictedUserProfiles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedUserProfiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.PredictedUserProfiles" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.users.</span></code><code class="sig-name descname"><span class="pre">PredictedUserProfiles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#PredictedUserProfiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.PredictedUserProfiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>User profiles as predicted by the model. This class is a container
 compatible with Numpy operations and it does not make assumptions on the
 size of the representation.</p>
+<dl class="py method">
+<dt id="components.users.PredictedUserProfiles.num_attrs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_attrs</span></code><a class="headerlink" href="#components.users.PredictedUserProfiles.num_attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut getter method for the number of attributes in each user profile.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.users.PredictedUserProfiles.num_users">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_users</span></code><a class="headerlink" href="#components.users.PredictedUserProfiles.num_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut getter method for the number of users.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -342,7 +434,7 @@ assigned by user u to item i.</p>
 <p>Models determine the size constraints of objects representing users.
 Requirements vary across models and, unless specified, this class does not
 make assumptions on the real user components.</p>
-<p>This class inherits from <a class="reference internal" href="#components.base_components.BaseComponent" title="components.base_components.BaseComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code></a>.</p>
+<p>This class inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -596,22 +688,23 @@ that user <cite>i</cite> interacted with.</p>
 ranging from disease to consumer goods</p>
 <dl class="py class">
 <dt id="components.items.Items">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.items.</span></code><code class="sig-name descname"><span class="pre">Items</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/items.html#Items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.items.Items" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.items.</span></code><code class="sig-name descname"><span class="pre">Items</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'items'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/items.html#Items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.items.Items" title="Permalink to this definition">¶</a></dt>
 <dd><p>Items components in the system.</p>
 <p>Items are the objects with which users interact with models and with each other.</p>
-<p>This class is essentially a container of Numpy’s ndarray. Therefore, it
-supports all the operations supported by ndarray. It inherits from
-<a class="reference internal" href="#components.base_components.Component" title="components.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> and it contains all the attributes of
-that class.</p>
+<p>It inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code> and it contains all the
+attributes of that class. We support both numpy arrays or scipy sparse matrices
+being used for the item representation.</p>
 <p>The Items class does not specify any constraints on items. It is used
 internally in <a class="reference internal" href="models.html#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of items. It expects an array_like object. If None, the
-representation is generated randomly.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the item representation. It expects a tuple. If None, it is
-chosen randomly.</p></li>
+representation is generated randomly using a binomial distribution (see
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code> for details). At least one of
+<cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the item representation. It expects a tuple. At least one of
+<cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
 <li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for underlying random generator.</p></li>
 </ul>
@@ -620,12 +713,72 @@ chosen randomly.</p></li>
 <dl class="py attribute">
 <dt>
 <code class="sig-name descname"><span class="pre">Attributes</span> <span class="pre">from</span> <span class="pre">Component</span></code></dt>
-<dd><p>Inherited by <a class="reference internal" href="#components.base_components.Component" title="components.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<dd><p>Inherited by <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="components.items.Items.name">
 <code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#components.items.Items.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.items.Items.append_new_items">
+<code class="sig-name descname"><span class="pre">append_new_items</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/items.html#Items.append_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.items.Items.append_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends a set of new items (represented as some kind of matrix) to the current
+set of items. Assumes the new items have dimension <span class="math notranslate nohighlight">\(|A|\times|I_{new}|\)</span>,
+where <span class="math notranslate nohighlight">\(I_{new}\)</span> indicates the number of new items to be appended.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.items.Items.num_attrs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_attrs</span></code><a class="headerlink" href="#components.items.Items.num_attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut getter method for the number of attributes of the items.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="components.items.Items.num_items">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_items</span></code><a class="headerlink" href="#components.items.Items.num_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut getter method for the number of items.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="components.items.PredictedItems">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.items.</span></code><code class="sig-name descname"><span class="pre">PredictedItems</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/items.html#PredictedItems"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.items.PredictedItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>This component represents the item attributes, as predicted by the
+recommender system. The only difference between the two is the intended
+purpose - all functionality is identical to the Items class
+and therefore PredictedItems inherits from it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of items. It expects an array_like object. If None, the
+representation is generated randomly using a binomial distribution (see
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code> for details). At least one of
+<cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the item representation. It expects a tuple. At least one of
+<cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for underlying random generator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">Attributes</span> <span class="pre">from</span> <span class="pre">Item</span></code></dt>
+<dd><p>Inherited by <a class="reference internal" href="#components.items.Items" title="components.items.Items"><code class="xref py py-class docutils literal notranslate"><span class="pre">Items</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="components.items.PredictedItems.name">
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#components.items.PredictedItems.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the component</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -727,116 +880,6 @@ link that goes from one user to the other.</p>
 <div class="section" id="base-components">
 <h2>Base Components<a class="headerlink" href="#base-components" title="Permalink to this headline">¶</a></h2>
 <p>These are mainly abstract classes that are not supposed to be instantiated.</p>
-<span class="target" id="module-components.base_components"></span><p>Base components that are the building blocks of measuring and tracking
-variables of interest in the recommender systems</p>
-<dl class="py class">
-<dt id="components.base_components.BaseComponent">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">BaseComponent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseComponent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Observable that stores a history of its state.</p>
-<dl class="py method">
-<dt id="components.base_components.BaseComponent.get_component_state">
-<code class="sig-name descname"><span class="pre">get_component_state</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent.get_component_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseComponent.get_component_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the history of the component’s values as a dictionary</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="components.base_components.BaseComponent.get_timesteps">
-<code class="sig-name descname"><span class="pre">get_timesteps</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent.get_timesteps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseComponent.get_timesteps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of timesteps in the state history</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="components.base_components.BaseComponent.observe">
-<code class="sig-name descname"><span class="pre">observe</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseComponent.observe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseComponent.observe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append the current value of the variable (by default a copy) to the
-state history</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="components.base_components.BaseObservable">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">BaseObservable</span></code><a class="reference internal" href="../_modules/components/base_components.html#BaseObservable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseObservable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Observable mixin for the observer design pattern.</p>
-<dl class="py method">
-<dt id="components.base_components.BaseObservable.get_observable">
-<code class="sig-name descname"><span class="pre">get_observable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseObservable.get_observable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseObservable.get_observable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the value of this observable as a dict</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="components.base_components.BaseObservable.observe">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">observe</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#BaseObservable.observe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.BaseObservable.observe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract method that should involve “recording” the observable</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="components.base_components.Component">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">Component</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.Component" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for components that make up the system state.</p>
-<dl class="py method">
-<dt id="components.base_components.Component.store_state">
-<code class="sig-name descname"><span class="pre">store_state</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#Component.store_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.Component.store_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>Store a copy of the component’s value in the state history</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="components.base_components.FromNdArray">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">FromNdArray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#FromNdArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.FromNdArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subclass for Numpy’s ndarrays.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="components.base_components.SystemStateModule">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">SystemStateModule</span></code><a class="reference internal" href="../_modules/components/base_components.html#SystemStateModule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.SystemStateModule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mixin for observers of <a class="reference internal" href="#components.base_components.Component" title="components.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> observables. Implements the
-<a class="reference external" href="https://en.wikipedia.org/wiki/Observer_pattern">Observer design pattern</a>.</p>
-<p>This mixin allows the system to monitor the system state. That is, at each
-timestep, an element will be added to the
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">state_history</span></code> lists
-of each component that the system is monitoring.</p>
-<dl class="py attribute">
-<dt id="components.base_components.SystemStateModule._system_state">
-<code class="sig-name descname"><span class="pre">_system_state</span></code><a class="headerlink" href="#components.base_components.SystemStateModule._system_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of system state components that the system will monitor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="components.base_components.SystemStateModule.add_state_variable">
-<code class="sig-name descname"><span class="pre">add_state_variable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#SystemStateModule.add_state_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.SystemStateModule.add_state_variable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds metrics to the <a class="reference internal" href="#components.base_components.SystemStateModule._system_state" title="components.base_components.SystemStateModule._system_state"><code class="xref py py-attr docutils literal notranslate"><span class="pre">_system_state</span></code></a> list. This allows the system
-to monitor these system state components.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>args</strong> (<a class="reference internal" href="#components.base_components.BaseComponent" title="components.base_components.BaseComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code></a>) – Accepts a variable number of components that inherit from class
-<a class="reference internal" href="#components.base_components.BaseComponent" title="components.base_components.BaseComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="components.base_components.register_observables">
-<code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">register_observables</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observable_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#register_observables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.register_observables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add items in observables to observer list</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="components.base_components.unregister_observables">
-<code class="sig-prename descclassname"><span class="pre">components.base_components.</span></code><code class="sig-name descname"><span class="pre">unregister_observables</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/base_components.html#unregister_observables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.base_components.unregister_observables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove items in observables from observer list</p>
-</dd></dl>
-
 </div>
 </div>
 
