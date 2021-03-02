@@ -179,6 +179,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         MeasurementModule.__init__(self)
         if measurements is not None:
             self.add_metrics(*measurements)
+        # set random state
+        self.random_state = Generator(seed)
         # init the recommender system's internal representation of users
         # and items
         self.users_hat = PredictedUserProfiles(users_hat)
@@ -189,10 +191,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # make sure interleaving function (if passed) is callable
             assert callable(interleaving_fn)
         self.interleaving_fn = interleaving_fn
-        # set predicted scores
-        self.predicted_scores = None
-        self.train()
-        assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
         self.probabilistic_recommendations = probabilistic_recommendations
@@ -230,10 +228,19 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if isinstance(items, Items):
             self.items = items
 
+        # set number of users and items
+        self.num_users = num_users
+        self.num_items = num_items
+
         if isinstance(creators, Creators):
             self.creators = creators
         else:
             self.creators = None
+
+        # set predicted scores
+        self.predicted_scores = None
+        self.train()
+        assert self.predicted_scores is not None
 
         # system state
         SystemStateModule.__init__(self)
@@ -251,10 +258,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         self.initialize_user_scores()
         assert self.users and isinstance(self.users, Users)
-        self.num_users = num_users
-        self.num_items = num_items
+
         self.set_num_items_per_iter(num_items_per_iter)
-        self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
         if self.is_verbose():

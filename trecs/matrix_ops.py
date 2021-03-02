@@ -358,6 +358,27 @@ def sparse_dot(mat1, mat2):
     return mat1.dot(mat2)
 
 
+def count_nonzero(matrix):
+    """
+    Returns the number of nonzero matrix in the dense or sparse matrix.
+
+    Parameters
+    -----------
+
+        matrix: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`
+            Arbitrary dense or sparse matrix
+
+    Returns
+    --------
+        num: int
+            Number of nonzero entries
+
+    """
+    if all_dense(matrix):
+        return np.count_nonzero(matrix)
+    return matrix.count_nonzero()
+
+
 def inner_product(user_profiles, item_attributes, normalize_users=True, normalize_items=False):
     """
     Performs a dot product multiplication between user profiles and

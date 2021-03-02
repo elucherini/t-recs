@@ -4,6 +4,7 @@ virality in online communications.
 """
 import networkx as nx
 import numpy as np
+import scipy.sparse as sp
 import trecs.matrix_ops as mo
 from trecs.components import BinarySocialGraph
 from trecs.base import Component
@@ -299,13 +300,11 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 the index of the item that the user has interacted with.
 
         """
-        # fetch infection probabilities for each user
-        infection_probabilities = self.predicted_scores.filter_by_index(interactions.reshape(-1, 1))
+        # fetch infection status for each user
+        new_infections = self.predicted_scores.filter_by_index(interactions.reshape(-1, 1))
         # flatten to 1D
-        infection_probabilities = infection_probabilities.reshape(self.num_users)
-        # independent infections
-        infection_trials = self.random_state.binomial(1, p=infection_probabilities)
-        newly_infected_users = np.where(infection_trials == 1)[0]
+        new_infections = new_infections.reshape(self.num_users)
+        newly_infected_users = np.where(new_infections == 1)[0]
         self.infection_state.infect_users(newly_infected_users, interactions[newly_infected_users])
 
     def infection_probabilities(self, user_profiles, item_attributes):
@@ -325,11 +324,19 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         infection_state = self.infection_state.value.copy()
         recovered_users = self.infection_state.recovered_users()
         infection_state[recovered_users] = 0  # make all recovered users 0 instead of -1
-        dot_product = user_profiles.dot(infection_state * np.log(1 - mo.to_dense(item_attributes)))
-        # Probability of being infected at the current iteration
-        predicted_scores = 1 - np.exp(dot_product)
-        predicted_scores[recovered_users] = 0  # recovered users cannot be infected
-        return predicted_scores
+        # get neighbors of all infected users
+        infected_users = infection_state.nonzero()[0]
+        neighbors = user_profiles[:, infected_users]
+        infection_trials = sp.csr_matrix(neighbors.shape)
+        total_neighbors = mo.count_nonzero(neighbors)
+        infection_trials[neighbors.nonzero()] = self.random_state.binomial(1, p=item_attributes, size=(1, total_neighbors))
+        infected_neighbors = infection_trials.nonzero()[0]
+
+        newly_infected = np.zeros((self.num_users, 1))
+        newly_infected[infected_neighbors, :] = 1
+        newly_infected[recovered_users] = 0  # recovered users cannot be infected
+        # reshape scores
+        return newly_infected.reshape((-1, 1))
 
     def run(
         self,

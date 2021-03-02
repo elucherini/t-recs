@@ -192,13 +192,11 @@ class TestBassModel:
         test_helpers.assert_equal_measurements(meas1, meas2)
         test_helpers.assert_equal_system_state(systate1, systate2)
 
-        if items is None:
-            items = np.random.randint(20, 1000)
         if users is None:
             users = np.random.randint(1, 100)
-        s1 = BassModel(seed=seed, num_users=users, num_items=items, record_base_state=True)
+        s1 = BassModel(seed=seed, num_users=users, record_base_state=True)
         s1.add_metrics(MSEMeasurement())
-        s2 = BassModel(seed=seed, num_users=users, num_items=items, record_base_state=True)
+        s2 = BassModel(seed=seed, num_users=users, record_base_state=True)
         s2.add_metrics(MSEMeasurement())
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
