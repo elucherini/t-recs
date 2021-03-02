@@ -333,10 +333,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         # use log trick to sum probabilities
         infection_probs = neighbors.sum(axis=1) * np.log(1 - mo.to_dense(item_attributes))
         infection_probs = infection_probs.reshape(-1, 1)  # reshape to column vector
-        could_be_infected = infection_probs[
-            infection_probs.nonzero()
-        ]  # users with a nonzero chance of being infected
-        infection_probs[infection_probs.nonzero()] = 1 - np.exp(could_be_infected)
+        infection_probs = 1 - np.exp(infection_probs)
 
         infection_probs[recovered_users] = 0  # recovered users cannot be infected
         return np.asarray(infection_probs)
