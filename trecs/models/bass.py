@@ -387,6 +387,16 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 repeated_items=repeated_items,
             )
 
+    def generate_recommendations(self, k=1, item_indices=None):
+        """
+        Overrides the default (slow) recommendation method, which we can do because
+        BassModel currently only supports showing one item at a time. Thus, there's no
+        need for sorting or anything of that nature.
+        """
+        if k != 1:
+            raise RuntimeError("BassModel only supports one infectious item at a time")
+        return item_indices
+
     def draw_diffusion_tree(self):
         """ Draw diffusion tree using matplotlib """
         for metric in self.metrics:
