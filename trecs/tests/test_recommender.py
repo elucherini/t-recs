@@ -1,6 +1,7 @@
 import numpy as np
 from trecs.models import BaseRecommender
 from trecs.components import Creators
+import trecs.matrix_ops as mo
 import test_helpers
 
 
@@ -17,7 +18,7 @@ class DummyRecommender(BaseRecommender):
 
     def process_new_items(self, new_items):
         # generate a representation of ones
-        num_attr = self.items.shape[0]
+        num_attr = self.items.num_attrs
         num_items = new_items.shape[1]
         return np.random.uniform(size=(num_attr, num_items))
 
@@ -26,8 +27,8 @@ class TestBaseRecommender:
     # 10 users and 50 items
     users = np.random.randint(10, size=(10, 5))
     items = np.random.randint(10, size=(5, 50))
-    users_hat = np.copy(users)
-    items_hat = np.copy(items)
+    users_hat = users.copy()
+    items_hat = items.copy()
 
     def test_generate_recommendations(self):
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)
@@ -95,12 +96,27 @@ class TestBaseRecommender:
         dummy.run(5, repeated_items=True)  # run 5 timesteps
         assert dummy.num_items == 100  # 10 creators * 5 iterations + 50 initial items
         # assert scores are updated correctly
-        created_items = dummy.items_hat[:, 50:100]
+        created_items = dummy.predicted_item_attributes[:, 50:100]
         true_scores = self.users @ created_items
-        predicted_scores = dummy.predicted_scores[:, 50:100]
+        predicted_scores = dummy.predicted_user_item_scores[:, 50:100]
         # the predicted scores normalize the user arrays before doing the dot product,
         # so instead we verify the sorted position of each item
         test_helpers.assert_equal_arrays(true_scores.argsort(), predicted_scores.argsort())
+
+    def test_simple_properties(self):
+        true_attrs = 25
+        self.users = np.random.randint(10, size=(10, true_attrs))
+        self.items = np.random.randint(10, size=(true_attrs, 50))
+        dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)
+
+        test_helpers.assert_equal_arrays(self.users_hat, dummy.predicted_user_profiles)
+        test_helpers.assert_equal_arrays(self.items_hat, dummy.predicted_item_attributes)
+        test_helpers.assert_equal_arrays(self.users, dummy.actual_user_profiles)
+        test_helpers.assert_equal_arrays(self.items, dummy.actual_item_attributes)
+        pred_scores = mo.inner_product(self.users_hat, self.items_hat)
+        true_scores = mo.inner_product(self.users, self.items)
+        test_helpers.assert_equal_arrays(pred_scores, dummy.predicted_user_item_scores)
+        test_helpers.assert_equal_arrays(true_scores, dummy.actual_user_item_scores)
 
     def test_all_items_per_iter(self):
         # 10 content creators

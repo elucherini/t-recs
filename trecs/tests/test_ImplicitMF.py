@@ -1,6 +1,7 @@
 from trecs.models import ImplicitMF
 from trecs.components import Users, Creators
 import numpy as np
+import scipy.sparse as sp
 import pytest
 import test_helpers
 
@@ -8,11 +9,11 @@ import test_helpers
 class TestImplicitMF:
     def test_default(self):
         mf = ImplicitMF(seed=123)
-        test_helpers.assert_correct_num_users(mf.num_users, mf, mf.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(mf.num_items, mf, mf.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(mf.num_users, mf, mf.users_hat.num_users)
+        test_helpers.assert_correct_num_items(mf.num_items, mf, mf.items_hat.num_items)
         # assert dimensions match up to latent features
-        assert mf.num_latent_factors == mf.users_hat.shape[1]
-        assert mf.num_latent_factors == mf.items_hat.shape[0]
+        assert mf.num_latent_factors == mf.users_hat.num_attrs
+        assert mf.num_latent_factors == mf.items_hat.num_attrs
         assert mf.num_latent_factors == 10
         assert mf.num_users == 100
         assert mf.num_items == 1250
@@ -52,7 +53,7 @@ class TestImplicitMF:
 
     def test_startup_run(self):
         mf = ImplicitMF(seed=123)
-        items_hat_0, users_hat_0 = mf.items_hat.copy(), mf.users_hat.copy()
+        items_hat_0, users_hat_0 = mf.items_hat.value.copy(), mf.users_hat.value.copy()
         num_startup_iters = 5
         mf.startup_and_train(num_startup_iters)
         # assert interactions are recorded
@@ -64,7 +65,7 @@ class TestImplicitMF:
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(users_hat_0, mf.users_hat)
 
-        latent_items, latent_users = mf.items_hat.copy(), mf.users_hat.copy()
+        latent_items, latent_users = mf.items_hat.value.copy(), mf.users_hat.value.copy()
         mf.run(1)
         # should not have refit
         test_helpers.assert_equal_arrays(latent_items, mf.items_hat)
@@ -73,17 +74,17 @@ class TestImplicitMF:
         # interactions are reset at every call to run()
         assert mf.all_interactions.shape[0] == mf.num_users
 
-        prior_scores = mf.predicted_scores.copy()
+        prior_scores = mf.predicted_scores.value.copy()
         mf.train()  # fit to interaction data from the most recent run
         with pytest.raises(AssertionError):
             # we should see new predicted scores
-            test_helpers.assert_equal_arrays(prior_scores, mf.predicted_scores)
+            test_helpers.assert_equal_arrays(prior_scores, mf.predicted_scores.value)
         with pytest.raises(AssertionError):
             # new item representation
-            test_helpers.assert_equal_arrays(latent_items, mf.items_hat)
+            test_helpers.assert_equal_arrays(latent_items, mf.items_hat.value)
         with pytest.raises(AssertionError):
             # new user representation
-            test_helpers.assert_equal_arrays(latent_users, mf.users_hat)
+            test_helpers.assert_equal_arrays(latent_users, mf.users_hat.value)
 
     def test_content_creators(self):
         # true users and true items
@@ -107,9 +108,36 @@ class TestImplicitMF:
         # disallow content creators from making new items during startup phase
         mf.startup_and_train(5)
         # no new items should have been created during startup
-        assert mf.items.shape[1] == num_items
+        assert mf.items.num_items == num_items
         avg_item = mf.als_model.item_features_.T.mean(axis=1)
         mf.run(1)
         # there should be 5 new items with the same latent feature representation
-        new_items_hat = mf.items_hat[:, -5:]
+        new_items_hat = mf.items_hat.value[:, -5:]
         test_helpers.assert_equal_arrays(np.tile(avg_item, (num_creators, 1)).T, new_items_hat)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        num_items = 5
+        users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
+        items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
+
+        model = ImplicitMF(
+            actual_user_representation=users,
+            actual_item_representation=items,
+            num_items_per_iter=num_items,
+        )
+        init_pred_scores = model.predicted_user_item_scores.copy()
+        # after one iteration of training, the model should have perfect
+        # predictions, since each user was shown all the items in the item set
+        model.startup_and_train(1)
+
+        # assert new scores have changed
+        trained_preds = model.predicted_user_item_scores.copy()
+        with pytest.raises(AssertionError):
+            test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
+
+        # assert that recommendations are now "perfect"
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[0], [1], [2], [3], [4]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)

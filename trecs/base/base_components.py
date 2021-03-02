@@ -4,28 +4,9 @@
 import inspect
 from abc import ABC, abstractmethod
 import numpy as np
+from scipy.sparse import csr_matrix
 from trecs.logging import VerboseMode
 from trecs.random import Generator
-
-
-class FromNdArray(np.ndarray, VerboseMode):
-    """Subclass for Numpy's ndarrays."""
-
-    def __new__(cls, input_array, verbose=False):
-        obj = np.asarray(input_array).view(cls)
-        obj.verbose = verbose
-        return obj
-
-    def __init__(self, *args, **kwargs):  # pylint: disable=super-init-not-called
-        pass
-
-    def __array_finalize__(self, obj):
-        """ Set the verbosity based on the object passed in """
-        if obj is None:
-            return
-        self.verbose = getattr(  # pylint: disable=attribute-defined-outside-init
-            obj, "verbose", False
-        )
 
 
 # Observer methods for the observer design pattern
@@ -84,7 +65,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
         if isinstance(init_value, np.ndarray):
-            init_value = np.copy(init_value)
+            init_value = init_value.copy()
         self.seed = seed
         self.state_history.append(init_value)
 
@@ -96,7 +77,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         """Append the current value of the variable (by default a copy) to the
         state history"""
         if copy:
-            to_append = np.copy(state)
+            to_append = state.copy()
         else:
             to_append = state
         self.state_history.append(to_append)
@@ -106,7 +87,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         return len(self.state_history)
 
 
-class Component(FromNdArray, BaseComponent):
+class Component(BaseComponent):
     """Class for components that make up the system state."""
 
     def __init__(
@@ -114,8 +95,8 @@ class Component(FromNdArray, BaseComponent):
     ):  # pylint: disable=super-init-not-called
         # general input checks
         if current_state is not None:
-            if not isinstance(current_state, (list, np.ndarray)):
-                raise TypeError("current_state must be a list or numpy.ndarray")
+            if not isinstance(current_state, (list, np.ndarray, csr_matrix)):
+                raise TypeError("current_state must be a list, numpy.ndarray, or sparse matrix")
         if current_state is None and size is None:
             raise ValueError("current_state and size can't both be None")
         if current_state is None and not isinstance(size, tuple):
@@ -124,11 +105,49 @@ class Component(FromNdArray, BaseComponent):
             current_state = Generator(seed).binomial(n=0.3, p=1, size=size)
         self.current_state = current_state
         # Initialize component state
+        self.verbose = verbose
         BaseComponent.__init__(self, verbose=verbose, init_value=self.current_state)
+
+    @property
+    def value(self):
+        """
+        Returns the current state of the Component (e.g., a numpy ndarray, a scipy
+        sparse matrix, or list.)
+        """
+        return self.current_state
+
+    @value.setter
+    def value(self, state):
+        """
+        Sets the current state of the Component to something new. The new state must
+        be a list, numpy array, or sparse matrix.
+        """
+        if not isinstance(state, (list, np.ndarray, csr_matrix)):
+            raise TypeError("current_state must be a list, numpy.ndarray, or sparse matrix")
+        self.current_state = state
+
+    @property
+    def shape(self):
+        """
+        Returns the dimensions of the Component.
+
+        Returns
+        --------
+        shape: tuple
+            Tuple of arbitrary dimension indicating the dimension of the Component's
+            state.
+        """
+        if not isinstance(self.current_state, (np.ndarray, csr_matrix)):
+            error_msg = (
+                "Cannot fetch shape of Component because it is not a numpy array "
+                "or sparse matrix"
+            )
+            raise TypeError(error_msg)
+        return self.current_state.shape
 
     def store_state(self):
         """ Store a copy of the component's value in the state history """
-        self.observe(self, copy=True)
+        self.observe(self.current_state, copy=True)
 
 
 class SystemStateModule:  # pylint: disable=too-few-public-methods

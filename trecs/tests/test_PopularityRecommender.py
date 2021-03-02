@@ -2,6 +2,7 @@ from trecs.metrics.measurement import MSEMeasurement
 from trecs.models import PopularityRecommender
 from trecs.components import Creators
 import numpy as np
+import scipy.sparse as sp
 import pytest
 import test_helpers
 
@@ -9,8 +10,8 @@ import test_helpers
 class TestPopularityRecommender:
     def test_default(self):
         c = PopularityRecommender()
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_arguments(self, items=None, users=None):
@@ -21,8 +22,8 @@ class TestPopularityRecommender:
 
         # init with given arguments
         c = PopularityRecommender(num_users=users, num_items=items)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_partial_arguments(self, items=None, users=None):
@@ -33,18 +34,18 @@ class TestPopularityRecommender:
             users = np.random.randint(1, 100)
 
         c = PopularityRecommender(num_users=users)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(num_items=items)
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(num_users=users, num_items=items)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_representations(self, item_repr=None, user_repr=None):
@@ -56,20 +57,20 @@ class TestPopularityRecommender:
             user_repr = np.random.randint(10, size=(users, 1))
 
         c = PopularityRecommender(item_representation=item_repr)
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.num_items)
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, c.users_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = PopularityRecommender(user_representation=user_repr, item_representation=item_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, c.users_hat)
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
@@ -107,8 +108,8 @@ class TestPopularityRecommender:
         c = PopularityRecommender(verbose=False, num_items_per_iter=num_items_per_iter)
         assert num_items_per_iter == c.num_items_per_iter
         # also check other params
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_seeding(self, seed=None, items=None, users=None):
@@ -167,13 +168,13 @@ class TestPopularityRecommender:
             actual_item_representation=items,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_scores)
+        init_pred_scores = model.predicted_user_item_scores.copy()
         # after one iteration of training, the most popular item
         # should be the item at index 0
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_scores)
+        trained_preds = model.predicted_user_item_scores.copy()
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 
@@ -185,11 +186,11 @@ class TestPopularityRecommender:
 
         # assert that items_hat and users_hat are as expected
         user_rep = np.ones(num_users).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(model.users_hat, user_rep)
+        test_helpers.assert_equal_arrays(model.predicted_user_profiles, user_rep)
 
         item_rep = np.zeros(num_items).reshape(1, -1)
         item_rep[0, 0] = 5  # all users should have interacted with this item
-        test_helpers.assert_equal_arrays(model.items_hat, item_rep)
+        test_helpers.assert_equal_arrays(model.predicted_item_attributes, item_rep)
 
         # new model that only shows 2 items per iteration
         model = PopularityRecommender(
@@ -200,9 +201,57 @@ class TestPopularityRecommender:
         # assert that recommendations are now "perfect"
         model.num_items_per_iter = 1
         recommendations = model.recommend()
-        most_popular = np.argmax(model.items_hat)  # extract most popular item
+        most_popular = np.argmax(model.predicted_item_attributes)  # extract most popular item
         correct_rec = np.ones(num_users).reshape(-1, 1) * most_popular
         test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        num_items = 5
+        num_attr = 5
+        users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
+        items = sp.csr_matrix(np.zeros((num_attr, num_items)))  # 5 items, 5 attributes
+        users_hat = sp.csr_matrix(np.ones((num_users, 1)))
+        items_hat = sp.csr_matrix((1, num_items))
+        items[:, 0] = 10  # this item will be most desirable to users
+
+        model = PopularityRecommender(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        # assert that recommendations are now "perfect"
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[0], [0], [0], [0], [0]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+        # test various combinations of sparse matrix arguments,
+        # ensure they run without error
+        model = PopularityRecommender(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = PopularityRecommender(
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = PopularityRecommender(
+            user_representation=users_hat.copy(),
+            num_items=num_items,
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
 
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
@@ -216,6 +265,6 @@ class TestPopularityRecommender:
             creators=creator_profiles,
         )
         p.run(1, repeated_items=True)
-        assert p.items.shape[1] == 150  # 50 new items
-        assert p.items_hat.shape[1] == 150
-        assert p.users.state_history[-1].shape[1] == 150
+        assert p.items.num_items == 150  # 50 new items
+        assert p.items_hat.num_items == 150
+        assert p.users.actual_user_scores.num_items == 150

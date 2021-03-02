@@ -1,20 +1,21 @@
 from attr import attrs
+import numpy as np
+import scipy.sparse as sp
+import pytest
 from trecs.metrics.measurement import MSEMeasurement
 from trecs.models import ContentFiltering
 from trecs.components import Users, Creators
-import numpy as np
-import pytest
 import test_helpers
-from trecs.matrix_ops import normalize_matrix
+import trecs.matrix_ops as mo
 
 
 class TestContentFiltering:
     def test_default(self):
         c = ContentFiltering()
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         # test attributes
-        assert c.users_hat.shape[1] == c.items_hat.shape[0]
+        assert c.users_hat.num_attrs == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -32,11 +33,11 @@ class TestContentFiltering:
             attr = np.random.randint(1, 100)
         # init with given arguments
         c = ContentFiltering(num_users=users, num_items=items, num_attributes=attr)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert attr == c.items_hat.shape[0]
-        assert attr == c.users_hat.shape[1]
+        assert attr == c.items_hat.num_attrs
+        assert attr == c.users_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -55,10 +56,10 @@ class TestContentFiltering:
             attr = np.random.randint(1, 100)
 
         c = ContentFiltering(num_users=users)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert c.users_hat.shape[1] == c.items_hat.shape[0]
+        assert c.users_hat.num_attrs == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -68,10 +69,10 @@ class TestContentFiltering:
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
         c = ContentFiltering(num_items=items)
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert c.users_hat.shape[1] == c.items_hat.shape[0]
+        assert c.users_hat.num_attrs == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -81,11 +82,11 @@ class TestContentFiltering:
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
         c = ContentFiltering(num_attributes=attr)
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert attr == c.users_hat.shape[1]
-        assert attr == c.items_hat.shape[0]
+        assert attr == c.users_hat.num_attrs
+        assert attr == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -95,10 +96,10 @@ class TestContentFiltering:
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
         c = ContentFiltering(num_users=users, num_items=items)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert c.users_hat.shape[1] == c.items_hat.shape[0]
+        assert c.users_hat.num_attrs == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -108,11 +109,11 @@ class TestContentFiltering:
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
         c = ContentFiltering(num_users=users, num_attributes=attr)
-        test_helpers.assert_correct_num_users(users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert attr == c.users_hat.shape[1]
-        assert attr == c.items_hat.shape[0]
+        assert attr == c.users_hat.num_attrs
+        assert attr == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -122,11 +123,11 @@ class TestContentFiltering:
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
         c = ContentFiltering(num_attributes=attr, num_items=items)
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(items, c, c.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(items, c, c.items_hat.num_items)
         # assert attributes look correct
-        assert attr == c.users_hat.shape[1]
-        assert attr == c.items_hat.shape[0]
+        assert attr == c.users_hat.num_attrs
+        assert attr == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
         # did not set seed, show random behavior
@@ -145,18 +146,18 @@ class TestContentFiltering:
             user_repr = np.random.randint(10, size=(users, item_repr.shape[0]))
 
         c = ContentFiltering(item_representation=item_repr)
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.items_hat.shape[0])
-        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.num_items)
+        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.items_hat.num_attrs)
+        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.users_hat.num_attrs)
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
         c = ContentFiltering(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.items_hat.shape[0])
-        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
+        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.items_hat.num_attrs)
+        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.users_hat.num_attrs)
         test_helpers.assert_equal_arrays(user_repr, c.users_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
@@ -169,12 +170,12 @@ class TestContentFiltering:
             test_helpers.assert_equal_arrays(c.items_hat, c1.items_hat)
 
         c = ContentFiltering(user_representation=user_repr, item_representation=item_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.shape[1])
-        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.items_hat.shape[0])
-        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.users_hat.shape[1])
-        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.items_hat.shape[0])
-        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.users_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.num_items)
+        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.items_hat.num_attrs)
+        test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.users_hat.num_attrs)
+        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.items_hat.num_attrs)
+        test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.users_hat.num_attrs)
         test_helpers.assert_equal_arrays(user_repr, c.users_hat)
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
@@ -217,9 +218,9 @@ class TestContentFiltering:
         c = ContentFiltering(verbose=False, num_items_per_iter=num_items_per_iter)
         assert num_items_per_iter == c.num_items_per_iter
         # also check other params
-        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.shape[0])
-        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.shape[1])
-        assert c.users_hat.shape[1] == c.items_hat.shape[0]
+        test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
+        test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
+        assert c.users_hat.num_attrs == c.items_hat.num_attrs
         test_helpers.assert_not_none(c.predicted_scores)
 
     def test_seeding(self, seed=None, items=None, users=None):
@@ -272,13 +273,13 @@ class TestContentFiltering:
             actual_item_representation=items,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_scores)
+        init_pred_scores = model.predicted_user_item_scores.copy()
         # after one iteration of training, the model should have perfect
         # predictions, since each user was shown all the items in the item set
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_scores)
+        trained_preds = model.predicted_user_item_scores.copy()
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 
@@ -306,9 +307,9 @@ class TestContentFiltering:
         # to test whether users are correctly drifting towards the items
         # vector
         item_repr = (user_repr + 0.1 * np.vstack([user_repr[1:], user_repr[0]])).T
-        users = Users(actual_user_profiles=np.copy(user_repr), num_users=10, drift=0.5)
+        users = Users(actual_user_profiles=user_repr.copy(), num_users=10, drift=0.5)
         model = ContentFiltering(
-            user_representation=np.copy(user_repr),
+            user_representation=user_repr.copy(),
             item_representation=item_repr,
             actual_user_representation=users,
         )
@@ -317,12 +318,12 @@ class TestContentFiltering:
         assert not np.array_equal(user_repr, users.actual_user_profiles)
         # user profiles should be closer to the items after drifting
         orig_dist = np.linalg.norm(item_repr.T - user_repr, axis=1)
-        new_dist = np.linalg.norm(item_repr.T - users.actual_user_profiles, axis=1)
+        new_dist = np.linalg.norm(item_repr.T - users.actual_user_profiles.value, axis=1)
         assert (new_dist < orig_dist).all()
         # let's go further and check that angles are decreased by 50% too!
-        item_norm = normalize_matrix(item_repr.T)
+        item_norm = mo.normalize_matrix(item_repr.T)
         orig_angles = np.arccos((user_repr * item_norm).sum(axis=1))
-        new_angles = np.arccos((users.actual_user_profiles * item_norm).sum(axis=1))
+        new_angles = np.arccos((users.actual_user_profiles.value * item_norm).sum(axis=1))
         np.testing.assert_array_almost_equal(0.5 * orig_angles, new_angles)
 
     def test_creator_items(self):
@@ -335,6 +336,55 @@ class TestContentFiltering:
             actual_user_representation=users, item_representation=items, creators=creator_profiles
         )
         cf.run(1, repeated_items=True)
-        assert cf.items.shape == (10, 150)  # 50 new items
-        assert cf.items_hat.shape == (10, 150)
-        assert cf.users.state_history[-1].shape == (100, 150)
+        assert cf.items.value.shape == (10, 150)  # 50 new items
+        assert cf.items_hat.value.shape == (10, 150)
+        assert cf.users.actual_user_scores.state_history[-1].shape == (100, 150)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        num_items = 5
+        num_attrs = 10
+        users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
+        items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
+        users_hat = sp.csr_matrix((num_users, num_attrs))
+        items_hat = sp.csr_matrix(
+            mo.normalize_matrix(np.random.random((num_attrs, num_items)), axis=0)
+        )
+
+        model = ContentFiltering(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        init_pred_scores = mo.to_dense(model.predicted_user_item_scores.copy())
+        # after one iteration of training, the model should have perfect
+        # predictions, since each user was shown all the items in the item set
+        model.run(1)
+
+        # assert new scores have changed
+        trained_preds = mo.to_dense(model.predicted_user_item_scores.copy())
+        with pytest.raises(AssertionError):
+            test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
+
+        # assert that recommendations are now "perfect"
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[0], [1], [2], [3], [4]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+        # ensure no errors when we pass in different sparse matrices
+        model = ContentFiltering(
+            user_representation=users_hat.copy(),
+            item_representation=items_hat.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = ContentFiltering(
+            actual_user_representation=users.copy(),
+            actual_item_representation=items.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)

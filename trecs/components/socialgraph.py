@@ -3,6 +3,7 @@
 """
 import numpy as np
 from trecs.logging import VerboseMode
+from .users import PredictedUserProfiles
 
 
 class BinarySocialGraph(VerboseMode):
@@ -15,8 +16,8 @@ class BinarySocialGraph(VerboseMode):
     """
 
     # expect these to be initialized
-    users_hat = np.array([])
-    num_users = np.array([])
+    users_hat = PredictedUserProfiles(np.array([]))
+    num_users = 0
 
     def follow(self, user_index, following_index):
         """
@@ -43,8 +44,8 @@ class BinarySocialGraph(VerboseMode):
                 f"Number of users is {self.num_users}, but indices "
                 f"{user_index} and {following_index} were requested."
             )
-        if self.users_hat[following_index, user_index] == 0:
-            self.users_hat[following_index, user_index] = 1
+        if self.users_hat.value[following_index, user_index] == 0:
+            self.users_hat.value[following_index, user_index] = 1
         elif self.is_verbose():
             self.log(f"User {following_index} was already following user {user_index}")
 
@@ -73,8 +74,8 @@ class BinarySocialGraph(VerboseMode):
                 f"Number of users is {self.num_users}, but indices "
                 f"{user_index} and {following_index} were requested."
             )
-        if self.users_hat[following_index, user_index] == 1:
-            self.users_hat[following_index, user_index] = 0
+        if self.users_hat.value[following_index, user_index] == 1:
+            self.users_hat.value[following_index, user_index] = 0
         elif self.is_verbose():
             self.log(f"User {following_index} was not following user {user_index}")
 
@@ -103,12 +104,12 @@ class BinarySocialGraph(VerboseMode):
                 f"Number of users is {self.num_users}, but indices "
                 f"{user1_index} and {user2_index} were requested."
             )
-        if self.users_hat[user1_index, user2_index] == 0:
-            self.users_hat[user1_index, user2_index] = 1
+        if self.users_hat.value[user1_index, user2_index] == 0:
+            self.users_hat.value[user1_index, user2_index] = 1
         elif self.is_verbose():
             self.log(f"User {user2_index} was already following user {user1_index}")
-        if self.users_hat[user2_index, user1_index] == 0:
-            self.users_hat[user2_index, user1_index] = 1
+        if self.users_hat.value[user2_index, user1_index] == 0:
+            self.users_hat.value[user2_index, user1_index] = 1
         elif self.is_verbose():
             self.log(f"User {user1_index} was already following user {user2_index}")
 
@@ -137,11 +138,11 @@ class BinarySocialGraph(VerboseMode):
                 f"Number of users is {self.num_users}, but indices "
                 f"{user1_index} and {user2_index} were requested."
             )
-        if self.users_hat[user1_index, user2_index] == 1:
-            self.users_hat[user1_index, user2_index] = 0
+        if self.users_hat.value[user1_index, user2_index] == 1:
+            self.users_hat.value[user1_index, user2_index] = 0
         elif self.is_verbose():
             self.log(f"User {user2_index} was not following user {user1_index}")
-        if self.users_hat[user2_index, user1_index] == 1:
-            self.users_hat[user2_index, user1_index] = 0
+        if self.users_hat.value[user2_index, user1_index] == 1:
+            self.users_hat.value[user2_index, user1_index] = 0
         elif self.is_verbose():
             self.log(f"User {user1_index} was not following user {user2_index}")

@@ -66,7 +66,7 @@ class TestUsers:
     def test_dn_users(self, num_users=15, num_attr=15, num_items=20, seed=None):
         users = DNUsers(size=(num_users, num_attr), seed=seed)
         items = np.random.uniform(size=(num_attr, num_items))
-        user_item_scores = np.dot(users.actual_user_profiles, items)
+        user_item_scores = np.dot(users.actual_user_profiles.value, items)
         users.compute_user_scores(items)  # calculate underlying values
 
         # have a random sample of 5 num_items shown to each user
@@ -87,7 +87,7 @@ class TestUsers:
         items = np.arange(20).reshape(5, 4)
         users.compute_user_scores(items)
         # should be: [120, 130, 140, 150]
-        user_item_scores = np.dot(users.actual_user_profiles, items)
+        user_item_scores = np.dot(users.actual_user_profiles.value, items)
         normed_values = users.normalize_values(user_item_scores)
 
         # these are manually calculated
