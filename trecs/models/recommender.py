@@ -368,6 +368,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 self.log(
                     f"Top-k items ordered by preference (high to low) for each user:\n{str(rec)}"
                 )
+            #print(rec)
             return rec
 
     def choose_interleaved_items(self, k, item_indices):

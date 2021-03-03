@@ -89,9 +89,9 @@ class ImplicitMFLFD(ImplicitMF):
         if not top_n_limit:
             top_n_limit = self.items_hat.shape[1]
 
-        row = np.repeat(self.users.user_vector, self.item_indices.shape[1])
+        row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
-        s_filtered = self.predicted_scores[row, self.item_indices]
+        s_filtered = self.predicted_scores[row, item_indices]
 
         negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
         # break ties using a random score component
@@ -105,7 +105,7 @@ class ImplicitMFLFD(ImplicitMF):
         row = np.repeat(self.users.user_vector, top_n_limit).reshape((self.num_users, -1))
         # again, indices should go from highest to lowest
         sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
-        top_k_recs = self.item_indices[row, top_k[row, sort_top_k]]
+        top_k_recs = item_indices[row, top_k[row, sort_top_k]]
 
         # dims are attribute, items, users
         top_k_att = self.items_hat[:, top_k_recs[:]].swapaxes(1, 2)
@@ -124,9 +124,9 @@ class ImplicitMFLFD(ImplicitMF):
             # hold the features of the recommended items
             recs_features = self.items_hat[:, user_max_idx]
 
-            for rec in range(1, k):
+            for r in range(1, k):
 
-                if rec == 1:
+                if r == 1:
                     # for the second item, just use the first item values
                     centroid = recs_features
                 else:
@@ -136,7 +136,7 @@ class ImplicitMFLFD(ImplicitMF):
 
                 # set all the previously chosen item features to the centroid, so they will not be selected again
                 # don't want to just remove rows because it will throw off the indexing
-                user_item_feats[:, 0 : rec + 1] = centroid.T
+                user_item_feats[:, 0 : r + 1] = centroid.T
 
                 d = pairwise_distances(
                     X=centroid,
@@ -156,5 +156,6 @@ class ImplicitMFLFD(ImplicitMF):
                 recs_features = np.vstack((recs_features, user_item_feats[:, most_distant]))
 
             rec.append(recs_idxs)
+        self.rec = rec
 
-        return rec
+        return np.array(rec)
