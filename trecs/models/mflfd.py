@@ -29,10 +29,8 @@ class ImplicitMFLFD(ImplicitMF):
         verbose=False,
         num_items_per_iter=10,
         model_params=None,
-        top_n_limit=None,
         **kwargs,
     ):
-
         super().__init__(
             num_users,
             num_items,
@@ -49,12 +47,7 @@ class ImplicitMFLFD(ImplicitMF):
             **kwargs,
         )
 
-        if not top_n_limit:
-            self.top_n_limit = self.items_hat.shape[1]
-        else:
-            self.top_n_limit=top_n_limit
-
-    def generate_recommendations(self, k=1, item_indices=None):
+    def generate_recommendations(self, k=1, top_n_limit=None, item_indices=None):
         """
         Generate recommendations for each user based on latent feature diversification algorithm in Willemsen et al., (2016).
         Method works by taking the highest predicted item, then iteratively adding items that are maximally distant from the centroid of the attributes of items
@@ -93,7 +86,8 @@ class ImplicitMFLFD(ImplicitMF):
             if k == 0:
                 return np.array([]).reshape((self.num_users, 0)).astype(int)
 
-
+        if not top_n_limit:
+            top_n_limit = self.items_hat.shape[1]
 
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
@@ -104,11 +98,11 @@ class ImplicitMFLFD(ImplicitMF):
         scores_tiebreak = np.zeros(negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")])
         scores_tiebreak["score"] = negated_scores
         scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
-        top_k = scores_tiebreak.argpartition(self.top_n_limit - 1, order=["score", "random"])[
-            :, :self.top_n_limit
+        top_k = scores_tiebreak.argpartition(top_n_limit - 1, order=["score", "random"])[
+            :, :top_n_limit
         ]
         # now we sort within the top k
-        row = np.repeat(self.users.user_vector, self.top_n_limit).reshape((self.num_users, -1))
+        row = np.repeat(self.users.user_vector, top_n_limit).reshape((self.num_users, -1))
         # again, indices should go from highest to lowest
         sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
         top_k_recs = item_indices[row, top_k[row, sort_top_k]]
