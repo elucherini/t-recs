@@ -638,7 +638,7 @@ class AverageFeatureScoreRange(Measurement):
     def measure(self, recommender, **kwargs):
         """
         Measures the average range (across users) of item attributes for items
-        users chose to interact with at a time step.
+        users chose to interact with at a time step. Used as a measure of within list recommendation diversity
 
         Parameters
         ------------
@@ -660,16 +660,6 @@ class AverageFeatureScoreRange(Measurement):
 
         if {item for item in recommended_item_attr.flatten()} == {0, 1}:
             raise ValueError("AFSR is not intended for binary features.")
-
-        #ranges = interacted_item_attr.max(axis=0) - interacted_item_attr.min(axis=0)
-        #print("shape of ranges {}".format(ranges.shape))
-
-        #print("sum of ranges {}".format(len(interacted_item_attr.max(axis=1) - interacted_item_attr.min(axis=1))))
-        #print("interacted_item_attr.shape[1] is {}".format(interacted_item_attr.shape[1]))
-        # afsr = (
-        #     sum(interacted_item_attr.max(axis=0) - interacted_item_attr.min(axis=0))
-        #     / interacted_item_attr.shape[1]
-        # )
 
         afsr = np.mean(recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2)))
 
