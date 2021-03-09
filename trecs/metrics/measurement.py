@@ -654,6 +654,12 @@ class AverageFeatureScoreRange(Measurement):
         users chose to interact with at a time step. Used as a measure of within
         list recommendation diversity
 
+        This metric is based on the item diversity measure used in :
+        Willemsen, M. C., Graus, M. P.,
+        & Knijnenburg, B. P. (2016). Understanding the role of latent feature
+        diversification on choice difficulty and satisfaction. User Modeling
+        and User-Adapted Interaction, 26(4), 347-389.
+
         Parameters
         ------------
             recommender: :class:`~models.recommender.BaseRecommender`
@@ -666,13 +672,11 @@ class AverageFeatureScoreRange(Measurement):
                 item shown to every user at a particular timestep.
         """
         items_shown = kwargs.pop("items_shown", None)
-        # print("interactions {}".format(interactions))
 
         # assert interactions.size == recommender.num_users
         recommended_item_attr = recommender.items_hat[:, items_shown]
-        # print("interacted_item_att shape {}".format(interacted_item_attr.shape))
-        if np.all((recommended_item_attr.flatten() == {0, 1})):
-        #if {item for item in recommended_item_attr.flatten()} == {0, 1}:
+
+        if recommended_item_attr.flatten().all() in [0, 1]:
             raise ValueError("AFSR is not intended for binary features.")
 
         afsr = np.mean(
