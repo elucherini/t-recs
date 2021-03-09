@@ -47,7 +47,7 @@ class ImplicitMFLFD(ImplicitMF):
             **kwargs,
         )
 
-    def generate_recommendations(self, k=1, top_n_limit=500, item_indices=None):
+    def generate_recommendations(self, k=1, top_n_limit=50, item_indices=None):
         """
         Generate recommendations for each user based on latent feature diversification algorithm in Willemsen et al., (2016).
         Method works by taking the highest predicted item, then iteratively adding items that are maximally distant from the centroid of the attributes of items
