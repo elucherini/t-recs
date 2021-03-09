@@ -616,11 +616,10 @@ class StructuralVirality(DiffusionTreeMeasurement):
         num_nodes = self.diffusion_tree.number_of_nodes()
         return wiener_index(self.diffusion_tree) / (num_nodes * (num_nodes - 1))
 
-
 class AverageFeatureScoreRange(Measurement):
     """
     Measures the average range (across users) of item attributes for items
-    users chose to interact with at a time step.
+    users were recommended at a time step.
 
     This metric is based on the item diversity measure used in :
 
@@ -629,7 +628,7 @@ class AverageFeatureScoreRange(Measurement):
         diversification on choice difficulty and satisfaction. User Modeling
         and User-Adapted Interaction, 26(4), 347-389.
 
-    This class inherits from :class:`.InteractionMeasurement`.
+    This class inherits from :class:`.Measurement`.
 
     Parameters
     -----------
@@ -651,7 +650,7 @@ class AverageFeatureScoreRange(Measurement):
     def measure(self, recommender, **kwargs):
         """
         Measures the average range (across users) of item attributes for items
-        users chose to interact with at a time step.
+        users chose to interact with at a time step. Used as a measure of within list recommendation diversity
 
         Parameters
         ------------
@@ -660,21 +659,21 @@ class AverageFeatureScoreRange(Measurement):
                 :class:`~models.recommender.BaseRecommender`.
 
             **kwargs
-                Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index.ide
-                of the item with which user `u` interacted.
+                Keyword arguments, one of which must be `items_shown`, a |U| x
+                num_items_per_iter matrix that contains the indices of every
+                item shown to every user at a particular timestep.
         """
-        interactions = kwargs.pop("interactions", None)
-        assert interactions.size == recommender.num_users
-        interacted_item_attr = recommender.predicted_item_attributes[:, interactions]
+        items_shown = kwargs.pop("items_shown", None)
+        #print("interactions {}".format(interactions))
 
-        if {item for sublist in interacted_item_attr for item in sublist} == {0, 1}:
+        #assert interactions.size == recommender.num_users
+        recommended_item_attr = recommender.items_hat[:, items_shown]
+        #print("interacted_item_att shape {}".format(interacted_item_attr.shape))
+
+        if {item for item in recommended_item_attr.flatten()} == {0, 1}:
             raise ValueError("AFSR is not intended for binary features.")
 
-        afsr = (
-            sum(interacted_item_attr.max(axis=0) - interacted_item_attr.min(axis=0))
-            / interacted_item_attr.shape[0]
-        )
+        afsr = np.mean(recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2)))
 
         self.observe(afsr)
+
