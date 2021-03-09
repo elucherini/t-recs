@@ -676,8 +676,8 @@ class AverageFeatureScoreRange(Measurement):
         # assert interactions.size == recommender.num_users
         recommended_item_attr = recommender.items_hat.value[:, items_shown]
 
-        if recommended_item_attr.flatten().all() in [0, 1]:
-            raise ValueError("AFSR is not intended for binary features.")
+        #if recommended_item_attr.flatten().all() in [0, 1]:
+         #   raise ValueError("AFSR is not intended for binary features.")
 
         afsr = np.mean(
             recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2))
