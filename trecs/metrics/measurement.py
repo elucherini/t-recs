@@ -616,6 +616,7 @@ class StructuralVirality(DiffusionTreeMeasurement):
         num_nodes = self.diffusion_tree.number_of_nodes()
         return wiener_index(self.diffusion_tree) / (num_nodes * (num_nodes - 1))
 
+
 class AverageFeatureScoreRange(Measurement):
     """
     Measures the average range (across users) of item attributes for items
@@ -650,7 +651,8 @@ class AverageFeatureScoreRange(Measurement):
     def measure(self, recommender, **kwargs):
         """
         Measures the average range (across users) of item attributes for items
-        users chose to interact with at a time step. Used as a measure of within list recommendation diversity
+        users chose to interact with at a time step. Used as a measure of within
+        list recommendation diversity
 
         Parameters
         ------------
@@ -664,16 +666,17 @@ class AverageFeatureScoreRange(Measurement):
                 item shown to every user at a particular timestep.
         """
         items_shown = kwargs.pop("items_shown", None)
-        #print("interactions {}".format(interactions))
+        # print("interactions {}".format(interactions))
 
-        #assert interactions.size == recommender.num_users
+        # assert interactions.size == recommender.num_users
         recommended_item_attr = recommender.items_hat[:, items_shown]
-        #print("interacted_item_att shape {}".format(interacted_item_attr.shape))
+        # print("interacted_item_att shape {}".format(interacted_item_attr.shape))
 
         if {item for item in recommended_item_attr.flatten()} == {0, 1}:
             raise ValueError("AFSR is not intended for binary features.")
 
-        afsr = np.mean(recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2)))
+        afsr = np.mean(
+            recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2))
+        )
 
         self.observe(afsr)
-
