@@ -774,7 +774,7 @@
 <span class="k">class</span> <span class="nc">AverageFeatureScoreRange</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Measures the average range (across users) of item attributes for items</span>
-<span class="sd">    users chose to interact with at a time step.</span>
+<span class="sd">    users were recommended at a time step.</span>
 
 <span class="sd">    This metric is based on the item diversity measure used in :</span>
 
@@ -783,7 +783,7 @@
 <span class="sd">        diversification on choice difficulty and satisfaction. User Modeling</span>
 <span class="sd">        and User-Adapted Interaction, 26(4), 347-389.</span>
 
-<span class="sd">    This class inherits from :class:`.InteractionMeasurement`.</span>
+<span class="sd">    This class inherits from :class:`.Measurement`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
@@ -805,7 +805,14 @@
     <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures the average range (across users) of item attributes for items</span>
-<span class="sd">        users chose to interact with at a time step.</span>
+<span class="sd">        users were recommended at a time step. Used as a measure of within</span>
+<span class="sd">        list recommendation diversity</span>
+
+<span class="sd">        This metric is based on the item diversity measure used in :</span>
+<span class="sd">        Willemsen, M. C., Graus, M. P.,</span>
+<span class="sd">        &amp; Knijnenburg, B. P. (2016). Understanding the role of latent feature</span>
+<span class="sd">        diversification on choice difficulty and satisfaction. User Modeling</span>
+<span class="sd">        and User-Adapted Interaction, 26(4), 347-389.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
@@ -814,21 +821,16 @@
 <span class="sd">                :class:`~models.recommender.BaseRecommender`.</span>
 
 <span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`.</span>
-<span class="sd">                `interactions` is a non-aggregated array of interactions --</span>
-<span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index.ide</span>
-<span class="sd">                of the item with which user `u` interacted.</span>
+<span class="sd">                Keyword arguments, one of which must be `items_shown`, a |U| x</span>
+<span class="sd">                num_items_per_iter matrix that contains the indices of every</span>
+<span class="sd">                item shown to every user at a particular timestep.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">interactions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interactions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span>
-        <span class="n">interacted_item_attr</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_item_attributes</span><span class="p">[:,</span> <span class="n">interactions</span><span class="p">]</span>
+        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">{</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">interacted_item_attr</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">}</span> <span class="o">==</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;AFSR is not intended for binary features.&quot;</span><span class="p">)</span>
+        <span class="n">recommended_item_attr</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="n">items_shown</span><span class="p">]</span>
 
-        <span class="n">afsr</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="nb">sum</span><span class="p">(</span><span class="n">interacted_item_attr</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">interacted_item_attr</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-            <span class="o">/</span> <span class="n">interacted_item_attr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">afsr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">recommended_item_attr</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">-</span> <span class="n">recommended_item_attr</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">afsr</span><span class="p">)</span>
