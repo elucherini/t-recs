@@ -651,7 +651,7 @@ class AverageFeatureScoreRange(Measurement):
     def measure(self, recommender, **kwargs):
         """
         Measures the average range (across users) of item attributes for items
-        users chose to interact with at a time step. Used as a measure of within
+        users were recommended at a time step. Used as a measure of within
         list recommendation diversity
 
         This metric is based on the item diversity measure used in :
