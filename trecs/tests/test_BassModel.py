@@ -1,6 +1,7 @@
 from trecs.metrics.measurement import MSEMeasurement
 import test_helpers
 import numpy as np
+from scipy.sparse import csr_matrix
 from trecs.models import BassModel
 import pytest
 
@@ -8,15 +9,15 @@ import pytest
 class TestBassModel:
     def test_default(self):
         s = BassModel()
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
         # did not set seed, show random behavior
         s1 = BassModel()
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_arguments(self, items=1, users=5):
         if items is None:
@@ -24,15 +25,15 @@ class TestBassModel:
         if users is None:
             users = np.random.randint(1, 100)
         s = BassModel(num_users=users, num_items=items)
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
         # did not set seed, show random behavior
         s1 = BassModel(num_users=users, num_items=items)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_partial_arguments(self, items=1, users=5):
         if items is None:
@@ -41,25 +42,25 @@ class TestBassModel:
             users = np.random.randint(1, 100)
         # init with partially given arguments
         s = BassModel(num_users=users)
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
         s = BassModel(num_items=items)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
         s1 = BassModel(num_users=users)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
         s1 = BassModel(num_items=items)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_representations(self, item_repr=None, user_repr=None):
         if item_repr is None:
@@ -70,29 +71,29 @@ class TestBassModel:
             user_repr = np.random.randint(2, size=(users, users))
         # test item representation
         s = BassModel(item_representation=item_repr)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test user representation
         s = BassModel(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test item and user representations
         s = BassModel(user_representation=user_repr, item_representation=item_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
@@ -101,7 +102,7 @@ class TestBassModel:
         s1 = BassModel(item_representation=item_repr)
 
         with pytest.raises(AssertionError):
-            test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
+            test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)
 
     def test_wrong_representations(self, bad_user_repr=None):
         if bad_user_repr is None or bad_user_repr.shape[0] == bad_user_repr.shape[1]:
@@ -119,9 +120,9 @@ class TestBassModel:
         assert num_items_per_iter == s.num_items_per_iter
         # also check other params
         test_helpers.assert_not_none(s.predicted_scores)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
 
     def test_social_graph(self, user_repr=None, user1=None, user2=None):
         if user_repr is None or user_repr.shape[0] != user_repr.shape[1]:
@@ -136,41 +137,41 @@ class TestBassModel:
         while user1 == user2:
             user1 = np.random.randint(s.num_users)
         # test current graph
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow again -- nothing should change
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow again -- nothing should change
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
         # test friending
         s.add_friends(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test friending again -- nothing should change
         s.add_friends(user2, user1)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test unfriending
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfriending again -- nothing should change
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
     def test_seeding(self, seed=None, items=None, users=None):
         if seed is None:
@@ -211,25 +212,63 @@ class TestBassModel:
         systate2 = s2.get_system_state()
         test_helpers.assert_equal_system_state(systate1, systate2)
 
-    def test_infection(self):
+    def test_infections(self):
         num_users = 5
-        infection_thresholds = np.zeros(num_users).reshape((1, -1))
-        items = np.eye(1) * 0.99  # 0.99 infectiousness
+        user_rep = np.zeros((num_users, num_users))
+        user_rep[1, 0] = 1  # user 1 is connected to user 0
+        user_rep[0, 1] = 1  # user 1 is connected to user 0
+        user_rep[2, 1] = 1  # user 2 is connected to user 1
         infection_state = np.zeros((num_users, 1))
-        # user 0 is infected
-        infection_state[0, 0] = 1
-        social_network = np.roll(
-            np.eye(num_users), 1, axis=1
-        )  # every user i is connected to (i+1) % 5
+        infection_state[0] = 1  # user 0 is infected at the outset
+        item_rep = np.array(
+            [[0.9999]]
+        )  # combined with random seed, this should guarantee infection
         bass = BassModel(
-            user_representation=social_network,
-            item_representation=items,
-            infection_thresholds=infection_thresholds,
+            user_representation=user_rep,
+            item_representation=item_rep,
             infection_state=infection_state,
+            seed=1234,
+        )
+        bass.run(1)  # after 1st step, user 1 should be infected, and user 0 should be recovered
+        correct_infections = np.array([-1, 1, 0, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        bass.run(
+            1
+        )  # after 2nd step, users 0 and 1 should be recovered, and user 2 should be infected
+        correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+
+        # test running to completion
+        bass.run()
+        correct_infections = np.array([-1, -1, -1, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        user_rep = csr_matrix(np.zeros((num_users, num_users)))
+        user_rep[1, 0] = 1  # user 1 is connected to user 0
+        user_rep[0, 1] = 1  # user 1 is connected to user 0
+        user_rep[2, 1] = 1  # user 2 is connected to user 1
+        infection_state = np.zeros((num_users, 1))
+        infection_state[0] = 1  # user 0 is infected at the outset
+        item_rep = np.array(
+            [[0.9999]]
+        )  # combined with random seed, this should guarantee infection
+        bass = BassModel(
+            user_representation=user_rep,
+            item_representation=item_rep,
+            infection_state=infection_state,
+            seed=132,
         )
 
-        bass.run(1)
-        # confirm that the new infection state is that user 4 is infected
-        assert bass.infection_state[4, 0] == 1
-        # user 1 should not be infected
-        assert bass.infection_state[1, 0] == 0
+        bass.run(1)  # after 1st step, user 1 should be infected, and user 0 should be recovered
+        correct_infections = np.array([-1, 1, 0, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        bass.run(
+            1
+        )  # after 2nd step, users 0 and 1 should be recovered, and user 2 should be infected
+        correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+
+        # assert that the user representation is still sparse
+        assert isinstance(bass.users_hat.value, csr_matrix)

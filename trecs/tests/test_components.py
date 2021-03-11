@@ -11,7 +11,7 @@ class TestComponents:
 
         # increment profile twice
         for _ in range(2):
-            profiles += 1
+            profiles.value += 1
             for component in sys._system_state:
                 component.store_state()
 

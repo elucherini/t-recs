@@ -193,7 +193,7 @@ class ImplicitMF(BaseRecommender):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
 
         super().__init__(
             user_representation,
@@ -234,8 +234,8 @@ class ImplicitMF(BaseRecommender):
             self.als_model = model
             # update latent representations
             user_index, item_index = list(set(model.user_index_)), list(set(model.item_index_))
-            self.users_hat[user_index, :] = model.user_features_
-            self.items_hat[:, item_index] = model.item_features_.T
+            self.users_hat.value[user_index, :] = model.user_features_
+            self.items_hat.value[:, item_index] = model.item_features_.T
         # update predicted scores
         # when there are no new interactions to refit an MF from, it simply uses the
         # existing representation of user & item attributes to predict scores

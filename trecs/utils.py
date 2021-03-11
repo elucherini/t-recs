@@ -1,5 +1,6 @@
 """Various utility functions, mainly used for input validation"""
 import numpy as np
+from scipy.sparse import csr_matrix
 
 # Common input validation functions
 def check_consistency(  # pylint: disable=too-many-arguments
@@ -155,16 +156,19 @@ def is_array_valid_or_none(array, ndim=2):
     dimensions specified
     """
     # check if array_like
-    if not is_valid_or_none(array, (np.ndarray, list)):
+    if not is_valid_or_none(array, (np.ndarray, list, csr_matrix)):
         return False
     # check if None: this is correct and allowed
     if array is None:
         return True
 
-    array = np.asarray(array)
+    if not hasattr(array, "ndim"):
+        array = np.asarray(array)
+
     # check ndim
     if array.ndim != ndim:
         return False
+
     # all good
     return True
 

@@ -1,17 +1,19 @@
 import test_helpers
+import pytest
 import numpy as np
+import scipy.sparse as sp
 from trecs.metrics.measurement import MSEMeasurement
+import trecs.matrix_ops as mo
 from trecs.models import SocialFiltering
 from trecs.components import Creators
-import pytest
 
 
 class TestSocialFiltering:
     def test_default(self):
         s = SocialFiltering()
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
         # did not set seed, show random behavior
         s1 = SocialFiltering()
@@ -24,13 +26,13 @@ class TestSocialFiltering:
             items = np.random.randint(10, 1000)
         if users is None:
             users = np.random.randint(10, 100)
-        s = SocialFiltering(num_users=users, num_items=items)
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(items, s, s.items_hat.shape[1])
+        s = SocialFiltering(num_users=users, num_items=items, seed=1234)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
-        # did not set seed, show random behavior
-        s1 = SocialFiltering(num_users=users, num_items=items)
+        # set different seed, show random behavior
+        s1 = SocialFiltering(num_users=users, num_items=items, seed=4321)
 
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
@@ -42,9 +44,9 @@ class TestSocialFiltering:
             users = np.random.randint(10, 100)
         # init with partially given arguments
         s = SocialFiltering(num_users=users)
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
@@ -54,9 +56,9 @@ class TestSocialFiltering:
             test_helpers.assert_equal_arrays(s.users_hat, s1.users_hat)
 
         s = SocialFiltering(num_items=items)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
@@ -75,9 +77,9 @@ class TestSocialFiltering:
             user_repr = np.random.randint(2, size=(users, users))
         # test item representation
         s = SocialFiltering(item_representation=item_repr)
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
@@ -89,21 +91,21 @@ class TestSocialFiltering:
 
         # test user representation
         s = SocialFiltering(user_representation=user_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # test item and user representations
         s = SocialFiltering(user_representation=user_repr, item_representation=item_repr)
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[0], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(user_repr.shape[1], s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(item_repr.shape[1], s, s.items_hat.num_items)
         test_helpers.assert_equal_arrays(user_repr, s.users_hat)
         test_helpers.assert_equal_arrays(item_repr, s.items_hat)
         test_helpers.assert_not_none(s.predicted_scores)
@@ -123,9 +125,9 @@ class TestSocialFiltering:
         s = SocialFiltering(verbose=False, num_items_per_iter=num_items_per_iter)
         assert num_items_per_iter == s.num_items_per_iter
         # also check other params
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[0])
-        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.shape[1])
-        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.shape[1])
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_users)
+        test_helpers.assert_correct_num_users(s.num_users, s, s.users_hat.num_attrs)
+        test_helpers.assert_correct_num_items(s.num_items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
 
         # did not set seed, show random behavior
@@ -147,41 +149,41 @@ class TestSocialFiltering:
         while user1 == user2:
             user1 = np.random.randint(1, s.num_users)
         # test current graph
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test follow again -- nothing should change
         s.follow(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfollow again -- nothing should change
         s.unfollow(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
         # test friending
         s.add_friends(user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test friending again -- nothing should change
         s.add_friends(user2, user1)
-        test_helpers.assert_social_graph_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_following(s.users_hat.value, user2, user1)
         # test unfriending
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
         # test unfriending again -- nothing should change
         s.remove_friends(user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user1, user2)
-        test_helpers.assert_social_graph_not_following(s.users_hat, user2, user1)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user1, user2)
+        test_helpers.assert_social_graph_not_following(s.users_hat.value, user2, user1)
 
     def test_seeding(self, seed=None, items=None, users=None):
         if seed is None:
@@ -235,11 +237,11 @@ class TestSocialFiltering:
             actual_user_representation=users,
             num_items_per_iter=num_items,
         )
-        init_pred_scores = np.copy(model.predicted_scores)
+        init_pred_scores = model.predicted_user_item_scores.copy()
         model.run(1)
 
         # assert new scores have changed
-        trained_preds = np.copy(model.predicted_scores)
+        trained_preds = model.predicted_user_item_scores.copy()
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
 
@@ -250,6 +252,51 @@ class TestSocialFiltering:
         recommendations = model.recommend()
         correct_rec = np.array([[1], [2], [3], [4], [0]])
         test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+    def test_sparse_matrix(self):
+        num_users = 5
+        num_items = 5
+        users = sp.csr_matrix(np.eye(num_users))  # 5 users, 5 attributes
+        items = sp.csr_matrix(np.eye(num_items))  # 5 users, 5 attributes
+        social_network = sp.csr_matrix(
+            np.roll(np.eye(num_users), 1, axis=1)
+        )  # every user i is connected to (i+1) % 5
+
+        model = SocialFiltering(
+            user_representation=social_network.copy(),
+            actual_item_representation=items.copy(),
+            actual_user_representation=users.copy(),
+            num_items_per_iter=num_items,
+        )
+        init_pred_scores = mo.to_dense(model.predicted_user_item_scores.copy())
+        model.run(1)
+
+        # assert new scores have changed
+        trained_preds = mo.to_dense(model.predicted_user_item_scores.copy())
+        with pytest.raises(AssertionError):
+            test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
+
+        # assert that recommendations are now "perfect"
+        # every user should be recommended the item that
+        # the person they are "following" interacted with
+        model.num_items_per_iter = 1
+        recommendations = model.recommend()
+        correct_rec = np.array([[1], [2], [3], [4], [0]])
+        test_helpers.assert_equal_arrays(recommendations, correct_rec)
+
+        # ensure no errors when variuos arguments are sparse
+        model = SocialFiltering(
+            user_representation=social_network.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
+
+        model = SocialFiltering(
+            actual_item_representation=items.copy(),
+            actual_user_representation=users.copy(),
+            num_items_per_iter=num_items,
+        )
+        model.run(1)
 
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
@@ -263,6 +310,9 @@ class TestSocialFiltering:
             creators=creator_profiles,
         )
         sf.run(1, repeated_items=True)
-        assert sf.items.shape == (10, 150)  # 50 new items
-        assert sf.items_hat.shape == (100, 150)
-        assert sf.users.state_history[-1].shape == (100, 150)
+        assert sf.items.num_items == 150  # 50 new items
+        assert sf.items.num_attrs == 10  # 10 true items
+        assert sf.items_hat.num_items == 150
+        assert sf.items_hat.num_attrs == 100  # 100 users
+        assert sf.users.actual_user_scores.num_users == 100
+        assert sf.users.actual_user_scores.num_items == 150

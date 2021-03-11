@@ -6,8 +6,9 @@ from abc import ABC, abstractmethod
 import networkx as nx
 from networkx import wiener_index
 import numpy as np
+import scipy.sparse as sp
 from trecs.logging import VerboseMode
-from trecs.components import (
+from trecs.base import (
     BaseObservable,
     register_observables,
 )
@@ -40,14 +41,14 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
-        if isinstance(init_value, np.ndarray):
-            init_value = np.copy(init_value)
+        if isinstance(init_value, (np.ndarray, sp.spmatrix)):
+            init_value = init_value.copy()
         self.measurement_history.append(init_value)
 
     def get_measurement(self):
         """
         Returns measurements. See
-        :func:`~components.base_components.BaseObservable.get_observable`
+        :func:`~base.base_components.BaseObservable.get_observable`
         for more details.
 
         Returns
@@ -447,7 +448,7 @@ class MSEMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        diff = recommender.predicted_scores - recommender.users.actual_user_scores
+        diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
 
 
@@ -471,8 +472,8 @@ class DiffusionTreeMeasurement(Measurement):
     Parameters
     -----------
 
-        infection_state: array_like
-            The initial "infection state"
+        infection_state: :class:`~models.bass.InfectionState`
+            The initial "infection state" of all users
 
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
@@ -498,8 +499,8 @@ class DiffusionTreeMeasurement(Measurement):
     def __init__(self, infection_state, verbose=False):
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
-        self._manage_new_infections(None, np.copy(infection_state))
-        self._old_infection_state = np.copy(infection_state)
+        self._manage_new_infections(None, infection_state)
+        self._old_infection_state = infection_state.value.copy()
         Measurement.__init__(
             self, "num_infected", verbose=verbose, init_value=self.diffusion_tree.number_of_nodes()
         )
@@ -514,7 +515,11 @@ class DiffusionTreeMeasurement(Measurement):
         prev_infected_users = np.where(self._old_infection_state > 0)[0]
         # candidates must be connected to newly infected users
         candidate_parents = user_profiles[:, prev_infected_users][new_infected_users]
-        parents = prev_infected_users[np.argsort(candidate_parents)[:, -1]]
+        if not isinstance(candidate_parents, np.ndarray):
+            candidate_parents = candidate_parents.toarray()  # convert sparse to numpy if needed
+        # randomly select parent out of those who were infected, use random multiplication
+        candidate_parents = candidate_parents * np.random.rand(*candidate_parents.shape)
+        parents = prev_infected_users[np.argmax(candidate_parents, axis=1)]
         return parents
 
     def _add_to_graph(self, user_profiles, new_infected_users):
@@ -531,17 +536,25 @@ class DiffusionTreeMeasurement(Measurement):
     def _manage_new_infections(self, user_profiles, current_infection_state):
         """Add new infected users to graph and return number of newly infected
         users
+
+        Parameters
+        ------------
+            user_profiles: :obj:`numpy.ndarray`
+                :math:`|U|\\times|A|` numpy adjacency matrix.
+
+            current_infection_state: :class:`~models.bass.InfectionState`
+                Matrix that contains state about recovered,
+                infected, and susceptible individuals.
         """
         if self._old_infection_state is None:
-            self._old_infection_state = np.zeros(current_infection_state.shape)
-        new_infections = current_infection_state - self._old_infection_state
-        if (new_infections == 0).all():
+            self._old_infection_state = np.zeros(current_infection_state.value.shape)
+        new_infections = current_infection_state.infected_users()[0]  # only extract user indices
+        if len(new_infections) == 0:
             # no new infections
             return 0
-        new_infected_users = np.where(new_infections > 0)[0]  # only the rows
-        self._add_to_graph(user_profiles, new_infected_users)
+        self._add_to_graph(user_profiles, new_infections)
         # return number of new infections
-        return new_infected_users.shape[0]
+        return len(new_infections)
 
     def measure(self, recommender, **kwargs):
         """
@@ -561,9 +574,9 @@ class DiffusionTreeMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        self._manage_new_infections(recommender.users_hat, recommender.infection_state)
+        self._manage_new_infections(recommender.users_hat.value, recommender.infection_state)
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
-        self._old_infection_state = np.copy(recommender.infection_state)
+        self._old_infection_state = np.copy(recommender.infection_state.value)
 
     def draw_tree(self):
         """
@@ -584,7 +597,7 @@ class StructuralVirality(DiffusionTreeMeasurement):
     Parameters
     ----------
 
-        infection_state: array_like
+        :obj:`numpy.ndarray`
             The initial "infection state" (see :class:`DiffusionTreeMeasurement`).
 
     """
@@ -608,26 +621,19 @@ class AverageFeatureScoreRange(Measurement):
     """
     Measures the average range (across users) of item attributes for items
     users were recommended at a time step.
-
     This metric is based on the item diversity measure used in :
-
         Willemsen, M. C., Graus, M. P.,
         & Knijnenburg, B. P. (2016). Understanding the role of latent feature
         diversification on choice difficulty and satisfaction. User Modeling
         and User-Adapted Interaction, 26(4), 347-389.
-
     This class inherits from :class:`.Measurement`.
-
     Parameters
     -----------
-
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
-
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
-
         name: str (optional, default: "afsr")
             Name of the measurement component.
     """
@@ -638,30 +644,29 @@ class AverageFeatureScoreRange(Measurement):
     def measure(self, recommender, **kwargs):
         """
         Measures the average range (across users) of item attributes for items
-        users chose to interact with at a time step. Used as a measure of within list recommendation diversity
-
+        users were recommended at a time step. Used as a measure of within
+        list recommendation diversity
+        This metric is based on the item diversity measure used in :
+        Willemsen, M. C., Graus, M. P.,
+        & Knijnenburg, B. P. (2016). Understanding the role of latent feature
+        diversification on choice difficulty and satisfaction. User Modeling
+        and User-Adapted Interaction, 26(4), 347-389.
         Parameters
         ------------
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from
                 :class:`~models.recommender.BaseRecommender`.
-
             **kwargs
                 Keyword arguments, one of which must be `items_shown`, a |U| x
                 num_items_per_iter matrix that contains the indices of every
                 item shown to every user at a particular timestep.
         """
         items_shown = kwargs.pop("items_shown", None)
-        #print("interactions {}".format(interactions))
 
-        #assert interactions.size == recommender.num_users
-        recommended_item_attr = recommender.items_hat[:, items_shown]
-        #print("interacted_item_att shape {}".format(interacted_item_attr.shape))
+        recommended_item_attr = recommender.items_hat.value[:, items_shown]
 
-        #if {item for item in recommended_item_attr.flatten()} == {0, 1}:
-        if recommended_item_attr.flatten().all() in [0,1]:
-            raise ValueError("AFSR is not intended for binary features.")
-
-        afsr = np.mean(recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2)))
+        afsr = np.mean(
+            recommended_item_attr.max(axis=(0, 2)) - recommended_item_attr.min(axis=(0, 2))
+        )
 
         self.observe(afsr)

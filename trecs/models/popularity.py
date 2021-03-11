@@ -144,7 +144,7 @@ class PopularityRecommender(BaseRecommender):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
         if user_representation is None:
             user_representation = np.ones((num_users, num_attributes), dtype=int)
 
@@ -163,9 +163,9 @@ class PopularityRecommender(BaseRecommender):
         )
 
     def _update_internal_state(self, interactions):
-        histogram = np.zeros(self.num_items)
+        histogram = np.zeros(self.num_items, dtype=int)
         np.add.at(histogram, interactions, 1)
-        self.items_hat[:, :] = np.add(self.items_hat, histogram)
+        self.items_hat.value += histogram
 
     def process_new_items(self, new_items):
         """

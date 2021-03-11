@@ -4,11 +4,12 @@ scores, predicted user profiles, actual user profiles, and a Users class (which
 encapsulates some of these concepts)
 """
 import numpy as np
+import scipy.sparse as sp
 
-from trecs.matrix_ops import contains_row, slerp, inner_product
+import trecs.matrix_ops as mo
 from trecs.random import Generator
 from trecs.utils import check_consistency
-from .base_components import Component, BaseComponent
+from trecs.base import Component, BaseComponent
 
 
 class PredictedScores(Component):  # pylint: disable=too-many-ancestors
@@ -24,6 +25,50 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
             self, current_state=predicted_scores, size=None, verbose=verbose, seed=None
         )
 
+    def filter_by_index(self, item_indices):
+        """
+        Return a subset of the predicted scores, filtered by the indices
+        of valid items.
+
+        Parameters
+        -------------
+
+        item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            A matrix with |U| rows that specifies the indices of items
+            requested for each user.
+
+        """
+        if item_indices.shape[0] != self.current_state.shape[0]:
+            error_msg = "Number of users does not match between score matrix and item index matrix"
+            raise ValueError(error_msg)
+        # generates row matrix like the following:
+        # [0, 0, 0, ..., 0]
+        # [1, 1, 1, ..., 1]
+        # [     ...       ]
+        # [n, n, n, ..., n]
+        num_users = item_indices.shape[0]
+        row = np.repeat(np.arange(num_users), item_indices.shape[1]).reshape((num_users, -1))
+        # for now, we have to keep the score matrix a dense array because scipy
+        # sparse has no equivalent of argsort
+        # TODO: look into potential solutions using things like Numba to maintain
+        # speed?
+        # https://stackoverflow.com/questions/31790819/scipy-sparse-csr-matrix-how-to-get-top-ten-values-and-indices
+        return mo.to_dense(self.current_state)[row, item_indices]
+
+    def append_new_scores(self, new_scores):
+        """
+        Appends a set of scores for new items to the current set of scores.
+
+        Parameters
+        -------------
+
+        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,
+            where :math:`I_{new}` indicates the number of new items whose scores
+            are being to be appended.
+        """
+        self.current_state = mo.hstack([self.current_state, new_scores])
+
 
 class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
@@ -33,8 +78,22 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
 
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
-        self.name = "predicted_user_profiles"
+        self.name = "predicted_users"
         Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
+
+    @property
+    def num_users(self):
+        """
+        Shortcut getter method for the number of users.
+        """
+        return self.current_state.shape[0]
+
+    @property
+    def num_attrs(self):
+        """
+        Shortcut getter method for the number of attributes in each user profile.
+        """
+        return self.current_state.shape[1]
 
 
 class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
@@ -47,6 +106,85 @@ class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
         self.name = "actual_user_profiles"
         Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
+
+
+class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
+    """
+    Real matrix of user-item scores, unknown to the model.
+    """
+
+    def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
+        self.name = "actual_user_scores"
+        if user_profiles is not None:
+            num_users, num_items = user_profiles.shape
+            self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+        else:
+            self.user_rows = None
+        Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
+
+    def get_item_scores(self, items_shown):
+        """
+        Return the user scores for the items shown, in the correct
+        order specified.
+        """
+        if self.user_rows is None or self.user_rows.shape != self.current_state.shape:
+            num_users, num_items = self.current_state.shape
+            self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+        num_items = items_shown.shape[1]
+        return self.current_state[self.user_rows[:, :num_items], items_shown]
+
+    def set_item_scores_to_value(self, item_indices, value):
+        """
+        Set scores for the specified user-item indices to the determined
+        value.
+
+        Parameters
+        -----------
+            item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+                A matrix with |U| rows that specifies the indices of items
+                requested for each user.
+
+            value: float
+                Single value with which to replace scores.
+        """
+        if self.user_rows is None or self.user_rows.shape != self.current_state.shape:
+            num_users, num_items = self.current_state.shape
+            self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+        num_items = item_indices.shape[1]
+        self.current_state[self.user_rows[:, :num_items], item_indices] = value
+
+    def append_new_scores(self, new_scores):
+        """
+        Appends a set of scores for new items to the current set of scores.
+
+        Parameters
+        -------------
+
+        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,
+            where :math:`I_{new}` indicates the number of new items whose scores
+            are being to be appended.
+        """
+        self.current_state = mo.hstack([self.current_state, new_scores])
+        # update user rows matrix
+        num_users, num_items = self.current_state.shape
+        self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+
+    @property
+    def num_users(self):
+        """
+        Shortcut getter method for the number of users.
+        """
+        # rows = users, cols = items
+        return self.current_state.shape[0]
+
+    @property
+    def num_items(self):
+        """
+        Shortcut getter method for the number of items.
+        """
+        # rows = users, cols = items
+        return self.current_state.shape[1]
 
 
 class Users(BaseComponent):  # pylint: disable=too-many-ancestors
@@ -66,7 +204,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     Requirements vary across models and, unless specified, this class does not
     make assumptions on the real user components.
 
-    This class inherits from :class:`~components.base_components.BaseComponent`.
+    This class inherits from :class:`~base.base_components.BaseComponent`.
 
     Parameters
     ------------
@@ -171,7 +309,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         size=None,
         num_users=None,
         drift=0,
-        score_fn=inner_product,
+        score_fn=mo.inner_product,
         verbose=False,
         seed=None,
         attention_exp=0.0,
@@ -180,7 +318,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.rng = Generator(seed=seed)
         # general input checks
         if actual_user_profiles is not None:
-            if not isinstance(actual_user_profiles, (list, np.ndarray)):
+            if not isinstance(actual_user_profiles, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if interact_with_items is not None and not callable(interact_with_items):
             raise TypeError("interact_with_items must be callable")
@@ -189,11 +327,11 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if actual_user_profiles is None and not isinstance(size, tuple):
             raise TypeError("size must be a tuple, is %s" % type(size))
         if actual_user_scores is not None:
-            if not isinstance(actual_user_scores, (list, np.ndarray)):
+            if not isinstance(actual_user_scores, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
         if actual_user_profiles is None and size is not None:
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
-            while actual_user_profiles is None or contains_row(actual_user_profiles, row_zeros):
+            while actual_user_profiles is None or mo.contains_row(actual_user_profiles, row_zeros):
                 # generate matrix until no row is the zero vector
                 actual_user_profiles = self.rng.normal(size=size)
 
@@ -201,7 +339,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         num_users = check_consistency(
             users=actual_user_profiles, user_item_scores=actual_user_scores, num_users=num_users
         )[0]
-        self.actual_user_profiles = ActualUserProfiles(np.asarray(actual_user_profiles))
+        self.actual_user_profiles = ActualUserProfiles(actual_user_profiles)
         self.interact_with_items = interact_with_items
         self.drift = drift
         self.attention_exp = attention_exp
@@ -213,7 +351,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if not repeat_interactions:
             self.user_interactions = np.array([], dtype=int).reshape((num_users, 0))
         self.name = "actual_user_scores"
-        BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_scores)
+        BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_profiles.value)
 
     def set_score_function(self, score_fn):
         """Users "score" items before "deciding" which item to interact with.
@@ -256,14 +394,14 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if not callable(self.score_fn):
             raise TypeError("score function must be callable")
         actual_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles, item_attributes=item_attributes
+            user_profiles=self.actual_user_profiles.value, item_attributes=item_attributes
         )
         if self.actual_user_scores is None:
-            self.actual_user_scores = actual_scores
+            self.actual_user_scores = ActualUserScores(actual_scores)
         else:
-            self.actual_user_scores[:, :] = actual_scores
+            self.actual_user_scores.value = actual_scores
 
-        self.store_state()
+        self.actual_user_scores.store_state()
 
     def score_new_items(self, new_items):
         """
@@ -281,10 +419,10 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             number of items and :math:`|A|` is the number of attributes.
         """
         new_scores = self.score_fn(
-            user_profiles=self.actual_user_profiles, item_attributes=new_items
+            user_profiles=self.actual_user_profiles.value, item_attributes=new_items
         )
-        self.actual_user_scores = np.hstack([self.actual_user_scores, new_scores])
-        self.store_state()
+        self.actual_user_scores.append_new_scores(new_scores)
+        self.actual_user_scores.store_state()
 
     def get_actual_user_scores(self, user=None):
         """
@@ -327,6 +465,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         items_shown: :obj:`numpy.ndarray`): A
             :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
+
         item_attributes: :obj:`numpy.ndarray`):
             A :math:`|A|\\times|I|` matrix with item attributes.
 
@@ -348,22 +487,16 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         item_attributes = kwargs.pop("item_attributes", None)
         if items_shown is None:
             raise ValueError("Items can't be None")
-        reshaped_user_vector = self.user_vector.reshape((-1, 1))  # turn into column
-
-        user_item_scores = self.actual_user_scores
         if not self.repeat_interactions:
-            # scores for items already interacted with go to negative infinity
-            num_past_interactions = self.user_interactions.shape[1]
-            user_rows = np.tile(reshaped_user_vector, num_past_interactions)
-            user_item_scores[user_rows, self.user_interactions] = float("-inf")
-
-        rec_item_scores = user_item_scores[reshaped_user_vector, items_shown]
+            # "remove" items that have been interacted with by setting scores to negativve infinity
+            self.actual_user_scores.set_item_scores_to_value(self.user_interactions, float("-inf"))
+        rec_item_scores = self.actual_user_scores.get_item_scores(items_shown)
         if self.attention_exp != 0:
             idxs = np.arange(items_shown.shape[1]) + 1
             multiplier = np.power(idxs, self.attention_exp)
             # multiply each row by the attention coefficient
             rec_item_scores = rec_item_scores * multiplier
-        sorted_user_preferences = rec_item_scores.argmax(axis=1)
+        sorted_user_preferences = mo.argmax(rec_item_scores, axis=1)
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
         if self.is_verbose():
@@ -399,13 +532,13 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized
-        self.actual_user_profiles = slerp(
+        self.actual_user_profiles.value = mo.slerp(
             self.actual_user_profiles, item_attributes, perc=self.drift
         )
 
     def store_state(self):
         """ Store the actual user scores in the state history """
-        self.state_history.append(np.copy(self.actual_user_scores))
+        self.state_history.append(np.copy(self.actual_user_scores.value))
 
 
 class DNUsers(Users):
@@ -439,7 +572,7 @@ class DNUsers(Users):
         size=None,
         num_users=None,
         drift=0,
-        score_fn=inner_product,
+        score_fn=mo.inner_product,
         sigma=0.0,
         omega=0.2376,
         beta=0.9739,
@@ -502,7 +635,7 @@ class DNUsers(Users):
         interaction_scores = self.actual_user_scores[reshaped_user_vector, items_shown]
 
         self.log("User scores for given items are:\n" + str(interaction_scores))
-        item_utilities = self.calc_dn_utilities(interaction_scores)
+        item_utilities = mo.to_dense(self.calc_dn_utilities(interaction_scores))
         sorted_user_preferences = item_utilities.argsort()[:, -1]
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + str(interactions))

@@ -5,18 +5,20 @@ implementable in our simulation library
 from abc import ABC, abstractmethod
 import warnings
 import numpy as np
+import scipy.sparse as sp
 from tqdm import tqdm
 from trecs.metrics import MeasurementModule
+from trecs.base import SystemStateModule
 from trecs.components import (
     Users,
     Items,
     Creators,
     PredictedScores,
     PredictedUserProfiles,
-    SystemStateModule,
+    PredictedItems,
 )
 from trecs.logging import VerboseMode
-from trecs.matrix_ops import inner_product
+import trecs.matrix_ops as mo
 from trecs.random import Generator
 from trecs.utils import is_valid_or_none
 
@@ -166,7 +168,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         measurements=None,
         record_base_state=False,
         system_state=None,
-        score_fn=inner_product,
+        score_fn=mo.inner_product,
         interleaving_fn=None,
         verbose=False,
         seed=None,
@@ -180,7 +182,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # init the recommender system's internal representation of users
         # and items
         self.users_hat = PredictedUserProfiles(users_hat)
-        self.items_hat = Items(items_hat)
+        self.items_hat = PredictedItems(items_hat)
         assert callable(score_fn)  # score function must be a function
         self.score_fn = score_fn
         if interleaving_fn:
@@ -207,24 +209,23 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise ValueError("You must define at least one measurement module")
 
         # check users array
-        if not is_valid_or_none(users, (list, np.ndarray, Users)):
+        if not is_valid_or_none(users, (list, np.ndarray, sp.spmatrix, Users)):
             raise TypeError("users must be array_like or Users")
         if users is None:
-            self.users = Users(size=self.users_hat.shape, num_users=num_users, seed=seed)
-        if isinstance(users, (list, np.ndarray)):
+            shape = (self.users_hat.num_users, self.users_hat.num_attrs)
+            self.users = Users(size=shape, num_users=num_users, seed=seed)
+        if isinstance(users, (list, np.ndarray, sp.spmatrix)):
             # assume that's what passed in is the user's profiles
             self.users = Users(actual_user_profiles=users, num_users=num_users)
         if isinstance(users, Users):
             self.users = users
 
         # check items array
-        if not is_valid_or_none(items, (list, np.ndarray, Items)):
+        if not is_valid_or_none(items, (list, np.ndarray, sp.spmatrix, Items)):
             raise TypeError("items must be array_like or Items")
         if items is None:
             raise ValueError("true item attributes can't be None")
-        if isinstance(items, (list, np.ndarray)):
-            # will need to change this when Items no longer inherits from
-            # ndarray
+        if isinstance(items, (list, np.ndarray, sp.spmatrix)):
             self.items = Items(items)
         if isinstance(items, Items):
             self.items = items
@@ -266,6 +267,66 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             else:
                 self.log("Seed was not set.")
 
+    @property
+    def predicted_user_profiles(self):
+        """
+        Property that is an alias for the matrix representation of
+        predicted user profiles. Returns a matrix of dimension
+        :math:`|U|\\times|\\hat{A}|`, where :math:`|\\hat{A}|` is the
+        number of attributes that the algorithm uses to represent each
+        item and user.
+        """
+        return self.users_hat.value
+
+    @property
+    def predicted_item_attributes(self):
+        """
+        Property that is an alias for the matrix representation of
+        predicted item attributes. Returns a matrix of dimension
+        :math:`|\\hat{A}|\\times|I|`,  where :math:`|\\hat{A}|` is the
+        number of attributes that the algorithm uses to represent each
+        item and user.
+        """
+        return self.items_hat.value
+
+    @property
+    def actual_user_profiles(self):
+        """
+        Property that is an alias for the matrix representation of
+        true user profiles. Returns a matrix of dimension
+        :math:`|U|\\times|A^*|`, where :math:`|A^*|` is the number
+        of attributes the "true" item/user representation has.
+        """
+        return self.users.actual_user_profiles.value
+
+    @property
+    def actual_item_attributes(self):
+        """
+        Property that is an alias for the matrix representation of
+        actual item attributes. Returns a matrix of dimension
+        :math:`|A^*|\\times|I|`, where :math:`|A^*|` is the number
+        of attributes the "true" item representation has.
+        """
+        return self.items.value
+
+    @property
+    def actual_user_item_scores(self):
+        """
+        Property that is an alias for the matrix representation of
+        the true user-item score matrix. Returns a matrix of
+        dimension :math:`|U|\\times|I|`.
+        """
+        return self.users.actual_user_scores.value
+
+    @property
+    def predicted_user_item_scores(self):
+        """
+        Property that is an alias for the matrix representation of
+        the RS algorithm's predicted user-item score matrix.  Returns
+        a matrix of dimension :math:`|U|\\times|I|`.
+        """
+        return self.predicted_scores.value
+
     def initialize_user_scores(self):
         """
         If the Users object does not already have known user-item scores,
@@ -274,7 +335,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # users compute their own scores using the true item attributes,
         # unless their own scores are already known to them
         if self.users.get_actual_user_scores() is None:
-            self.users.compute_user_scores(self.items)
+            self.users.compute_user_scores(self.actual_item_attributes)
 
     def train(self):
         """
@@ -286,7 +347,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         --------
             predicted_scores: :class:`~components.users.PredictedScores`
         """
-        predicted_scores = self.score_fn(self.users_hat, self.items_hat)
+        predicted_scores = self.score_fn(
+            self.predicted_user_profiles, self.predicted_item_attributes
+        )
         if self.is_verbose():
             self.log(
                 "System updates predicted scores given by users (rows) "
@@ -297,7 +360,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
-            self.predicted_scores[:, :] = predicted_scores
+            self.predicted_scores.value = predicted_scores
 
     def generate_recommendations(self, k=1, item_indices=None):
         """
@@ -332,9 +395,13 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 )
         if k == 0:
             return np.array([]).reshape((self.num_users, 0)).astype(int)
+        # convert to dense because scipy does not yet support argsort - consider
+        # implementing our own fast sparse version? see
+        # https://stackoverflow.com/questions/31790819/scipy-sparse-csr
+        # -matrix-how-to-get-top-ten-values-and-indices
+        s_filtered = mo.to_dense(self.predicted_scores.filter_by_index(item_indices))
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
-        s_filtered = self.predicted_scores[row, item_indices]
         if self.probabilistic_recommendations:
             permutation = s_filtered.argsort()
             rec = item_indices[row, permutation]
@@ -531,6 +598,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         vary_random_items_per_iter=False,
         repeated_items=True,
         no_new_items=False,
+        disable_tqdm=False,
     ):  # pylint: disable=too-many-arguments
         """
         Runs simulation for the given timesteps.
@@ -577,7 +645,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             warnings.warn(error_msg)
         if not startup and self.is_verbose():
             self.log("Running recommendation simulation using recommendation algorithm...")
-        for timestep in tqdm(range(timesteps)):
+        for timestep in tqdm(range(timesteps), disable=disable_tqdm):
             if self.is_verbose():
                 self.log(f"Step {timestep}")
             if self.creators is not None and not no_new_items:
@@ -593,7 +661,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             )
             # important: we use the true item attributes to get user feedback
             interactions = self.users.get_user_feedback(
-                items_shown=item_idxs, item_attributes=self.items
+                items_shown=item_idxs, item_attributes=self.actual_item_attributes
             )
             if not repeated_items:
                 self.indices[self.users.user_vector, interactions] = -1
@@ -642,15 +710,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         new_items = self.creators.generate_items()  # should be A x I
         self.num_items += new_items.shape[1]  # increment number of items
         # concatenate old items with new items
-        self.items = np.hstack([self.items, new_items])
+        self.items.append_new_items(new_items)
         # generate new internal system representations of the items
         new_items_hat = self.process_new_items(new_items)
-        self.items_hat = np.hstack([self.items_hat, new_items_hat])
+        self.items_hat.append_new_items(new_items_hat)
 
         self.add_new_item_indices(new_items.shape[1])
         # create new predicted scores if not in startup
-        new_item_pred_score = self.score_fn(self.users_hat, new_items_hat)
-        self.predicted_scores = np.hstack([self.predicted_scores, new_item_pred_score])
+        new_item_pred_score = self.score_fn(self.users_hat.value, new_items_hat)
+        self.predicted_scores.append_new_scores(new_item_pred_score)
         # have users update their own scores too
         self.users.score_new_items(new_items)
 
@@ -703,7 +771,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
     def get_system_state(self):
         """
         Return history of system state components stored in the
-        :attr:`~components.base_components.BaseComponent.state_history` of the
+        :attr:`~base.base_components.BaseComponent.state_history` of the
         components stored in :attr:`.SystemStateModule._system_state`.
 
         Returns
@@ -731,17 +799,20 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
     def measure_content(self, interactions, items_shown, step):
         """
-        TODO: UPDATE DOCUMENTATION
         Calls method in the :class:`Measurements` module to record metrics.
         For more details, see the :class:`Measurements` class and its measure
-        method.
+        method. Also stores state for each variable being recorded.
 
         Parameters
         -----------
-            interactions (:obj:`numpy.ndarray`): matrix of interactions
-                per users at a given time step.
+            interactions: :obj:`numpy.ndarray`
+                Matrix of interactions per users at a given time step.
 
-            step (int): step on which the recorded interactions refers to.
+            items_shown: :obj:`numpy.ndarray`
+                Matrix of item indices shown to each user at a given time step.
+
+            step: int
+                Step on which the recorded interactions refers to.
         """
         for metric in self.metrics:
             metric.measure(self, step=step, interactions=interactions, items_shown=items_shown)

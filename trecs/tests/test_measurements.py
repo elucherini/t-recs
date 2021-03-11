@@ -1,5 +1,6 @@
 import test_helpers
 import numpy as np
+from trecs.components import Items
 from trecs.models import SocialFiltering, ContentFiltering, BassModel
 from trecs.metrics import (
     HomogeneityMeasurement,
@@ -9,6 +10,7 @@ from trecs.metrics import (
     InteractionMeasurement,
     RecSimilarity,
     InteractionSimilarity,
+    AverageFeatureScoreRange,
 )
 import pytest
 
@@ -29,7 +31,7 @@ class MeasurementUtils:
             if key in measurements.keys():
                 assert np.array_equal(measurements[key][timesteps], value)
             else:
-                assert value not in s._system_state
+                assert value not in model_attribute
 
     @classmethod
     def test_generic_metric(self, model, metric, timesteps):
@@ -79,16 +81,16 @@ class TestMeasurementModule:
             timesteps = np.random.randint(2, 100)
 
         s = SocialFiltering(record_base_state=True)
-        state_mappings = {
-            "predicted_user_profiles": s.users_hat,
-            "actual_user_scores": s.users.actual_user_scores,
-            "items": s.items_hat,
-            "predicted_user_scores": s.predicted_scores,
-        }
 
         for t in range(1, timesteps + 1):
             s.run(timesteps=1)
             system_state = s.get_system_state()
+            state_mappings = {
+                "predicted_users": s.users_hat.value,
+                "actual_user_scores": s.users.actual_user_scores.value,
+                "predicted_items": s.items_hat.value,
+                "predicted_user_scores": s.predicted_scores.value,
+            }
             MeasurementUtils.assert_valid_final_measurements(
                 system_state, s._system_state, state_mappings, t
             )
@@ -164,9 +166,9 @@ class TestInteractionSimilarity:
         # alter items such that both users prefer the first item
         new_items[:, 0] = np.ones(2)
         new_items[:, 1] = np.zeros(2)
-        content.items = new_items
+        content.items = Items(new_items)
         # force users to recalculate scores
-        content.users.compute_user_scores(content.items)
+        content.users.compute_user_scores(new_items)
         content.run(1)
         final_jacc = content.get_measurements()["interaction_similarity"][-1]
         assert final_jacc == 0.5  # users should now have 1 interaction item in common
@@ -178,6 +180,24 @@ class TestMSEMeasurement:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), MSEMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(ContentFiltering(), MSEMeasurement(), timesteps)
+
+
+class TestAFSRMeasurement:
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        # not intended for binary features, so generate item representation
+        item_representation = np.random.random((20, 100))
+        MeasurementUtils.test_generic_metric(
+            SocialFiltering(item_representation=item_representation),
+            AverageFeatureScoreRange(),
+            timesteps,
+        )
+        MeasurementUtils.test_generic_metric(
+            ContentFiltering(item_representation=item_representation),
+            AverageFeatureScoreRange(),
+            timesteps,
+        )
 
 
 class TestInteractionMeasurement:

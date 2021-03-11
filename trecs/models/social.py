@@ -4,10 +4,11 @@ interacted with by users in their social networks
 """
 import networkx as nx
 import numpy as np
-from trecs.metrics import MSEMeasurement
+import scipy.sparse as sp
+import trecs.matrix_ops as mo
+
 from trecs.components import BinarySocialGraph
 from trecs.random import SocialGraphGenerator
-from trecs.utils import get_first_valid, non_none_values
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
@@ -151,11 +152,17 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             None,  # see if we can get the default number of users from the items array
             num_attributes=num_users,  # number of attributes should be equal to the number of users
             default_num_items=1250,
-            default_num_attributes=100,
+            default_num_attributes=None,
         )
+        if num_users is None and num_attributes is None:
+            # number of users could not be inferred from any of the inputs
+            num_users = 100
+            num_attributes = 100
         if num_users is None:
             # get user representation from items instead
-            num_users = num_attributes  # num_attributes by default is 100
+            num_users = num_attributes
+        if num_attributes is None:
+            num_attributes = num_users
 
         # verify that the user representation is an adjacency matrix and that
         # the item representation aligns
@@ -173,7 +180,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
 
         # Initialize recommender system
         BaseRecommender.__init__(
@@ -204,10 +211,18 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 interacted with in the latest step. Namely, interactions_u represents
                 the index of the item that the user has interacted with.
         """
-        interactions_per_user = np.zeros((self.num_users, self.num_items))
+        if self.num_users != self.items_hat.num_attrs or self.num_items != self.items_hat.num_items:
+            error_msg = (
+                "User-item interactions matrix must have same shape as internal "
+                "item representation"
+            )
+            raise ValueError(error_msg)
+        interactions_per_user = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
-        assert interactions_per_user.shape == self.items_hat.shape
-        self.items_hat[:, :] = np.add(self.items_hat, interactions_per_user)
+        if mo.any_dense(self.items_hat.value):
+            # only add dense to dense and sparse to sparse
+            interactions_per_user = mo.to_dense(interactions_per_user)
+        self.items_hat.value += interactions_per_user
 
     def process_new_items(self, new_items):
         """
@@ -221,5 +236,5 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 added into the system. Should be :math:`|A|\\times|I|`
         """
         # users have never interacted with new items
-        new_representation = np.zeros((self.num_users, new_items.shape[1]))
+        new_representation = sp.csr_matrix((self.num_users, new_items.shape[1]))
         return new_representation

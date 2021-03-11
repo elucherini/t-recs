@@ -1,5 +1,7 @@
 """ Content filtering class """
 import numpy as np
+import scipy.sparse as sp
+import trecs.matrix_ops as mo
 from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.utils import (
@@ -160,7 +162,7 @@ class ContentFiltering(BaseRecommender):
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
-            actual_item_representation = np.copy(item_representation)
+            actual_item_representation = item_representation.copy()
 
         # Initialize recommender system
         BaseRecommender.__init__(
@@ -196,10 +198,14 @@ class ContentFiltering(BaseRecommender):
                 the item that the user has interacted with.
 
         """
-        interactions_per_user = np.zeros((self.num_users, self.num_items))
+        # interactions are naturally sparse, so use sparse matrix here
+        interactions_per_user = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
-        user_attributes = np.dot(interactions_per_user, self.items_hat.T)
-        np.add(self.users_hat, user_attributes, out=self.users_hat, casting="unsafe")
+        # perform an inner product with no normalization of the arguments
+        user_attributes = mo.inner_product(
+            interactions_per_user, mo.transpose(self.items_hat), False, False
+        )
+        self.users_hat.value += user_attributes
 
     def process_new_items(self, new_items):
         """

@@ -1,7 +1,11 @@
 import numpy as np
 
+import trecs.matrix_ops as mo
+from trecs.base import Component
+
 
 def assert_equal_arrays(a, b):
+    a, b = mo.extract_values(a, b)
     assert np.array_equal(a, b)
 
 
@@ -21,6 +25,7 @@ def assert_correct_size_generic(attribute, num_attribute, size):
 
 
 def assert_correct_representation(repr, model_repr):
+    model_repr = mo.extract_value(model_repr)
     assert np.array_equal(repr, model_repr)
 
 
@@ -46,21 +51,16 @@ def assert_equal_measurements(meas1, meas2):
 
 
 def assert_equal_system_state(systate1, systate2):
+    # check identical keys
+    assert_equal_arrays(systate1.keys(), systate2.keys())
     for key, val in systate1.items():
         assert key in systate2
         if isinstance(val, list):
             for i, item in enumerate(val):
                 assert_equal_arrays(item, systate2[key][i])
-        if val is None:
+        elif val is None:
             assert val == systate2[key] == None
-        if isinstance(val, np.ndarray):
+        elif isinstance(val, np.ndarray):
             assert_equal_arrays(val, systate2[key])
-    for key, val in systate2.items():
-        assert key in systate1
-        if isinstance(val, list):
-            for i, item in enumerate(val):
-                assert_equal_arrays(item, systate1[key][i])
-        if val is None:
-            assert val == systate1[key] == None
-        if isinstance(val, np.ndarray):
-            assert_equal_arrays(val, systate1[key])
+        elif isinstance(val, Component):
+            assert_equal_arrays(val.value, systate2[key].value)
