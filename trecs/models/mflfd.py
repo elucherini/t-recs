@@ -29,6 +29,7 @@ class ImplicitMFLFD(ImplicitMF):
         verbose=False,
         num_items_per_iter=10,
         model_params=None,
+        top_n_limit=50,
         **kwargs,
     ):
         super().__init__(
@@ -47,7 +48,9 @@ class ImplicitMFLFD(ImplicitMF):
             **kwargs,
         )
 
-    def generate_recommendations(self, k=1, top_n_limit=50, item_indices=None):
+        self.top_n_limit = top_n_limit
+
+    def generate_recommendations(self, k=1, item_indices=None):
         """
         Generate recommendations for each user based on latent feature diversification algorithm in Willemsen et al., (2016).
         Method works by taking the highest predicted item, then iteratively adding items that are maximally distant from the centroid of the attributes of items
@@ -72,7 +75,7 @@ class ImplicitMFLFD(ImplicitMF):
         ---------
             Recommendations: :obj:`numpy.ndarray`
         """
-
+        top_n_limit = self.top_n_limit
         if item_indices is not None:
             if item_indices.size < self.num_users:
                 raise ValueError(
@@ -91,7 +94,7 @@ class ImplicitMFLFD(ImplicitMF):
 
         row = np.repeat(self.users.user_vector, item_indices.shape[1])
         row = row.reshape((self.num_users, -1))
-        s_filtered = self.predicted_scores[row, item_indices]
+        s_filtered = self.predicted_scores.value[row, item_indices]
 
         negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
         # break ties using a random score component
@@ -108,10 +111,10 @@ class ImplicitMFLFD(ImplicitMF):
         top_k_recs = item_indices[row, top_k[row, sort_top_k]]
 
         # dims are attribute, items, users
-        top_k_att = self.items_hat[:, top_k_recs[:]].swapaxes(1, 2)
+        top_k_att = self.items_hat.value[:, top_k_recs[:]].swapaxes(1, 2)
 
         rec = []
-        for idx, user in enumerate(self.users_hat):
+        for idx, user in enumerate(self.users_hat.value):
 
             # make a copy so as not to modify the original array
             user_item_feats = np.array(top_k_att[:, :, idx])
@@ -122,7 +125,7 @@ class ImplicitMFLFD(ImplicitMF):
             recs_idxs = [user_max_idx]
 
             # hold the features of the recommended items
-            recs_features = self.items_hat[:, user_max_idx]
+            recs_features = self.items_hat.value[:, user_max_idx]
 
             for r in range(1, k):
 
