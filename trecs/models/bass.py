@@ -21,8 +21,9 @@ from .recommender import BaseRecommender
 
 
 class InfectionState(Component):  # pylint: disable=too-many-ancestors
-    """Component that tracks infection state, which is a binary array with
-    an element recording whether each user is infected
+    """Component that tracks infection state, which is a binary (possibly sparse)
+    array with an element recording whether each user is infected. Component
+    also keeps track internally of recovered users.
     """
 
     def __init__(self, infection_state=None, verbose=False):
@@ -30,13 +31,15 @@ class InfectionState(Component):  # pylint: disable=too-many-ancestors
         Component.__init__(
             self, current_state=infection_state, size=None, verbose=verbose, seed=None
         )
+        # keep track of recovered users in separate matrix for speed reasons
+        self.recovered_state = sp.csr_matrix(infection_state.shape)
 
     @property
     def num_infected(self):
         """
         Return number of infected users.
         """
-        return (self.value == 1).sum()
+        return self.value.sum()
 
     def recovered_users(self):
         """
@@ -51,7 +54,7 @@ class InfectionState(Component):  # pylint: disable=too-many-ancestors
                 second element is a numpy array of the column indices (i.e.,
                 item indices)
         """
-        return np.where(self.value == -1)
+        return self.recovered_state.nonzero()
 
     def infected_users(self):
         """
@@ -65,7 +68,7 @@ class InfectionState(Component):  # pylint: disable=too-many-ancestors
                 second element is a numpy array of the column indices (i.e.,
                 item indices)
         """
-        return np.where(self.value == 1)
+        return self.value.nonzero()
 
     def infect_users(self, user_indices, item_indices):
         """
@@ -75,11 +78,40 @@ class InfectionState(Component):  # pylint: disable=too-many-ancestors
         currently_infected = self.infected_users()
 
         # infect new users
-        self.current_state[user_indices, item_indices] = 1
+        self.value[user_indices, item_indices] = 1
 
         # remove already infected individuals
-        self.current_state[recovered_users] = -1
-        self.current_state[currently_infected] = -1
+        self.value[recovered_users] = 0
+        self.value[currently_infected] = 0
+        self.recovered_state[currently_infected] = 1
+
+    def total_infected_or_recovered(self):
+        """
+        Returns the total number of users who are currently infected
+        or have recovered from infection.
+
+        Returns
+        --------
+            num: int
+                Number of infected or recovered users
+        """
+        recovered_users = self.recovered_users()
+        currently_infected = self.infected_users()
+        return len(recovered_users[0]) + len(currently_infected[0])
+
+    def sir_state(self):
+        """
+        Return a single matrix representing the SIR status of all users.
+
+        Returns
+        --------
+            sir_state: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+                Sparse/dense matrix that contains 0 for all susceptible users,
+                1 for all infected users, and -1 for all recovered users.
+        """
+        sir_state = self.value.copy()
+        sir_state[self.recovered_users()] = -1
+        return sir_state
 
 
 class InfectionThresholds(Component):  # pylint: disable=too-many-ancestors
@@ -119,7 +151,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         num_items: int (optional, default: 1250)
             The number of items :math:`|I|` in the system.
 
-        infection_state: :obj:`numpy.ndarray` or None (optional, default: None)
+        infection_state: :obj:`numpy.ndarray`, `scipy.sparse.spmatrix`, or \
+                        None (optional, default: None)
             Component that tracks infection state, which is a binary (0/1) array with
             an element recording whether each user is infected. Should be of
             dimension :math:`|U|\\times|I|`.
@@ -128,7 +161,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             Component that tracks infection thresholds for each user. Should be of
             dimension :math:`1\\times|U|`.
 
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        user_representation: :obj:`numpy.ndarray`, `scipy.sparse.spmatrix`, or \
+                                None (optional, default: None)
             A :math:`|U|\\times|A|` matrix representing the similarity between
             each item and attribute, as interpreted by the system.
 
@@ -230,11 +264,10 @@ class BassModel(BaseRecommender, BinarySocialGraph):
 
         # Define infection_state
         if infection_state is None:
-            infection_state = np.zeros((num_users, num_items))
+            infection_state = sp.csr_matrix((num_users, num_items))
             infected_users = generator.integers(num_users)
             infectious_items = generator.integers(num_items)
             infection_state[infected_users, infectious_items] = 1
-        self.infection_state = infection_state
 
         if not all_besides_none_equal(
             getattr(user_representation, "shape", [None])[0],
@@ -409,3 +442,27 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             if hasattr(metric, "get_structural_virality"):
                 return metric.get_structural_virality()
         raise ValueError("Structural virality metric undefined")
+
+    def total_infected_or_recovered(self):
+        """
+        Returns the total number of users who are currently infected
+        or have recovered from infection.
+
+        Returns
+        --------
+            num: int
+                Number of infected or recovered users
+        """
+        return self.infection_state.total_infected_or_recovered()
+
+    def sir_state(self):
+        """
+        Return a single matrix representing the SIR status of all users.
+
+        Returns
+        --------
+            sir_state: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+                Sparse/dense matrix that contains 0 for all susceptible users,
+                1 for all infected users, and -1 for all recovered users.
+        """
+        return self.infection_state.sir_state()

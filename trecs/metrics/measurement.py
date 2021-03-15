@@ -12,6 +12,7 @@ from trecs.base import (
     BaseObservable,
     register_observables,
 )
+from trecs.random import Generator
 
 
 class Measurement(BaseObservable, VerboseMode, ABC):
@@ -478,6 +479,9 @@ class DiffusionTreeMeasurement(Measurement):
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
 
+        seed: int (optional, default: None)
+            Random generator seed
+
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
@@ -496,23 +500,24 @@ class DiffusionTreeMeasurement(Measurement):
             Infection state at the previous timestep.
     """
 
-    def __init__(self, infection_state, verbose=False):
+    def __init__(self, infection_state, verbose=False, seed=None):
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         self._manage_new_infections(None, infection_state)
         self._old_infection_state = infection_state.value.copy()
+        self.rng = Generator(seed=seed)
         Measurement.__init__(
             self, "num_infected", verbose=verbose, init_value=self.diffusion_tree.number_of_nodes()
         )
 
     def _find_parents(self, user_profiles, new_infected_users):
         """ Find the users who infected the newly infected users """
-        if (self._old_infection_state == 0).all():
+        prev_infected_users = self._old_infection_state.nonzero()[0]
+        if prev_infected_users.size == 0:
             # Node is root
             return None
         # TODO: function is_following() based on code below:
         # candidates must have been previously infected
-        prev_infected_users = np.where(self._old_infection_state > 0)[0]
         # candidates must be connected to newly infected users
         candidate_parents = user_profiles[:, prev_infected_users][new_infected_users]
         if not isinstance(candidate_parents, np.ndarray):
@@ -547,7 +552,7 @@ class DiffusionTreeMeasurement(Measurement):
                 infected, and susceptible individuals.
         """
         if self._old_infection_state is None:
-            self._old_infection_state = np.zeros(current_infection_state.value.shape)
+            self._old_infection_state = sp.csr_matrix(current_infection_state.value.shape)
         new_infections = current_infection_state.infected_users()[0]  # only extract user indices
         if len(new_infections) == 0:
             # no new infections
@@ -576,7 +581,7 @@ class DiffusionTreeMeasurement(Measurement):
         """
         self._manage_new_infections(recommender.users_hat.value, recommender.infection_state)
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
-        self._old_infection_state = np.copy(recommender.infection_state.value)
+        self._old_infection_state = recommender.infection_state.value.copy()
 
     def draw_tree(self):
         """

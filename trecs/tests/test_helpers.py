@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.sparse as sp
 
 import trecs.matrix_ops as mo
 from trecs.base import Component
@@ -6,6 +7,10 @@ from trecs.base import Component
 
 def assert_equal_arrays(a, b):
     a, b = mo.extract_values(a, b)
+    if isinstance(a, sp.spmatrix):
+        a = mo.to_dense(a)
+    if isinstance(b, sp.spmatrix):
+        b = mo.to_dense(b)
     assert np.array_equal(a, b)
 
 

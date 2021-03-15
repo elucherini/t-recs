@@ -229,17 +229,21 @@ class TestBassModel:
         )
         bass.run(1)  # after 1st step, user 1 should be infected, and user 0 should be recovered
         correct_infections = np.array([-1, 1, 0, 0, 0]).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        assert bass.total_infected_or_recovered() == 2
+        test_helpers.assert_equal_arrays(bass.sir_state(), correct_infections)
+
         bass.run(
             1
         )  # after 2nd step, users 0 and 1 should be recovered, and user 2 should be infected
         correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        test_helpers.assert_equal_arrays(bass.sir_state(), correct_infections)
+        assert bass.total_infected_or_recovered() == 3
 
         # test running to completion
         bass.run()
         correct_infections = np.array([-1, -1, -1, 0, 0]).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        test_helpers.assert_equal_arrays(bass.sir_state(), correct_infections)
+        assert bass.total_infected_or_recovered() == 3
 
     def test_sparse_matrix(self):
         num_users = 5
@@ -249,7 +253,7 @@ class TestBassModel:
         user_rep[2, 1] = 1  # user 2 is connected to user 1
         infection_state = np.zeros((num_users, 1))
         infection_state[0] = 1  # user 0 is infected at the outset
-        item_rep = np.array(
+        item_rep = csr_matrix(
             [[0.9999]]
         )  # combined with random seed, this should guarantee infection
         bass = BassModel(
@@ -261,12 +265,15 @@ class TestBassModel:
 
         bass.run(1)  # after 1st step, user 1 should be infected, and user 0 should be recovered
         correct_infections = np.array([-1, 1, 0, 0, 0]).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        test_helpers.assert_equal_arrays(bass.sir_state(), correct_infections)
+        assert bass.total_infected_or_recovered() == 2
+
         bass.run(
             1
         )  # after 2nd step, users 0 and 1 should be recovered, and user 2 should be infected
         correct_infections = np.array([-1, -1, 1, 0, 0]).reshape(-1, 1)
-        test_helpers.assert_equal_arrays(infection_state, correct_infections)
+        test_helpers.assert_equal_arrays(bass.sir_state(), correct_infections)
+        assert bass.total_infected_or_recovered() == 3
 
         # assert that the user representation is still sparse
         assert isinstance(bass.users_hat.value, csr_matrix)
