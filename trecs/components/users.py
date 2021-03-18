@@ -329,6 +329,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if actual_user_scores is not None:
             if not isinstance(actual_user_scores, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
+            actual_user_scores = ActualUserScores(actual_user_scores)
         if actual_user_profiles is None and size is not None:
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
             while actual_user_profiles is None or mo.contains_row(actual_user_profiles, row_zeros):
@@ -488,7 +489,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if items_shown is None:
             raise ValueError("Items can't be None")
         if not self.repeat_interactions:
-            # "remove" items that have been interacted with by setting scores to negativve infinity
+            # "remove" items that have been interacted with by setting scores to negative infinity
             self.actual_user_scores.set_item_scores_to_value(self.user_interactions, float("-inf"))
         rec_item_scores = self.actual_user_scores.get_item_scores(items_shown)
         if self.attention_exp != 0:
