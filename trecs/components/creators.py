@@ -77,7 +77,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         # general input checks
         if actual_creator_profiles is not None:
             if not isinstance(actual_creator_profiles, (list, np.ndarray, sp.spmatrix)):
-                raise TypeError("actual_creator_profiles must be a list or numpy.ndarray")
+                raise TypeError("actual_creator_profiles must be a list, numpy.ndarray, or scipy sparse matrix")
         if actual_creator_profiles is None and size is None:
             raise ValueError("actual_creator_profiles and size can't both be None")
         if actual_creator_profiles is None and not isinstance(size, tuple):

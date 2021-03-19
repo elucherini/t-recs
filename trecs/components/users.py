@@ -319,7 +319,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         # general input checks
         if actual_user_profiles is not None:
             if not isinstance(actual_user_profiles, (list, np.ndarray, sp.spmatrix)):
-                raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
+                raise TypeError("actual_user_profiles must be a list, numpy.ndarray, or scipy sparse matrix")
         if interact_with_items is not None and not callable(interact_with_items):
             raise TypeError("interact_with_items must be callable")
         if actual_user_profiles is None and size is None:
@@ -328,7 +328,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             raise TypeError("size must be a tuple, is %s" % type(size))
         if actual_user_scores is not None:
             if not isinstance(actual_user_scores, (list, np.ndarray, sp.spmatrix)):
-                raise TypeError("actual_user_profiles must be a list or numpy.ndarray")
+                raise TypeError("actual_user_profiles must be a list, numpy.ndarray, or scipy sparse matrix")
             actual_user_scores = ActualUserScores(actual_user_scores)
         if actual_user_profiles is None and size is not None:
             row_zeros = np.zeros(size[1])  # one row vector of zeroes
