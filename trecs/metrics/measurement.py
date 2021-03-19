@@ -448,8 +448,9 @@ class MSEMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
-        self.observe((diff ** 2).mean(), copy=False)
+        #diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
+        diff = recommender.predicted_scores.value - (np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes))
+        self.observe((diff ** 2).mean()**0.5, copy=False)
 
 
 class DiffusionTreeMeasurement(Measurement):
