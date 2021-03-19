@@ -449,8 +449,10 @@ class MSEMeasurement(Measurement):
                 of the item with which user `u` interacted.
         """
         diff = recommender.predicted_scores.value - (
-            np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes))
+            np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes)
+        )
         self.observe((diff ** 2).mean(), copy=False)
+
 
 class RMSEMeasurement(Measurement):
     """
@@ -494,8 +496,9 @@ class RMSEMeasurement(Measurement):
                 of the item with which user `u` interacted.
         """
         diff = recommender.predicted_scores.value - (
-            np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes))
-        self.observe((diff ** 2)**0.5.mean(), copy=False)
+            np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes)
+        )
+        self.observe((diff ** 2).mean() ** 0.5, copy=False)
 
 
 class DiffusionTreeMeasurement(Measurement):
