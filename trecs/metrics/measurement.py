@@ -448,9 +448,7 @@ class MSEMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        diff = recommender.predicted_scores.value - (
-            np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes)
-        )
+        diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
 
 
@@ -477,7 +475,7 @@ class RMSEMeasurement(Measurement):
     """
 
     def __init__(self, verbose=False):
-        Measurement.__init__(self, "mse", verbose=verbose, init_value=None)
+        Measurement.__init__(self, "rmse", verbose=verbose, init_value=None)
 
     def measure(self, recommender, **kwargs):
         """
@@ -495,9 +493,7 @@ class RMSEMeasurement(Measurement):
                 that is, an array of length `|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
-        diff = recommender.predicted_scores.value - (
-            np.dot(recommender.users.actual_user_profiles.value, recommender.actual_item_attributes)
-        )
+        diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean() ** 0.5, copy=False)
 
 

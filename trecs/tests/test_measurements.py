@@ -1,6 +1,7 @@
 import test_helpers
 import numpy as np
-from trecs.components import Items
+import pytest
+from trecs.components import Users, Items
 from trecs.models import SocialFiltering, ContentFiltering, BassModel
 from trecs.metrics import (
     HomogeneityMeasurement,
@@ -11,8 +12,8 @@ from trecs.metrics import (
     RecSimilarity,
     InteractionSimilarity,
     AverageFeatureScoreRange,
+    RMSEMeasurement,
 )
-import pytest
 
 
 class MeasurementUtils:
@@ -180,6 +181,28 @@ class TestMSEMeasurement:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), MSEMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(ContentFiltering(), MSEMeasurement(), timesteps)
+
+
+class TestRMSEMeasurement:
+    def test_generic(self, timesteps=None):
+        if timesteps is None:
+            timesteps = np.random.randint(2, 100)
+        MeasurementUtils.test_generic_metric(SocialFiltering(), RMSEMeasurement(), timesteps)
+        MeasurementUtils.test_generic_metric(ContentFiltering(), RMSEMeasurement(), timesteps)
+
+    def test_functionality(self):
+        num_users, num_attrs, num_items = 100, 20, 100
+        user_profiles = np.random.randint(2, size=(num_users, num_attrs))
+        items = np.random.randint(2, size=(num_attrs, num_items))
+        users = Users(actual_user_profiles=user_profiles, repeat_interactions=False)
+        content = ContentFiltering(
+            actual_user_representation=users, actual_item_representation=items
+        )
+        content.add_metrics(MSEMeasurement(), RMSEMeasurement())
+        content.run(5)
+        mse = np.array(content.get_measurements()["mse"][1:])
+        rmse = np.array(content.get_measurements()["rmse"][1:])
+        test_helpers.assert_equal_arrays(np.sqrt(mse), rmse)
 
 
 class TestAFSRMeasurement:
