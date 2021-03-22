@@ -75,7 +75,7 @@ class DebugLogger:
 
     def _test_configured_logger(self):
         """Simple test to announce logger is enabled"""
-        self.logger.debug("Debugging module inizialized")
+        self.logger.debug("Debugging module initialized")
 
     def log(self, message):
         """ Log at DEBUG level """

@@ -97,6 +97,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         BaseComponent.__init__(
             self, verbose=verbose, init_value=self.actual_creator_profiles, seed=seed
         )
+        self.rng = Generator(seed=seed)
 
     def generate_items(self):
         """
@@ -116,13 +117,13 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         # This should result in a _binary_ matrix of size (num_creators,)
         if (self.actual_creator_profiles < 0).any() or (self.actual_creator_profiles > 1).any():
             raise ValueError("Creator profile attributes must be between zero and one.")
-        creator_mask = Generator(seed=self.seed).binomial(
+        creator_mask = self.rng.binomial(
             1, self.creation_probability, self.actual_creator_profiles.shape[0]
         )
         chosen_profiles = self.actual_creator_profiles[creator_mask == 1, :]
         # for each creator that will add new items, generate Bernoulli trial
         # for item attributes
-        items = Generator(seed=self.seed).binomial(
+        items = self.rng.binomial(
             1, chosen_profiles.reshape(-1), chosen_profiles.size
         )
         return items.reshape(chosen_profiles.shape).T
