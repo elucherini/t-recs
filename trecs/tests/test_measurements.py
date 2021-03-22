@@ -182,6 +182,14 @@ class TestMSEMeasurement:
         MeasurementUtils.test_generic_metric(SocialFiltering(), MSEMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(ContentFiltering(), MSEMeasurement(), timesteps)
 
+    def test_numeric(self):
+        content = ContentFiltering()
+        content.add_metrics(MSEMeasurement())
+        content.run(5)
+        mse = np.array(content.get_measurements()["mse"][1:])
+        assert not np.isnan(mse).any()
+        assert not np.isinf(mse).any()
+
 
 class TestRMSEMeasurement:
     def test_generic(self, timesteps=None):
@@ -203,6 +211,8 @@ class TestRMSEMeasurement:
         mse = np.array(content.get_measurements()["mse"][1:])
         rmse = np.array(content.get_measurements()["rmse"][1:])
         test_helpers.assert_equal_arrays(np.sqrt(mse), rmse)
+        assert not np.isnan(rmse).any()
+        assert not np.isinf(rmse).any()
 
 
 class TestAFSRMeasurement:

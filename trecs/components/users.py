@@ -491,7 +491,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             raise ValueError("Items can't be None")
         if not self.repeat_interactions:
             # scores must be set back later to non-infinite values
-            orig_scores = self.actual_user_scores.get_item_scores(self.user_interactions)
+            prev_interacted_scores = self.actual_user_scores.get_item_scores(self.user_interactions)
             # "remove" items that have been interacted with by setting scores to negative infinity
             self.actual_user_scores.set_item_scores_to_value(self.user_interactions, float("-inf"))
         rec_item_scores = self.actual_user_scores.get_item_scores(items_shown)
@@ -514,7 +514,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         # record interactions if needed to ensure users don't repeat interactions
         if not self.repeat_interactions:
             # set scores back to the original scores
-            self.actual_user_scores.set_item_scores_to_value(self.user_interactions, orig_scores)
+            self.actual_user_scores.set_item_scores_to_value(
+                self.user_interactions, prev_interacted_scores
+            )
             interactions_col = interactions.reshape((-1, 1))
             # append interactions as column of user interactions
             self.user_interactions = np.hstack([self.user_interactions, interactions_col])
