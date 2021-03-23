@@ -560,6 +560,28 @@ will not perform repeat interactions.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt id="components.users.Users.attention_transform">
+<code class="sig-name descname"><span class="pre">attention_transform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommended_item_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.attention_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.attention_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms a matrix of user-item scores based on a user attention mechanism; for example,
+because user attention is limited, items at the top of the recommendation list
+may have a higher effective score than items at the end of the recommendation list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recommended_item_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
+pre-attention user-item scores.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>recommended_item_scores</strong> – A <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
+transformed user-item scores that take into account
+the positions in the recommendation list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="components.users.Users.compute_user_scores">
 <code class="sig-name descname"><span class="pre">compute_user_scores</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.compute_user_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.compute_user_scores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes and stores the actual scores that users assign to items
@@ -602,15 +624,15 @@ model.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> – Parameters needed by the model’s train function.</p></li>
 <li><p><strong>kwargs</strong> – Parameters needed by the model’s train function.</p></li>
-<li><p><strong>items_shown</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>): A) – <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
+<li><p><strong>items_shown</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
 recommendations and new items.</p></li>
-<li><p><strong>item_attributes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>):) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix with item attributes.</p></li>
+<li><p><strong>item_attributes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix with item attributes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><em>Array of interactions s.t. element interactions_u(t) represents the</em></p></li>
-<li><p><strong>index of the item selected by user u at time t. Shape</strong> (<em>|U|</em>)</p></li>
+<li><p><strong>index of the item selected by user u at time t. Shape</strong> (<em>|U|x1</em>)</p></li>
 </ul>
 </p>
 </dd>

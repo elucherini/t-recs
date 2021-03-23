@@ -617,17 +617,17 @@
 <span class="sd">        args, kwargs:</span>
 <span class="sd">            Parameters needed by the model&#39;s train function.</span>
 
-<span class="sd">        items_shown: :obj:`numpy.ndarray`): A</span>
-<span class="sd">            :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
+<span class="sd">        items_shown: :obj:`numpy.ndarray`</span>
+<span class="sd">            A :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
 <span class="sd">            recommendations and new items.</span>
 
-<span class="sd">        item_attributes: :obj:`numpy.ndarray`):</span>
+<span class="sd">        item_attributes: :obj:`numpy.ndarray`</span>
 <span class="sd">            A :math:`|A|\\times|I|` matrix with item attributes.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ---------</span>
 <span class="sd">            Array of interactions s.t. element interactions_u(t) represents the</span>
-<span class="sd">            index of the item selected by user u at time t. Shape: |U|</span>
+<span class="sd">            index of the item selected by user u at time t. Shape: |U|x1</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        -------</span>
@@ -636,6 +636,7 @@
 <span class="sd">            If :attr:`interact_with_items` is None and there is not `item`</span>
 <span class="sd">            parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># use custom item interaction function, if provided</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -643,14 +644,12 @@
         <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Items can&#39;t be None&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
+            <span class="c1"># scores must be set back later to non-infinite values</span>
+            <span class="n">prev_interacted_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">get_item_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">)</span>
             <span class="c1"># &quot;remove&quot; items that have been interacted with by setting scores to negative infinity</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">set_item_scores_to_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">))</span>
         <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">get_item_scores</span><span class="p">(</span><span class="n">items_shown</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">multiplier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span><span class="p">)</span>
-            <span class="c1"># multiply each row by the attention coefficient</span>
-            <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="n">rec_item_scores</span> <span class="o">*</span> <span class="n">multiplier</span>
+        <span class="n">rec_item_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_transform</span><span class="p">(</span><span class="n">rec_item_scores</span><span class="p">)</span>
         <span class="n">sorted_user_preferences</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">rec_item_scores</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">interactions</span> <span class="o">=</span> <span class="n">items_shown</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">sorted_user_preferences</span><span class="p">]</span>
         <span class="c1"># logging information if requested</span>
@@ -668,10 +667,42 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="n">item_attributes</span><span class="p">)</span>
         <span class="c1"># record interactions if needed to ensure users don&#39;t repeat interactions</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
+            <span class="c1"># set scores back to the original scores</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">set_item_scores_to_value</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">,</span> <span class="n">prev_interacted_scores</span>
+            <span class="p">)</span>
             <span class="n">interactions_col</span> <span class="o">=</span> <span class="n">interactions</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="c1"># append interactions as column of user interactions</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">,</span> <span class="n">interactions_col</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">interactions</span></div>
+
+<div class="viewcode-block" id="Users.attention_transform"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.attention_transform">[docs]</a>    <span class="k">def</span> <span class="nf">attention_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommended_item_scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transforms a matrix of user-item scores based on a user attention mechanism; for example,</span>
+<span class="sd">        because user attention is limited, items at the top of the recommendation list</span>
+<span class="sd">        may have a higher effective score than items at the end of the recommendation list.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+<span class="sd">            recommended_item_scores: :obj:`numpy.ndarray`</span>
+<span class="sd">                A :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
+<span class="sd">                pre-attention user-item scores.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">            recommended_item_scores: :obj:`numpy.ndarray`)</span>
+<span class="sd">                A :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
+<span class="sd">                transformed user-item scores that take into account</span>
+<span class="sd">                the positions in the recommendation list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">num_items</span> <span class="o">=</span> <span class="n">recommended_item_scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_items</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">multiplier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span><span class="p">)</span>
+            <span class="c1"># multiply each row by the attention coefficient</span>
+            <span class="k">return</span> <span class="n">recommended_item_scores</span> <span class="o">*</span> <span class="n">multiplier</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">recommended_item_scores</span></div>
 
 <div class="viewcode-block" id="Users.update_profiles"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.update_profiles">[docs]</a>    <span class="k">def</span> <span class="nf">update_profiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;In the case of dynamic user profiles, we update the user&#39;s actual</span>
