@@ -1,6 +1,7 @@
 import numpy as np
 from trecs.components import Users, DNUsers
 from trecs.models import ContentFiltering
+import trecs.matrix_ops as mo
 import test_helpers
 import pytest
 
@@ -133,3 +134,12 @@ class TestUsers:
         # allowed to repeat interactions
         feedback = users.get_user_feedback(items_shown=items_shown)
         np.testing.assert_array_equal(feedback, np.ones(num_users))
+        # all users should then like the 2nd item, since they're not
+        # allowed to repeat interactions
+        feedback = users.get_user_feedback(items_shown=items_shown)
+        np.testing.assert_array_equal(feedback, np.ones(num_users) * 2)
+        # test that all users still have well-defined score values;
+        # i.e., no score values are equal to negative infinity, they
+        # should be equal to the orignial score values
+        correct_scores = mo.inner_product(users.actual_user_profiles.value, items)
+        np.testing.assert_array_equal(users.actual_user_scores.value, correct_scores)
