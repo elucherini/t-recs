@@ -1,4 +1,4 @@
-black
+black==21.5b1
 mypy
 pylint
 pytest
