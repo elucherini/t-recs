@@ -381,13 +381,13 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             )
 
     def draw_diffusion_tree(self):
-        """ Draw diffusion tree using matplotlib """
+        """Draw diffusion tree using matplotlib"""
         for metric in self.metrics:
             if hasattr(metric, "draw_tree"):
                 metric.draw_tree()
 
     def get_structural_virality(self):
-        """ Return the value of the structural virality metric """
+        """Return the value of the structural virality metric"""
         for metric in self.metrics:
             if hasattr(metric, "get_structural_virality"):
                 return metric.get_structural_virality()

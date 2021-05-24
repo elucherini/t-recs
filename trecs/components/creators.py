@@ -143,5 +143,5 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         # this can be overwritten by a custom creator class
 
     def store_state(self):
-        """ Store the actual creator profiles in the state history """
+        """Store the actual creator profiles in the state history"""
         self.state_history.append(np.copy(self.actual_creator_profiles))

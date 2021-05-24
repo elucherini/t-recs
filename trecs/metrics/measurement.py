@@ -551,7 +551,7 @@ class DiffusionTreeMeasurement(Measurement):
         )
 
     def _find_parents(self, user_profiles, new_infected_users):
-        """ Find the users who infected the newly infected users """
+        """Find the users who infected the newly infected users"""
         if (self._old_infection_state == 0).all():
             # Node is root
             return None

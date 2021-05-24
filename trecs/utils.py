@@ -184,7 +184,7 @@ def array_dimensions_match(array1, array2, axis=None):
 
 
 def is_valid_or_none(value, desired_type):
-    """ Returns true if either None or of the specified type"""
+    """Returns true if either None or of the specified type"""
     return value is None or isinstance(value, desired_type)
 
 
@@ -215,5 +215,5 @@ def non_none_values(*args):
 
 
 def all_none(*args):
-    """ Return True if all arguments passed in are None. """
+    """Return True if all arguments passed in are None."""
     return all(a is None for a in args)

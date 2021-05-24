@@ -573,7 +573,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         )
 
     def store_state(self):
-        """ Store the actual user scores in the state history """
+        """Store the actual user scores in the state history"""
         self.state_history.append(np.copy(self.actual_user_scores.value))
 
 
