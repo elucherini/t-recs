@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -535,13 +538,13 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BassModel.draw_diffusion_tree"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.draw_diffusion_tree">[docs]</a>    <span class="k">def</span> <span class="nf">draw_diffusion_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Draw diffusion tree using matplotlib &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Draw diffusion tree using matplotlib&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="s2">&quot;draw_tree&quot;</span><span class="p">):</span>
                 <span class="n">metric</span><span class="o">.</span><span class="n">draw_tree</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BassModel.get_structural_virality"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.get_structural_virality">[docs]</a>    <span class="k">def</span> <span class="nf">get_structural_virality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return the value of the structural virality metric &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the value of the structural virality metric&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="s2">&quot;get_structural_virality&quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">metric</span><span class="o">.</span><span class="n">get_structural_virality</span><span class="p">()</span>
