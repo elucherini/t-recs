@@ -42,7 +42,7 @@ class BaseObservable(ABC):
     """Observable mixin for the observer design pattern."""
 
     def get_observable(self, **kwargs):
-        """ Returns the value of this observable as a dict """
+        """Returns the value of this observable as a dict"""
         data = kwargs.pop("data", None)
         if data is None:
             raise ValueError("Argument `data` cannot be None")
@@ -55,7 +55,7 @@ class BaseObservable(ABC):
 
     @abstractmethod
     def observe(self, *args, **kwargs):
-        """ Abstract method that should involve "recording" the observable """
+        """Abstract method that should involve "recording" the observable"""
 
 
 class BaseComponent(BaseObservable, VerboseMode, ABC):
@@ -70,7 +70,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         self.state_history.append(init_value)
 
     def get_component_state(self):
-        """ Return the history of the component's values as a dictionary """
+        """Return the history of the component's values as a dictionary"""
         return self.get_observable(data=self.state_history)
 
     def observe(self, state, copy=True):  # pylint: disable=arguments-differ
@@ -83,7 +83,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
         self.state_history.append(to_append)
 
     def get_timesteps(self):
-        """ Get the number of timesteps in the state history """
+        """Get the number of timesteps in the state history"""
         return len(self.state_history)
 
 
@@ -146,7 +146,7 @@ class Component(BaseComponent):
         return self.current_state.shape
 
     def store_state(self):
-        """ Store a copy of the component's value in the state history """
+        """Store a copy of the component's value in the state history"""
         self.observe(self.current_state, copy=True)
 
 

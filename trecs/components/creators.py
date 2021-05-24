@@ -77,7 +77,9 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         # general input checks
         if actual_creator_profiles is not None:
             if not isinstance(actual_creator_profiles, (list, np.ndarray, sp.spmatrix)):
-                raise TypeError("actual_creator_profiles must be a list or numpy.ndarray")
+                raise TypeError(
+                    "actual_creator_profiles must be a list, numpy.ndarray, or scipy sparse matrix"
+                )
         if actual_creator_profiles is None and size is None:
             raise ValueError("actual_creator_profiles and size can't both be None")
         if actual_creator_profiles is None and not isinstance(size, tuple):
@@ -97,6 +99,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         BaseComponent.__init__(
             self, verbose=verbose, init_value=self.actual_creator_profiles, seed=seed
         )
+        self.rng = Generator(seed=seed)
 
     def generate_items(self):
         """
@@ -116,15 +119,13 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         # This should result in a _binary_ matrix of size (num_creators,)
         if (self.actual_creator_profiles < 0).any() or (self.actual_creator_profiles > 1).any():
             raise ValueError("Creator profile attributes must be between zero and one.")
-        creator_mask = Generator(seed=self.seed).binomial(
+        creator_mask = self.rng.binomial(
             1, self.creation_probability, self.actual_creator_profiles.shape[0]
         )
         chosen_profiles = self.actual_creator_profiles[creator_mask == 1, :]
         # for each creator that will add new items, generate Bernoulli trial
         # for item attributes
-        items = Generator(seed=self.seed).binomial(
-            1, chosen_profiles.reshape(-1), chosen_profiles.size
-        )
+        items = self.rng.binomial(1, chosen_profiles.reshape(-1), chosen_profiles.size)
         return items.reshape(chosen_profiles.shape).T
 
     def update_profiles(self, interactions, items):
@@ -142,5 +143,5 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         # this can be overwritten by a custom creator class
 
     def store_state(self):
-        """ Store the actual creator profiles in the state history """
+        """Store the actual creator profiles in the state history"""
         self.state_history.append(np.copy(self.actual_creator_profiles))

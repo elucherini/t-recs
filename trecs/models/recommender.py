@@ -673,7 +673,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 )
             # update creators if any
             if self.creators is not None:
-                self.creators.update_profiles(interactions, self.items)
+                self.creators.update_profiles(interactions, self.actual_item_attributes)
             # train between steps:
             if train_between_steps:
                 self.train()
