@@ -463,17 +463,17 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         args, kwargs:
             Parameters needed by the model's train function.
 
-        items_shown: :obj:`numpy.ndarray`): A
-            :math:`|U|\\times\\text{num_items_per_iter}` matrix with
+        items_shown: :obj:`numpy.ndarray`
+            A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
 
-        item_attributes: :obj:`numpy.ndarray`):
+        item_attributes: :obj:`numpy.ndarray`
             A :math:`|A|\\times|I|` matrix with item attributes.
 
         Returns
         ---------
             Array of interactions s.t. element interactions_u(t) represents the
-            index of the item selected by user u at time t. Shape: |U|
+            index of the item selected by user u at time t. Shape: |U|x1
 
         Raises
         -------
@@ -482,6 +482,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             If :attr:`interact_with_items` is None and there is not `item`
             parameter.
         """
+        # use custom item interaction function, if provided
         if self.interact_with_items is not None:
             return self.interact_with_items(*args, **kwargs)
         items_shown = kwargs.pop("items_shown", None)
@@ -489,14 +490,12 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if items_shown is None:
             raise ValueError("Items can't be None")
         if not self.repeat_interactions:
+            # scores must be set back later to non-infinite values
+            prev_interacted_scores = self.actual_user_scores.get_item_scores(self.user_interactions)
             # "remove" items that have been interacted with by setting scores to negative infinity
             self.actual_user_scores.set_item_scores_to_value(self.user_interactions, float("-inf"))
         rec_item_scores = self.actual_user_scores.get_item_scores(items_shown)
-        if self.attention_exp != 0:
-            idxs = np.arange(items_shown.shape[1]) + 1
-            multiplier = np.power(idxs, self.attention_exp)
-            # multiply each row by the attention coefficient
-            rec_item_scores = rec_item_scores * multiplier
+        rec_item_scores = self.attention_transform(rec_item_scores)
         sorted_user_preferences = mo.argmax(rec_item_scores, axis=1)
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         # logging information if requested
@@ -514,10 +513,42 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             self.compute_user_scores(item_attributes)
         # record interactions if needed to ensure users don't repeat interactions
         if not self.repeat_interactions:
+            # set scores back to the original scores
+            self.actual_user_scores.set_item_scores_to_value(
+                self.user_interactions, prev_interacted_scores
+            )
             interactions_col = interactions.reshape((-1, 1))
             # append interactions as column of user interactions
             self.user_interactions = np.hstack([self.user_interactions, interactions_col])
         return interactions
+
+    def attention_transform(self, recommended_item_scores):
+        """
+        Transforms a matrix of user-item scores based on a user attention mechanism; for example,
+        because user attention is limited, items at the top of the recommendation list
+        may have a higher effective score than items at the end of the recommendation list.
+
+        Parameters
+        ------------
+            recommended_item_scores: :obj:`numpy.ndarray`
+                A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
+                pre-attention user-item scores.
+
+        Returns
+        ---------
+            recommended_item_scores: :obj:`numpy.ndarray`)
+                A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
+                transformed user-item scores that take into account
+                the positions in the recommendation list.
+        """
+        if self.attention_exp != 0:
+            num_items = recommended_item_scores.shape[1]
+            idxs = np.arange(num_items) + 1
+            multiplier = np.power(idxs, self.attention_exp)
+            # multiply each row by the attention coefficient
+            return recommended_item_scores * multiplier
+        else:
+            return recommended_item_scores
 
     def update_profiles(self, item_attributes):
         """In the case of dynamic user profiles, we update the user's actual

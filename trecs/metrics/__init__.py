@@ -6,6 +6,7 @@ from .measurement import (
     RecSimilarity,
     InteractionSimilarity,
     MSEMeasurement,
+    RMSEMeasurement,
     DiffusionTreeMeasurement,
     StructuralVirality,
     InteractionMeasurement,

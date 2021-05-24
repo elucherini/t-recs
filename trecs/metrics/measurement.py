@@ -452,6 +452,51 @@ class MSEMeasurement(Measurement):
         self.observe((diff ** 2).mean(), copy=False)
 
 
+class RMSEMeasurement(Measurement):
+    """
+    Measures the root mean squared error (RMSE) between real and predicted user scores.
+
+    It can be used to evaluate how accurate the model predictions are.
+
+    This class inherits from :class:`.Measurement`.
+
+    Parameters
+    -----------
+
+        verbose: bool (optional, default: False)
+            If True, enables verbose mode. Disabled by default.
+
+    Attributes
+    -----------
+        Inherited by Measurement: :class:`.Measurement`
+
+        name: str (optional, default: "mse")
+            Name of the measurement component.
+    """
+
+    def __init__(self, verbose=False):
+        Measurement.__init__(self, "rmse", verbose=verbose, init_value=None)
+
+    def measure(self, recommender, **kwargs):
+        """
+        Measures and records the mean squared error between the user preferences
+        predicted by the system and the users' actual preferences.
+
+        Parameters
+        ------------
+            recommender: :class:`~models.recommender.BaseRecommender`
+                Model that inherits from :class:`~models.recommender.BaseRecommender`.
+
+            **kwargs
+                Keyword arguments, one of which must be `interactions`.
+                `interactions` is a non-aggregated array of interactions --
+                that is, an array of length `|U|` s.t. element `u` is the index
+                of the item with which user `u` interacted.
+        """
+        diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
+        self.observe((diff ** 2).mean() ** 0.5, copy=False)
+
+
 class DiffusionTreeMeasurement(Measurement):
     """
     Class that implements an information diffusion tree. The current
