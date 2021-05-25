@@ -1,5 +1,5 @@
 T-RECS (Tool for RecSys Simulation)
-=========
+=====================================
 
 .. image:: https://i.imgur.com/3ZRDVaD.png
   :width: 400
