@@ -1,15 +1,19 @@
 T-RECS (Tool for RecSys Simulation)
-=========
+=====================================
 
 .. image:: https://i.imgur.com/3ZRDVaD.png
   :width: 400
   :alt: Picture of T-Rex next to letters T-RECS
 
-A simulator for sociotechnical systems. More details coming soon.
+A library for using agent-based modeling to perform simulation studies of sociotechnical systems. 
 
-Install
--------
+Installation
+------------
 
+System requirements
+###################
+
+Currently, the simulator has only been tested extensively on MacOS 10.15 and Ubuntu 20.04.
 This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy's `instructions for installing a scientific Python distribution`_.
 
 .. _instructions for installing a scientific Python distribution: https://scipy.org/install.html
@@ -22,11 +26,21 @@ If you do not have Python 3.7+ installed, you can create a new environment with 
 
 To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow `the instructions from this blog post`_. **Note**: you will also need ``pandas`` to run the example notebooks. As of December 2020, we recommend installing ``pandas v1.0.5`` using the command: ``pip install 'pandas==1.0.5'``. This will help avoid package conflicts between ``pandas`` and ``pylint`` if you also plan on contributing to ``trecs`` and running tests.
 
-    .. _the instructions from this blog post: https://medium.com/@nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084
+.. _the instructions from this blog post: https://medium.com/@nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084
 
-Currently, the simulator has only been tested extensively on MacOS 10.15 and Ubuntu 20.04.
+For users
+#########
 
-To install the simulator, you will need the Python package manager, ``pip``. After activating your virtual environment, run the following commands in a terminal:
+To install the simulator, you will need the Python package manager, ``pip``. After activating your virtual environment, run the following command in a terminal:
+
+..  code-block:: bash
+
+  pip install trecs
+
+For developers
+##############
+
+If you'd like to install the latest version of ``trecs`` based on what is currently in the main branch of the repository, run the following commands after activating your virtual environment:
 
 ..  code-block:: bash
 
@@ -34,8 +48,7 @@ To install the simulator, you will need the Python package manager, ``pip``. Aft
   cd t-recs
   pip install -e .
 
-
-The command should automatically install all dependencies.
+Additionally, you may run ``pip install -r requirements-dev.txt`` to install a few additional dependencies that will be useful for linting, testing, etc.
 
 Tutorials
 ----------
