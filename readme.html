@@ -90,7 +90,12 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">T-RECS (Tool for RecSys Simulation)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#system-requirements">System requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#for-users">For users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#for-developers">For developers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#tutorials">Tutorials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-usage">Example usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
@@ -168,25 +173,36 @@
   <div class="section" id="t-recs-tool-for-recsys-simulation">
 <h1>T-RECS (Tool for RecSys Simulation)<a class="headerlink" href="#t-recs-tool-for-recsys-simulation" title="Permalink to this headline">¶</a></h1>
 <a class="reference internal image-reference" href="https://i.imgur.com/3ZRDVaD.png"><img alt="Picture of T-Rex next to letters T-RECS" src="https://i.imgur.com/3ZRDVaD.png" style="width: 400px;" /></a>
-<p>A simulator for sociotechnical systems. More details coming soon.</p>
-<div class="section" id="install">
-<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
-<p>This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy’s <a class="reference external" href="https://scipy.org/install.html">instructions for installing a scientific Python distribution</a>.</p>
+<p>A library for using agent-based modeling to perform simulation studies of sociotechnical systems.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-requirements">
+<h3>System requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline">¶</a></h3>
+<p>Currently, the simulator has only been tested extensively on MacOS 10.15 and Ubuntu 20.04.
+This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy’s <a class="reference external" href="https://scipy.org/install.html">instructions for installing a scientific Python distribution</a>.</p>
 <p>If you do not have Python 3.7+ installed, you can create a new environment with Python 3.7 by running the following command in terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create --name py37 <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
 </pre></div>
 </div>
 <p>To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow <a class="reference external" href="https://medium.com/&#64;nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084">the instructions from this blog post</a>. <strong>Note</strong>: you will also need <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to run the example notebooks. As of December 2020, we recommend installing <code class="docutils literal notranslate"><span class="pre">pandas</span> <span class="pre">v1.0.5</span></code> using the command: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'pandas==1.0.5'</span></code>. This will help avoid package conflicts between <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and <code class="docutils literal notranslate"><span class="pre">pylint</span></code> if you also plan on contributing to <code class="docutils literal notranslate"><span class="pre">trecs</span></code> and running tests.</p>
-<blockquote>
-<div></div></blockquote>
-<p>Currently, the simulator has only been tested extensively on MacOS 10.15 and Ubuntu 20.04.</p>
-<p>To install the simulator, you will need the Python package manager, <code class="docutils literal notranslate"><span class="pre">pip</span></code>. After activating your virtual environment, run the following commands in a terminal:</p>
+</div>
+<div class="section" id="for-users">
+<h3>For users<a class="headerlink" href="#for-users" title="Permalink to this headline">¶</a></h3>
+<p>To install the simulator, you will need the Python package manager, <code class="docutils literal notranslate"><span class="pre">pip</span></code>. After activating your virtual environment, run the following command in a terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install trecs
+</pre></div>
+</div>
+</div>
+<div class="section" id="for-developers">
+<h3>For developers<a class="headerlink" href="#for-developers" title="Permalink to this headline">¶</a></h3>
+<p>If you’d like to install the latest version of <code class="docutils literal notranslate"><span class="pre">trecs</span></code> based on what is currently in the main branch of the repository, run the following commands after activating your virtual environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/elucherini/t-recs.git
 <span class="nb">cd</span> t-recs
 pip install -e .
 </pre></div>
 </div>
-<p>The command should automatically install all dependencies.</p>
+<p>Additionally, you may run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements-dev.txt</span></code> to install a few additional dependencies that will be useful for linting, testing, etc.</p>
+</div>
 </div>
 <div class="section" id="tutorials">
 <h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
