@@ -99,11 +99,17 @@ class RandomRecommender(BaseRecommender):
         **kwargs
     ):
         if kwargs.pop("score_fn", None) is not None:
-            warnings.warn("score_fn cannot be passed to RandomRecommender; user-item scores must be generated randomly.")
+            warnings.warn(
+                "score_fn cannot be passed to RandomRecommender; user-item scores must be generated randomly."
+            )
         if kwargs.pop("user_representation", None) is not None:
-            warnings.warn("user_representation is not relevant for the RandomRecommender; overwriting user_representation.")
+            warnings.warn(
+                "user_representation is not relevant for the RandomRecommender; overwriting user_representation."
+            )
         if kwargs.pop("item_representation", None) is not None:
-            warnings.warn("item_representation is not relevant for the RandomRecommender; overwriting item_representation.")
+            warnings.warn(
+                "item_representation is not relevant for the RandomRecommender; overwriting item_representation."
+            )
 
         num_users, num_items = validate_user_item_inputs(
             num_users,
@@ -116,7 +122,7 @@ class RandomRecommender(BaseRecommender):
             1250,
             # attributes are guaranteed to match due to
             # the fact that we set the item / user representations
-            attributes_must_match=False
+            attributes_must_match=False,
         )
         # items and users will always be zeros; this ensures recommendation in
         # random order due to the "tiebreaking" functionality in random.py

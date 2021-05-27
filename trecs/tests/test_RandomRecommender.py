@@ -101,13 +101,9 @@ class TestRandomRecommender:
             items = np.random.randint(20, 1000)
         if users is None:
             users = np.random.randint(20, 100)
-        r1 = RandomRecommender(
-            seed=seed, num_users=users, num_items=items, record_base_state=True
-        )
+        r1 = RandomRecommender(seed=seed, num_users=users, num_items=items, record_base_state=True)
         r1.add_metrics(MSEMeasurement())
-        r2 = RandomRecommender(
-            seed=seed, num_users=users, num_items=items, record_base_state=True
-        )
+        r2 = RandomRecommender(seed=seed, num_users=users, num_items=items, record_base_state=True)
         r2.add_metrics(MSEMeasurement())
         test_helpers.assert_equal_arrays(r1.items_hat, r2.items_hat)
         test_helpers.assert_equal_arrays(r1.users_hat, r2.users_hat)
@@ -133,7 +129,7 @@ class TestRandomRecommender:
             actual_user_representation=users,
             actual_item_representation=items,
             num_items_per_iter=num_items,
-            seed = 1234 # seed ensures that this test passes deterministically
+            seed=1234,  # seed ensures that this test passes deterministically
         )
 
         model.num_items_per_iter = 1
@@ -147,7 +143,7 @@ class TestRandomRecommender:
         test_helpers.assert_equal_arrays(init_pred_scores, trained_preds)
         test_helpers.assert_equal_arrays(init_pred_scores, np.zeros(trained_preds.shape))
 
-         # assert that recommendations are random between runs
+        # assert that recommendations are random between runs
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(first_rec, second_rec)
 
@@ -170,7 +166,7 @@ class TestRandomRecommender:
             actual_user_representation=users.copy(),
             actual_item_representation=items.copy(),
             num_items_per_iter=num_items,
-            seed = 1234 # ensures the test passes deterministically
+            seed=1234,  # ensures the test passes deterministically
         )
         model.run(1)
 
@@ -181,7 +177,6 @@ class TestRandomRecommender:
         second_rec = model.recommend()
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(first_rec, second_rec)
-
 
     def test_creator_items(self):
         users = np.random.randint(10, size=(100, 10))
