@@ -89,7 +89,7 @@ class PopularityRecommender(BaseRecommender):
         >>> pr = PopularityRecommender(num_users=1200, num_items=5000)
         >>> pr.users_hat.shape
         (1200, 1) # <-- 1200 users
-        >>> cf.items.shape
+        >>> pr.items.shape
         (1, 5000)
 
         Or by generating representations for items (user representation can
@@ -99,9 +99,9 @@ class PopularityRecommender(BaseRecommender):
 
             >>> item_representation = np.random.randint(11, size=(1, 200))
             >>> pr = PopularityRecommender(item_representation=item_representation)
-            >>> cf.items.shape
+            >>> pr.items.shape
             (1, 200)
-            >>> cf.users_hat.shape
+            >>> pr.users_hat.shape
             (100, 1)
 
         Note that all arguments passed in at initialization must be consistent -
