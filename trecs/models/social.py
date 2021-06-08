@@ -217,7 +217,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
                 "item representation"
             )
             raise ValueError(error_msg)
-        interactions_per_user = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
+        interactions_per_user = sp.lil_matrix((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
         if mo.any_dense(self.items_hat.value):
             # only add dense to dense and sparse to sparse
