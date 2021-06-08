@@ -1,21 +1,17 @@
 """
-Popularity-based recommender system
+Random recommendation system, where users are shown items that are uniformly randomly
+sampled from the full item catalog
 """
 import numpy as np
-from trecs.metrics import MSEMeasurement
+import warnings
+
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
 
-class PopularityRecommender(BaseRecommender):
+class RandomRecommender(BaseRecommender):
     """
-    A customizable popularity recommendation system.
-
-    With the popularity recommender system, users are presented items that are
-    popular in the system. The popularity of an item is measured by the number
-    of times users interacted with that item in the past. In this
-    implementation, items do not expire and, therefore, the system does not base
-    its choice on how recent the items are.
+    A recommender system that randomly recommends items to each user.
 
     Item attributes are represented by a :math:`1\\times|I|` array, where
     :math:`|I|` is the number of items in the system. This array stores the
@@ -34,15 +30,6 @@ class PopularityRecommender(BaseRecommender):
 
         num_items: int (optional, default: 1250)
             The number of items :math:`|I|` in the system.
-
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A :math:`|A|\\times|I|` matrix representing the similarity between
-            each item and attribute. If this is not None, `num_items` is ignored.
-
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
-            A :math:`|U|\\times|A|` matrix representing the similarity between
-            each item and attribute, as interpreted by the system. If this is not
-            None, `num_users` is ignored.
 
         actual_user_representation: :obj:`numpy.ndarray` or None or \
                             :class:`~components.users.Users` (optional, default: None)
@@ -74,41 +61,28 @@ class PopularityRecommender(BaseRecommender):
 
     Examples
     ---------
-        PopularityRecommender can be instantiated with no arguments -- in which
+        RandomRecommender can be instantiated with no arguments -- in which
         case, it will be initialized with the default parameters.
 
-        >>> pr = PopularityRecommender()
-        >>> pr.users_hat.shape
+        >>> rr = RandomRecommender()
+        >>> rr.users_hat.shape
         (100, 1)   # <-- 100 users (default)
-        >>> pr.items.shape
+        >>> rr.items.shape
         (1, 1250) # <-- 1250 items (default)
 
         This class can be customized by defining the number of users and/or items
         in the system.
 
-        >>> pr = PopularityRecommender(num_users=1200, num_items=5000)
-        >>> pr.users_hat.shape
+        >>> rr = RandomRecommender(num_users=1200, num_items=5000)
+        >>> rr.users_hat.shape
         (1200, 1) # <-- 1200 users
-        >>> pr.items.shape
+        >>> rr.items.shape
         (1, 5000)
 
-        Or by generating representations for items (user representation can
-        also be defined, but they should always be set to all ones). In the
-        example below, items are uniformly distributed and have had between 0
-        and 10 interactions each.
-
-            >>> item_representation = np.random.randint(11, size=(1, 200))
-            >>> pr = PopularityRecommender(item_representation=item_representation)
-            >>> pr.items.shape
-            (1, 200)
-            >>> pr.users_hat.shape
-            (100, 1)
-
-        Note that all arguments passed in at initialization must be consistent -
-        otherwise, an error is thrown. For example, one cannot pass in
-        `num_users=200` but have `user_representation.shape` be `(300, 1)`.
-        Likewise, one cannot pass in `num_items=1000` but have
-        `item_representation.shape` be `(1, 500)`.
+        If the arguments `score_fn`, `user_representation`, or `item_representation`
+        are passed in, they will be ignored, since the random recommender relies on
+        these representations. Note that all arguments passed in at initialization
+        must be consistent - otherwise, an error is thrown.
 
     """
 
@@ -116,8 +90,6 @@ class PopularityRecommender(BaseRecommender):
         self,
         num_users=None,
         num_items=None,
-        user_representation=None,
-        item_representation=None,
         actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
@@ -126,27 +98,42 @@ class PopularityRecommender(BaseRecommender):
         num_items_per_iter=10,
         **kwargs
     ):
-        num_users, num_items, num_attributes = validate_user_item_inputs(
+        if kwargs.pop("score_fn", None) is not None:
+            warnings.warn(
+                "score_fn cannot be passed to RandomRecommender; user-item scores must be generated randomly."
+            )
+        if kwargs.pop("user_representation", None) is not None:
+            warnings.warn(
+                "user_representation is not relevant for the RandomRecommender; overwriting user_representation."
+            )
+        if kwargs.pop("item_representation", None) is not None:
+            warnings.warn(
+                "item_representation is not relevant for the RandomRecommender; overwriting item_representation."
+            )
+
+        num_users, num_items = validate_user_item_inputs(
             num_users,
             num_items,
-            user_representation,
-            item_representation,
+            None,
+            None,
             actual_user_representation,
             actual_item_representation,
             100,
             1250,
-            num_attributes=1,
+            # attributes are guaranteed to match due to
+            # the fact that we set the item / user representations
+            attributes_must_match=False,
         )
-        # num_attributes should always be 1
-        if item_representation is None:
-            item_representation = np.zeros((num_attributes, num_items), dtype=int)
+        # items and users will always be zeros; this ensures recommendation in
+        # random order due to the "tiebreaking" functionality in random.py
+        item_representation = np.zeros((1, num_items), dtype=int)
+        user_representation = np.zeros((num_users, 1), dtype=int)
+
         # if the actual item representation is not specified, we assume
         # that the recommender system's beliefs about the item attributes
         # are the same as the "true" item attributes
         if actual_item_representation is None:
             actual_item_representation = item_representation.copy()
-        if user_representation is None:
-            user_representation = np.ones((num_users, num_attributes), dtype=int)
 
         super().__init__(
             user_representation,
@@ -163,13 +150,15 @@ class PopularityRecommender(BaseRecommender):
         )
 
     def _update_internal_state(self, interactions):
-        histogram = np.zeros(self.num_items, dtype=int)
-        np.add.at(histogram, interactions, 1)
-        self.items_hat.value += histogram
+        """
+        Internal representation of items and users does not change based
+        on interactions.
+        """
+        pass
 
     def process_new_items(self, new_items):
         """
-        The popularity of any new items is always zero.
+        The representation of any new items is always zero.
 
         Parameters:
         ------------
