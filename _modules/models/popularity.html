@@ -246,7 +246,7 @@
 <span class="sd">        &gt;&gt;&gt; pr = PopularityRecommender(num_users=1200, num_items=5000)</span>
 <span class="sd">        &gt;&gt;&gt; pr.users_hat.shape</span>
 <span class="sd">        (1200, 1) # &lt;-- 1200 users</span>
-<span class="sd">        &gt;&gt;&gt; cf.items.shape</span>
+<span class="sd">        &gt;&gt;&gt; pr.items.shape</span>
 <span class="sd">        (1, 5000)</span>
 
 <span class="sd">        Or by generating representations for items (user representation can</span>
@@ -256,9 +256,9 @@
 
 <span class="sd">            &gt;&gt;&gt; item_representation = np.random.randint(11, size=(1, 200))</span>
 <span class="sd">            &gt;&gt;&gt; pr = PopularityRecommender(item_representation=item_representation)</span>
-<span class="sd">            &gt;&gt;&gt; cf.items.shape</span>
+<span class="sd">            &gt;&gt;&gt; pr.items.shape</span>
 <span class="sd">            (1, 200)</span>
-<span class="sd">            &gt;&gt;&gt; cf.users_hat.shape</span>
+<span class="sd">            &gt;&gt;&gt; pr.users_hat.shape</span>
 <span class="sd">            (100, 1)</span>
 
 <span class="sd">        Note that all arguments passed in at initialization must be consistent -</span>

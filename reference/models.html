@@ -246,7 +246,7 @@ in the system.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pr</span> <span class="o">=</span> <span class="n">PopularityRecommender</span><span class="p">(</span><span class="n">num_users</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">num_items</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pr</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(1200, 1) # &lt;-- 1200 users</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">shape</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pr</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(1, 5000)</span>
 </pre></div>
 </div>
@@ -256,9 +256,9 @@ example below, items are uniformly distributed and have had between 0
 and 10 interactions each.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">item_representation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pr</span> <span class="o">=</span> <span class="n">PopularityRecommender</span><span class="p">(</span><span class="n">item_representation</span><span class="o">=</span><span class="n">item_representation</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">shape</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pr</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(1, 200)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cf</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">shape</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pr</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(100, 1)</span>
 </pre></div>
 </div>
