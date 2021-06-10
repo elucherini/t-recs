@@ -13,10 +13,10 @@ Interaction Measurement
 .. autoclass:: metrics.measurement.InteractionMeasurement
   :members:
 
-Homogeneity Measurement
+Interaction Spread
 ------------------------
 
-.. autoclass:: metrics.measurement.HomogeneityMeasurement
+.. autoclass:: metrics.measurement.InteractionSpread
   :members:
 
 MSE Measurement
