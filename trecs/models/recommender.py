@@ -138,6 +138,15 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             with, so that it won't be presented to the user again if
             `repeated_items` are not allowed.
 
+        items_shown: :obj:`numpy.ndarray`
+            A :math:`|U| \\times \\text{num_items_per_iter}` array representing the
+            indices of the items that each user was shown (i.e., their recommendations)
+            from the most recent timestep.
+
+        interactions: :obj:`numpy.ndarray`
+            A :math:`|U| \\times 1` array representing the indices of the items
+            that each user interacted with at the most recent time step.
+
         score_fn: callable
             Function that is used to calculate each user's predicted scores for
             each candidate item. The score function should take as input
@@ -177,8 +186,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         # Initialize measurements
         MeasurementModule.__init__(self)
-        if measurements is not None:
-            self.add_metrics(*measurements)
         # init the recommender system's internal representation of users
         # and items
         self.users_hat = PredictedUserProfiles(users_hat)
@@ -196,6 +203,12 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
         self.probabilistic_recommendations = probabilistic_recommendations
+
+        # these variables hold the indices of the items users were shown
+        # and the indices of the items users interacted with at the most
+        # recent timestep
+        self.items_shown = np.empty((num_users, 0))
+        self.interactions = np.empty((num_users, 0))
 
         if not is_valid_or_none(num_users, int):
             raise TypeError("num_users must be an int")
@@ -257,6 +270,11 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.random_state = Generator(seed)
         # Matrix keeping track of the items consumed by each user
         self.indices = np.tile(np.arange(num_items), (num_users, 1))
+
+        # initial metrics measurements (done at the end
+        # when the rest of the initial state has been initialized)
+        self.measure_content()
+
         if self.is_verbose():
             self.log("Recommender system ready")
             self.log(f"Num items: {self.num_items}")
@@ -652,32 +670,34 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 if self.expand_items_per_iter:
                     # expand set of items recommended per iteration
                     self.set_num_items_per_iter("all")
-            item_idxs = self.recommend(
+            self.items_shown = self.recommend(
                 startup=startup,
                 random_items_per_iter=random_items_per_iter,
                 vary_random_items_per_iter=vary_random_items_per_iter,
                 repeated_items=repeated_items,
             )
             # important: we use the true item attributes to get user feedback
-            interactions = self.users.get_user_feedback(
-                items_shown=item_idxs, item_attributes=self.actual_item_attributes
+            self.interactions = self.users.get_user_feedback(
+                items_shown=self.items_shown, item_attributes=self.actual_item_attributes
             )
             if not repeated_items:
-                self.indices[self.users.user_vector, interactions] = -1
-            self._update_internal_state(interactions)
+                self.indices[self.users.user_vector, self.interactions] = -1
+            self._update_internal_state(self.interactions)
             if self.is_verbose():
-                self.log("Recorded user interaction:\n" + str(interactions))
+                self.log("Recorded user interaction:\n" + str(self.interactions))
                 self.log(
                     "System updates user profiles based on last interaction:\n"
                     + str(self.users_hat)
                 )
             # update creators if any
             if self.creators is not None:
-                self.creators.update_profiles(interactions, self.actual_item_attributes)
+                self.creators.update_profiles(self.interactions, self.actual_item_attributes)
             # train between steps:
             if train_between_steps:
                 self.train()
-            self.measure_content(interactions, item_idxs, step=timestep)
+            # record state and compute metrics
+            self.record_state()
+            self.measure_content()
 
     def startup_and_train(self, timesteps=50, no_new_items=False):
         """
@@ -796,24 +816,5 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             state["actual_user_scores"].pop(0)
         return state
 
-    def measure_content(self, interactions, items_shown, step):
-        """
-        Calls method in the :class:`Measurements` module to record metrics.
-        For more details, see the :class:`Measurements` class and its measure
-        method. Also stores state for each variable being recorded.
 
-        Parameters
-        -----------
-            interactions: :obj:`numpy.ndarray`
-                Matrix of interactions per users at a given time step.
 
-            items_shown: :obj:`numpy.ndarray`
-                Matrix of item indices shown to each user at a given time step.
-
-            step: int
-                Step on which the recorded interactions refers to.
-        """
-        for metric in self.metrics:
-            metric.measure(self, step=step, interactions=interactions, items_shown=items_shown)
-        for component in self._system_state:
-            component.store_state()
