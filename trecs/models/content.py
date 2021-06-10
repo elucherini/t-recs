@@ -2,12 +2,7 @@
 import numpy as np
 import scipy.sparse as sp
 import trecs.matrix_ops as mo
-from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
-from trecs.utils import (
-    non_none_values,
-    is_valid_or_none,
-)
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 

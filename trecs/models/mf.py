@@ -5,7 +5,6 @@ import numpy as np
 from lenskit.algorithms import als
 import pandas as pd
 import warnings
-from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.validate import validate_user_item_inputs
 from trecs.utils import non_none_values
