@@ -160,7 +160,7 @@ class RandomRecommender(BaseRecommender):
         """
         The representation of any new items is always zero.
 
-        Parameters:
+        Parameters
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being

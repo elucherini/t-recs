@@ -211,7 +211,7 @@ class InteractionMeasurement(Measurement):
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
                 `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index
+                that is, an array of length :math:`|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
         if recommender.interactions.size == 0:
@@ -268,9 +268,9 @@ class InteractionSimilarity(Measurement):
                 :class:`~models.recommender.BaseRecommender`.
 
             **kwargs
-                Keyword arguments, one of which must be `interactions`, a |U| x
-                1 array that contains the index of the items that each user has
-                interacted with at this timestep.
+                Keyword arguments, one of which must be `interactions`, a
+                :math:`|U|\\times 1` array that contains the index of the items that
+                each user has interacted with at this timestep.
         """
         similarity = 0
         interactions = recommender.interactions
@@ -334,9 +334,9 @@ class RecSimilarity(Measurement):
                 :class:`~models.recommender.BaseRecommender`.
 
             **kwargs
-                Keyword arguments, one of which must be `items_shown`, a |U| x
-                num_items_per_iter matrix that contains the indices of every
-                item shown to every user at a particular timestep.
+                Keyword arguments, one of which must be `items_shown`, a
+                :math:`|U|\\times\\text{num_items_per_iter}` matrix that contains the
+                indices of every item shown to every user at a particular timestep.
         """
         similarity = 0
         items_shown = recommender.items_shown
@@ -399,7 +399,7 @@ class InteractionSpread(InteractionMeasurement):
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
                 `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index
+                that is, an array of length :math:`|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
         interactions = recommender.interactions
@@ -455,7 +455,7 @@ class MSEMeasurement(Measurement):
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
                 `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index
+                that is, an array of length :math:`|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
@@ -500,7 +500,7 @@ class RMSEMeasurement(Measurement):
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
                 `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index
+                that is, an array of length :math:`|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
@@ -622,7 +622,7 @@ class DiffusionTreeMeasurement(Measurement):
             **kwargs
                 Keyword arguments, one of which must be `interactions`.
                 `interactions` is a non-aggregated array of interactions --
-                that is, an array of length `|U|` s.t. element `u` is the index
+                that is, an array of length :math:`|U|` s.t. element `u` is the index
                 of the item with which user `u` interacted.
         """
         self._manage_new_infections(recommender.users_hat.value, recommender.infection_state)
@@ -718,9 +718,9 @@ class AverageFeatureScoreRange(Measurement):
                 :class:`~models.recommender.BaseRecommender`.
 
             **kwargs
-                Keyword arguments, one of which must be `items_shown`, a |U| x
-                num_items_per_iter matrix that contains the indices of every
-                item shown to every user at a particular timestep.
+                Keyword arguments, one of which must be `items_shown`, a
+                :math:`|U|\\times\\text{num_items_per_iter}` matrix that contains the
+                indices of every item shown to every user at a particular timestep.
         """
         items_shown = recommender.items_shown
         if items_shown.size == 0:
