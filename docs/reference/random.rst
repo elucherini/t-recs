@@ -2,7 +2,7 @@ Random Generators
 ===================
 
 Random Number Generator
-----------
+-----------------------
 
 .. autoclass:: trecs.random.generators.Generator
   :members:

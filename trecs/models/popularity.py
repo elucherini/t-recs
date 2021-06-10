@@ -170,7 +170,7 @@ class PopularityRecommender(BaseRecommender):
         """
         The popularity of any new items is always zero.
 
-        Parameters:
+        Parameters
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being

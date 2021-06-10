@@ -229,7 +229,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         New items are simply represented as zeros, since they have not received
         interactions from any users yet.
 
-        Parameters:
+        Parameters
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being

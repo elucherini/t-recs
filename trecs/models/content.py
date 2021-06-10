@@ -208,7 +208,7 @@ class ContentFiltering(BaseRecommender):
         of the new items; therefore, when new items are created,
         we simply return the new item attributes.
 
-        Parameters:
+        Parameters
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being

@@ -34,7 +34,7 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
         -------------
 
         item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
-            A matrix with |U| rows that specifies the indices of items
+            A matrix with :math:`|U|` rows that specifies the indices of items
             requested for each user.
 
         """
@@ -141,7 +141,7 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
         Parameters
         -----------
             item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
-                A matrix with |U| rows that specifies the indices of items
+                A matrix with :math:`|U|` rows that specifies the indices of items
                 requested for each user.
 
             value: float
@@ -477,7 +477,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         Returns
         ---------
             Array of interactions s.t. element interactions_u(t) represents the
-            index of the item selected by user u at time t. Shape: |U|x1
+            index of the item selected by user u at time t. Shape: :math:`|U|\\times 1`
 
         Raises
         -------
