@@ -70,9 +70,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             item profile. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
-
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
@@ -137,7 +134,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         actual_user_representation=None,
         actual_item_representation=None,
         probabilistic_recommendations=False,
-        verbose=False,
         num_items_per_iter=10,
         seed=None,
         **kwargs
@@ -194,7 +190,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
             seed=seed,
-            verbose=verbose,
             **kwargs
         )
 

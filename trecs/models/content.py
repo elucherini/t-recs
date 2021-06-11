@@ -58,9 +58,6 @@ class ContentFiltering(BaseRecommender):
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
-
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
@@ -127,7 +124,6 @@ class ContentFiltering(BaseRecommender):
         actual_item_representation=None,
         probabilistic_recommendations=False,
         seed=None,
-        verbose=False,
         num_items_per_iter=10,
         **kwargs
     ):
@@ -170,7 +166,6 @@ class ContentFiltering(BaseRecommender):
             num_items,
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
-            verbose=verbose,
             seed=seed,
             **kwargs
         )
