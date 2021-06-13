@@ -198,4 +198,3 @@ class SystemStateModule:  # pylint: disable=too-few-public-methods
         """
         for component in self._system_state:
             component.store_state()
-

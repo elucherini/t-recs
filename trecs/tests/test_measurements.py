@@ -109,9 +109,7 @@ class TestInteractionSpread:
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), InteractionSpread(), timesteps)
-        MeasurementUtils.test_generic_metric(
-            ContentFiltering(), InteractionSpread(), timesteps
-        )
+        MeasurementUtils.test_generic_metric(ContentFiltering(), InteractionSpread(), timesteps)
 
 
 class TestRecSimilarity:
