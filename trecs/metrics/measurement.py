@@ -74,7 +74,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.measurement_history.append(to_append)
 
     @abstractmethod
-    def measure(self, recommender, **kwargs):
+    def measure(self, recommender):
         """Function that should calculate some outcome of interest of the system
         at the current timestep
         """
@@ -144,7 +144,6 @@ class MeasurementModule:  # pylint: disable=too-few-public-methods
             metric.measure(self)
 
 
-
 class InteractionMeasurement(Measurement):
     """
     Keeps track of the interactions between users and items.
@@ -207,12 +206,6 @@ class InteractionMeasurement(Measurement):
         ------------
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions --
-                that is, an array of length :math:`|U|` s.t. element `u` is the index
-                of the item with which user `u` interacted.
         """
         if recommender.interactions.size == 0:
             # at beginning of simulation, there are no interactions
@@ -266,16 +259,11 @@ class InteractionSimilarity(Measurement):
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from
                 :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `interactions`, a
-                :math:`|U|\\times 1` array that contains the index of the items that
-                each user has interacted with at this timestep.
         """
         similarity = 0
         interactions = recommender.interactions
         if interactions.size == 0:
-            self.observe(None) # no interactions yet
+            self.observe(None)  # no interactions yet
             return
 
         if self.interaction_hist is None:
@@ -332,11 +320,6 @@ class RecSimilarity(Measurement):
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from
                 :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `items_shown`, a
-                :math:`|U|\\times\\text{num_items_per_iter}` matrix that contains the
-                indices of every item shown to every user at a particular timestep.
         """
         similarity = 0
         items_shown = recommender.items_shown
@@ -395,15 +378,9 @@ class InteractionSpread(InteractionMeasurement):
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from
                 :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions --
-                that is, an array of length :math:`|U|` s.t. element `u` is the index
-                of the item with which user `u` interacted.
         """
         interactions = recommender.interactions
-        if interactions.size == 0: # initially, there are no interactions
+        if interactions.size == 0:  # initially, there are no interactions
             self.observe(None)
             return
         histogram = self._generate_interaction_histogram(
@@ -442,7 +419,7 @@ class MSEMeasurement(Measurement):
     def __init__(self, verbose=False):
         Measurement.__init__(self, "mse", verbose=verbose)
 
-    def measure(self, recommender, **kwargs):
+    def measure(self, recommender):
         """
         Measures and records the mean squared error between the user preferences
         predicted by the system and the users' actual preferences.
@@ -451,12 +428,6 @@ class MSEMeasurement(Measurement):
         ------------
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions --
-                that is, an array of length :math:`|U|` s.t. element `u` is the index
-                of the item with which user `u` interacted.
         """
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
@@ -487,7 +458,7 @@ class RMSEMeasurement(Measurement):
     def __init__(self, verbose=False):
         Measurement.__init__(self, "rmse", verbose=verbose)
 
-    def measure(self, recommender, **kwargs):
+    def measure(self, recommender):
         """
         Measures and records the mean squared error between the user preferences
         predicted by the system and the users' actual preferences.
@@ -496,12 +467,6 @@ class RMSEMeasurement(Measurement):
         ------------
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions --
-                that is, an array of length :math:`|U|` s.t. element `u` is the index
-                of the item with which user `u` interacted.
         """
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean() ** 0.5, copy=False)
@@ -618,12 +583,6 @@ class DiffusionTreeMeasurement(Measurement):
         ------------
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `interactions`.
-                `interactions` is a non-aggregated array of interactions --
-                that is, an array of length :math:`|U|` s.t. element `u` is the index
-                of the item with which user `u` interacted.
         """
         self._manage_new_infections(recommender.users_hat.value, recommender.infection_state)
         self.observe(self.diffusion_tree.number_of_nodes(), copy=False)
@@ -716,11 +675,6 @@ class AverageFeatureScoreRange(Measurement):
             recommender: :class:`~models.recommender.BaseRecommender`
                 Model that inherits from
                 :class:`~models.recommender.BaseRecommender`.
-
-            **kwargs
-                Keyword arguments, one of which must be `items_shown`, a
-                :math:`|U|\\times\\text{num_items_per_iter}` matrix that contains the
-                indices of every item shown to every user at a particular timestep.
         """
         items_shown = recommender.items_shown
         if items_shown.size == 0:
