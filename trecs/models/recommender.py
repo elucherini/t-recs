@@ -273,7 +273,8 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         # initial metrics measurements (done at the end
         # when the rest of the initial state has been initialized)
-        self.measure_content()
+        if measurements is not None:
+            self.add_metrics(*measurements)
 
         if self.is_verbose():
             self.log("Recommender system ready")
@@ -815,6 +816,3 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         ):
             state["actual_user_scores"].pop(0)
         return state
-
-
-
