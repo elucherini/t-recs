@@ -163,7 +163,6 @@
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">from</span> <span class="nn">networkx</span> <span class="kn">import</span> <span class="n">wiener_index</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">from</span> <span class="nn">trecs.logging</span> <span class="kn">import</span> <span class="n">VerboseMode</span>
 <span class="kn">from</span> <span class="nn">trecs.base</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseObservable</span><span class="p">,</span>
@@ -181,9 +180,6 @@
 <span class="sd">        verbose: bool (optional, default: False)</span>
 <span class="sd">            If True, enables verbose mode. Disabled by default.</span>
 
-<span class="sd">        init_value: array_like or None or int or float (optional, default: None)</span>
-<span class="sd">            The value of the metric before the start of the simulation.</span>
-
 <span class="sd">    Attributes</span>
 <span class="sd">    -----------</span>
 
@@ -194,13 +190,10 @@
 <span class="sd">            Name of the measurement quantity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">VerboseMode</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measurement_history</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init_value</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">)):</span>
-            <span class="n">init_value</span> <span class="o">=</span> <span class="n">init_value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">measurement_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">init_value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Measurement.get_measurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement.get_measurement">[docs]</a>    <span class="k">def</span> <span class="nf">get_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -237,7 +230,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">measurement_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_append</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Measurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.Measurement.measure">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Function that should calculate some outcome of interest of the system</span>
 <span class="sd">        at the current timestep</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
@@ -293,6 +286,18 @@
         <span class="n">register_observables</span><span class="p">(</span>
             <span class="n">observer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">observable_type</span><span class="o">=</span><span class="n">Measurement</span>
         <span class="p">)</span>
+        <span class="c1"># after adding a new metric, we always perform an initial measurement</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">metric</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">measure_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calls method in the :class:`Measurements` module to record metrics.</span>
+<span class="sd">        For more details, see the :class:`Measurements` class and its measure</span>
+<span class="sd">        method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
+            <span class="n">metric</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="InteractionMeasurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionMeasurement">[docs]</a><span class="k">class</span> <span class="nc">InteractionMeasurement</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
@@ -317,7 +322,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;interaction_histogram&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_generate_interaction_histogram</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span><span class="p">):</span>
@@ -348,7 +353,7 @@
         <span class="k">assert</span> <span class="n">histogram</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">num_users</span>
         <span class="k">return</span> <span class="n">histogram</span>
 
-<div class="viewcode-block" id="InteractionMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures and stores a histogram of the number of interactions per</span>
 <span class="sd">        item at the given timestep.</span>
@@ -357,22 +362,19 @@
 <span class="sd">        ------------</span>
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`.</span>
-<span class="sd">                `interactions` is a non-aggregated array of interactions --</span>
-<span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
-<span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">interactions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interactions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">recommender</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># at beginning of simulation, there are no interactions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span>
-            <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span>
+            <span class="n">recommender</span><span class="o">.</span><span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span>
         <span class="p">)</span>
-        <span class="c1"># histogram[::-1].sort()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">InteractionSimilarity</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionSimilarity"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionSimilarity">[docs]</a><span class="k">class</span> <span class="nc">InteractionSimilarity</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keeps track of the average Jaccard similarity between interactions with items</span>
 <span class="sd">    between pairs of users at each timestep. The pairs of users must be passed</span>
@@ -399,9 +401,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pairs</span> <span class="o">=</span> <span class="n">pairs</span>
         <span class="c1"># will eventually be a matrix where each row corresponds to 1 user</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interaction_hist</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionSimilarity.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionSimilarity.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures the average Jaccard index of items that pairs of users have interacted</span>
 <span class="sd">        with in the system. Intuitively, a higher average Jaccard index corresponds to</span>
@@ -413,19 +415,12 @@
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from</span>
 <span class="sd">                :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`, a |U| x</span>
-<span class="sd">                1 array that contains the index of the items that each user has</span>
-<span class="sd">                interacted with at this timestep.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">similarity</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">interactions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interactions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">interactions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;interactions must be passed in to InteractionSimilarity&#39;s `measure` &quot;</span>
-                <span class="s2">&quot;method as a keyword argument&quot;</span>
-            <span class="p">)</span>
+        <span class="n">interactions</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">interactions</span>
+        <span class="k">if</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># no interactions yet</span>
+            <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interaction_hist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interaction_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -439,10 +434,10 @@
             <span class="n">common</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemset_1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">itemset_2</span><span class="p">))</span>
             <span class="n">union</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemset_1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">itemset_2</span><span class="p">))</span>
             <span class="n">similarity</span> <span class="o">+=</span> <span class="n">common</span> <span class="o">/</span> <span class="n">union</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">similarity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">similarity</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">RecSimilarity</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
+<div class="viewcode-block" id="RecSimilarity"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.RecSimilarity">[docs]</a><span class="k">class</span> <span class="nc">RecSimilarity</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keeps track of the average Jaccard similarity between items seen by pairs</span>
 <span class="sd">    of users at each timestep. The pairs of users must be passed in by the</span>
@@ -467,9 +462,9 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rec_similarity&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pairs</span> <span class="o">=</span> <span class="n">pairs</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="RecSimilarity.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.RecSimilarity.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures the average Jaccard index of items shown to pairs of users in</span>
 <span class="sd">        the system. Intuitively, a higher average Jaccard index corresponds to</span>
@@ -481,31 +476,26 @@
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from</span>
 <span class="sd">                :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `items_shown`, a |U| x</span>
-<span class="sd">                num_items_per_iter matrix that contains the indices of every</span>
-<span class="sd">                item shown to every user at a particular timestep.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">similarity</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;items_shown must be passed in to RecSimilarity&#39;s `measure` &quot;</span>
-                <span class="s2">&quot;method as a keyword argument&quot;</span>
-            <span class="p">)</span>
+        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">items_shown</span>
+        <span class="k">if</span> <span class="n">items_shown</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># at the beginning of the simulation, there are no recommendations yet</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairs</span><span class="p">:</span>
             <span class="n">itemset_1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">items_shown</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:])</span>
             <span class="n">itemset_2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">items_shown</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:])</span>
             <span class="n">common</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemset_1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">itemset_2</span><span class="p">))</span>
             <span class="n">union</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemset_1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">itemset_2</span><span class="p">))</span>
             <span class="n">similarity</span> <span class="o">+=</span> <span class="n">common</span> <span class="o">/</span> <span class="n">union</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">similarity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">similarity</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="HomogeneityMeasurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.HomogeneityMeasurement">[docs]</a><span class="k">class</span> <span class="nc">HomogeneityMeasurement</span><span class="p">(</span><span class="n">InteractionMeasurement</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionSpread"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionSpread">[docs]</a><span class="k">class</span> <span class="nc">InteractionSpread</span><span class="p">(</span><span class="n">InteractionMeasurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Measures the homogeneity of the interactions between users and items.</span>
+<span class="sd">    Measures the diversity of the interactions between users and items.</span>
 
 <span class="sd">    Specifically, at each timestep, it measures whether interactions are spread</span>
 <span class="sd">    among many items or only a few items.</span>
@@ -522,7 +512,7 @@
 <span class="sd">    -----------</span>
 <span class="sd">        Inherited by InteractionMeasurement: :class:`.InteractionMeasurement`</span>
 
-<span class="sd">        name: str (optional, default: &quot;homogeneity&quot;)</span>
+<span class="sd">        name: str (optional, default: &quot;interaction_spread&quot;)</span>
 <span class="sd">            Name of the measurement component.</span>
 
 <span class="sd">        _old_histogram: None, list, array_like</span>
@@ -532,11 +522,11 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">histogram</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">InteractionMeasurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;homogeneity&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">InteractionMeasurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;interaction_spread&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HomogeneityMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.HomogeneityMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionSpread.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.InteractionSpread.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Measures the homogeneity of user interactions -- that is, whether</span>
+<span class="sd">        Measures the diversity of user interactions -- that is, whether</span>
 <span class="sd">        interactions are spread among many items or only a few items.</span>
 
 <span class="sd">        Parameters</span>
@@ -544,15 +534,11 @@
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from</span>
 <span class="sd">                :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`.</span>
-<span class="sd">                `interactions` is a non-aggregated array of interactions --</span>
-<span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
-<span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">interactions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interactions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span>
+        <span class="n">interactions</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">interactions</span>
+        <span class="k">if</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># initially, there are no interactions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span>
         <span class="n">histogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_interaction_histogram</span><span class="p">(</span>
             <span class="n">interactions</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_items</span>
         <span class="p">)</span>
@@ -587,9 +573,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MSEMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.MSEMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MSEMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.MSEMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures and records the mean squared error between the user preferences</span>
 <span class="sd">        predicted by the system and the users&#39; actual preferences.</span>
@@ -598,12 +584,6 @@
 <span class="sd">        ------------</span>
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`.</span>
-<span class="sd">                `interactions` is a non-aggregated array of interactions --</span>
-<span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
-<span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">recommender</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">((</span><span class="n">diff</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
@@ -632,9 +612,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;rmse&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;rmse&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures and records the mean squared error between the user preferences</span>
 <span class="sd">        predicted by the system and the users&#39; actual preferences.</span>
@@ -643,12 +623,6 @@
 <span class="sd">        ------------</span>
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`.</span>
-<span class="sd">                `interactions` is a non-aggregated array of interactions --</span>
-<span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
-<span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">recommender</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">((</span><span class="n">diff</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -698,14 +672,10 @@
 <span class="sd">            Infection state at the previous timestep.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_old_infection_state</span> <span class="o">=</span> <span class="n">infection_state</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_infected&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_infected&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_find_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">new_infected_users</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the users who infected the newly infected users&quot;&quot;&quot;</span>
@@ -758,7 +728,7 @@
         <span class="c1"># return number of new infections</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_infections</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DiffusionTreeMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiffusionTreeMeasurement.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.DiffusionTreeMeasurement.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates tree with new infections and stores information about new</span>
 <span class="sd">        infections. In :attr:`~.Measurement.measurement_history`, it stores the</span>
@@ -769,12 +739,6 @@
 <span class="sd">        ------------</span>
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `interactions`.</span>
-<span class="sd">                `interactions` is a non-aggregated array of interactions --</span>
-<span class="sd">                that is, an array of length `|U|` s.t. element `u` is the index</span>
-<span class="sd">                of the item with which user `u` interacted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_manage_new_infections</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -804,8 +768,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">DiffusionTreeMeasurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_state</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">DiffusionTreeMeasurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StructuralVirality.get_structural_virality"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.StructuralVirality.get_structural_virality">[docs]</a>    <span class="k">def</span> <span class="nf">get_structural_virality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -819,7 +783,7 @@
         <span class="k">return</span> <span class="n">wiener_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diffusion_tree</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">AverageFeatureScoreRange</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
+<div class="viewcode-block" id="AverageFeatureScoreRange"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.AverageFeatureScoreRange">[docs]</a><span class="k">class</span> <span class="nc">AverageFeatureScoreRange</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Measures the average range (across users) of item attributes for items</span>
 <span class="sd">    users were recommended at a time step.</span>
@@ -848,9 +812,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;afsr&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AverageFeatureScoreRange.measure"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.AverageFeatureScoreRange.measure">[docs]</a>    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Measures the average range (across users) of item attributes for items</span>
 <span class="sd">        users were recommended at a time step. Used as a measure of within</span>
@@ -867,13 +831,13 @@
 <span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">                Model that inherits from</span>
 <span class="sd">                :class:`~models.recommender.BaseRecommender`.</span>
-
-<span class="sd">            **kwargs</span>
-<span class="sd">                Keyword arguments, one of which must be `items_shown`, a |U| x</span>
-<span class="sd">                num_items_per_iter matrix that contains the indices of every</span>
-<span class="sd">                item shown to every user at a particular timestep.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">items_shown</span>
+        <span class="k">if</span> <span class="n">items_shown</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># at beginning of simulation, there are no recommendations,</span>
+            <span class="c1"># so we log a `None` value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="n">recommended_item_attr</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="n">items_shown</span><span class="p">]</span>
 
@@ -881,7 +845,7 @@
             <span class="n">recommended_item_attr</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">-</span> <span class="n">recommended_item_attr</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">afsr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">afsr</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

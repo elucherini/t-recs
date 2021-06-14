@@ -159,12 +159,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">trecs.matrix_ops</span> <span class="k">as</span> <span class="nn">mo</span>
-<span class="kn">from</span> <span class="nn">trecs.metrics</span> <span class="kn">import</span> <span class="n">MSEMeasurement</span>
 <span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">trecs.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">non_none_values</span><span class="p">,</span>
-    <span class="n">is_valid_or_none</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">trecs.validate</span> <span class="kn">import</span> <span class="n">validate_user_item_inputs</span>
 <span class="kn">from</span> <span class="nn">.recommender</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
 
@@ -219,9 +214,6 @@
 <span class="sd">            :math:`T` is the number of attributes in the real underlying item profile.</span>
 <span class="sd">            This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
-
-<span class="sd">        verbose: bool (optional, default: False)</span>
-<span class="sd">            If True, enables verbose mode. Disabled by default.</span>
 
 <span class="sd">        num_items_per_iter: int (optional, default: 10)</span>
 <span class="sd">            Number of items presented to the user per iteration.</span>
@@ -289,7 +281,6 @@
         <span class="n">actual_item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
@@ -332,7 +323,6 @@
             <span class="n">num_items</span><span class="p">,</span>
             <span class="n">num_items_per_iter</span><span class="p">,</span>
             <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="n">probabilistic_recommendations</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
@@ -356,7 +346,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># interactions are naturally sparse, so use sparse matrix here</span>
-        <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">interactions_per_user</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="c1"># perform an inner product with no normalization of the arguments</span>
         <span class="n">user_attributes</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">inner_product</span><span class="p">(</span>
@@ -370,7 +360,7 @@
 <span class="sd">        of the new items; therefore, when new items are created,</span>
 <span class="sd">        we simply return the new item attributes.</span>
 
-<span class="sd">        Parameters:</span>
+<span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
 <span class="sd">            new_items: numpy.ndarray</span>
 <span class="sd">                An array of items that represents new items that are being</span>

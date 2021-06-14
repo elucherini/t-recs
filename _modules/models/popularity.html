@@ -159,7 +159,6 @@
 <span class="sd">Popularity-based recommender system</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">trecs.metrics</span> <span class="kn">import</span> <span class="n">MSEMeasurement</span>
 <span class="kn">from</span> <span class="nn">trecs.validate</span> <span class="kn">import</span> <span class="n">validate_user_item_inputs</span>
 <span class="kn">from</span> <span class="nn">.recommender</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
 
@@ -222,9 +221,6 @@
 <span class="sd">        num_items_per_iter: int (optional, default: 10)</span>
 <span class="sd">            Number of items presented to the user per iteration.</span>
 
-<span class="sd">        seed: int, None (optional, default: None)</span>
-<span class="sd">            Seed for random generator.</span>
-
 <span class="sd">    Attributes</span>
 <span class="sd">    -----------</span>
 <span class="sd">        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`</span>
@@ -277,8 +273,6 @@
         <span class="n">item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">actual_user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">actual_item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
@@ -313,9 +307,7 @@
             <span class="n">num_users</span><span class="p">,</span>
             <span class="n">num_items</span><span class="p">,</span>
             <span class="n">num_items_per_iter</span><span class="p">,</span>
-            <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="n">probabilistic_recommendations</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
@@ -328,7 +320,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The popularity of any new items is always zero.</span>
 
-<span class="sd">        Parameters:</span>
+<span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
 <span class="sd">            new_items: numpy.ndarray</span>
 <span class="sd">                An array of items that represents new items that are being</span>

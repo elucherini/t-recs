@@ -306,9 +306,6 @@
 <span class="sd">            This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
-<span class="sd">        verbose: bool (optional, default: False)</span>
-<span class="sd">            If True, enables verbose mode. Disabled by default.</span>
-
 <span class="sd">        num_items_per_iter: int (optional, default: 10)</span>
 <span class="sd">            Number of items presented to the user per iteration.</span>
 
@@ -330,8 +327,6 @@
         <span class="n">user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">actual_user_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">actual_item_representation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">measurements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">num_items_per_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -418,7 +413,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span> <span class="o">=</span> <span class="n">InfectionState</span><span class="p">(</span><span class="n">infection_state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">infection_thresholds</span> <span class="o">=</span> <span class="n">InfectionThresholds</span><span class="p">(</span><span class="n">infection_thresholds</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">measurements</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">measurements</span> <span class="o">=</span> <span class="p">[</span><span class="n">StructuralVirality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="p">)]</span>
+            <span class="n">measurements</span> <span class="o">=</span> <span class="p">[</span><span class="n">StructuralVirality</span><span class="p">()]</span>
         <span class="n">system_state</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="p">]</span>
         <span class="c1"># Initialize recommender system</span>
         <span class="c1"># NOTE: Forcing to 1 item per iteration</span>
@@ -432,10 +427,8 @@
             <span class="n">num_users</span><span class="p">,</span>
             <span class="n">num_items</span><span class="p">,</span>
             <span class="n">num_items_per_iter</span><span class="p">,</span>
-            <span class="n">probabilistic_recommendations</span><span class="o">=</span><span class="n">probabilistic_recommendations</span><span class="p">,</span>
             <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
             <span class="n">system_state</span><span class="o">=</span><span class="n">system_state</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
             <span class="n">score_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">infection_probabilities</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>

@@ -295,6 +295,15 @@
 <span class="sd">            with, so that it won&#39;t be presented to the user again if</span>
 <span class="sd">            `repeated_items` are not allowed.</span>
 
+<span class="sd">        items_shown: :obj:`numpy.ndarray`</span>
+<span class="sd">            A :math:`|U| \\times \\text{num_items_per_iter}` array representing the</span>
+<span class="sd">            indices of the items that each user was shown (i.e., their recommendations)</span>
+<span class="sd">            from the most recent timestep.</span>
+
+<span class="sd">        interactions: :obj:`numpy.ndarray`</span>
+<span class="sd">            A :math:`|U| \\times 1` array representing the indices of the items</span>
+<span class="sd">            that each user interacted with at the most recent time step.</span>
+
 <span class="sd">        score_fn: callable</span>
 <span class="sd">            Function that is used to calculate each user&#39;s predicted scores for</span>
 <span class="sd">            each candidate item. The score function should take as input</span>
@@ -310,6 +319,9 @@
 <span class="sd">            representing the interleaved items for each user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+    <span class="c1"># The recommender system model contains everything needed to run the simulation,</span>
+    <span class="c1"># so many instance attributes are justified in this case.</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable=R0913,R0912,R0915</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -334,8 +346,6 @@
         <span class="n">VerboseMode</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="c1"># Initialize measurements</span>
         <span class="n">MeasurementModule</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">measurements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_metrics</span><span class="p">(</span><span class="o">*</span><span class="n">measurements</span><span class="p">)</span>
         <span class="c1"># init the recommender system&#39;s internal representation of users</span>
         <span class="c1"># and items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span> <span class="o">=</span> <span class="n">PredictedUserProfiles</span><span class="p">(</span><span class="n">users_hat</span><span class="p">)</span>
@@ -353,6 +363,12 @@
         <span class="c1"># determine whether recommendations should be randomized, rather than</span>
         <span class="c1"># top-k by predicted score</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_recommendations</span> <span class="o">=</span> <span class="n">probabilistic_recommendations</span>
+
+        <span class="c1"># these variables hold the indices of the items users were shown</span>
+        <span class="c1"># and the indices of the items users interacted with at the most</span>
+        <span class="c1"># recent timestep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_shown</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">num_users</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_or_none</span><span class="p">(</span><span class="n">num_users</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_users must be an int&quot;</span><span class="p">)</span>
@@ -414,6 +430,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="c1"># Matrix keeping track of the items consumed by each user</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_items</span><span class="p">),</span> <span class="p">(</span><span class="n">num_users</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># initial metrics measurements (done at the end</span>
+        <span class="c1"># when the rest of the initial state has been initialized)</span>
+        <span class="k">if</span> <span class="n">measurements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_metrics</span><span class="p">(</span><span class="o">*</span><span class="n">measurements</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Recommender system ready&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Num items: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -809,32 +831,34 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_items_per_iter</span><span class="p">:</span>
                     <span class="c1"># expand set of items recommended per iteration</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_num_items_per_iter</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
-            <span class="n">item_idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">items_shown</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span>
                 <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
                 <span class="n">random_items_per_iter</span><span class="o">=</span><span class="n">random_items_per_iter</span><span class="p">,</span>
                 <span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="n">vary_random_items_per_iter</span><span class="p">,</span>
                 <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="c1"># important: we use the true item attributes to get user feedback</span>
-            <span class="n">interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_user_feedback</span><span class="p">(</span>
-                <span class="n">items_shown</span><span class="o">=</span><span class="n">item_idxs</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_user_feedback</span><span class="p">(</span>
+                <span class="n">items_shown</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">items_shown</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">repeated_items</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_internal_state</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Recorded user interaction:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interactions</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Recorded user interaction:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="s2">&quot;System updates user profiles based on last interaction:</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="c1"># update creators if any</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">creators</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">creators</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span><span class="p">)</span>
             <span class="c1"># train between steps:</span>
             <span class="k">if</span> <span class="n">train_between_steps</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">(</span><span class="n">interactions</span><span class="p">,</span> <span class="n">item_idxs</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span></div>
+            <span class="c1"># record state and compute metrics</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record_state</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measure_content</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseRecommender.startup_and_train"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.startup_and_train">[docs]</a>    <span class="k">def</span> <span class="nf">startup_and_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">no_new_items</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -951,29 +975,7 @@
             <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;actual_user_scores&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;timesteps&quot;</span><span class="p">])</span>
         <span class="p">):</span>
             <span class="n">state</span><span class="p">[</span><span class="s2">&quot;actual_user_scores&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">state</span></div>
-
-<div class="viewcode-block" id="BaseRecommender.measure_content"><a class="viewcode-back" href="../../reference/models.html#models.recommender.BaseRecommender.measure_content">[docs]</a>    <span class="k">def</span> <span class="nf">measure_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calls method in the :class:`Measurements` module to record metrics.</span>
-<span class="sd">        For more details, see the :class:`Measurements` class and its measure</span>
-<span class="sd">        method. Also stores state for each variable being recorded.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        -----------</span>
-<span class="sd">            interactions: :obj:`numpy.ndarray`</span>
-<span class="sd">                Matrix of interactions per users at a given time step.</span>
-
-<span class="sd">            items_shown: :obj:`numpy.ndarray`</span>
-<span class="sd">                Matrix of item indices shown to each user at a given time step.</span>
-
-<span class="sd">            step: int</span>
-<span class="sd">                Step on which the recorded interactions refers to.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
-            <span class="n">metric</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="n">interactions</span><span class="o">=</span><span class="n">interactions</span><span class="p">,</span> <span class="n">items_shown</span><span class="o">=</span><span class="n">items_shown</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_state</span><span class="p">:</span>
-            <span class="n">component</span><span class="o">.</span><span class="n">store_state</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="n">state</span></div></div>
 </pre></div>
 
            </div>
