@@ -5,7 +5,7 @@ T-RECS (Tool for RecSys Simulation)
   :width: 400
   :alt: Picture of T-Rex next to letters T-RECS
 
-A library for using agent-based modeling to perform simulation studies of sociotechnical systems. 
+A library for using agent-based modeling to perform simulation studies of sociotechnical systems.
 
 Installation
 ------------
@@ -50,6 +50,13 @@ If you'd like to install the latest version of ``trecs`` based on what is curren
 
 Additionally, you may run ``pip install -r requirements-dev.txt`` to install a few additional dependencies that will be useful for linting, testing, etc.
 
+Documentation
+**************
+If you would like to edit the documentation, see the `docs/` folder. To build the documentation on your local folder, you will need to install `sphinx` and the `sphinx-rtd-theme`. Next, `cd` into the `docs` folder and run `make html`. The output of the command should tell you where the compiled HTML documentation is located.
+
+.. _sphinx: https://www.sphinx-doc.org/en/master/usage/installation.html
+.. _sphinx-rtd-theme: https://pypi.org/project/sphinx-rtd-theme/
+
 Tutorials
 ----------
 Examples of how to use the simulator can be found in the notebooks below:
@@ -91,6 +98,6 @@ A first draft of the documentation is available `here`_. In its current version,
 Contributing
 --------------
 
-Thanks for your interest in contributing! Check out the guidelines for contributors in `CONTRIBUTING.md`_. 
+Thanks for your interest in contributing! Check out the guidelines for contributors in `CONTRIBUTING.md`_.
 
 .. _CONTRIBUTING.md: https://github.com/elucherini/t-recs/blob/main/CONTRIBUTING.md

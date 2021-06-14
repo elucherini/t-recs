@@ -2,12 +2,7 @@
 import numpy as np
 import scipy.sparse as sp
 import trecs.matrix_ops as mo
-from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
-from trecs.utils import (
-    non_none_values,
-    is_valid_or_none,
-)
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
@@ -62,9 +57,6 @@ class ContentFiltering(BaseRecommender):
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
-
-        verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
 
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
@@ -132,7 +124,6 @@ class ContentFiltering(BaseRecommender):
         actual_item_representation=None,
         probabilistic_recommendations=False,
         seed=None,
-        verbose=False,
         num_items_per_iter=10,
         **kwargs
     ):
@@ -175,7 +166,6 @@ class ContentFiltering(BaseRecommender):
             num_items,
             num_items_per_iter,
             probabilistic_recommendations=probabilistic_recommendations,
-            verbose=verbose,
             seed=seed,
             **kwargs
         )
@@ -199,7 +189,7 @@ class ContentFiltering(BaseRecommender):
 
         """
         # interactions are naturally sparse, so use sparse matrix here
-        interactions_per_user = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
+        interactions_per_user = sp.lil_matrix((self.num_users, self.num_items), dtype=int)
         interactions_per_user[self.users.user_vector, interactions] = 1
         # perform an inner product with no normalization of the arguments
         user_attributes = mo.inner_product(
@@ -213,7 +203,7 @@ class ContentFiltering(BaseRecommender):
         of the new items; therefore, when new items are created,
         we simply return the new item attributes.
 
-        Parameters:
+        Parameters
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being

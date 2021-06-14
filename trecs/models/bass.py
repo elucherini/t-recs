@@ -149,9 +149,6 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
-
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
@@ -173,8 +170,6 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         user_representation=None,
         actual_user_representation=None,
         actual_item_representation=None,
-        probabilistic_recommendations=False,
-        verbose=False,
         measurements=None,
         num_items_per_iter=1,
         seed=None,
@@ -261,7 +256,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         self.infection_state = InfectionState(infection_state)
         self.infection_thresholds = InfectionThresholds(infection_thresholds)
         if measurements is None:
-            measurements = [StructuralVirality(self.infection_state)]
+            measurements = [StructuralVirality()]
         system_state = [self.infection_state]
         # Initialize recommender system
         # NOTE: Forcing to 1 item per iteration
@@ -275,10 +270,8 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=probabilistic_recommendations,
             measurements=measurements,
             system_state=system_state,
-            verbose=verbose,
             seed=seed,
             score_fn=self.infection_probabilities,
             **kwargs

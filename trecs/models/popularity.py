@@ -2,7 +2,6 @@
 Popularity-based recommender system
 """
 import numpy as np
-from trecs.metrics import MSEMeasurement
 from trecs.validate import validate_user_item_inputs
 from .recommender import BaseRecommender
 
@@ -65,9 +64,6 @@ class PopularityRecommender(BaseRecommender):
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
 
-        seed: int, None (optional, default: None)
-            Seed for random generator.
-
     Attributes
     -----------
         Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
@@ -120,8 +116,6 @@ class PopularityRecommender(BaseRecommender):
         item_representation=None,
         actual_user_representation=None,
         actual_item_representation=None,
-        probabilistic_recommendations=False,
-        seed=None,
         verbose=False,
         num_items_per_iter=10,
         **kwargs
@@ -156,9 +150,7 @@ class PopularityRecommender(BaseRecommender):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=probabilistic_recommendations,
             verbose=verbose,
-            seed=seed,
             **kwargs
         )
 
@@ -171,7 +163,7 @@ class PopularityRecommender(BaseRecommender):
         """
         The popularity of any new items is always zero.
 
-        Parameters:
+        Parameters
         ------------
             new_items: numpy.ndarray
                 An array of items that represents new items that are being

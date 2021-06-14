@@ -4,7 +4,7 @@ import pytest
 from trecs.components import Users, Items
 from trecs.models import SocialFiltering, ContentFiltering, BassModel
 from trecs.metrics import (
-    HomogeneityMeasurement,
+    InteractionSpread,
     MSEMeasurement,
     DiffusionTreeMeasurement,
     StructuralVirality,
@@ -20,7 +20,7 @@ class MeasurementUtils:
     @classmethod
     def assert_valid_length(self, measurements, timesteps):
         # there are as many states as the timesteps for which we ran the
-        # system + the initial state
+        # system, plus one to account for the initial state
         for _, value in measurements.items():
             assert len(value) == timesteps + 1
 
@@ -52,9 +52,9 @@ class TestMeasurementModule:
     def test_measurement_module(self):
         # Create model, e.g., SocialFiltering
         s = SocialFiltering()
-        # Add HomogeneityMeasurement
+        # Add Interaction Spread
         old_metrics = s.metrics.copy()
-        s.add_metrics(HomogeneityMeasurement())
+        s.add_metrics(InteractionSpread())
         assert len(old_metrics) + 1 == len(s.metrics)
 
         with pytest.raises(ValueError):
@@ -65,10 +65,8 @@ class TestMeasurementModule:
             s.add_metrics()
         assert len(old_metrics) + 1 == len(s.metrics)
 
-    def test_system_state_module(self, timesteps=None):
+    def test_system_state_module(self):
         s = SocialFiltering()
-
-        old_metrics = s._system_state.copy()
 
         with pytest.raises(ValueError):
             s.add_state_variable("wrong type")
@@ -106,14 +104,12 @@ class TestMeasurementModule:
             MeasurementUtils.assert_valid_length(measurements, t)
 
 
-class TestHomogeneityMeasurement:
+class TestInteractionSpread:
     def test_generic(self, timesteps=None):
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
-        MeasurementUtils.test_generic_metric(SocialFiltering(), HomogeneityMeasurement(), timesteps)
-        MeasurementUtils.test_generic_metric(
-            ContentFiltering(), HomogeneityMeasurement(), timesteps
-        )
+        MeasurementUtils.test_generic_metric(SocialFiltering(), InteractionSpread(), timesteps)
+        MeasurementUtils.test_generic_metric(ContentFiltering(), InteractionSpread(), timesteps)
 
 
 class TestRecSimilarity:

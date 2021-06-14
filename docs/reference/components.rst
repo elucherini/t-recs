@@ -29,5 +29,5 @@ Base Components
 
 These are mainly abstract classes that are not supposed to be instantiated.
 
-.. automodule:: components.base_components
+.. automodule:: base.base_components
   :members:

@@ -13,10 +13,22 @@ Interaction Measurement
 .. autoclass:: metrics.measurement.InteractionMeasurement
   :members:
 
-Homogeneity Measurement
+Interaction Spread
 ------------------------
 
-.. autoclass:: metrics.measurement.HomogeneityMeasurement
+.. autoclass:: metrics.measurement.InteractionSpread
+  :members:
+
+RecSimilarity
+------------------------
+
+.. autoclass:: metrics.measurement.RecSimilarity
+  :members:
+
+InteractionSimilarity
+------------------------
+
+.. autoclass:: metrics.measurement.InteractionSimilarity
   :members:
 
 MSE Measurement
@@ -37,6 +49,11 @@ Measurement of Structural Virality
 .. autoclass:: metrics.measurement.StructuralVirality
   :members:
 
+Average Feature Score Range
+-----------------------------------
+
+.. autoclass:: metrics.measurement.AverageFeatureScoreRange
+  :members:
 
 Measurement: base class
 ------------------------

@@ -5,7 +5,6 @@ import numpy as np
 from lenskit.algorithms import als
 import pandas as pd
 import warnings
-from trecs.metrics import MSEMeasurement
 from trecs.random import Generator
 from trecs.validate import validate_user_item_inputs
 from trecs.utils import non_none_values
@@ -71,9 +70,6 @@ class ImplicitMF(BaseRecommender):
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
-
-        verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
 
         num_items_per_iter: int (optional, default: 10)
             Number of items presented to the user per iteration.
@@ -148,9 +144,7 @@ class ImplicitMF(BaseRecommender):
         item_representation=None,
         actual_user_representation=None,
         actual_item_representation=None,
-        probabilistic_recommendations=False,
         seed=None,
-        verbose=False,
         num_items_per_iter=10,
         model_params=None,
         **kwargs
@@ -203,8 +197,6 @@ class ImplicitMF(BaseRecommender):
             num_users,
             num_items,
             num_items_per_iter,
-            probabilistic_recommendations=probabilistic_recommendations,
-            verbose=verbose,
             seed=seed,
             **kwargs
         )

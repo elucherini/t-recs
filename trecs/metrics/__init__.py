@@ -2,7 +2,7 @@
 from .measurement import (
     Measurement,
     MeasurementModule,
-    HomogeneityMeasurement,
+    InteractionSpread,
     RecSimilarity,
     InteractionSimilarity,
     MSEMeasurement,

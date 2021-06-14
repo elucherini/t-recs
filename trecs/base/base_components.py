@@ -4,7 +4,7 @@
 import inspect
 from abc import ABC, abstractmethod
 import numpy as np
-from scipy.sparse import csr_matrix
+import scipy.sparse as sp
 from trecs.logging import VerboseMode
 from trecs.random import Generator
 
@@ -64,7 +64,7 @@ class BaseComponent(BaseObservable, VerboseMode, ABC):
     def __init__(self, verbose=False, init_value=None, seed=None):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.state_history = list()
-        if isinstance(init_value, np.ndarray):
+        if isinstance(init_value, (np.ndarray, sp.spmatrix)):
             init_value = init_value.copy()
         self.seed = seed
         self.state_history.append(init_value)
@@ -95,7 +95,7 @@ class Component(BaseComponent):
     ):  # pylint: disable=super-init-not-called
         # general input checks
         if current_state is not None:
-            if not isinstance(current_state, (list, np.ndarray, csr_matrix)):
+            if not isinstance(current_state, (list, np.ndarray, sp.spmatrix)):
                 raise TypeError("current_state must be a list, numpy.ndarray, or sparse matrix")
         if current_state is None and size is None:
             raise ValueError("current_state and size can't both be None")
@@ -122,7 +122,7 @@ class Component(BaseComponent):
         Sets the current state of the Component to something new. The new state must
         be a list, numpy array, or sparse matrix.
         """
-        if not isinstance(state, (list, np.ndarray, csr_matrix)):
+        if not isinstance(state, (list, np.ndarray, sp.spmatrix)):
             raise TypeError("current_state must be a list, numpy.ndarray, or sparse matrix")
         self.current_state = state
 
@@ -137,7 +137,7 @@ class Component(BaseComponent):
             Tuple of arbitrary dimension indicating the dimension of the Component's
             state.
         """
-        if not isinstance(self.current_state, (np.ndarray, csr_matrix)):
+        if not isinstance(self.current_state, (np.ndarray, sp.spmatrix)):
             error_msg = (
                 "Cannot fetch shape of Component because it is not a numpy array "
                 "or sparse matrix"
@@ -190,3 +190,11 @@ class SystemStateModule:  # pylint: disable=too-few-public-methods
             observables=list(args),
             observable_type=BaseComponent,
         )
+
+    def record_state(self):
+        """
+        Records a copy of the state of all components that in the
+        SystemStateModule.
+        """
+        for component in self._system_state:
+            component.store_state()
