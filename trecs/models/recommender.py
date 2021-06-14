@@ -162,6 +162,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             representing the interleaved items for each user.
     """
 
+    # pylint: disable=too-many-instance-attributes
+    # The recommender system model contains everything needed to run the simulation,
+    # so many instance attributes are justified in this case.
     @abstractmethod
     def __init__(  # pylint: disable=R0913,R0912,R0915
         self,

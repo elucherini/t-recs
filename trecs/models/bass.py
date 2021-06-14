@@ -256,7 +256,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         self.infection_state = InfectionState(infection_state)
         self.infection_thresholds = InfectionThresholds(infection_thresholds)
         if measurements is None:
-            measurements = [StructuralVirality(self.infection_state)]
+            measurements = [StructuralVirality()]
         system_state = [self.infection_state]
         # Initialize recommender system
         # NOTE: Forcing to 1 item per iteration

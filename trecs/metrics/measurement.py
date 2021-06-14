@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 import networkx as nx
 from networkx import wiener_index
 import numpy as np
-import scipy.sparse as sp
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
@@ -516,7 +515,7 @@ class DiffusionTreeMeasurement(Measurement):
             Infection state at the previous timestep.
     """
 
-    def __init__(self, infection_state, verbose=False):
+    def __init__(self, verbose=False):
         self._old_infection_state = None
         self.diffusion_tree = nx.Graph()
         Measurement.__init__(self, "num_infected", verbose=verbose)
@@ -612,8 +611,8 @@ class StructuralVirality(DiffusionTreeMeasurement):
 
     """
 
-    def __init__(self, infection_state, verbose=False):
-        DiffusionTreeMeasurement.__init__(self, infection_state, verbose)
+    def __init__(self, verbose=False):
+        DiffusionTreeMeasurement.__init__(self, verbose)
 
     def get_structural_virality(self):
         """
