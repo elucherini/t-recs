@@ -27,6 +27,7 @@ Here are some rules to follow for writing PRs:
 * Respond to any comments from reviewers.
 * Comment on individual lines of the PR yourself if you want to bring special attention to it for feedback.
 * In the case that a PR is "good enough for now" but it is known that it will induce future changes, document that foreseen problem as an Issue immediately.
+* Once you are done testing locally, run the Jupyter notebooks in the `examples/` to ensure they still work. (No need to commit the updated notebooks if they all still run perfectly.)
 
 If you're reviewing a PR:
 * Don't accept commented out code.
