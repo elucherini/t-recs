@@ -20,7 +20,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
     Parameters
     -----------
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
@@ -46,7 +46,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
         Returns
         --------
-            Measurements: dict
+        dict:
+            Measurements
         """
         return self.get_observable(data=self.measurement_history)
 
@@ -61,12 +62,14 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         observation: array_like or int or float or None
             Element that will be stored
 
-        copy: bool (optional, default: True)
-            If True, the function stores a copy of observation. Useful for
+        copy: bool, default True
+            If ``True``, the function stores a copy of observation. Useful for
             :obj:`numpy.ndarray`.
 
         """
-        if copy:
+        # avoid in-place modification issues by copying lists and
+        # numpy arrays
+        if isinstance(observation, (list, np.ndarray)) and copy:
             to_append = np.copy(observation)
         else:
             to_append = observation
@@ -74,7 +77,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
     @abstractmethod
     def measure(self, recommender):
-        """Function that should calculate some outcome of interest of the system
+        """
+        Function that should calculate some outcome of interest of the system
         at the current timestep
         """
 
@@ -85,8 +89,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
         Returns
         --------
-
-            Length of measurement_history: int
+        int:
+            Length of ``measurement_history``
         """
         return len(self.measurement_history)
 
@@ -147,20 +151,21 @@ class InteractionMeasurement(Measurement):
     """
     Keeps track of the interactions between users and items.
 
-    Specifically, at each timestep, it stores a histogram of length `|I|`, where
-    element `i` is the number of interactions received by item `i`.
+    Specifically, at each timestep, it stores a histogram of length
+    :math:`|I|`, where element :math:`i` is the number of interactions
+    received by item :math:`i`.
 
     Parameters
     -----------
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "interaction_histogram")
+        name: str, default ``"interaction_histogram"``
             Name of the measurement component.
     """
 
@@ -175,7 +180,6 @@ class InteractionMeasurement(Measurement):
 
         Parameters
         -----------
-
             interactions : :obj:`numpy.ndarray`
                 Array of user interactions.
 
@@ -187,7 +191,7 @@ class InteractionMeasurement(Measurement):
 
         Returns
         ---------
-            Histogram : :obj:`numpy.ndarray`
+            :obj:`numpy.ndarray`:
                 Histogram of the number of interactions aggregated by items at the given timestep.
         """
         histogram = np.zeros(num_items)
@@ -229,14 +233,14 @@ class InteractionSimilarity(Measurement):
             Contains tuples representing each pair of users. Each user should
             be represented as an index into the user profiles matrix.
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "interaction_similarity")
+        name: str, default ``"interaction_similarity"``
             Name of the measurement component.
     """
 
@@ -292,14 +296,14 @@ class RecSimilarity(Measurement):
             Contains tuples representing each pair of users. Each user should
             be represented as an index into the user profiles matrix.
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "rec_similarity")
+        name: str, default ``"rec_similarity"``
             Name of the measurement component.
     """
 
@@ -348,14 +352,14 @@ class InteractionSpread(InteractionMeasurement):
     Parameters
     -----------
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by InteractionMeasurement: :class:`.InteractionMeasurement`
 
-        name: str (optional, default: "interaction_spread")
+        name: str, default ``"interaction_spread"``
             Name of the measurement component.
 
         _old_histogram: None, list, array_like
@@ -404,7 +408,7 @@ class MSEMeasurement(Measurement):
     Parameters
     -----------
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
@@ -443,14 +447,14 @@ class RMSEMeasurement(Measurement):
     Parameters
     -----------
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "mse")
+        name: str, default ``"mse"``
             Name of the measurement component.
     """
 
@@ -494,14 +498,14 @@ class DiffusionTreeMeasurement(Measurement):
         infection_state: :class:`~models.bass.InfectionState`
             The initial "infection state" of all users
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "num_infected")
+        name: str, default ``"num_infected"``
             Name of the metric that is recorded at each time step. Note that,
             in this case, the metric stored in
             :attr:`~.Measurement.measurement_history` is actually the
@@ -602,13 +606,6 @@ class StructuralVirality(DiffusionTreeMeasurement):
     :class:`~models.bass.BassModel`.
 
     .. _The Structural Virality of Online Diffusion: https://5harad.com/papers/twiral.pdf
-
-    Parameters
-    ----------
-
-        :obj:`numpy.ndarray`
-            The initial "infection state" (see :class:`DiffusionTreeMeasurement`).
-
     """
 
     def __init__(self, verbose=False):
@@ -643,14 +640,14 @@ class AverageFeatureScoreRange(Measurement):
     Parameters
     -----------
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str (optional, default: "afsr")
+        name: str, default ``"afsr"``
             Name of the measurement component.
     """
 
