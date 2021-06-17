@@ -1,7 +1,7 @@
 """
 Suite of classes related to users of the system, including predicted user-item
 scores, predicted user profiles, actual user profiles, and a Users class (which
-encapsulates some of these concepts)
+encapsulates some of these concepts).
 """
 import numpy as np
 import scipy.sparse as sp
@@ -33,7 +33,7 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
         Parameters
         -------------
 
-        item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+        item_indices: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
             A matrix with :math:`|U|` rows that specifies the indices of items
             requested for each user.
 
@@ -62,7 +62,7 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
         Parameters
         -------------
 
-        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+        new_scores: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
             Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,
             where :math:`I_{new}` indicates the number of new items whose scores
             are being to be appended.
@@ -98,7 +98,7 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
 
 class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
-    Real user profiles, unknown to the model. This class is a container
+    True user profiles, unknown to the model. This class is a container
     compatible with Numpy operations and it does not make assumptions on the
     size of the representation.
     """
@@ -110,7 +110,7 @@ class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
 
 class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
     """
-    Real matrix of user-item scores, unknown to the model.
+    Matrix of true user-item scores, unknown to the model.
     """
 
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
@@ -124,8 +124,8 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
 
     def get_item_scores(self, items_shown):
         """
-        Return the user scores for the items shown, in the correct
-        order specified.
+        Return the user scores for the items shown, in the order specified by the
+        list of items shown to each user.
         """
         if self.user_rows is None or self.user_rows.shape != self.current_state.shape:
             num_users, num_items = self.current_state.shape
@@ -140,7 +140,7 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
 
         Parameters
         -----------
-            item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+            item_indices: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
                 A matrix with :math:`|U|` rows that specifies the indices of items
                 requested for each user.
 
@@ -160,7 +160,7 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
         Parameters
         -------------
 
-        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`
+        new_scores: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
             Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,
             where :math:`I_{new}` indicates the number of new items whose scores
             are being to be appended.
@@ -230,8 +230,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         drift: float (optional, default: 0)
             If greater than 0, user profiles will update dynamically as they
             interact with items, "drifting" towards the item attribute vectors
-            they interact with. `drift` is a parameter between 0 and 1 that
-            controls the degree of rotational drift. If `t=1`, then the user
+            they interact with. ``drift`` is a parameter between 0 and 1 that
+            controls the degree of rotational drift. If ``t=1``, then the user
             profile vector takes on the exact same direction as the attribute
             vector of the item they just interacted with. If 0, user profiles
             are generated once at initialization and never change.
@@ -250,7 +250,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         score_fn: callable
             Function that is used to calculate each user's scores for each
             candidate item. The score function should take as input
-            user_profiles and item_attributes.
+            ``user_profiles`` and ``item_attributes``.
 
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
@@ -265,21 +265,21 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             Inherited by :class:`~trecs.components.base_components.BaseComponent`
 
         actual_user_profiles: :obj:`numpy.ndarray`
-            A matrix representing the *real* similarity between each item and
-            attribute.
+            A matrix representing the *real* user profiles.
 
         actual_user_scores: :obj:`numpy.ndarray`
-             A ```|U|x|I|``` matrix representing the *real* scores assigned by
-             each user to each item, where ```|U|``` is the number of users and
-             ```|I|``` is the number of items in the system. Item `[u, i]` is
-             the score assigned by user `u` to item `i`.
+             A :math:`|U|\\times|I|` matrix representing the *true* scores assigned by
+             each user to each item, where :math:`|U|` is the number of users and
+             :math:`|I|` is the number of items in the system. The element of this matrix
+             indexed by :math:`(u,i)` is the score assigned by user :math:`u` to item
+             :math:`i`.
 
         interact_with_items: callable
             A function that defines user behaviors when interacting with items.
             If None, users follow the behavior in :meth:`get_user_feedback()`.
 
         user_vector: :obj:`numpy.ndarray`
-            A ```|U|``` array of user indices.
+            A :math:`|U|` array of user indices.
 
         score_fn: callable
             Function that is used to calculate each user's scores for each
@@ -287,8 +287,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             user_profiles and item_attributes.
 
         repeat_interactions: bool (optional, default: True)
-            If `True`, then users will interact with items regardless of whether
-            they have already interacted with them before. If `False`, users
+            If ``True``, then users will interact with items regardless of whether
+            they have already interacted with them before. If ``False``, users
             will not perform repeat interactions.
 
     Raises
@@ -298,7 +298,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             If parameters are of the wrong type.
 
         ValueError
-            If both actual_user_profiles and size are None.
+            If both ``actual_user_profiles`` and ``size`` are None.
     """
 
     def __init__(
@@ -359,9 +359,10 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_profiles.value)
 
     def set_score_function(self, score_fn):
-        """Users "score" items before "deciding" which item to interact with.
-            This function makes it possible to set an arbitrary function as the
-            score function.
+        """
+        Users "score" items before "deciding" which item to interact with.
+        This function makes it possible to set an arbitrary function as the
+        score function.
 
         Parameters
         ------------
@@ -371,13 +372,13 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             candidate item. Note that this function can be the same function
             used by the recommender system to generate its predictions for
             user-item scores. The score function should take as input
-            user_profiles and item_attributes.
+            ``user_profiles`` and ``item_attributes``.
 
         Raises
         --------
 
         TypeError
-            If score_fn is not callable.
+            If ``score_fn`` is not callable.
         """
         if not callable(score_fn):
             raise TypeError("score function must be callable")
@@ -386,7 +387,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     def compute_user_scores(self, item_attributes):
         """
         Computes and stores the actual scores that users assign to items
-        compatible with the system. Note that we expect the score_fn
+        compatible with the system. Note that we expect the ``self.score_fn``
         attribute to be set to some callable function which takes item
         attributes and user profiles.
 
@@ -411,7 +412,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     def score_new_items(self, new_items):
         """
         Computes and stores the actual scores that users assign to any new
-        items that enter the system. Note that we expect the score_fn
+        items that enter the system. Note that we expect the ``self.score_fn``
         attribute to be set to some callable function which takes item
         attributes and user profiles.
 
@@ -436,20 +437,15 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         Parameters
         -----------
 
-            user: int or numpy.ndarray or list (optional, default: None)
-                Specifies the user index (or indices) for which to return the
-                actual user scores. If None, the function returns the whole
-                matrix.
+        user: int or :obj:`numpy.ndarray` or list (optional, default: None)
+            Specifies the user index (or indices) for which to return the
+            actual user scores. If ``None``, the function returns the whole
+            matrix.
 
         Returns
         --------
-
+        scores:
             An array of actual user scores for each item.
-
-        .. todo::
-
-            Raise exceptions
-
         """
         if user is None:
             return self.actual_user_scores
@@ -476,14 +472,15 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
 
         Returns
         ---------
-            Array of interactions s.t. element interactions_u(t) represents the
-            index of the item selected by user u at time t. Shape: :math:`|U|\\times 1`
+        :obj:`numpy.ndarray`
+            Array of interactions s.t. element :math:`\\text{interactions}_u(t)` represents the
+            index of the item selected by user `u` at time `t`. Shape: :math:`|U|\\times 1`
 
         Raises
         -------
 
         ValueError
-            If :attr:`interact_with_items` is None and there is not `item`
+            If :attr:`interact_with_items` is ``None`` and there is not ``item``
             parameter.
         """
         # use custom item interaction function, if provided
@@ -540,7 +537,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
 
         Returns
         ---------
-            recommended_item_scores: :obj:`numpy.ndarray`)
+            recommended_item_scores: :obj:`numpy.ndarray`
                 A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
                 transformed user-item scores that take into account
                 the positions in the recommendation list.
@@ -642,17 +639,18 @@ class DNUsers(Users):
         args, kwargs:
             Parameters needed by the model's train function.
 
-        items_shown: :obj:`numpy.ndarray`): A
-            :math:`|U|\\times\\text{num_items_per_iter}` matrix with
+        items_shown: :obj:`numpy.ndarray`
+            A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
 
-        item_attributes: :obj:`numpy.ndarray`):
+        item_attributes: :obj:`numpy.ndarray`
             A :math:`|A|\\times|I|` matrix with item attributes.
 
         Returns
         ---------
-            Array of interactions s.t. element :math:`interactions_{u(t)}` represents the
-            index of the item selected by user `u` at time `t`. Shape: |U|
+        :obj:`numpy.ndarray`
+            Array of interactions s.t. element :math:`\\text{interactions}_u(t)` represents the
+            index of the item selected by user `u` at time `t`. Shape: :math:`|U|\\times 1`
 
         Raises
         -------
@@ -750,8 +748,8 @@ class DNUsers(Users):
     def sample_from_error_dist(self, num_choices, num_users):
         """
         The second stage of generating the divisive normalization utilities
-        :math:`interactions_{u(t)} is adding the error term
-        :math:`\\textbf{\\eta}`. In this implementation, we sample from
+        :math:`\\text{interactions}_{u(t)}` is adding the error term
+        :math:`\\eta`. In this implementation, we sample from
         a specific multivariate normal distribution used by Webb et al.
         (see https://github.com/UofT-Neuroecon-1/Normalization).
 

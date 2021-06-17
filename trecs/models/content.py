@@ -182,7 +182,7 @@ class ContentFiltering(BaseRecommender):
 
         Parameters:
         ------------
-            interactions: numpy.ndarray
+            interactions: :obj:`numpy.ndarray`
                 An array of item indices that users have interacted with in the
                 latest step. Namely, `interactions[u]` represents the index of
                 the item that the user has interacted with.
@@ -205,7 +205,7 @@ class ContentFiltering(BaseRecommender):
 
         Parameters
         ------------
-            new_items: numpy.ndarray
+            new_items: :obj:`numpy.ndarray`
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """

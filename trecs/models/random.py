@@ -153,7 +153,7 @@ class RandomRecommender(BaseRecommender):
 
         Parameters
         ------------
-            new_items: numpy.ndarray
+            new_items: :obj:`numpy.ndarray`
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """

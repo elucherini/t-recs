@@ -136,7 +136,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         Parameters
         -----------
 
-            interactions: numpy.ndarray or list
+            interactions: :obj:`numpy.ndarray` or list
                 A matrix where row `i` corresponds to the attribute vector
                 that user `i` interacted with.
         """

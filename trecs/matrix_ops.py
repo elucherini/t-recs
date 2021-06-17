@@ -469,11 +469,11 @@ def slerp(mat1, mat2, perc=0.05):
     Parameters
     -----------
 
-        mat1: numpy.ndarray or list
+        mat1: :obj:`numpy.ndarray` or list
             Matrix whose row vectors will be rotated in the direction of
             mat2's row vectors.
 
-        mat2: numpy.ndarray or list
+        mat2: :obj:`numpy.ndarray` or list
             Matrix that should have the same dimensions at mat1.
 
         perc: float
