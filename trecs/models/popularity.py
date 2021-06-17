@@ -61,7 +61,7 @@ class PopularityRecommender(BaseRecommender):
             is only kept for measurements and the system is unaware of it.
 
         verbose: bool, default False
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
         num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.

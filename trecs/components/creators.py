@@ -17,8 +17,8 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
 
     Each content creator is represented with a single vector that governs
     the kinds of content each creator produces. All creator profiles can be
-    represented with a numpy ndarray of size
-    `(number_of_creators, number_of_attributes)`.
+    represented with a :obj:`numpy.ndarray` of size
+    ``(number_of_creators, number_of_attributes)``.
 
     This class inherits from :class:`~components.base_components.BaseComponent`.
 
@@ -28,16 +28,16 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         actual_creator_profiles: array_like, optional
             Representation of the creator's attribute profiles.
 
-        creation_probability: float, (optional, default: 0.5)
+        creation_probability: float, default 0.5
             The probability that any given creator produces a new item at a
             timestep.
 
-        size: tuple, None (optional, default: None)
-            Size of the user representation. It expects a tuple. If None,
+        size: tuple, optional
+            Size of the user representation. It expects a tuple. If ``None``,
             it is chosen randomly.
 
-        verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+        verbose: bool, default False
+            If ``True``, enables verbose mode.
 
         seed: int, optional
             Seed for random generator.
@@ -111,6 +111,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
 
         Returns
         ---------
+        :obj:`np.ndarray`
             A numpy matrix of dimension :math:`|A|\\times|I_n|`, where
             :math:`|I_n|` represents the number of new items, and :math:`|A|`
             represents the number of attributes for each item.
@@ -137,8 +138,8 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         -----------
 
             interactions: :obj:`numpy.ndarray` or list
-                A matrix where row `i` corresponds to the attribute vector
-                that user `i` interacted with.
+                A matrix where row :math:`i` corresponds to the attribute vector
+                that user :math:`i` interacted with.
         """
         # this can be overwritten by a custom creator class
 

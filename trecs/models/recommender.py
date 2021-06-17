@@ -124,7 +124,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             system.
 
         probabilistic_recommendations: bool (optional, default: False)
-            When this flag is set to `True`, the recommendations (excluding
+            When this flag is set to ``True``, the recommendations (excluding
             any random interleaving) will be randomized, meaning that items
             will be recommended with a probability proportionate to their
             predicted score, rather than the top `k` items, as ranked by their
@@ -150,14 +150,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         score_fn: callable
             Function that is used to calculate each user's predicted scores for
             each candidate item. The score function should take as input
-            user_profiles and item_attributes.
+            ``user_profiles`` and ``item_attributes``.
 
         interleaving_fn: callable
             Function that is used to determine the indices of items that will be
             interleaved into the recommender system's recommendations. The
-            interleaving function should take as input an integer `k` (representing
+            interleaving function should take as input an integer ``k`` (representing
             the number of items to be interleaved in every recommendation set) and
-            a matrix `item_indices` (representing which items are eligible to be
+            a matrix ``item_indices`` (representing which items are eligible to be
             interleaved). The function should return a :math:`|U|\\times k` matrix
             representing the interleaved items for each user.
     """
@@ -391,7 +391,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            k : int (optional, default: 1)
+            k : int, default 1
                 Number of items to recommend.
 
             item_indices : :obj:`numpy.ndarray`, optional
@@ -521,24 +521,25 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         Parameters
         -----------
-            startup: bool (optional, default: False)
+            startup: bool, default False
                 If True, the system is in "startup"  (exploration) mode and
                 only presents the user with new randomly chosen items. This is
                 done to maximize exploration.
 
-            random_items_per_iter: int (optional, default: 0)
+            random_items_per_iter: int, default 0
                 Number of per-user item recommendations that should be
-                randomly generated. Passing in `1.0` will result in all
-                recommendations being randomly generated, while passing in `0.0`
-                will result in all recommendations coming from predicted score.
+                randomly generated. Passing in ``self.num_items_per_iter``
+                will result in all recommendations being randomly generated,
+                while passing in ``0`` will result in all recommendations
+                coming from predicted score.
 
-            vary_random_items_per_iter: bool (optional, default: False)
-                If true, then at each timestep, the # of items that are recommended
+            vary_random_items_per_iter: bool, default False
+                If ``True``, then at each timestep, the # of items that are recommended
                 randomly is itself randomly generated between 0 and
-                `random_items_per_iter`, inclusive.
+                ``random_items_per_iter``, inclusive.
 
-            repeated_items : bool (optional, default: True)
-                If True, repeated items are allowed in the system -- that is,
+            repeated_items : bool, default True
+                If ``True``, repeated items are allowed in the system -- that is,
                 users can interact with the same item more than once.
 
         Returns
@@ -627,34 +628,35 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            timestep : int (optional, default: 50)
+            timestep : int, default 50
                 Number of timesteps for simulation.
 
-            startup : bool (optional, default: False)
-                If True, it runs the simulation in startup mode (see
+            startup : bool, default False
+                If ``True``, it runs the simulation in startup mode (see
                 :func:`recommend` and :func:`startup_and_train`)
 
-            train_between_steps : bool (optional, default: True)
-                If True, the model is retrained after each timestep with the
+            train_between_steps : bool, default True
+                If ``True``, the model is retrained after each timestep with the
                 information gathered in the previous step.
 
-            random_items_per_iter: float (optional, default: 0)
-                Percentage of per-user item recommendations that should be
-                randomly generated. Passing in `1.0` will result in all
-                recommendations being randomly generated, while passing in `0.0`
-                will result in all recommendations coming from predicted score.
+            random_items_per_iter: int, default 0
+                Number of per-user item recommendations that should be
+                randomly generated. Passing in ``self.num_items_per_iter`` will
+                result in all recommendations being randomly generated, while passing
+                in ``0`` will result in all recommendations coming from predicted scores.
 
-            vary_random_items_per_iter: bool (optional, default: False)
-                If true, then at each timestep, the # of items that are recommended
+            vary_random_items_per_iter: bool, default False
+                If ``True``, then at each timestep, the # of items that are recommended
                 randomly is itself randomly generated between 0 and
-                `random_items_per_iter`, inclusive.
+                ``random_items_per_iter``, inclusive.
 
-            repeated_items : bool (optional, default: True)
-                If True, repeated items are allowed in the system -- that is,
-                users can interact with the same item more than once.
+            repeated_items : bool, default True
+                If ``True``, repeated items are allowed in the system -- that is,
+                the system can recommend items to users that they've already previously
+                interacted with.
 
-            no_new_items : bool (optional, default: False)
-                If True, then no new items are created during these timesteps. This
+            no_new_items : bool, default False
+                If ``True``, then no new items are created during these timesteps. This
                 can be helpful, say, during a "training" period where no new items should be
                 made.
         """
@@ -712,13 +714,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            timesteps : int (optional, default: 50)
+            timesteps : int, default 50
                 Number of timesteps for simulation
 
-            no_new_items : bool (optional, default: False)
-                If True, then no new items are created during these timesteps. This
-                can be helpful, say, during a "training" period where no new items should be
-                made.
+            no_new_items : bool, default False
+                If ``True``, then no new items are created during these timesteps.
+                This is only relevant when you have item
+                :class:`~components.creators.Creators`. This can be helpful, say, during
+                a "training" period where no new items should be made.
         """
         if self.is_verbose():
             self.log("Startup -- recommend random items")

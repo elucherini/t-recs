@@ -253,7 +253,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             ``user_profiles`` and ``item_attributes``.
 
         verbose: bool, default False
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
         seed: int, optional
             Seed for random generator.

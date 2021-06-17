@@ -21,7 +21,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
     -----------
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -154,7 +154,7 @@ class InteractionMeasurement(Measurement):
     -----------
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -230,7 +230,7 @@ class InteractionSimilarity(Measurement):
             be represented as an index into the user profiles matrix.
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -293,7 +293,7 @@ class RecSimilarity(Measurement):
             be represented as an index into the user profiles matrix.
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -349,7 +349,7 @@ class InteractionSpread(InteractionMeasurement):
     -----------
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -405,7 +405,7 @@ class MSEMeasurement(Measurement):
     -----------
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -444,7 +444,7 @@ class RMSEMeasurement(Measurement):
     -----------
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -495,7 +495,7 @@ class DiffusionTreeMeasurement(Measurement):
             The initial "infection state" of all users
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------
@@ -644,7 +644,7 @@ class AverageFeatureScoreRange(Measurement):
     -----------
 
         verbose: bool (optional, default: False)
-            If True, enables verbose mode. Disabled by default.
+            If ``True``, enables verbose mode. Disabled by default.
 
     Attributes
     -----------

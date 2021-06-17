@@ -17,7 +17,7 @@ Items
   :members:
 
 Creators
-------
+---------
 
 .. automodule:: components.creators
   :members:
