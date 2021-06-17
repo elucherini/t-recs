@@ -55,8 +55,8 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             A :math:`|U|\\times|I|` matrix representing the past user interactions.
             If this is not None, `num_items` is ignored.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user
             profiles, where :math:`T` is the number of attributes in the real
             underlying user profile, or a `Users` object that contains the real
@@ -78,7 +78,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
     Attributes
     -----------
-        Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender : :class:`~models.recommender.BaseRecommender`
 
     Examples
     ----------
@@ -120,9 +120,9 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         Note that all arguments passed in at initialization must be consistent -
         otherwise, an error is thrown. For example, one cannot pass in
-        `num_users=200` but have `user_representation.shape` be `(200, 500)` or
-        `(300, 300)`. Likewise, one cannot pass in `num_items=1000` but have
-        `item_representation.shape` be `(200, 500)`.
+        ``num_users=200`` but have ``user_representation.shape`` be ``(200, 500)`` or
+        ``(300, 300)``. Likewise, one cannot pass in ``num_items=1000`` but have
+        ``item_representation.shape`` be ``(200, 500)``.
         """
 
     def __init__(  # pylint: disable-all

@@ -71,7 +71,7 @@ class ContentFiltering(BaseRecommender):
 
     Attributes
     -----------
-        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender: :class:`~models.recommender.BaseRecommender`
 
     Examples
     ---------
@@ -98,7 +98,7 @@ class ContentFiltering(BaseRecommender):
 
         Or by generating representations for items and/or users. In the example
         below, items are uniformly distributed. We indirectly define 100
-        attributes by defining the following `item_representation`:
+        attributes by defining the following ``item_representation``:
 
         >>> items = np.random.randint(0, 1, size=(100, 200))
         # Users are represented by a power law distribution.
@@ -113,9 +113,9 @@ class ContentFiltering(BaseRecommender):
 
         Note that all arguments passed in at initialization must be consistent -
         otherwise, an error is thrown. For example, one cannot pass in
-        `num_users=200` but have `user_representation.shape` be `(300, 100)`.
-        Likewise, one cannot pass in `num_items=1000` but have
-        `item_representation.shape` be `(100, 500)`.
+        ``num_users=200`` but have ``user_representation.shape`` be ``(300, 100)``.
+        Likewise, one cannot pass in ``num_items=1000`` but have
+        ``item_representation.shape`` be ``(100, 500)``.
     """
 
     def __init__(  # pylint: disable-all

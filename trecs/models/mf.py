@@ -56,8 +56,8 @@ class ImplicitMF(BaseRecommender):
             A :math:`|U|\\times|A|` matrix representing the latent reprsentations
             of the users. If this is not None, `num_users` is ignored.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user
             profiles, where :math:`T` is the number of attributes in the real
             underlying user profile, or a `Users` object that contains the real
@@ -74,7 +74,7 @@ class ImplicitMF(BaseRecommender):
         num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
-        model_params: dict (optional, default: None)
+        model_params: dict, optional
             Arguments that can be passed to `lenskit.algorithms.als.ImplicitMF()` that
             dictate model training. For example: `{'iterations':40, 'reg':0.01}`.
 
@@ -83,7 +83,7 @@ class ImplicitMF(BaseRecommender):
 
     Attributes
     -----------
-        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender: :class:`~models.recommender.BaseRecommender`
 
     Examples
     ---------

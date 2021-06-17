@@ -31,8 +31,8 @@ class RandomRecommender(BaseRecommender):
         num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user
             profiles, where :math:`T` is the number of attributes in the real
             underlying user profile, or a `Users` object that contains the real
@@ -54,7 +54,7 @@ class RandomRecommender(BaseRecommender):
 
     Attributes
     -----------
-        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender: :class:`~models.recommender.BaseRecommender`
 
     Examples
     ---------
