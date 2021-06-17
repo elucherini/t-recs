@@ -145,7 +145,7 @@ class TestContentFiltering:
             users = np.random.randint(5, 100)
             user_repr = np.random.randint(10, size=(users, item_repr.shape[0]))
 
-        c = ContentFiltering(item_representation=item_repr)
+        c = ContentFiltering(item_representation=item_repr, seed=101)
         test_helpers.assert_correct_num_users(c.num_users, c, c.users_hat.num_users)
         test_helpers.assert_correct_num_items(item_repr.shape[1], c, c.items_hat.num_items)
         test_helpers.assert_correct_size_generic(item_repr.shape[0], attr, c.items_hat.num_attrs)
@@ -153,7 +153,7 @@ class TestContentFiltering:
         test_helpers.assert_equal_arrays(item_repr, c.items_hat)
         test_helpers.assert_not_none(c.predicted_scores)
 
-        c = ContentFiltering(user_representation=user_repr)
+        c = ContentFiltering(user_representation=user_repr, seed=102)
         test_helpers.assert_correct_num_users(user_repr.shape[0], c, c.users_hat.num_users)
         test_helpers.assert_correct_num_items(c.num_items, c, c.items_hat.num_items)
         test_helpers.assert_correct_size_generic(user_repr.shape[1], attr, c.items_hat.num_attrs)
