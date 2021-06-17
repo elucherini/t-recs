@@ -16,6 +16,12 @@ Items
 .. automodule:: components.items
   :members:
 
+Creators
+------
+
+.. automodule:: components.creators
+  :members:
+
 Binary Social Graph
 ---------------------
 
