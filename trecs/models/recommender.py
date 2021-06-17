@@ -81,7 +81,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         verbose: bool (optional, default: False)
             If True, it enables verbose mode.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator used
 
     Attributes
@@ -394,7 +394,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             k : int (optional, default: 1)
                 Number of items to recommend.
 
-            item_indices : :obj:`numpy.ndarray` or None (optional, default: None)
+            item_indices : :obj:`numpy.ndarray`, optional
                 A matrix containing the indices of the items each user has not yet
                 interacted with. It is used to ensure that the user is presented
                 with items they have not already interacted with. If `None`,

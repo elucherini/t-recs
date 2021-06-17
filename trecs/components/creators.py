@@ -25,7 +25,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
     Parameters
     ------------
 
-        actual_creator_profiles: array_like or None (optional, default: None)
+        actual_creator_profiles: array_like, optional
             Representation of the creator's attribute profiles.
 
         creation_probability: float, (optional, default: 0.5)
@@ -39,7 +39,7 @@ class Creators(BaseComponent):  # pylint: disable=too-many-ancestors
         verbose: bool (optional, default: False)
             If True, enables verbose mode. Disabled by default.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes

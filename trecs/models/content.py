@@ -1,4 +1,9 @@
-""" Content filtering class """
+"""
+The content filtering recommender system attempts to match users to items
+based on highest predicted inner product between the predicted user profile
+and predicted item profile. The predictions of user and item profiles
+are generated iteratively as users interact with items.
+"""
 import numpy as np
 import scipy.sparse as sp
 import trecs.matrix_ops as mo
@@ -27,41 +32,41 @@ class ContentFiltering(BaseRecommender):
     Parameters
     -----------
 
-        num_users: int (optional, default: 100)
+        num_users: int, default 100
             The number of users :math:`|U|` in the system.
 
-        num_items: int (optional, default: 1250)
+        num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        num_attributes: int (optional, default: 1000)
+        num_attributes: int, default 1000
             The number of attributes :math:`|A|` in the system.
 
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        user_representation: :obj:`numpy.ndarray`, optional
             A :math:`|U|\\times|A|` matrix representing the similarity between
             each item and attribute, as interpreted by the system.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|A|\\times|I|` matrix representing the similarity between
             each item and attribute.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying user profile,
             or a `Users` object that contains the real user profiles or real
             user-item scores. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|T|\\times|I|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        num_items_per_iter: int (optional, default: 10)
+        num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes

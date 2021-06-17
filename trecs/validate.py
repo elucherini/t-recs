@@ -26,54 +26,54 @@ def validate_user_item_inputs(  # pylint: disable=too-many-arguments
     Parameters
     -----------
 
-    num_users: int or None (optional, default: None)
+    num_users: int, optional
         An integer representing the number of users in the system
 
-    num_items: int or None (optional, default: None)
+    num_items: int, optional
         An integer representing the number of items in the system
 
-    users_hat: :obj:`numpy.ndarray` or None (optional, default: None)
+    users_hat: :obj:`numpy.ndarray`, optional
         A 2D matrix whose first dimension should be equal to the number of
         users in the system. Typically this matrix refers to the system's
         internal representation of user profiles, not the "true" underlying
         user profiles, which are unknown to the system.
 
-    items_hat: :obj:`numpy.ndarray` or None (optional, default: None)
+    items_hat: :obj:`numpy.ndarray`, optional
         A 2D matrix whose second dimension should be equal to the number of
         items in the system. Typically this matrix refers to the system's
         internal representation of item attributes, not the "true" underlying
         item attributes, which are unknown to the system.
 
     users: :obj:`numpy.ndarray` or :class:`~components.users.Users` \
-            or None (optional, default: None)
+           , optional
         A 2D matrix whose first dimension should be equal to the number of
         users in the system. This is the "true" underlying user profile
         matrix.
 
-    items: :obj:`numpy.ndarray` or None (optional, default: None)
+    items: :obj:`numpy.ndarray`, optional
         A 2D matrix whose second dimension should be equal to the number of
         items in the system. This is the "true" underlying item attribute
         matrix.
 
-    default_num_users: int or None (optional, default: None)
+    default_num_users: int, optional
         If the number of users is not specified anywhere in the inputs, we return
         this value as the number of users to be returned.
 
-    default_num_items: int or None (optional, default: None)
+    default_num_items: int, optional
         If the number of items is not specified anywhere in the inputs, we return
         this value as the number of items to be returned.
 
-    default_num_attributes: int or None (optional, default: None)
+    default_num_attributes: int, optional
         If the number of attributes in the item/user representations is not
         specified or cannot be inferred, this is the default number
         of attributes that should be used. (This applies only to users_hat
         and items_hat.)
 
-    num_attributes: int or None (optional, default: None)
+    num_attributes: int, optional
         Check that the number of attributes per user & per item are equal to
         this specified number. (This applies only to users_hat and items_hat.)
 
-    user_item_scores: :obj:`numpy.ndarray` or None (optional, default: None)
+    user_item_scores: :obj:`numpy.ndarray`, optional
         A 2D matrix whose first dimension is the number of users in the system
         and whose second dimension is the number of items in the system.
 

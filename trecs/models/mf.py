@@ -38,21 +38,21 @@ class ImplicitMF(BaseRecommender):
     Parameters
     -----------
 
-        num_users: int (optional, default: 100)
+        num_users: int, default 100
             The number of users :math:`|U|` in the system.
 
-        num_items: int (optional, default: 1250)
+        num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        num_latent_factors: int (optional, default: 10)
+        num_latent_factors: int, default 10
             The number of latent factors that will be used to fit the Implicit MF
             model.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|A|\\times|I|` matrix representing the latent representations
             of the items. If this is not None, `num_items` is ignored.
 
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        user_representation: :obj:`numpy.ndarray`, optional
             A :math:`|U|\\times|A|` matrix representing the latent reprsentations
             of the users. If this is not None, `num_users` is ignored.
 
@@ -65,20 +65,20 @@ class ImplicitMF(BaseRecommender):
             for recommendations. This is only kept for measurements and the
             system is unaware of it.
 
-        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|T|\\times|I|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        num_items_per_iter: int (optional, default: 10)
+        num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
         model_params: dict (optional, default: None)
             Arguments that can be passed to `lenskit.algorithms.als.ImplicitMF()` that
             dictate model training. For example: `{'iterations':40, 'reg':0.01}`.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes

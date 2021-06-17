@@ -112,26 +112,26 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     Parameters
     -----------
 
-        num_users: int (optional, default: 100)
+        num_users: int, default 100
             The number of users :math:`|U|` in the system.
 
-        num_items: int (optional, default: 1250)
+        num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        infection_state: :obj:`numpy.ndarray` or None (optional, default: None)
+        infection_state: :obj:`numpy.ndarray`, optional
             Component that tracks infection state, which is a binary (0/1) array with
             an element recording whether each user is infected. Should be of
             dimension :math:`|U|\\times|I|`.
 
-        infection_thresholds: :obj:`numpy.ndarray` or None (optional, default: None)
+        infection_thresholds: :obj:`numpy.ndarray`, optional
             Component that tracks infection thresholds for each user. Should be of
             dimension :math:`1\\times|U|`.
 
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        user_representation: :obj:`numpy.ndarray`, optional
             A :math:`|U|\\times|A|` matrix representing the similarity between
             each item and attribute, as interpreted by the system.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|A|\\times|I|` matrix representing the similarity between
             each item and attribute.
 
@@ -143,16 +143,16 @@ class BassModel(BaseRecommender, BinarySocialGraph):
             user-item scores. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|T|\\times|I|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        num_items_per_iter: int (optional, default: 10)
+        num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes
