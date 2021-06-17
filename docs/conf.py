@@ -22,8 +22,8 @@ sys.setrecursionlimit(1500)
 # -- Project information -----------------------------------------------------
 
 project = "T-RECS"
-copyright = "2020, Elena Lucherini"
-author = "Elena Lucherini"
+copyright = "2021, Eli Lucherini"
+author = "Eli Lucherini"
 
 # The short X.Y version
 version = ""
@@ -140,7 +140,7 @@ latex_documents = [
         master_doc,
         "T-RECS.tex",
         "T-RECS Documentation",
-        "Elena Lucherini",
+        "Eli Lucherini",
         "manual",
     ),
 ]
