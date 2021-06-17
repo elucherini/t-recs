@@ -1,5 +1,5 @@
-""" Base components that are the building blocks of measuring and tracking
-    variables of interest in the recommender systems
+""" Base components are the building blocks of measuring and tracking
+    variables of interest in the simulation environment.
  """
 import inspect
 from abc import ABC, abstractmethod

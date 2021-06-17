@@ -21,27 +21,27 @@ class Items(Component):  # pylint: disable=too-many-ancestors
     Parameters
     -------------
 
-    item_attributes: array_like, None (optional, default: None)
+    item_attributes: array_like, optional
         Representation of items. It expects an array_like object. If None, the
         representation is generated randomly using a binomial distribution (see
         :class:`~base.base_components.Component` for details). At least one of
         `item_attributes` or `size` must be supplied.
 
-    size: tuple, None (optional, default: None)
+    size: tuple, optional
         Size of the item representation. It expects a tuple. At least one of
         `item_attributes` or `size` must be supplied.
 
-    verbose: bool (optional, default: False)
+    verbose: bool, default False
         If True, it enables verbose mode.
 
-    seed: int, None (optional, default: None)
+    seed: int, optional
         Seed for underlying random generator.
 
     Attributes
     ------------
 
     Attributes from Component
-        Inherited by :class:`~base.base_components.Component`
+        Inherited from :class:`~base.base_components.Component`
 
     name: str
         Name of the component
@@ -89,20 +89,20 @@ class PredictedItems(Items):  # pylint: disable=too-many-ancestors
     Parameters
     -------------
 
-    item_attributes: array_like, None (optional, default: None)
+    item_attributes: array_like, optional
         Representation of items. It expects an array_like object. If None, the
         representation is generated randomly using a binomial distribution (see
         :class:`~base.base_components.Component` for details). At least one of
         `item_attributes` or `size` must be supplied.
 
-    size: tuple, None (optional, default: None)
+    size: tuple, optional
         Size of the item representation. It expects a tuple. At least one of
         `item_attributes` or `size` must be supplied.
 
-    verbose: bool (optional, default: False)
+    verbose: bool, default False
         If True, it enables verbose mode.
 
-    seed: int, None (optional, default: None)
+    seed: int, optional
         Seed for underlying random generator.
 
     Attributes

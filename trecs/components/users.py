@@ -209,25 +209,25 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
     Parameters
     ------------
 
-        actual_user_profiles: array_like or None (optional, default: None)
+        actual_user_profiles: array_like, optional
             Representation of the real user profiles.
 
-        actual_user_scores: array_like or None (optional, default: None)
+        actual_user_scores: array_like, optional
             Representation of the real scores that users assign to items.
 
-        interact_with_items: callable or None (optional, default: None)
+        interact_with_items: callable, optional
             Function that specifies the behavior of users when interacting with
             items. If None, users follow the behavior specified in
             :meth:`get_user_feedback()`.
 
-        num_users: int or None, (optional, default: None)
+        num_users: int, optional
             The number of users in the system.
 
-        size: tuple, None (optional, default: None)
+        size: tuple, optional
             Size of the user representation. It expects a tuple. If None,
             it is chosen randomly.
 
-        drift: float (optional, default: 0)
+        drift: float, default 0
             If greater than 0, user profiles will update dynamically as they
             interact with items, "drifting" towards the item attribute vectors
             they interact with. ``drift`` is a parameter between 0 and 1 that
@@ -236,7 +236,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             vector of the item they just interacted with. If 0, user profiles
             are generated once at initialization and never change.
 
-        attention_exp: float (optional, default: 0)
+        attention_exp: float, default 0
             If this parameter is non-zero, then the order of the items
             in the recommendation set affects the user's choice, in that
             the item chosen will be a function of its index in the recommendation
@@ -252,10 +252,10 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
             candidate item. The score function should take as input
             ``user_profiles`` and ``item_attributes``.
 
-        verbose: bool (optional, default: False)
+        verbose: bool, default False
             If True, enables verbose mode. Disabled by default.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes
@@ -559,9 +559,9 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         Parameters
         -----------
 
-            interactions: numpy.ndarray or list
-                A matrix where row `i` corresponds to the attribute vector
-                that user `i` interacted with.
+            interactions: :obj:`numpy.ndarray` or list
+                A matrix where row ``i`` corresponds to the attribute vector
+                that user ``i`` interacted with.
         """
         # we make no assumptions about whether the user profiles or item
         # attributes vectors are normalized
