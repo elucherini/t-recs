@@ -197,7 +197,8 @@ class InteractionMeasurement(Measurement):
         histogram = np.zeros(num_items)
         np.add.at(histogram, interactions, 1)
         # Check that there's one interaction per user
-        assert histogram.sum() == num_users
+        if histogram.sum() != num_users:
+            raise ValueError("The sum of interactions must be equal to the number of users")
         return histogram
 
     def measure(self, recommender):

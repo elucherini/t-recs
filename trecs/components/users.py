@@ -348,7 +348,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.interact_with_items = interact_with_items
         self.drift = drift
         self.attention_exp = attention_exp
-        assert callable(score_fn)
+        if not callable(score_fn):
+            raise TypeError("Custom score function must be a callable method")
         self.score_fn = score_fn  # function that dictates how scores will be generated
         self.actual_user_scores = actual_user_scores
         self.user_vector = np.arange(num_users, dtype=int)

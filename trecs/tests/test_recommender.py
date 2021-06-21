@@ -1,6 +1,6 @@
 import numpy as np
 from trecs.models import BaseRecommender
-from trecs.components import Creators
+from trecs.components import Creators, Users
 import trecs.matrix_ops as mo
 import test_helpers
 
@@ -109,6 +109,7 @@ class TestBaseRecommender:
         self.items = np.random.randint(10, size=(true_attrs, 50))
         dummy = DummyRecommender(self.users_hat, self.items_hat, self.users, self.items, 10, 50, 5)
 
+        assert dummy.users and isinstance(dummy.users, Users)
         test_helpers.assert_equal_arrays(self.users_hat, dummy.predicted_user_profiles)
         test_helpers.assert_equal_arrays(self.items_hat, dummy.predicted_item_attributes)
         test_helpers.assert_equal_arrays(self.users, dummy.actual_user_profiles)
