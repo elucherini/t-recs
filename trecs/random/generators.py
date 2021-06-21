@@ -15,9 +15,9 @@ class Generator(np.random.Generator):  # pylint: disable=too-few-public-methods
 
     Parameters
     -----------
-        seed: int or None (optional, default: None)
+        seed: int, optional
 
-        bit_generator: :class:`numpy.random.BitGenerator` or None (optional, default: None)
+        bit_generator: :class:`numpy.random.BitGenerator`, optional
             :class:`numpy.random.BitGenerator`. Please see Numpy's
             `BitGenerator documentation`_ for more details.
 

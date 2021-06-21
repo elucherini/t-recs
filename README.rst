@@ -52,7 +52,7 @@ Additionally, you may run ``pip install -r requirements-dev.txt`` to install a f
 
 Documentation
 **************
-If you would like to edit the documentation, see the `docs/` folder. To build the documentation on your local folder, you will need to install `sphinx` and the `sphinx-rtd-theme`. Next, `cd` into the `docs` folder and run `make html`. The output of the command should tell you where the compiled HTML documentation is located.
+If you would like to edit the documentation, see the ``docs/`` folder. To build the documentation on your local folder, you will need to install ``sphinx`` and the ``sphinx-rtd-theme`` via ``pip``. Next, ``cd`` into the ``docs`` folder and run ``make html``. The output of the command should tell you where the compiled HTML documentation is located.
 
 .. _sphinx: https://www.sphinx-doc.org/en/master/usage/installation.html
 .. _sphinx-rtd-theme: https://pypi.org/project/sphinx-rtd-theme/

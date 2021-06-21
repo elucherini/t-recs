@@ -41,22 +41,22 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
     Parameters
     -----------
 
-        num_users: int (optional, default: 100)
+        num_users: int, default 100
             The number of users :math:`|U|` in the system.
 
-        num_items: int (optional, default: 1250)
+        num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        user_representation: :obj:`numpy.ndarray`, optional
             A :math:`|U|\\times|U|` adjacency matrix representing each users'
             social network. If this is not None, `num_users` is ignored.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|U|\\times|I|` matrix representing the past user interactions.
             If this is not None, `num_items` is ignored.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user
             profiles, where :math:`T` is the number of attributes in the real
             underlying user profile, or a `Users` object that contains the real
@@ -64,21 +64,21 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
             for recommendations. This is only kept for measurements and the
             system is unaware of it.
 
-        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|T|\\times|I|` matrix representing the real item profiles,
             where :math:`T` is the number of attributes in the real underlying
             item profile. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        num_items_per_iter: int (optional, default: 10)
+        num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes
     -----------
-        Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender : :class:`~models.recommender.BaseRecommender`
 
     Examples
     ----------
@@ -120,9 +120,9 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         Note that all arguments passed in at initialization must be consistent -
         otherwise, an error is thrown. For example, one cannot pass in
-        `num_users=200` but have `user_representation.shape` be `(200, 500)` or
-        `(300, 300)`. Likewise, one cannot pass in `num_items=1000` but have
-        `item_representation.shape` be `(200, 500)`.
+        ``num_users=200`` but have ``user_representation.shape`` be ``(200, 500)`` or
+        ``(300, 300)``. Likewise, one cannot pass in ``num_items=1000`` but have
+        ``item_representation.shape`` be ``(200, 500)``.
         """
 
     def __init__(  # pylint: disable-all
@@ -226,7 +226,7 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
 
         Parameters
         ------------
-            new_items: numpy.ndarray
+            new_items: :obj:`numpy.ndarray`
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """

@@ -23,14 +23,14 @@ class TestBassModel:
         if items is None:
             items = 1
         if users is None:
-            users = np.random.randint(1, 100)
-        s = BassModel(num_users=users, num_items=items)
+            users = np.random.randint(30, 100)
+        s = BassModel(num_users=users, num_items=items, seed=100)
         test_helpers.assert_correct_num_users(users, s, s.users_hat.num_users)
         test_helpers.assert_correct_num_users(users, s, s.users_hat.num_attrs)
         test_helpers.assert_correct_num_items(items, s, s.items_hat.num_items)
         test_helpers.assert_not_none(s.predicted_scores)
-        # did not set seed, show random behavior
-        s1 = BassModel(num_users=users, num_items=items)
+        # show random behavior with different seeds
+        s1 = BassModel(num_users=users, num_items=items, seed=101)
 
         with pytest.raises(AssertionError):
             test_helpers.assert_equal_arrays(s.users_hat.value, s1.users_hat)

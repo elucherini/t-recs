@@ -25,14 +25,14 @@ class RandomRecommender(BaseRecommender):
     Parameters
     -----------
 
-        num_users: int (optional, default: 100)
+        num_users: int, default 100
             The number of users :math:`|U|` in the system.
 
-        num_items: int (optional, default: 1250)
+        num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user
             profiles, where :math:`T` is the number of attributes in the real
             underlying user profile, or a `Users` object that contains the real
@@ -40,21 +40,21 @@ class RandomRecommender(BaseRecommender):
             for recommendations. This is only kept for measurements and the
             system is unaware of it.
 
-        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|T|\\times|I|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        num_items_per_iter: int (optional, default: 10)
+        num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes
     -----------
-        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender: :class:`~models.recommender.BaseRecommender`
 
     Examples
     ---------
@@ -153,7 +153,7 @@ class RandomRecommender(BaseRecommender):
 
         Parameters
         ------------
-            new_items: numpy.ndarray
+            new_items: :obj:`numpy.ndarray`
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """

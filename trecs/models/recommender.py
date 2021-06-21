@@ -81,7 +81,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         verbose: bool (optional, default: False)
             If True, it enables verbose mode.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator used
 
     Attributes
@@ -124,7 +124,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             system.
 
         probabilistic_recommendations: bool (optional, default: False)
-            When this flag is set to `True`, the recommendations (excluding
+            When this flag is set to ``True``, the recommendations (excluding
             any random interleaving) will be randomized, meaning that items
             will be recommended with a probability proportionate to their
             predicted score, rather than the top `k` items, as ranked by their
@@ -150,14 +150,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         score_fn: callable
             Function that is used to calculate each user's predicted scores for
             each candidate item. The score function should take as input
-            user_profiles and item_attributes.
+            ``user_profiles`` and ``item_attributes``.
 
         interleaving_fn: callable
             Function that is used to determine the indices of items that will be
             interleaved into the recommender system's recommendations. The
-            interleaving function should take as input an integer `k` (representing
+            interleaving function should take as input an integer ``k`` (representing
             the number of items to be interleaved in every recommendation set) and
-            a matrix `item_indices` (representing which items are eligible to be
+            a matrix ``item_indices`` (representing which items are eligible to be
             interleaved). The function should return a :math:`|U|\\times k` matrix
             representing the interleaved items for each user.
     """
@@ -193,16 +193,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # and items
         self.users_hat = PredictedUserProfiles(users_hat)
         self.items_hat = PredictedItems(items_hat)
-        assert callable(score_fn)  # score function must be a function
+        if not callable(score_fn):
+            # score function must be a function
+            raise TypeError("Custom score function must be a callable method")
         self.score_fn = score_fn
-        if interleaving_fn:
-            # make sure interleaving function (if passed) is callable
-            assert callable(interleaving_fn)
+        if interleaving_fn and not callable(interleaving_fn):
+            # interleaving function must be callable
+            raise TypeError("Custom interleaving function must be a callable method")
         self.interleaving_fn = interleaving_fn
         # set predicted scores
         self.predicted_scores = None
         self.train()
-        assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
         self.probabilistic_recommendations = probabilistic_recommendations
@@ -219,8 +220,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_items must be an int")
         if not is_valid_or_none(num_items_per_iter, (str, int)):
             raise TypeError("num_items_per_iter must be an int or string 'all'")
-        if isinstance(num_items_per_iter, int):
-            assert num_items_per_iter > 0  # check number of items per iteration is positive
+        if isinstance(num_items_per_iter, int) and num_items_per_iter < 1:
+            # check number of items per iteration is positive
+            raise ValueError("num_items_per_iter must be greater than zero")
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
@@ -266,7 +268,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.add_state_variable(*system_state)
 
         self.initialize_user_scores()
-        assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
         self.num_items = num_items
         self.set_num_items_per_iter(num_items_per_iter)
@@ -378,7 +379,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 "to items (columns):\n"
                 f"{str(predicted_scores)}"
             )
-        assert predicted_scores is not None
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
@@ -391,10 +391,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            k : int (optional, default: 1)
+            k : int, default 1
                 Number of items to recommend.
 
-            item_indices : :obj:`numpy.ndarray` or None (optional, default: None)
+            item_indices : :obj:`numpy.ndarray`, optional
                 A matrix containing the indices of the items each user has not yet
                 interacted with. It is used to ensure that the user is presented
                 with items they have not already interacted with. If `None`,
@@ -436,22 +436,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
             return rec[:, picks]
         else:
-            # scores are U x I; we can use argpartition to take the top k scores
-            negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
-            # break ties using a random score component
-            scores_tiebreak = np.zeros(
-                negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")]
-            )
-            scores_tiebreak["score"] = negated_scores
-            scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
-            top_k = scores_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
-            # now we sort within the top k
-            row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
-            # again, indices should go from highest to lowest
-            sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
-            rec = item_indices[
-                row, top_k[row, sort_top_k]
-            ]  # extract items such that rows go from highest scored to lowest-scored of top-k
+            # returns top k indices, sorted from greatest to smallest
+            sort_top_k = mo.top_k_indices(s_filtered, k, self.random_state)
+            # convert top k indices into actual item IDs
+            rec = item_indices[row[:, :k], sort_top_k]
             if self.is_verbose():
                 self.log(f"Item indices:\n{str(item_indices)}")
                 self.log(
@@ -521,24 +509,25 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
 
         Parameters
         -----------
-            startup: bool (optional, default: False)
+            startup: bool, default False
                 If True, the system is in "startup"  (exploration) mode and
                 only presents the user with new randomly chosen items. This is
                 done to maximize exploration.
 
-            random_items_per_iter: int (optional, default: 0)
+            random_items_per_iter: int, default 0
                 Number of per-user item recommendations that should be
-                randomly generated. Passing in `1.0` will result in all
-                recommendations being randomly generated, while passing in `0.0`
-                will result in all recommendations coming from predicted score.
+                randomly generated. Passing in ``self.num_items_per_iter``
+                will result in all recommendations being randomly generated,
+                while passing in ``0`` will result in all recommendations
+                coming from predicted score.
 
-            vary_random_items_per_iter: bool (optional, default: False)
-                If true, then at each timestep, the # of items that are recommended
+            vary_random_items_per_iter: bool, default False
+                If ``True``, then at each timestep, the # of items that are recommended
                 randomly is itself randomly generated between 0 and
-                `random_items_per_iter`, inclusive.
+                ``random_items_per_iter``, inclusive.
 
-            repeated_items : bool (optional, default: True)
-                If True, repeated items are allowed in the system -- that is,
+            repeated_items : bool, default True
+                If ``True``, repeated items are allowed in the system -- that is,
                 users can interact with the same item more than once.
 
         Returns
@@ -627,34 +616,35 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            timestep : int (optional, default: 50)
+            timestep : int, default 50
                 Number of timesteps for simulation.
 
-            startup : bool (optional, default: False)
-                If True, it runs the simulation in startup mode (see
+            startup : bool, default False
+                If ``True``, it runs the simulation in startup mode (see
                 :func:`recommend` and :func:`startup_and_train`)
 
-            train_between_steps : bool (optional, default: True)
-                If True, the model is retrained after each timestep with the
+            train_between_steps : bool, default True
+                If ``True``, the model is retrained after each timestep with the
                 information gathered in the previous step.
 
-            random_items_per_iter: float (optional, default: 0)
-                Percentage of per-user item recommendations that should be
-                randomly generated. Passing in `1.0` will result in all
-                recommendations being randomly generated, while passing in `0.0`
-                will result in all recommendations coming from predicted score.
+            random_items_per_iter: int, default 0
+                Number of per-user item recommendations that should be
+                randomly generated. Passing in ``self.num_items_per_iter`` will
+                result in all recommendations being randomly generated, while passing
+                in ``0`` will result in all recommendations coming from predicted scores.
 
-            vary_random_items_per_iter: bool (optional, default: False)
-                If true, then at each timestep, the # of items that are recommended
+            vary_random_items_per_iter: bool, default False
+                If ``True``, then at each timestep, the # of items that are recommended
                 randomly is itself randomly generated between 0 and
-                `random_items_per_iter`, inclusive.
+                ``random_items_per_iter``, inclusive.
 
-            repeated_items : bool (optional, default: True)
-                If True, repeated items are allowed in the system -- that is,
-                users can interact with the same item more than once.
+            repeated_items : bool, default True
+                If ``True``, repeated items are allowed in the system -- that is,
+                the system can recommend items to users that they've already previously
+                interacted with.
 
-            no_new_items : bool (optional, default: False)
-                If True, then no new items are created during these timesteps. This
+            no_new_items : bool, default False
+                If ``True``, then no new items are created during these timesteps. This
                 can be helpful, say, during a "training" period where no new items should be
                 made.
         """
@@ -680,10 +670,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 vary_random_items_per_iter=vary_random_items_per_iter,
                 repeated_items=repeated_items,
             )
-            # important: we use the true item attributes to get user feedback
-            self.interactions = self.users.get_user_feedback(
-                items_shown=self.items_shown, item_attributes=self.actual_item_attributes
-            )
+            self.interactions = self.users.get_user_feedback(self.items_shown)
             if not repeated_items:
                 self.indices[self.users.user_vector, self.interactions] = -1
             self._update_internal_state(self.interactions)
@@ -696,6 +683,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # update creators if any
             if self.creators is not None:
                 self.creators.update_profiles(self.interactions, self.actual_item_attributes)
+            # update users if needed
+            if self.users.drift > 0:
+                # update user profiles based on the attributes of items they
+                # interacted with
+                interact_attrs = self.actual_item_attributes.T[self.interactions, :]
+                self.users.update_profiles(interact_attrs)
+                # update user scores
+                self.users.compute_user_scores(self.actual_item_attributes)
             # train between steps:
             if train_between_steps:
                 self.train()
@@ -712,13 +707,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Parameters
         -----------
 
-            timesteps : int (optional, default: 50)
+            timesteps : int, default 50
                 Number of timesteps for simulation
 
-            no_new_items : bool (optional, default: False)
-                If True, then no new items are created during these timesteps. This
-                can be helpful, say, during a "training" period where no new items should be
-                made.
+            no_new_items : bool, default False
+                If ``True``, then no new items are created during these timesteps.
+                This is only relevant when you have item
+                :class:`~components.creators.Creators`. This can be helpful, say, during
+                a "training" period where no new items should be made.
         """
         if self.is_verbose():
             self.log("Startup -- recommend random items")

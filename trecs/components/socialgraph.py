@@ -1,5 +1,5 @@
-""" A binary social graph that represents relationships between users which
-    can be used in different types of recommender systems
+""" A binary social graph represents relationships between users which
+    can be used in different types of recommender systems.
 """
 import numpy as np
 from trecs.logging import VerboseMode
@@ -12,7 +12,7 @@ class BinarySocialGraph(VerboseMode):
     :attr:`~trecs.models.recommender.BaseRecommender.users_hat` attribute
     to gain the basic functionality of a binary social graph.
 
-    It assumes a network adjacency matrix of size `|U|x|U|`.
+    It assumes a network adjacency matrix of size :math:`|U|\\times |U|`.
     """
 
     # expect these to be initialized

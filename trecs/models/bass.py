@@ -112,52 +112,52 @@ class BassModel(BaseRecommender, BinarySocialGraph):
     Parameters
     -----------
 
-        num_users: int (optional, default: 100)
+        num_users: int, default 100
             The number of users :math:`|U|` in the system.
 
-        num_items: int (optional, default: 1250)
+        num_items: int, default 1250
             The number of items :math:`|I|` in the system.
 
-        infection_state: :obj:`numpy.ndarray` or None (optional, default: None)
+        infection_state: :obj:`numpy.ndarray`, optional
             Component that tracks infection state, which is a binary (0/1) array with
             an element recording whether each user is infected. Should be of
             dimension :math:`|U|\\times|I|`.
 
-        infection_thresholds: :obj:`numpy.ndarray` or None (optional, default: None)
+        infection_thresholds: :obj:`numpy.ndarray`, optional
             Component that tracks infection thresholds for each user. Should be of
             dimension :math:`1\\times|U|`.
 
-        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        user_representation: :obj:`numpy.ndarray`, optional
             A :math:`|U|\\times|A|` matrix representing the similarity between
             each item and attribute, as interpreted by the system.
 
-        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|A|\\times|I|` matrix representing the similarity between
             each item and attribute.
 
-        actual_user_representation: :obj:`numpy.ndarray` or None or \
-                            :class:`~components.users.Users` (optional, default: None)
+        actual_user_representation: :obj:`numpy.ndarray` or \
+                            :class:`~components.users.Users`, optional
             Either a :math:`|U|\\times|T|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying user profile,
             or a `Users` object that contains the real user profiles or real
             user-item scores. This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)
+        actual_item_representation: :obj:`numpy.ndarray`, optional
             A :math:`|T|\\times|I|` matrix representing the real user profiles, where
             :math:`T` is the number of attributes in the real underlying item profile.
             This matrix is **not** used for recommendations. This
             is only kept for measurements and the system is unaware of it.
 
-        num_items_per_iter: int (optional, default: 10)
+        num_items_per_iter: int, default 10
             Number of items presented to the user per iteration.
 
-        seed: int, None (optional, default: None)
+        seed: int, optional
             Seed for random generator.
 
     Attributes
     -----------
-        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`
+        Inherited from BaseRecommender: :class:`~models.recommender.BaseRecommender`
     """
 
     def __init__(  # pylint: disable-all
@@ -278,18 +278,21 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         )
 
     def _update_internal_state(self, interactions):
-        """Private function that updates user profiles with data from
-            latest interactions.
+        """
+        Private function that updates user profiles with data from
+        latest interactions.
 
-            Specifically, this function converts interactions into item attributes.
-            For example, if user :math:`u` has interacted with item :math:`i`,
-            then item :math:`i`'s attributes will be updated to increase the
-            similarity between :math:`u` and :math:`i`.
+        Specifically, this function converts interactions into item attributes.
+        For example, if user :math:`u` has interacted with item :math:`i`,
+        then item :math:`i`'s attributes will be updated to increase the
+        similarity between :math:`u` and :math:`i`.
 
-        Args:
-            interactions (numpy.ndarray): An array of item indices that users have
-                interacted with in the latest step. Namely, interactions_u represents
-                the index of the item that the user has interacted with.
+        Parameters
+        ------------
+            interactions: :obj:`numpy.ndarray`
+                An array of item indices that users have interacted with in the
+                latest step. Namely, :math:`\\text{interactions}_u` represents
+                the index of the item that the user :math:`u` has interacted with.
 
         """
         # fetch infection probabilities for each user
@@ -302,15 +305,17 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         self.infection_state.infect_users(newly_infected_users, interactions[newly_infected_users])
 
     def infection_probabilities(self, user_profiles, item_attributes):
-        """Calculates the infection probabilities for each user at the current
-        timestep
-        Args:
+        """
+        Calculates the infection probabilities for each user at the current
+        timestep.
 
-        user_profiles: :obj:`array_like`
+        Parameters
+        ------------
+        user_profiles: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`
             First factor of the dot product, which should provide a
             representation of users.
 
-        item_attributes: :obj:`array_like`
+        item_attributes: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`
             Second factor of the dot product, which should provide a
             representation of items.
         """
@@ -329,29 +334,30 @@ class BassModel(BaseRecommender, BinarySocialGraph):
         timesteps="until_completion",
         startup=False,
         train_between_steps=True,
-        repeated_items=True,
     ):
-        """Overrides run method of parent class :class:`Recommender`, so that
-        repeated_items defaults to True in Bass models.
+        """
+        Overrides run method of parent class :class:`Recommender`, so that
+        ``repeated_items`` defaults to ``True`` in Bass models.
 
-        Args:
-            timestep (int, optional): number of timesteps for simulation
+        Parameters
+        ------------
+            timestep: int, optional
+                Number of timesteps for simulation
 
-            startup (bool, optional): if True, it runs the simulation in
+            startup: bool, default False
+                If True, it runs the simulation in
                 startup mode (see recommend() and startup_and_train())
 
-            train_between_steps (bool, optional): if True, the model is
-                retrained after each step with the information gathered
-                in the previous step.
+            train_between_steps: bool, default True
+                If True, the model is retrained after each step with the
+                information gathered in the previous step.
 
-            repeated_items (bool, optional): if True, repeated items are allowed
-                in the system -- that is, users can interact with the same
-                item more than once. Examples of common instances in which
-                this is useful: infection and network propagation models.
-                Default is False.
+            repeated_items: bool, default True
+                If True, repeated items are allowed in the system -- that
+                is, users can interact with the same item more than once.
+                Examples of common instances in which this is useful: infection
+                and network propagation models.
         """
-        # NOTE: force repeated_items to True
-        repeated_items = True
         # option to run until cascade completes
         if timesteps == "until_completion":
             num_infected = 1
@@ -360,7 +366,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                     self,
                     startup=startup,
                     train_between_steps=train_between_steps,
-                    repeated_items=repeated_items,
+                    repeated_items=True,
                     disable_tqdm=True,
                 )
                 num_infected = self.infection_state.num_infected
@@ -370,7 +376,7 @@ class BassModel(BaseRecommender, BinarySocialGraph):
                 timesteps=timesteps,
                 startup=startup,
                 train_between_steps=train_between_steps,
-                repeated_items=repeated_items,
+                repeated_items=True,
             )
 
     def draw_diffusion_tree(self):
