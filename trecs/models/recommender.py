@@ -670,10 +670,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 vary_random_items_per_iter=vary_random_items_per_iter,
                 repeated_items=repeated_items,
             )
-            # important: we use the true item attributes to get user feedback
-            self.interactions = self.users.get_user_feedback(
-                items_shown=self.items_shown, item_attributes=self.actual_item_attributes
-            )
+            self.interactions = self.users.get_user_feedback(self.items_shown)
             if not repeated_items:
                 self.indices[self.users.user_vector, self.interactions] = -1
             self._update_internal_state(self.interactions)
@@ -686,6 +683,14 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             # update creators if any
             if self.creators is not None:
                 self.creators.update_profiles(self.interactions, self.actual_item_attributes)
+            # update users if needed
+            if self.users.drift > 0:
+                # update user profiles based on the attributes of items they
+                # interacted with
+                interact_attrs = self.actual_item_attributes.T[self.interactions, :]
+                self.users.update_profiles(interact_attrs)
+                # update user scores
+                self.users.compute_user_scores(self.actual_item_attributes)
             # train between steps:
             if train_between_steps:
                 self.train()

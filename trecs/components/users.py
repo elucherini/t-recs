@@ -453,7 +453,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         else:
             return self.actual_user_scores[user, :]
 
-    def get_user_feedback(self, *args, **kwargs):
+    def get_user_feedback(self, items_shown):
         """
         Generates user interactions at a given timestep, generally called by a
         model.
@@ -467,9 +467,6 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         items_shown: :obj:`numpy.ndarray`
             A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
-
-        item_attributes: :obj:`numpy.ndarray`
-            A :math:`|A|\\times|I|` matrix with item attributes.
 
         Returns
         ---------
@@ -486,11 +483,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         # use custom item interaction function, if provided
         if self.interact_with_items is not None:
-            return self.interact_with_items(*args, **kwargs)
-        items_shown = kwargs.pop("items_shown", None)
-        item_attributes = kwargs.pop("item_attributes", None)
-        if items_shown is None:
-            raise ValueError("Items can't be None")
+            return self.interact_with_items(self, items_shown)
         if not self.repeat_interactions:
             # scores must be set back later to non-infinite values
             prev_interacted_scores = self.actual_user_scores.get_item_scores(self.user_interactions)
@@ -504,15 +497,6 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         if self.is_verbose():
             self.log(f"User scores for given items are:\n{str(rec_item_scores)}")
             self.log(f"Users interact with the following items respectively:\n{str(interactions)}")
-        if self.drift > 0:
-            if item_attributes is None:
-                raise ValueError("Item attributes can't be None if user preferences are dynamic")
-            # update user profiles based on the attributes of items they
-            # interacted with
-            interact_attrs = item_attributes.T[interactions, :]
-            self.update_profiles(interact_attrs)
-            # update user scores
-            self.compute_user_scores(item_attributes)
         # record interactions if needed to ensure users don't repeat interactions
         if not self.repeat_interactions:
             # set scores back to the original scores
@@ -629,7 +613,7 @@ class DNUsers(Users):
         self.omega = omega
         self.beta = beta
 
-    def get_user_feedback(self, *args, **kwargs):
+    def get_user_feedback(self, items_shown):
         """
         Generates user interactions at a given timestep, generally called by a
         model.
@@ -644,8 +628,6 @@ class DNUsers(Users):
             A :math:`|U|\\times\\text{num_items_per_iter}` matrix with
             recommendations and new items.
 
-        item_attributes: :obj:`numpy.ndarray`
-            A :math:`|A|\\times|I|` matrix with item attributes.
 
         Returns
         ---------
@@ -661,11 +643,8 @@ class DNUsers(Users):
             parameter.
         """
         if self.interact_with_items is not None:
-            return self.interact_with_items(*args, **kwargs)
-        items_shown = kwargs.pop("items_shown", None)
-        item_attributes = kwargs.pop("item_attributes", None)
-        if items_shown is None:
-            raise ValueError("Items can't be None")
+            return self.interact_with_items(self, items_shown)
+
         reshaped_user_vector = self.user_vector.reshape((items_shown.shape[0], 1))
         interaction_scores = self.actual_user_scores[reshaped_user_vector, items_shown]
 
@@ -675,15 +654,6 @@ class DNUsers(Users):
         interactions = items_shown[self.user_vector, sorted_user_preferences]
         self.log("Users interact with the following items respectively:\n" + str(interactions))
 
-        if self.drift > 0:
-            if item_attributes is None:
-                raise ValueError("Item attributes can't be None if user preferences are dynamic")
-            # update user profiles based on the attributes of items they
-            # interacted with
-            interact_attrs = item_attributes.T[interactions, :]
-            self.update_profiles(interact_attrs)
-            # update user scores
-            self.compute_user_scores(item_attributes)
         return interactions
 
     def normalize_values(self, user_item_scores):

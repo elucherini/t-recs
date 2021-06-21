@@ -23,7 +23,7 @@ class TestUsers:
         # can't normalize a vector that isn't a matrix
         s = Users(actual_user_profiles=np.array([[1, 2, 3]]))
 
-    def test_content(self, num_items=10, num_attr=5, num_users=6, expand_items_by=2):
+    def test_content(self, num_items=10, num_attr=5, num_users=6):
         """WARNING Before running this, make sure ContentFiltering is working properly"""
         # user_repr = actual_user_repr
         item_repr = np.random.randint(2, size=(num_attr, num_items))
@@ -48,6 +48,20 @@ class TestUsers:
         model.train()
         with np.testing.assert_raises(AssertionError):
             np.testing.assert_array_equal(s.actual_user_scores, model.predicted_scores)
+
+    def test_interact_with_items(self, num_users=15):
+        def dummy_interact(users, items_shown):
+            # return the first item shown
+            return items_shown[:, 0]
+
+
+        u = Users(interact_with_items=dummy_interact, size=(num_users, 1))
+        items_shown = np.zeros((num_users, num_users))
+        # the first item each user is shown corresponds to their own index
+        items_shown[:, 0] = np.arange(num_users)
+        result = u.get_user_feedback(items_shown=items_shown)
+        np.testing.assert_array_equal(result, np.arange(num_users))
+
 
     def test_seeding(self, num_users=15, num_attr=15, seed=None):
         if seed is None:
@@ -107,14 +121,14 @@ class TestUsers:
         items[:, 1] = 1.5
         users.compute_user_scores(items)
         items_shown = np.tile(np.arange(num_items), (num_users, 1))
-        feedback = users.get_user_feedback(items_shown=items_shown)
+        feedback = users.get_user_feedback(items_shown)
         np.testing.assert_array_equal(feedback, np.zeros(num_users))
 
         # when we turn user attention off, we should see that all users
         # interact with item 1
         users.attention_exp = 0
         users.compute_user_scores(items)
-        feedback = users.get_user_feedback(items_shown=items_shown)
+        feedback = users.get_user_feedback(items_shown)
         np.testing.assert_array_equal(feedback, np.ones(num_users))
 
     def test_no_repeated_items(self):
@@ -128,15 +142,15 @@ class TestUsers:
         users.compute_user_scores(items)
         items_shown = np.tile(np.arange(num_items), (num_users, 1))  # all items shown to all users
         # all users should like the 0th item best
-        feedback = users.get_user_feedback(items_shown=items_shown)
+        feedback = users.get_user_feedback(items_shown)
         np.testing.assert_array_equal(feedback, np.zeros(num_users))
         # all users should then like the 1st item, since they're not
         # allowed to repeat interactions
-        feedback = users.get_user_feedback(items_shown=items_shown)
+        feedback = users.get_user_feedback(items_shown)
         np.testing.assert_array_equal(feedback, np.ones(num_users))
         # all users should then like the 2nd item, since they're not
         # allowed to repeat interactions
-        feedback = users.get_user_feedback(items_shown=items_shown)
+        feedback = users.get_user_feedback(items_shown)
         np.testing.assert_array_equal(feedback, np.ones(num_users) * 2)
         # test that all users still have well-defined score values;
         # i.e., no score values are equal to negative infinity, they
