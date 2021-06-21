@@ -306,6 +306,49 @@ def argmax(matrix, axis=None):
     return generic_matrix_op(np.argmax, sparse_argmax, matrix, axis=axis)
 
 
+def top_k_indices(matrix, k, random_state):
+    """
+    Given a matrix of values, we return the indices of the greatest values,
+    per-row, where the indices will appear in descending order of associated
+    value. This method is efficient in that we use argpartition to take
+    the top k indices first before sorting within the top k indices. We also
+    tie break randomly.
+
+    Parameters
+    -----------
+        matrix: :obj:`numpy.ndarray`
+            Matrix of input values.
+
+        k: int
+            Number of top indices to return per row.
+
+        random_state: :obj:`numpy.random.RandomState`
+            Random state generator used for random tiebreaking
+
+    Returns
+    --------
+        :obj:`numpy.ndarray`:
+            Matrix with ``k`` columns and the same number of rows as the
+            original matrix, containing the top-k indices per row, sorted
+            in descending order of value
+    """
+    # scores are U x I; we can use argpartition to take the top k scores
+    negated = -1 * matrix  # negate scores so indices go from highest to lowest
+    # break ties using a random score component
+    vals_tiebreak = np.zeros(
+        negated.shape, dtype=[("score", "f8"), ("random", "f8")]
+    )
+    vals_tiebreak["score"] = negated
+    vals_tiebreak["random"] = random_state.random(negated.shape)
+    top_k = vals_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
+    # now we sort within the top k
+    num_rows = matrix.shape[0]
+    row_vector = np.repeat(np.arange(num_rows, dtype=int), k).reshape((num_rows, -1))
+    # again, indices should go from highest to lowest, so we sort within the top_k
+    sort_top_k = vals_tiebreak[row_vector, top_k].argsort(order=["score", "random"])
+    return top_k[row_vector, sort_top_k]
+
+
 def add_empty_cols(matrix, num_cols):
     """
     Adds empty columns to a matrix, which can be either a sparse
@@ -482,8 +525,11 @@ def slerp(mat1, mat2, perc=0.05):
     """
     # in case Components were passed
     mat1, mat2 = extract_values(mat1, mat2)
-    assert 0 <= perc <= 1.0
-    assert mat1.shape == mat2.shape  # arrays should have same dimension
+    if perc < 0 or perc > 1.0:
+        raise ValueError("Percentage rotation must be between 0 and 1.")
+    if not mat1.shape == mat2.shape:
+        # arrays should have same dimension
+        raise ValueError("Matrices must have the same shape for rows to be rotated")
     if len(mat1.shape) == 1:
         # turn vector into matrix with one row
         mat1 = mat1[np.newaxis, :]

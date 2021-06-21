@@ -193,16 +193,17 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         # and items
         self.users_hat = PredictedUserProfiles(users_hat)
         self.items_hat = PredictedItems(items_hat)
-        assert callable(score_fn)  # score function must be a function
+        if not callable(score_fn):
+            # score function must be a function
+            raise TypeError("Custom score function must be a callable method")
         self.score_fn = score_fn
-        if interleaving_fn:
-            # make sure interleaving function (if passed) is callable
-            assert callable(interleaving_fn)
+        if interleaving_fn and not callable(interleaving_fn):
+            # interleaving function must be callable
+            raise TypeError("Custom interleaving function must be a callable method")
         self.interleaving_fn = interleaving_fn
         # set predicted scores
         self.predicted_scores = None
         self.train()
-        assert self.predicted_scores is not None
         # determine whether recommendations should be randomized, rather than
         # top-k by predicted score
         self.probabilistic_recommendations = probabilistic_recommendations
@@ -219,8 +220,9 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             raise TypeError("num_items must be an int")
         if not is_valid_or_none(num_items_per_iter, (str, int)):
             raise TypeError("num_items_per_iter must be an int or string 'all'")
-        if isinstance(num_items_per_iter, int):
-            assert num_items_per_iter > 0  # check number of items per iteration is positive
+        if isinstance(num_items_per_iter, int) and num_items_per_iter < 1:
+            # check number of items per iteration is positive
+            raise ValueError("num_items_per_iter must be greater than zero")
         if not hasattr(self, "metrics"):
             raise ValueError("You must define at least one measurement module")
 
@@ -266,7 +268,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             self.add_state_variable(*system_state)
 
         self.initialize_user_scores()
-        assert self.users and isinstance(self.users, Users)
         self.num_users = num_users
         self.num_items = num_items
         self.set_num_items_per_iter(num_items_per_iter)
@@ -378,7 +379,6 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
                 "to items (columns):\n"
                 f"{str(predicted_scores)}"
             )
-        assert predicted_scores is not None
         if self.predicted_scores is None:
             self.predicted_scores = PredictedScores(predicted_scores)
         else:
@@ -436,22 +436,10 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             picks = np.random.choice(num_items_unseen, k, replace=False, p=probabilities)
             return rec[:, picks]
         else:
-            # scores are U x I; we can use argpartition to take the top k scores
-            negated_scores = -1 * s_filtered  # negate scores so indices go from highest to lowest
-            # break ties using a random score component
-            scores_tiebreak = np.zeros(
-                negated_scores.shape, dtype=[("score", "f8"), ("random", "f8")]
-            )
-            scores_tiebreak["score"] = negated_scores
-            scores_tiebreak["random"] = self.random_state.random(negated_scores.shape)
-            top_k = scores_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]
-            # now we sort within the top k
-            row = np.repeat(self.users.user_vector, k).reshape((self.num_users, -1))
-            # again, indices should go from highest to lowest
-            sort_top_k = scores_tiebreak[row, top_k].argsort(order=["score", "random"])
-            rec = item_indices[
-                row, top_k[row, sort_top_k]
-            ]  # extract items such that rows go from highest scored to lowest-scored of top-k
+            # returns top k indices, sorted from greatest to smallest
+            sort_top_k = mo.top_k_indices(s_filtered, k, self.random_state)
+            # convert top k indices into actual item IDs
+            rec = item_indices[row[:, :k], sort_top_k]
             if self.is_verbose():
                 self.log(f"Item indices:\n{str(item_indices)}")
                 self.log(
