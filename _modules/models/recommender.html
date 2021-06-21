@@ -238,7 +238,7 @@
 <span class="sd">        verbose: bool (optional, default: False)</span>
 <span class="sd">            If True, it enables verbose mode.</span>
 
-<span class="sd">        seed: int, None (optional, default: None)</span>
+<span class="sd">        seed: int, optional</span>
 <span class="sd">            Seed for random generator used</span>
 
 <span class="sd">    Attributes</span>
@@ -281,7 +281,7 @@
 <span class="sd">            system.</span>
 
 <span class="sd">        probabilistic_recommendations: bool (optional, default: False)</span>
-<span class="sd">            When this flag is set to `True`, the recommendations (excluding</span>
+<span class="sd">            When this flag is set to ``True``, the recommendations (excluding</span>
 <span class="sd">            any random interleaving) will be randomized, meaning that items</span>
 <span class="sd">            will be recommended with a probability proportionate to their</span>
 <span class="sd">            predicted score, rather than the top `k` items, as ranked by their</span>
@@ -307,14 +307,14 @@
 <span class="sd">        score_fn: callable</span>
 <span class="sd">            Function that is used to calculate each user&#39;s predicted scores for</span>
 <span class="sd">            each candidate item. The score function should take as input</span>
-<span class="sd">            user_profiles and item_attributes.</span>
+<span class="sd">            ``user_profiles`` and ``item_attributes``.</span>
 
 <span class="sd">        interleaving_fn: callable</span>
 <span class="sd">            Function that is used to determine the indices of items that will be</span>
 <span class="sd">            interleaved into the recommender system&#39;s recommendations. The</span>
-<span class="sd">            interleaving function should take as input an integer `k` (representing</span>
+<span class="sd">            interleaving function should take as input an integer ``k`` (representing</span>
 <span class="sd">            the number of items to be interleaved in every recommendation set) and</span>
-<span class="sd">            a matrix `item_indices` (representing which items are eligible to be</span>
+<span class="sd">            a matrix ``item_indices`` (representing which items are eligible to be</span>
 <span class="sd">            interleaved). The function should return a :math:`|U|\\times k` matrix</span>
 <span class="sd">            representing the interleaved items for each user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -350,16 +350,17 @@
         <span class="c1"># and items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span> <span class="o">=</span> <span class="n">PredictedUserProfiles</span><span class="p">(</span><span class="n">users_hat</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span> <span class="o">=</span> <span class="n">PredictedItems</span><span class="p">(</span><span class="n">items_hat</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">score_fn</span><span class="p">)</span>  <span class="c1"># score function must be a function</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">score_fn</span><span class="p">):</span>
+            <span class="c1"># score function must be a function</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Custom score function must be a callable method&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span> <span class="o">=</span> <span class="n">score_fn</span>
-        <span class="k">if</span> <span class="n">interleaving_fn</span><span class="p">:</span>
-            <span class="c1"># make sure interleaving function (if passed) is callable</span>
-            <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">interleaving_fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interleaving_fn</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">interleaving_fn</span><span class="p">):</span>
+            <span class="c1"># interleaving function must be callable</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Custom interleaving function must be a callable method&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interleaving_fn</span> <span class="o">=</span> <span class="n">interleaving_fn</span>
         <span class="c1"># set predicted scores</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="c1"># determine whether recommendations should be randomized, rather than</span>
         <span class="c1"># top-k by predicted score</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">probabilistic_recommendations</span> <span class="o">=</span> <span class="n">probabilistic_recommendations</span>
@@ -376,8 +377,9 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_items must be an int&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_or_none</span><span class="p">(</span><span class="n">num_items_per_iter</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;num_items_per_iter must be an int or string &#39;all&#39;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_items_per_iter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">num_items_per_iter</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># check number of items per iteration is positive</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_items_per_iter</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">num_items_per_iter</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># check number of items per iteration is positive</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;num_items_per_iter must be greater than zero&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;metrics&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must define at least one measurement module&quot;</span><span class="p">)</span>
 
@@ -423,7 +425,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_state_variable</span><span class="p">(</span><span class="o">*</span><span class="n">system_state</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_user_scores</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="p">,</span> <span class="n">Users</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_users</span> <span class="o">=</span> <span class="n">num_users</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span> <span class="o">=</span> <span class="n">num_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_num_items_per_iter</span><span class="p">(</span><span class="n">num_items_per_iter</span><span class="p">)</span>
@@ -535,7 +536,6 @@
                 <span class="s2">&quot;to items (columns):</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">predicted_scores</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">predicted_scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">predicted_scores</span> <span class="o">=</span> <span class="n">PredictedScores</span><span class="p">(</span><span class="n">predicted_scores</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -548,10 +548,10 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            k : int (optional, default: 1)</span>
+<span class="sd">            k : int, default 1</span>
 <span class="sd">                Number of items to recommend.</span>
 
-<span class="sd">            item_indices : :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">            item_indices : :obj:`numpy.ndarray`, optional</span>
 <span class="sd">                A matrix containing the indices of the items each user has not yet</span>
 <span class="sd">                interacted with. It is used to ensure that the user is presented</span>
 <span class="sd">                with items they have not already interacted with. If `None`,</span>
@@ -593,22 +593,10 @@
             <span class="n">picks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">num_items_unseen</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">probabilities</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">rec</span><span class="p">[:,</span> <span class="n">picks</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># scores are U x I; we can use argpartition to take the top k scores</span>
-            <span class="n">negated_scores</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">s_filtered</span>  <span class="c1"># negate scores so indices go from highest to lowest</span>
-            <span class="c1"># break ties using a random score component</span>
-            <span class="n">scores_tiebreak</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                <span class="n">negated_scores</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="s2">&quot;f8&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="s2">&quot;f8&quot;</span><span class="p">)]</span>
-            <span class="p">)</span>
-            <span class="n">scores_tiebreak</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">negated_scores</span>
-            <span class="n">scores_tiebreak</span><span class="p">[</span><span class="s2">&quot;random&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">negated_scores</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-            <span class="n">top_k</span> <span class="o">=</span> <span class="n">scores_tiebreak</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">])[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">]</span>
-            <span class="c1"># now we sort within the top k</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-            <span class="c1"># again, indices should go from highest to lowest</span>
-            <span class="n">sort_top_k</span> <span class="o">=</span> <span class="n">scores_tiebreak</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">top_k</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">])</span>
-            <span class="n">rec</span> <span class="o">=</span> <span class="n">item_indices</span><span class="p">[</span>
-                <span class="n">row</span><span class="p">,</span> <span class="n">top_k</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">sort_top_k</span><span class="p">]</span>
-            <span class="p">]</span>  <span class="c1"># extract items such that rows go from highest scored to lowest-scored of top-k</span>
+            <span class="c1"># returns top k indices, sorted from greatest to smallest</span>
+            <span class="n">sort_top_k</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">top_k_indices</span><span class="p">(</span><span class="n">s_filtered</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+            <span class="c1"># convert top k indices into actual item IDs</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="n">item_indices</span><span class="p">[</span><span class="n">row</span><span class="p">[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">],</span> <span class="n">sort_top_k</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item indices:</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">item_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
@@ -678,24 +666,25 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
-<span class="sd">            startup: bool (optional, default: False)</span>
+<span class="sd">            startup: bool, default False</span>
 <span class="sd">                If True, the system is in &quot;startup&quot;  (exploration) mode and</span>
 <span class="sd">                only presents the user with new randomly chosen items. This is</span>
 <span class="sd">                done to maximize exploration.</span>
 
-<span class="sd">            random_items_per_iter: int (optional, default: 0)</span>
+<span class="sd">            random_items_per_iter: int, default 0</span>
 <span class="sd">                Number of per-user item recommendations that should be</span>
-<span class="sd">                randomly generated. Passing in `1.0` will result in all</span>
-<span class="sd">                recommendations being randomly generated, while passing in `0.0`</span>
-<span class="sd">                will result in all recommendations coming from predicted score.</span>
+<span class="sd">                randomly generated. Passing in ``self.num_items_per_iter``</span>
+<span class="sd">                will result in all recommendations being randomly generated,</span>
+<span class="sd">                while passing in ``0`` will result in all recommendations</span>
+<span class="sd">                coming from predicted score.</span>
 
-<span class="sd">            vary_random_items_per_iter: bool (optional, default: False)</span>
-<span class="sd">                If true, then at each timestep, the # of items that are recommended</span>
+<span class="sd">            vary_random_items_per_iter: bool, default False</span>
+<span class="sd">                If ``True``, then at each timestep, the # of items that are recommended</span>
 <span class="sd">                randomly is itself randomly generated between 0 and</span>
-<span class="sd">                `random_items_per_iter`, inclusive.</span>
+<span class="sd">                ``random_items_per_iter``, inclusive.</span>
 
-<span class="sd">            repeated_items : bool (optional, default: True)</span>
-<span class="sd">                If True, repeated items are allowed in the system -- that is,</span>
+<span class="sd">            repeated_items : bool, default True</span>
+<span class="sd">                If ``True``, repeated items are allowed in the system -- that is,</span>
 <span class="sd">                users can interact with the same item more than once.</span>
 
 <span class="sd">        Returns</span>
@@ -784,34 +773,35 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            timestep : int (optional, default: 50)</span>
+<span class="sd">            timestep : int, default 50</span>
 <span class="sd">                Number of timesteps for simulation.</span>
 
-<span class="sd">            startup : bool (optional, default: False)</span>
-<span class="sd">                If True, it runs the simulation in startup mode (see</span>
+<span class="sd">            startup : bool, default False</span>
+<span class="sd">                If ``True``, it runs the simulation in startup mode (see</span>
 <span class="sd">                :func:`recommend` and :func:`startup_and_train`)</span>
 
-<span class="sd">            train_between_steps : bool (optional, default: True)</span>
-<span class="sd">                If True, the model is retrained after each timestep with the</span>
+<span class="sd">            train_between_steps : bool, default True</span>
+<span class="sd">                If ``True``, the model is retrained after each timestep with the</span>
 <span class="sd">                information gathered in the previous step.</span>
 
-<span class="sd">            random_items_per_iter: float (optional, default: 0)</span>
-<span class="sd">                Percentage of per-user item recommendations that should be</span>
-<span class="sd">                randomly generated. Passing in `1.0` will result in all</span>
-<span class="sd">                recommendations being randomly generated, while passing in `0.0`</span>
-<span class="sd">                will result in all recommendations coming from predicted score.</span>
+<span class="sd">            random_items_per_iter: int, default 0</span>
+<span class="sd">                Number of per-user item recommendations that should be</span>
+<span class="sd">                randomly generated. Passing in ``self.num_items_per_iter`` will</span>
+<span class="sd">                result in all recommendations being randomly generated, while passing</span>
+<span class="sd">                in ``0`` will result in all recommendations coming from predicted scores.</span>
 
-<span class="sd">            vary_random_items_per_iter: bool (optional, default: False)</span>
-<span class="sd">                If true, then at each timestep, the # of items that are recommended</span>
+<span class="sd">            vary_random_items_per_iter: bool, default False</span>
+<span class="sd">                If ``True``, then at each timestep, the # of items that are recommended</span>
 <span class="sd">                randomly is itself randomly generated between 0 and</span>
-<span class="sd">                `random_items_per_iter`, inclusive.</span>
+<span class="sd">                ``random_items_per_iter``, inclusive.</span>
 
-<span class="sd">            repeated_items : bool (optional, default: True)</span>
-<span class="sd">                If True, repeated items are allowed in the system -- that is,</span>
-<span class="sd">                users can interact with the same item more than once.</span>
+<span class="sd">            repeated_items : bool, default True</span>
+<span class="sd">                If ``True``, repeated items are allowed in the system -- that is,</span>
+<span class="sd">                the system can recommend items to users that they&#39;ve already previously</span>
+<span class="sd">                interacted with.</span>
 
-<span class="sd">            no_new_items : bool (optional, default: False)</span>
-<span class="sd">                If True, then no new items are created during these timesteps. This</span>
+<span class="sd">            no_new_items : bool, default False</span>
+<span class="sd">                If ``True``, then no new items are created during these timesteps. This</span>
 <span class="sd">                can be helpful, say, during a &quot;training&quot; period where no new items should be</span>
 <span class="sd">                made.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -837,10 +827,7 @@
                 <span class="n">vary_random_items_per_iter</span><span class="o">=</span><span class="n">vary_random_items_per_iter</span><span class="p">,</span>
                 <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="c1"># important: we use the true item attributes to get user feedback</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_user_feedback</span><span class="p">(</span>
-                <span class="n">items_shown</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">items_shown</span><span class="p">,</span> <span class="n">item_attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get_user_feedback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_shown</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">repeated_items</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">)</span>
@@ -853,6 +840,14 @@
             <span class="c1"># update creators if any</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">creators</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span><span class="p">)</span>
+            <span class="c1"># update users if needed</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">drift</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># update user profiles based on the attributes of items they</span>
+                <span class="c1"># interacted with</span>
+                <span class="n">interact_attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interact_attrs</span><span class="p">)</span>
+                <span class="c1"># update user scores</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_item_attributes</span><span class="p">)</span>
             <span class="c1"># train between steps:</span>
             <span class="k">if</span> <span class="n">train_between_steps</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
@@ -869,13 +864,14 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            timesteps : int (optional, default: 50)</span>
+<span class="sd">            timesteps : int, default 50</span>
 <span class="sd">                Number of timesteps for simulation</span>
 
-<span class="sd">            no_new_items : bool (optional, default: False)</span>
-<span class="sd">                If True, then no new items are created during these timesteps. This</span>
-<span class="sd">                can be helpful, say, during a &quot;training&quot; period where no new items should be</span>
-<span class="sd">                made.</span>
+<span class="sd">            no_new_items : bool, default False</span>
+<span class="sd">                If ``True``, then no new items are created during these timesteps.</span>
+<span class="sd">                This is only relevant when you have item</span>
+<span class="sd">                :class:`~components.creators.Creators`. This can be helpful, say, during</span>
+<span class="sd">                a &quot;training&quot; period where no new items should be made.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Startup -- recommend random items&quot;</span><span class="p">)</span>
@@ -987,7 +983,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>

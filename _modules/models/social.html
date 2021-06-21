@@ -198,22 +198,22 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 
-<span class="sd">        num_users: int (optional, default: 100)</span>
+<span class="sd">        num_users: int, default 100</span>
 <span class="sd">            The number of users :math:`|U|` in the system.</span>
 
-<span class="sd">        num_items: int (optional, default: 1250)</span>
+<span class="sd">        num_items: int, default 1250</span>
 <span class="sd">            The number of items :math:`|I|` in the system.</span>
 
-<span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        user_representation: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            A :math:`|U|\\times|U|` adjacency matrix representing each users&#39;</span>
 <span class="sd">            social network. If this is not None, `num_users` is ignored.</span>
 
-<span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        item_representation: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            A :math:`|U|\\times|I|` matrix representing the past user interactions.</span>
 <span class="sd">            If this is not None, `num_items` is ignored.</span>
 
-<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
-<span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
+<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or \</span>
+<span class="sd">                            :class:`~components.users.Users`, optional</span>
 <span class="sd">            Either a :math:`|U|\\times|T|` matrix representing the real user</span>
 <span class="sd">            profiles, where :math:`T` is the number of attributes in the real</span>
 <span class="sd">            underlying user profile, or a `Users` object that contains the real</span>
@@ -221,21 +221,21 @@
 <span class="sd">            for recommendations. This is only kept for measurements and the</span>
 <span class="sd">            system is unaware of it.</span>
 
-<span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        actual_item_representation: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            A :math:`|T|\\times|I|` matrix representing the real item profiles,</span>
 <span class="sd">            where :math:`T` is the number of attributes in the real underlying</span>
 <span class="sd">            item profile. This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
-<span class="sd">        num_items_per_iter: int (optional, default: 10)</span>
+<span class="sd">        num_items_per_iter: int, default 10</span>
 <span class="sd">            Number of items presented to the user per iteration.</span>
 
-<span class="sd">        seed: int, None (optional, default: None)</span>
+<span class="sd">        seed: int, optional</span>
 <span class="sd">            Seed for random generator.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    -----------</span>
-<span class="sd">        Inherited by BaseRecommender : :class:`~models.recommender.BaseRecommender`</span>
+<span class="sd">        Inherited from BaseRecommender : :class:`~models.recommender.BaseRecommender`</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    ----------</span>
@@ -277,9 +277,9 @@
 
 <span class="sd">        Note that all arguments passed in at initialization must be consistent -</span>
 <span class="sd">        otherwise, an error is thrown. For example, one cannot pass in</span>
-<span class="sd">        `num_users=200` but have `user_representation.shape` be `(200, 500)` or</span>
-<span class="sd">        `(300, 300)`. Likewise, one cannot pass in `num_items=1000` but have</span>
-<span class="sd">        `item_representation.shape` be `(200, 500)`.</span>
+<span class="sd">        ``num_users=200`` but have ``user_representation.shape`` be ``(200, 500)`` or</span>
+<span class="sd">        ``(300, 300)``. Likewise, one cannot pass in ``num_items=1000`` but have</span>
+<span class="sd">        ``item_representation.shape`` be ``(200, 500)``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable-all</span>
@@ -383,7 +383,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
-<span class="sd">            new_items: numpy.ndarray</span>
+<span class="sd">            new_items: :obj:`numpy.ndarray`</span>
 <span class="sd">                An array of items that represents new items that are being</span>
 <span class="sd">                added into the system. Should be :math:`|A|\\times|I|`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -401,7 +401,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>

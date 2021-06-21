@@ -178,7 +178,9 @@
 <h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-models.popularity">
 <span id="popularity-recommender"></span><h2>Popularity Recommender<a class="headerlink" href="#module-models.popularity" title="Permalink to this headline">¶</a></h2>
-<p>Popularity-based recommender system</p>
+<p>The popularity-based recommender system recommends the same items to all users,
+ranked from greatest to least in terms of popularity (i.e., how many interactions
+each item has received).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.popularity.PopularityRecommender">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.popularity.</span></span><span class="sig-name descname"><span class="pre">PopularityRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender" title="Permalink to this definition">¶</a></dt>
@@ -198,31 +200,31 @@ item attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
 each item and attribute. If this is not None, <cite>num_items</cite> is ignored.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
 each item and attribute, as interpreted by the system. If this is not
 None, <cite>num_users</cite> is ignored.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a>, optional) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
 profiles, where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real
 underlying user profile, or a <cite>Users</cite> object that contains the real
 user profiles or real user-item scores. This matrix is <strong>not</strong> used
 for recommendations. This is only kept for measurements and the
 system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 10</em><em>)</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">by</span> <span class="pre">BaseRecommender</span></span></dt>
+<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">from</span> <span class="pre">BaseRecommender</span></span></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a></p>
@@ -263,17 +265,17 @@ and 10 interactions each.</p>
 </div>
 <p>Note that all arguments passed in at initialization must be consistent -
 otherwise, an error is thrown. For example, one cannot pass in
-<cite>num_users=200</cite> but have <cite>user_representation.shape</cite> be <cite>(300, 1)</cite>.
-Likewise, one cannot pass in <cite>num_items=1000</cite> but have
-<cite>item_representation.shape</cite> be <cite>(1, 500)</cite>.</p>
+<code class="docutils literal notranslate"><span class="pre">num_users=200</span></code> but have <code class="docutils literal notranslate"><span class="pre">user_representation.shape</span></code> be <cite>(300, 1)</cite>.
+Likewise, one cannot pass in <code class="docutils literal notranslate"><span class="pre">num_items=1000</span></code> but have
+<code class="docutils literal notranslate"><span class="pre">item_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">500)</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.popularity.PopularityRecommender.process_new_items">
 <span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender.process_new_items" title="Permalink to this definition">¶</a></dt>
 <dd><p>The popularity of any new items is always zero.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_items</strong> (<em>numpy.ndarray</em>) – An array of items that represents new items that are being
-added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
+<dd class="field-odd"><p><strong>new_items</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – An array of items that represents new items that are being
+added into the system. Should be of dimension <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -283,7 +285,10 @@ added into the system. Should be <span class="math notranslate nohighlight">\(|A
 </div>
 <div class="section" id="module-models.content">
 <span id="content-filtering-recommender"></span><h2>Content Filtering Recommender<a class="headerlink" href="#module-models.content" title="Permalink to this headline">¶</a></h2>
-<p>Content filtering class</p>
+<p>The content filtering recommender system attempts to match users to items
+based on highest predicted inner product between the predicted user profile
+and predicted item profile. The predictions of user and item profiles
+are generated iteratively as users interact with items.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.content.ContentFiltering">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.content.</span></span><span class="sig-name descname"><span class="pre">ContentFiltering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilistic_recommendations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering" title="Permalink to this definition">¶</a></dt>
@@ -301,30 +306,30 @@ the similarity to each attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
-<li><p><strong>num_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1000</em><em>)</em>) – The number of attributes <span class="math notranslate nohighlight">\(|A|\)</span> in the system.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>num_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1000</em>) – The number of attributes <span class="math notranslate nohighlight">\(|A|\)</span> in the system.</p></li>
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
 each item and attribute, as interpreted by the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
 each item and attribute.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user profiles, where
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a>, optional) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user profiles, where
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying user profile,
 or a <cite>Users</cite> object that contains the real user profiles or real
 user-item scores. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 10</em><em>)</em>) – Number of items presented to the user per iteration.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">by</span> <span class="pre">BaseRecommender</span></span></dt>
+<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">from</span> <span class="pre">BaseRecommender</span></span></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a></p>
@@ -357,7 +362,7 @@ in the system.</p>
 </div>
 <p>Or by generating representations for items and/or users. In the example
 below, items are uniformly distributed. We indirectly define 100
-attributes by defining the following <cite>item_representation</cite>:</p>
+attributes by defining the following <code class="docutils literal notranslate"><span class="pre">item_representation</span></code>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">items</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
 <span class="go"># Users are represented by a power law distribution.</span>
 <span class="go"># This representation also uses 100 attributes.</span>
@@ -372,9 +377,9 @@ attributes by defining the following <cite>item_representation</cite>:</p>
 </div>
 <p>Note that all arguments passed in at initialization must be consistent -
 otherwise, an error is thrown. For example, one cannot pass in
-<cite>num_users=200</cite> but have <cite>user_representation.shape</cite> be <cite>(300, 100)</cite>.
-Likewise, one cannot pass in <cite>num_items=1000</cite> but have
-<cite>item_representation.shape</cite> be <cite>(100, 500)</cite>.</p>
+<code class="docutils literal notranslate"><span class="pre">num_users=200</span></code> but have <code class="docutils literal notranslate"><span class="pre">user_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(300,</span> <span class="pre">100)</span></code>.
+Likewise, one cannot pass in <code class="docutils literal notranslate"><span class="pre">num_items=1000</span></code> but have
+<code class="docutils literal notranslate"><span class="pre">item_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(100,</span> <span class="pre">500)</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.content.ContentFiltering.process_new_items">
 <span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.process_new_items" title="Permalink to this definition">¶</a></dt>
@@ -383,7 +388,7 @@ of the new items; therefore, when new items are created,
 we simply return the new item attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_items</strong> (<em>numpy.ndarray</em>) – An array of items that represents new items that are being
+<dd class="field-odd"><p><strong>new_items</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – An array of items that represents new items that are being
 added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
@@ -419,30 +424,30 @@ relationship.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|U|\)</span> adjacency matrix representing each users’
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|U|\)</span> adjacency matrix representing each users’
 social network. If this is not None, <cite>num_users</cite> is ignored.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the past user interactions.
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the past user interactions.
 If this is not None, <cite>num_items</cite> is ignored.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a>, optional) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user
 profiles, where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real
 underlying user profile, or a <cite>Users</cite> object that contains the real
 user profiles or real user-item scores. This matrix is <strong>not</strong> used
 for recommendations. This is only kept for measurements and the
 system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real item profiles,
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real item profiles,
 where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying
 item profile. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 10</em><em>)</em>) – Number of items presented to the user per iteration.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">by</span> <span class="pre">BaseRecommender</span></span></dt>
+<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">from</span> <span class="pre">BaseRecommender</span></span></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a></p>
@@ -490,9 +495,9 @@ by defining a <cite>100x200</cite> item representation.</p>
 </div>
 <p>Note that all arguments passed in at initialization must be consistent -
 otherwise, an error is thrown. For example, one cannot pass in
-<cite>num_users=200</cite> but have <cite>user_representation.shape</cite> be <cite>(200, 500)</cite> or
-<cite>(300, 300)</cite>. Likewise, one cannot pass in <cite>num_items=1000</cite> but have
-<cite>item_representation.shape</cite> be <cite>(200, 500)</cite>.</p>
+<code class="docutils literal notranslate"><span class="pre">num_users=200</span></code> but have <code class="docutils literal notranslate"><span class="pre">user_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(200,</span> <span class="pre">500)</span></code> or
+<code class="docutils literal notranslate"><span class="pre">(300,</span> <span class="pre">300)</span></code>. Likewise, one cannot pass in <code class="docutils literal notranslate"><span class="pre">num_items=1000</span></code> but have
+<code class="docutils literal notranslate"><span class="pre">item_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(200,</span> <span class="pre">500)</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.social.SocialFiltering.process_new_items">
 <span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.social.SocialFiltering.process_new_items" title="Permalink to this definition">¶</a></dt>
@@ -500,7 +505,7 @@ otherwise, an error is thrown. For example, one cannot pass in
 interactions from any users yet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_items</strong> (<em>numpy.ndarray</em>) – An array of items that represents new items that are being
+<dd class="field-odd"><p><strong>new_items</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – An array of items that represents new items that are being
 added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
@@ -527,34 +532,34 @@ always equal to 1).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 100</em><em>)</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1250</em><em>)</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
-<li><p><strong>infection_state</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – Component that tracks infection state, which is a binary (0/1) array with
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>infection_state</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – Component that tracks infection state, which is a binary (0/1) array with
 an element recording whether each user is infected. Should be of
 dimension <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>.</p></li>
-<li><p><strong>infection_thresholds</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – Component that tracks infection thresholds for each user. Should be of
+<li><p><strong>infection_thresholds</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – Component that tracks infection thresholds for each user. Should be of
 dimension <span class="math notranslate nohighlight">\(1\times|U|\)</span>.</p></li>
-<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
+<li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
 each item and attribute, as interpreted by the system.</p></li>
-<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
+<li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
 each item and attribute.</p></li>
-<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a> (optional, default: None)) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user profiles, where
+<li><p><strong>actual_user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or                             <a class="reference internal" href="components.html#components.users.Users" title="components.users.Users"><code class="xref py py-class docutils literal notranslate"><span class="pre">Users</span></code></a>, optional) – Either a <span class="math notranslate nohighlight">\(|U|\times|T|\)</span> matrix representing the real user profiles, where
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying user profile,
 or a <cite>Users</cite> object that contains the real user profiles or real
 user-item scores. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
+<li><p><strong>actual_item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|T|\times|I|\)</span> matrix representing the real user profiles, where
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 10</em><em>)</em>) – Number of items presented to the user per iteration.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">by</span> <span class="pre">BaseRecommender</span></span></dt>
+<span class="sig-name descname"><span class="pre">Inherited</span> <span class="pre">from</span> <span class="pre">BaseRecommender</span></span></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#models.recommender.BaseRecommender" title="models.recommender.BaseRecommender"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a></p>
@@ -578,37 +583,36 @@ is only kept for measurements and the system is unaware of it.</p></li>
 <dt class="sig sig-object py" id="models.bass.BassModel.infection_probabilities">
 <span class="sig-name descname"><span class="pre">infection_probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.infection_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.infection_probabilities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the infection probabilities for each user at the current
-timestep
-Args:</p>
-<dl class="simple">
-<dt>user_profiles: <code class="xref py py-obj docutils literal notranslate"><span class="pre">array_like</span></code></dt><dd><p>First factor of the dot product, which should provide a
-representation of users.</p>
-</dd>
-<dt>item_attributes: <code class="xref py py-obj docutils literal notranslate"><span class="pre">array_like</span></code></dt><dd><p>Second factor of the dot product, which should provide a
-representation of items.</p>
+timestep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_profiles</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.spmatrix</span></code>) – First factor of the dot product, which should provide a
+representation of users.</p></li>
+<li><p><strong>item_attributes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.spmatrix</span></code>) – Second factor of the dot product, which should provide a
+representation of items.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.BassModel.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'until_completion'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_between_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeated_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.run" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'until_completion'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_between_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overrides run method of parent class <code class="xref py py-class docutils literal notranslate"><span class="pre">Recommender</span></code>, so that
-repeated_items defaults to True in Bass models.</p>
+<code class="docutils literal notranslate"><span class="pre">repeated_items</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> in Bass models.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – number of timesteps for simulation</p></li>
-<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, it runs the simulation in
+<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Number of timesteps for simulation</p></li>
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, it runs the simulation in
 startup mode (see recommend() and startup_and_train())</p></li>
-<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, the model is
-retrained after each step with the information gathered
-in the previous step.</p></li>
-<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, repeated items are allowed
-in the system – that is, users can interact with the same
-item more than once. Examples of common instances in which
-this is useful: infection and network propagation models.
-Default is False.</p></li>
+<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, the model is retrained after each step with the
+information gathered in the previous step.</p></li>
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, repeated items are allowed in the system – that
+is, users can interact with the same item more than once.
+Examples of common instances in which this is useful: infection
+and network propagation models.</p></li>
 </ul>
 </dd>
 </dl>
@@ -716,7 +720,7 @@ predicted user-item scores at each time step.</p></li>
 each candidate item. The score function should take as input
 user_profiles and item_attributes.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator used</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator used</p></li>
 </ul>
 </dd>
 </dl>
@@ -823,7 +827,7 @@ system.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.probabilistic_recommendations">
 <span class="sig-name descname"><span class="pre">probabilistic_recommendations</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.probabilistic_recommendations" title="Permalink to this definition">¶</a></dt>
-<dd><p>When this flag is set to <cite>True</cite>, the recommendations (excluding
+<dd><p>When this flag is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the recommendations (excluding
 any random interleaving) will be randomized, meaning that items
 will be recommended with a probability proportionate to their
 predicted score, rather than the top <cite>k</cite> items, as ranked by their
@@ -889,7 +893,7 @@ that each user interacted with at the most recent time step.</p>
 <span class="sig-name descname"><span class="pre">score_fn</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.score_fn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that is used to calculate each user’s predicted scores for
 each candidate item. The score function should take as input
-user_profiles and item_attributes.</p>
+<code class="docutils literal notranslate"><span class="pre">user_profiles</span></code> and <code class="docutils literal notranslate"><span class="pre">item_attributes</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>callable</p>
@@ -902,9 +906,9 @@ user_profiles and item_attributes.</p>
 <span class="sig-name descname"><span class="pre">interleaving_fn</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.interleaving_fn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that is used to determine the indices of items that will be
 interleaved into the recommender system’s recommendations. The
-interleaving function should take as input an integer <cite>k</cite> (representing
+interleaving function should take as input an integer <code class="docutils literal notranslate"><span class="pre">k</span></code> (representing
 the number of items to be interleaved in every recommendation set) and
-a matrix <cite>item_indices</cite> (representing which items are eligible to be
+a matrix <code class="docutils literal notranslate"><span class="pre">item_indices</span></code> (representing which items are eligible to be
 interleaved). The function should return a <span class="math notranslate nohighlight">\(|U|\times k\)</span> matrix
 representing the interleaved items for each user.</p>
 <dl class="field-list simple">
@@ -1003,8 +1007,8 @@ interacted with.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 1</em><em>)</em>) – Number of items to recommend.</p></li>
-<li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or None (optional, default: None)) – A matrix containing the indices of the items each user has not yet
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1</em>) – Number of items to recommend.</p></li>
+<li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A matrix containing the indices of the items each user has not yet
 interacted with. It is used to ensure that the user is presented
 with items they have not already interacted with. If <cite>None</cite>,
 then the user may be recommended items that they have already
@@ -1101,17 +1105,18 @@ new (random) items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, the system is in “startup”  (exploration) mode and
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, the system is in “startup”  (exploration) mode and
 only presents the user with new randomly chosen items. This is
 done to maximize exploration.</p></li>
-<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – Number of per-user item recommendations that should be
-randomly generated. Passing in <cite>1.0</cite> will result in all
-recommendations being randomly generated, while passing in <cite>0.0</cite>
-will result in all recommendations coming from predicted score.</p></li>
-<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If true, then at each timestep, the # of items that are recommended
+<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 0</em>) – Number of per-user item recommendations that should be
+randomly generated. Passing in <code class="docutils literal notranslate"><span class="pre">self.num_items_per_iter</span></code>
+will result in all recommendations being randomly generated,
+while passing in <code class="docutils literal notranslate"><span class="pre">0</span></code> will result in all recommendations
+coming from predicted score.</p></li>
+<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then at each timestep, the # of items that are recommended
 randomly is itself randomly generated between 0 and
-<cite>random_items_per_iter</cite>, inclusive.</p></li>
-<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, repeated items are allowed in the system – that is,
+<code class="docutils literal notranslate"><span class="pre">random_items_per_iter</span></code>, inclusive.</p></li>
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, repeated items are allowed in the system – that is,
 users can interact with the same item more than once.</p></li>
 </ul>
 </dd>
@@ -1131,21 +1136,22 @@ users can interact with the same item more than once.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 50</em><em>)</em>) – Number of timesteps for simulation.</p></li>
-<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it runs the simulation in startup mode (see
+<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of timesteps for simulation.</p></li>
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it runs the simulation in startup mode (see
 <a class="reference internal" href="#models.recommender.BaseRecommender.recommend" title="models.recommender.BaseRecommender.recommend"><code class="xref py py-func docutils literal notranslate"><span class="pre">recommend()</span></code></a> and <a class="reference internal" href="#models.recommender.BaseRecommender.startup_and_train" title="models.recommender.BaseRecommender.startup_and_train"><code class="xref py py-func docutils literal notranslate"><span class="pre">startup_and_train()</span></code></a>)</p></li>
-<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, the model is retrained after each timestep with the
+<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the model is retrained after each timestep with the
 information gathered in the previous step.</p></li>
-<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – Percentage of per-user item recommendations that should be
-randomly generated. Passing in <cite>1.0</cite> will result in all
-recommendations being randomly generated, while passing in <cite>0.0</cite>
-will result in all recommendations coming from predicted score.</p></li>
-<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If true, then at each timestep, the # of items that are recommended
+<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 0</em>) – Number of per-user item recommendations that should be
+randomly generated. Passing in <code class="docutils literal notranslate"><span class="pre">self.num_items_per_iter</span></code> will
+result in all recommendations being randomly generated, while passing
+in <code class="docutils literal notranslate"><span class="pre">0</span></code> will result in all recommendations coming from predicted scores.</p></li>
+<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then at each timestep, the # of items that are recommended
 randomly is itself randomly generated between 0 and
-<cite>random_items_per_iter</cite>, inclusive.</p></li>
-<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, repeated items are allowed in the system – that is,
-users can interact with the same item more than once.</p></li>
-<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, then no new items are created during these timesteps. This
+<code class="docutils literal notranslate"><span class="pre">random_items_per_iter</span></code>, inclusive.</p></li>
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, repeated items are allowed in the system – that is,
+the system can recommend items to users that they’ve already previously
+interacted with.</p></li>
+<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no new items are created during these timesteps. This
 can be helpful, say, during a “training” period where no new items should be
 made.</p></li>
 </ul>
@@ -1169,10 +1175,11 @@ and <a class="reference internal" href="#models.recommender.BaseRecommender.reco
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timesteps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>optional</em><em>, </em><em>default: 50</em><em>)</em>) – Number of timesteps for simulation</p></li>
-<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, then no new items are created during these timesteps. This
-can be helpful, say, during a “training” period where no new items should be
-made.</p></li>
+<li><p><strong>timesteps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of timesteps for simulation</p></li>
+<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no new items are created during these timesteps.
+This is only relevant when you have item
+<a class="reference internal" href="components.html#components.creators.Creators" title="components.creators.Creators"><code class="xref py py-class docutils literal notranslate"><span class="pre">Creators</span></code></a>. This can be helpful, say, during
+a “training” period where no new items should be made.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1213,7 +1220,7 @@ recommender system. Under default initialization, it updates
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>

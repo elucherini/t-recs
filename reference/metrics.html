@@ -35,6 +35,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -187,11 +188,12 @@
 <dt class="sig sig-object py" id="metrics.measurement.InteractionMeasurement">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_histogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Keeps track of the interactions between users and items.</p>
-<p>Specifically, at each timestep, it stores a histogram of length <cite>|I|</cite>, where
-element <cite>i</cite> is the number of interactions received by item <cite>i</cite>.</p>
+<p>Specifically, at each timestep, it stores a histogram of length
+<span class="math notranslate nohighlight">\(|I|\)</span>, where element <span class="math notranslate nohighlight">\(i\)</span> is the number of interactions
+received by item <span class="math notranslate nohighlight">\(i\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -210,7 +212,7 @@ element <cite>i</cite> is the number of interactions received by item <cite>i</c
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “interaction_histogram”)</p>
+<dd class="field-odd"><p>str, default <code class="docutils literal notranslate"><span class="pre">&quot;interaction_histogram&quot;</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -241,7 +243,7 @@ among many items or only a few items.</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.InteractionMeasurement" title="metrics.measurement.InteractionMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">InteractionMeasurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -260,7 +262,7 @@ among many items or only a few items.</p>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “interaction_spread”)</p>
+<dd class="field-odd"><p>str, default <code class="docutils literal notranslate"><span class="pre">&quot;interaction_spread&quot;</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -305,7 +307,7 @@ user.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pairs</strong> (<em>iterable of tuples</em>) – Contains tuples representing each pair of users. Each user should
 be represented as an index into the user profiles matrix.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -325,7 +327,7 @@ be represented as an index into the user profiles matrix.</p></li>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “rec_similarity”)</p>
+<dd class="field-odd"><p>str, default <code class="docutils literal notranslate"><span class="pre">&quot;rec_similarity&quot;</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -361,7 +363,7 @@ in by the user.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pairs</strong> (<em>iterable of tuples</em>) – Contains tuples representing each pair of users. Each user should
 be represented as an index into the user profiles matrix.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -381,7 +383,7 @@ be represented as an index into the user profiles matrix.</p></li>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “interaction_similarity”)</p>
+<dd class="field-odd"><p>str, default <code class="docutils literal notranslate"><span class="pre">&quot;interaction_similarity&quot;</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -414,7 +416,7 @@ similar (i.e., users have all interacted with the same items).</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -471,7 +473,7 @@ Networkx’s <a class="reference external" href="https://networkx.github.io/docu
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>infection_state</strong> (<a class="reference internal" href="models.html#models.bass.InfectionState" title="models.bass.InfectionState"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfectionState</span></code></a>) – The initial “infection state” of all users</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -495,7 +497,7 @@ in this case, the metric stored in
 the <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement.diffusion_tree" title="metrics.measurement.DiffusionTreeMeasurement.diffusion_tree"><code class="xref py py-attr docutils literal notranslate"><span class="pre">diffusion_tree</span></code></a> data structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “num_infected”)</p>
+<dd class="field-odd"><p>str, default <code class="docutils literal notranslate"><span class="pre">&quot;num_infected&quot;</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -554,7 +556,6 @@ nodes in the tree.</p>
 structural virality developed by Goel, Anderson, Hofman, and Watts in
 <a class="reference external" href="https://5harad.com/papers/twiral.pdf">The Structural Virality of Online Diffusion</a>. It is used in
 <a class="reference internal" href="models.html#models.bass.BassModel" title="models.bass.BassModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BassModel</span></code></a>.</p>
-<p>:param <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>: The initial “infection state” (see <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a>).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.StructuralVirality.get_structural_virality">
 <span class="sig-name descname"><span class="pre">get_structural_virality</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality.get_structural_virality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality.get_structural_virality" title="Permalink to this definition">¶</a></dt>
@@ -589,7 +590,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -608,7 +609,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “afsr”)</p>
+<dd class="field-odd"><p>str, default <code class="docutils literal notranslate"><span class="pre">&quot;afsr&quot;</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -643,7 +644,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 <dd><p>Abstract observable class to store measurements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -676,7 +677,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>Measurements</strong></p>
+<dd class="field-odd"><p>Measurements</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
@@ -691,7 +692,7 @@ for more details.</p>
 number of timesteps that the system has been measuring).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>Length of measurement_history</strong></p>
+<dd class="field-odd"><p>Length of <code class="docutils literal notranslate"><span class="pre">measurement_history</span></code></p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -715,7 +716,7 @@ consistency when storing different measurements.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>observation</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Element that will be stored</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: True</em><em>)</em>) – If True, the function stores a copy of observation. Useful for
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the function stores a copy of observation. Useful for
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p></li>
 </ul>
 </dd>
@@ -741,7 +742,7 @@ consistency when storing different measurements.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>

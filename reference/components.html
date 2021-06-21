@@ -95,6 +95,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Components</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-components.users">Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-components.items">Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-components.creators">Creators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#binary-social-graph">Binary Social Graph</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#base-components">Base Components</a></li>
 </ul>
@@ -180,11 +181,11 @@
 <span id="users"></span><h2>Users<a class="headerlink" href="#module-components.users" title="Permalink to this headline">¶</a></h2>
 <p>Suite of classes related to users of the system, including predicted user-item
 scores, predicted user profiles, actual user profiles, and a Users class (which
-encapsulates some of these concepts)</p>
+encapsulates some of these concepts).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.users.ActualUserProfiles">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">components.users.</span></span><span class="sig-name descname"><span class="pre">ActualUserProfiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserProfiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserProfiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Real user profiles, unknown to the model. This class is a container
+<dd><p>True user profiles, unknown to the model. This class is a container
 compatible with Numpy operations and it does not make assumptions on the
 size of the representation.</p>
 </dd></dl>
@@ -192,14 +193,14 @@ size of the representation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.users.ActualUserScores">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">components.users.</span></span><span class="sig-name descname"><span class="pre">ActualUserScores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Real matrix of user-item scores, unknown to the model.</p>
+<dd><p>Matrix of true user-item scores, unknown to the model.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.users.ActualUserScores.append_new_scores">
 <span class="sig-name descname"><span class="pre">append_new_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores.append_new_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores.append_new_scores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Appends a set of scores for new items to the current set of scores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – Matrix of new scores with dimension <span class="math notranslate nohighlight">\(|U|\times|I_{new}|\)</span>,
+<dd class="field-odd"><p><strong>new_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.spmatrix</span></code>) – Matrix of new scores with dimension <span class="math notranslate nohighlight">\(|U|\times|I_{new}|\)</span>,
 where <span class="math notranslate nohighlight">\(I_{new}\)</span> indicates the number of new items whose scores
 are being to be appended.</p>
 </dd>
@@ -209,8 +210,8 @@ are being to be appended.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.users.ActualUserScores.get_item_scores">
 <span class="sig-name descname"><span class="pre">get_item_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items_shown</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#ActualUserScores.get_item_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.ActualUserScores.get_item_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the user scores for the items shown, in the correct
-order specified.</p>
+<dd><p>Return the user scores for the items shown, in the order specified by the
+list of items shown to each user.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -233,7 +234,7 @@ value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – A matrix with <span class="math notranslate nohighlight">\(|U|\)</span> rows that specifies the indices of items
+<li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.spmatrix</span></code>) – A matrix with <span class="math notranslate nohighlight">\(|U|\)</span> rows that specifies the indices of items
 requested for each user.</p></li>
 <li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Single value with which to replace scores.</p></li>
 </ul>
@@ -295,7 +296,7 @@ pair of users and items in the recommendation set.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="components.users.DNUsers.get_user_feedback">
-<span class="sig-name descname"><span class="pre">get_user_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#DNUsers.get_user_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.DNUsers.get_user_feedback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_user_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items_shown</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#DNUsers.get_user_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.DNUsers.get_user_feedback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates user interactions at a given timestep, generally called by a
 model.</p>
 <dl class="field-list simple">
@@ -303,20 +304,19 @@ model.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> – Parameters needed by the model’s train function.</p></li>
 <li><p><strong>kwargs</strong> – Parameters needed by the model’s train function.</p></li>
-<li><p><strong>items_shown</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>): A) – <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
+<li><p><strong>items_shown</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
 recommendations and new items.</p></li>
-<li><p><strong>item_attributes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>):) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix with item attributes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>Array of interactions s.t. element <span class="math notranslate nohighlight">\(interactions_{u(t)}\)</span> represents the</p></li>
-<li><p><strong>index of the item selected by user `u` at time `t`. Shape</strong> (<em>|U|</em>)</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Array of interactions s.t. element <span class="math notranslate nohighlight">\(\text{interactions}_u(t)\)</span> represents the
+index of the item selected by user <cite>u</cite> at time <cite>t</cite>. Shape: <span class="math notranslate nohighlight">\(|U|\times 1\)</span></p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">interact_with_items</span></code> is None and there is not <cite>item</cite>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">interact_with_items</span></code> is None and there is not <cite>item</cite>
     parameter.</p>
 </dd>
 </dl>
@@ -346,8 +346,8 @@ Dimension: <span class="math notranslate nohighlight">\(|U|\times|I|\)</span></p
 <dt class="sig sig-object py" id="components.users.DNUsers.sample_from_error_dist">
 <span class="sig-name descname"><span class="pre">sample_from_error_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_choices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#DNUsers.sample_from_error_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.DNUsers.sample_from_error_dist" title="Permalink to this definition">¶</a></dt>
 <dd><p>The second stage of generating the divisive normalization utilities
-<span class="math notranslate nohighlight">\(interactions_{u(t)} is adding the error term
-:math:\)</span>textbf{eta}`. In this implementation, we sample from
+<span class="math notranslate nohighlight">\(\text{interactions}_{u(t)}\)</span> is adding the error term
+<span class="math notranslate nohighlight">\(\eta\)</span>. In this implementation, we sample from
 a specific multivariate normal distribution used by Webb et al.
 (see <a class="reference external" href="https://github.com/UofT-Neuroecon-1/Normalization">https://github.com/UofT-Neuroecon-1/Normalization</a>).</p>
 <dl class="field-list simple">
@@ -381,7 +381,7 @@ size of the representation.</p>
 <dd><p>Appends a set of scores for new items to the current set of scores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – Matrix of new scores with dimension <span class="math notranslate nohighlight">\(|U|\times|I_{new}|\)</span>,
+<dd class="field-odd"><p><strong>new_scores</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.spmatrix</span></code>) – Matrix of new scores with dimension <span class="math notranslate nohighlight">\(|U|\times|I_{new}|\)</span>,
 where <span class="math notranslate nohighlight">\(I_{new}\)</span> indicates the number of new items whose scores
 are being to be appended.</p>
 </dd>
@@ -395,7 +395,7 @@ are being to be appended.</p>
 of valid items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <cite>scipy.sparse.spmatrix</cite>) – A matrix with <span class="math notranslate nohighlight">\(|U|\)</span> rows that specifies the indices of items
+<dd class="field-odd"><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.spmatrix</span></code>) – A matrix with <span class="math notranslate nohighlight">\(|U|\)</span> rows that specifies the indices of items
 requested for each user.</p>
 </dd>
 </dl>
@@ -441,22 +441,22 @@ make assumptions on the real user components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actual_user_profiles</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of the real user profiles.</p></li>
-<li><p><strong>actual_user_scores</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of the real scores that users assign to items.</p></li>
-<li><p><strong>interact_with_items</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Function that specifies the behavior of users when interacting with
+<li><p><strong>actual_user_profiles</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Representation of the real user profiles.</p></li>
+<li><p><strong>actual_user_scores</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Representation of the real scores that users assign to items.</p></li>
+<li><p><strong>interact_with_items</strong> (<em>callable</em><em>, </em><em>optional</em>) – Function that specifies the behavior of users when interacting with
 items. If None, users follow the behavior specified in
 <a class="reference internal" href="#components.users.Users.get_user_feedback" title="components.users.Users.get_user_feedback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_user_feedback()</span></code></a>.</p></li>
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>, </em><em>(</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – The number of users in the system.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the user representation. It expects a tuple. If None,
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The number of users in the system.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – Size of the user representation. It expects a tuple. If None,
 it is chosen randomly.</p></li>
-<li><p><strong>drift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – If greater than 0, user profiles will update dynamically as they
+<li><p><strong>drift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>default 0</em>) – If greater than 0, user profiles will update dynamically as they
 interact with items, “drifting” towards the item attribute vectors
-they interact with. <cite>drift</cite> is a parameter between 0 and 1 that
-controls the degree of rotational drift. If <cite>t=1</cite>, then the user
+they interact with. <code class="docutils literal notranslate"><span class="pre">drift</span></code> is a parameter between 0 and 1 that
+controls the degree of rotational drift. If <code class="docutils literal notranslate"><span class="pre">t=1</span></code>, then the user
 profile vector takes on the exact same direction as the attribute
 vector of the item they just interacted with. If 0, user profiles
 are generated once at initialization and never change.</p></li>
-<li><p><strong>attention_exp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> (</em><em>optional</em><em>, </em><em>default: 0</em><em>)</em>) – If this parameter is non-zero, then the order of the items
+<li><p><strong>attention_exp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>default 0</em>) – If this parameter is non-zero, then the order of the items
 in the recommendation set affects the user’s choice, in that
 the item chosen will be a function of its index in the recommendation
 set and the underlying user-item score. (See Chaney et al. 2018
@@ -467,9 +467,9 @@ be according to
 and <span class="math notranslate nohighlight">\(S_{u,i}(t)\)</span> is the underlying user-item score.</p></li>
 <li><p><strong>score_fn</strong> (<em>callable</em>) – Function that is used to calculate each user’s scores for each
 candidate item. The score function should take as input
-user_profiles and item_attributes.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, enables verbose mode. Disabled by default.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for random generator.</p></li>
+<code class="docutils literal notranslate"><span class="pre">user_profiles</span></code> and <code class="docutils literal notranslate"><span class="pre">item_attributes</span></code>.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
@@ -482,8 +482,7 @@ user_profiles and item_attributes.</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="components.users.Users.actual_user_profiles">
 <span class="sig-name descname"><span class="pre">actual_user_profiles</span></span><a class="headerlink" href="#components.users.Users.actual_user_profiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>A matrix representing the <em>real</em> similarity between each item and
-attribute.</p>
+<dd><p>A matrix representing the <em>real</em> user profiles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
@@ -494,10 +493,11 @@ attribute.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="components.users.Users.actual_user_scores">
 <span class="sig-name descname"><span class="pre">actual_user_scores</span></span><a class="headerlink" href="#components.users.Users.actual_user_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <code class="docutils literal notranslate"><span class="pre">`|U|x|I|`</span></code> matrix representing the <em>real</em> scores assigned by
-each user to each item, where <code class="docutils literal notranslate"><span class="pre">`|U|`</span></code> is the number of users and
-<code class="docutils literal notranslate"><span class="pre">`|I|`</span></code> is the number of items in the system. Item <cite>[u, i]</cite> is
-the score assigned by user <cite>u</cite> to item <cite>i</cite>.</p>
+<dd><p>A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the <em>true</em> scores assigned by
+each user to each item, where <span class="math notranslate nohighlight">\(|U|\)</span> is the number of users and
+<span class="math notranslate nohighlight">\(|I|\)</span> is the number of items in the system. The element of this matrix
+indexed by <span class="math notranslate nohighlight">\((u,i)\)</span> is the score assigned by user <span class="math notranslate nohighlight">\(u\)</span> to item
+<span class="math notranslate nohighlight">\(i\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
@@ -520,7 +520,7 @@ If None, users follow the behavior in <a class="reference internal" href="#compo
 <dl class="py attribute">
 <dt class="sig sig-object py" id="components.users.Users.user_vector">
 <span class="sig-name descname"><span class="pre">user_vector</span></span><a class="headerlink" href="#components.users.Users.user_vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <code class="docutils literal notranslate"><span class="pre">`|U|`</span></code> array of user indices.</p>
+<dd><p>A <span class="math notranslate nohighlight">\(|U|\)</span> array of user indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
@@ -544,8 +544,8 @@ user_profiles and item_attributes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="components.users.Users.repeat_interactions">
 <span class="sig-name descname"><span class="pre">repeat_interactions</span></span><a class="headerlink" href="#components.users.Users.repeat_interactions" title="Permalink to this definition">¶</a></dt>
-<dd><p>If <cite>True</cite>, then users will interact with items regardless of whether
-they have already interacted with them before. If <cite>False</cite>, users
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then users will interact with items regardless of whether
+they have already interacted with them before. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, users
 will not perform repeat interactions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -558,7 +558,7 @@ will not perform repeat interactions.</p>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – If parameters are of the wrong type.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If both actual_user_profiles and size are None.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If both <code class="docutils literal notranslate"><span class="pre">actual_user_profiles</span></code> and <code class="docutils literal notranslate"><span class="pre">size</span></code> are None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -579,7 +579,7 @@ transformed user-item scores that take into account
 the positions in the recommendation list.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>)</p>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -588,7 +588,7 @@ the positions in the recommendation list.</p>
 <dt class="sig sig-object py" id="components.users.Users.compute_user_scores">
 <span class="sig-name descname"><span class="pre">compute_user_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.compute_user_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.compute_user_scores" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes and stores the actual scores that users assign to items
-compatible with the system. Note that we expect the score_fn
+compatible with the system. Note that we expect the <code class="docutils literal notranslate"><span class="pre">self.score_fn</span></code>
 attribute to be set to some callable function which takes item
 attributes and user profiles.</p>
 <dl class="field-list simple">
@@ -604,22 +604,22 @@ attributes and user profiles.</p>
 <dd><p>Returns an array of actual user scores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>numpy.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Specifies the user index (or indices) for which to return the
-actual user scores. If None, the function returns the whole
+<dd class="field-odd"><p><strong>user</strong> (int or <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or list (optional, default: None)) – Specifies the user index (or indices) for which to return the
+actual user scores. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the function returns the whole
 matrix.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>An array of actual user scores for each item.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>An array of actual user scores for each item.</p>
+<dd class="field-odd"><p>scores</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="components.users.Users.get_user_feedback">
-<span class="sig-name descname"><span class="pre">get_user_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.get_user_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.get_user_feedback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_user_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items_shown</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.get_user_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.get_user_feedback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates user interactions at a given timestep, generally called by a
 model.</p>
 <dl class="field-list simple">
@@ -629,18 +629,17 @@ model.</p>
 <li><p><strong>kwargs</strong> – Parameters needed by the model’s train function.</p></li>
 <li><p><strong>items_shown</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A <span class="math notranslate nohighlight">\(|U|\times\text{num_items_per_iter}\)</span> matrix with
 recommendations and new items.</p></li>
-<li><p><strong>item_attributes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix with item attributes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>Array of interactions s.t. element interactions_u(t) represents the</em></p></li>
-<li><p><strong>index of the item selected by user u at time t. Shape</strong> (<span class="math notranslate nohighlight">\(|U|\times 1\)</span>)</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Array of interactions s.t. element <span class="math notranslate nohighlight">\(\text{interactions}_u(t)\)</span> represents the
+index of the item selected by user <cite>u</cite> at time <cite>t</cite>. Shape: <span class="math notranslate nohighlight">\(|U|\times 1\)</span></p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If <a class="reference internal" href="#components.users.Users.interact_with_items" title="components.users.Users.interact_with_items"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interact_with_items</span></code></a> is None and there is not <cite>item</cite>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If <a class="reference internal" href="#components.users.Users.interact_with_items" title="components.users.Users.interact_with_items"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interact_with_items</span></code></a> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and there is not <code class="docutils literal notranslate"><span class="pre">item</span></code>
     parameter.</p>
 </dd>
 </dl>
@@ -650,7 +649,7 @@ recommendations and new items.</p></li>
 <dt class="sig sig-object py" id="components.users.Users.score_new_items">
 <span class="sig-name descname"><span class="pre">score_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.score_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.score_new_items" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes and stores the actual scores that users assign to any new
-items that enter the system. Note that we expect the score_fn
+items that enter the system. Note that we expect the <code class="docutils literal notranslate"><span class="pre">self.score_fn</span></code>
 attribute to be set to some callable function which takes item
 attributes and user profiles.</p>
 <dl class="field-list simple">
@@ -665,21 +664,19 @@ number of items and <span class="math notranslate nohighlight">\(|A|\)</span> is
 <dl class="py method">
 <dt class="sig sig-object py" id="components.users.Users.set_score_function">
 <span class="sig-name descname"><span class="pre">set_score_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/users.html#Users.set_score_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.users.Users.set_score_function" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Users “score” items before “deciding” which item to interact with.</dt><dd><p>This function makes it possible to set an arbitrary function as the
+<dd><p>Users “score” items before “deciding” which item to interact with.
+This function makes it possible to set an arbitrary function as the
 score function.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>score_fn</strong> (<em>callable</em>) – Function that is used to calculate each user’s scores for each
 candidate item. Note that this function can be the same function
 used by the recommender system to generate its predictions for
 user-item scores. The score function should take as input
-user_profiles and item_attributes.</p>
+<code class="docutils literal notranslate"><span class="pre">user_profiles</span></code> and <code class="docutils literal notranslate"><span class="pre">item_attributes</span></code>.</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – If score_fn is not callable.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">score_fn</span></code> is not callable.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -698,8 +695,8 @@ profiles with new values as each user profile “drifts” towards
 items that they consume.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>interactions</strong> (<em>numpy.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A matrix where row <cite>i</cite> corresponds to the attribute vector
-that user <cite>i</cite> interacted with.</p>
+<dd class="field-odd"><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or list) – A matrix where row <code class="docutils literal notranslate"><span class="pre">i</span></code> corresponds to the attribute vector
+that user <code class="docutils literal notranslate"><span class="pre">i</span></code> interacted with.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -724,21 +721,21 @@ internally in <a class="reference internal" href="models.html#models.recommender
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of items. It expects an array_like object. If None, the
+<li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Representation of items. It expects an array_like object. If None, the
 representation is generated randomly using a binomial distribution (see
 <a class="reference internal" href="#base.base_components.Component" title="base.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> for details). At least one of
 <cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the item representation. It expects a tuple. At least one of
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – Size of the item representation. It expects a tuple. At least one of
 <cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for underlying random generator.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, it enables verbose mode.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for underlying random generator.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">Attributes</span> <span class="pre">from</span> <span class="pre">Component</span></span></dt>
-<dd><p>Inherited by <a class="reference internal" href="#base.base_components.Component" title="base.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<dd><p>Inherited from <a class="reference internal" href="#base.base_components.Component" title="base.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -784,14 +781,14 @@ and therefore PredictedItems inherits from it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Representation of items. It expects an array_like object. If None, the
+<li><p><strong>item_attributes</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Representation of items. It expects an array_like object. If None, the
 representation is generated randomly using a binomial distribution (see
 <a class="reference internal" href="#base.base_components.Component" title="base.base_components.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> for details). At least one of
 <cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Size of the item representation. It expects a tuple. At least one of
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – Size of the item representation. It expects a tuple. At least one of
 <cite>item_attributes</cite> or <cite>size</cite> must be supplied.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> (</em><em>optional</em><em>, </em><em>default: None</em><em>)</em>) – Seed for underlying random generator.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, it enables verbose mode.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for underlying random generator.</p></li>
 </ul>
 </dd>
 </dl>
@@ -815,18 +812,125 @@ representation is generated randomly using a binomial distribution (see
 </dd></dl>
 
 </div>
+<div class="section" id="module-components.creators">
+<span id="creators"></span><h2>Creators<a class="headerlink" href="#module-components.creators" title="Permalink to this headline">¶</a></h2>
+<p>Suite of classes related to content creators, including predicted user-item
+scores, predicted user profiles, actual creator profiles, and a Creators class (which
+encapsulates some of these concepts)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="components.creators.Creators">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">components.creators.</span></span><span class="sig-name descname"><span class="pre">Creators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual_creator_profiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/creators.html#Creators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.creators.Creators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing content creators in the system.</p>
+<p>Each content creator is represented with a single vector that governs
+the kinds of content each creator produces. All creator profiles can be
+represented with a <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> of size
+<code class="docutils literal notranslate"><span class="pre">(number_of_creators,</span> <span class="pre">number_of_attributes)</span></code>.</p>
+<p>This class inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actual_creator_profiles</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Representation of the creator’s attribute profiles.</p></li>
+<li><p><strong>creation_probability</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>default 0.5</em>) – The probability that any given creator produces a new item at a
+timestep.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – Size of the user representation. It expects a tuple. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+it is chosen randomly.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Attributes</span> <span class="pre">from</span> <span class="pre">BaseComponent</span></span></dt>
+<dd><p>Inherited by <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseComponent</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.creators.Creators.actual_creator_profiles">
+<span class="sig-name descname"><span class="pre">actual_creator_profiles</span></span><a class="headerlink" href="#components.creators.Creators.actual_creator_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>A matrix representing the <em>real</em> similarity between each item and
+attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.creators.Creators.create_new_items">
+<span class="sig-name descname"><span class="pre">create_new_items</span></span><a class="headerlink" href="#components.creators.Creators.create_new_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that defines user behaviors when interacting with items.
+If None, users follow the behavior in <code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_new_items()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – If parameters are of the wrong type.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If both actual_creator_profiles and size are None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.creators.Creators.generate_items">
+<span class="sig-name descname"><span class="pre">generate_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/creators.html#Creators.generate_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.creators.Creators.generate_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates new items. Each creator probabilistically creates a new item.
+Item attributes are generated using each creator’s profile
+as a series of Bernoulli random variables. Therefore, item attributes
+will be binarized. To change this behavior, simply write a custom
+class that overwrites this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A numpy matrix of dimension <span class="math notranslate nohighlight">\(|A|\times|I_n|\)</span>, where
+<span class="math notranslate nohighlight">\(|I_n|\)</span> represents the number of new items, and <span class="math notranslate nohighlight">\(|A|\)</span>
+represents the number of attributes for each item.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.creators.Creators.store_state">
+<span class="sig-name descname"><span class="pre">store_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/creators.html#Creators.store_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.creators.Creators.store_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store the actual creator profiles in the state history</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.creators.Creators.update_profiles">
+<span class="sig-name descname"><span class="pre">update_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interactions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/creators.html#Creators.update_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.creators.Creators.update_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method can be implemented by child classes to update the
+creator profiles over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>interactions</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or list) – A matrix where row <span class="math notranslate nohighlight">\(i\)</span> corresponds to the attribute vector
+that user <span class="math notranslate nohighlight">\(i\)</span> interacted with.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="binary-social-graph">
 <h2>Binary Social Graph<a class="headerlink" href="#binary-social-graph" title="Permalink to this headline">¶</a></h2>
 <p>This mixin helps define the behavior of agents (such as models) that implement a social network.</p>
-<span class="target" id="module-components.socialgraph"></span><p>A binary social graph that represents relationships between users which
-can be used in different types of recommender systems</p>
+<span class="target" id="module-components.socialgraph"></span><p>A binary social graph represents relationships between users which
+can be used in different types of recommender systems.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.socialgraph.BinarySocialGraph">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">components.socialgraph.</span></span><span class="sig-name descname"><span class="pre">BinarySocialGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>A mixin for classes with a
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">users_hat</span></code> attribute
 to gain the basic functionality of a binary social graph.</p>
-<p>It assumes a network adjacency matrix of size <cite>|U|x|U|</cite>.</p>
+<p>It assumes a network adjacency matrix of size <span class="math notranslate nohighlight">\(|U|\times |U|\)</span>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.socialgraph.BinarySocialGraph.add_friends">
 <span class="sig-name descname"><span class="pre">add_friends</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user1_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user2_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/components/socialgraph.html#BinarySocialGraph.add_friends"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.socialgraph.BinarySocialGraph.add_friends" title="Permalink to this definition">¶</a></dt>
@@ -905,8 +1009,8 @@ link that goes from one user to the other.</p>
 <div class="section" id="base-components">
 <h2>Base Components<a class="headerlink" href="#base-components" title="Permalink to this headline">¶</a></h2>
 <p>These are mainly abstract classes that are not supposed to be instantiated.</p>
-<span class="target" id="module-base.base_components"></span><p>Base components that are the building blocks of measuring and tracking
-variables of interest in the recommender systems</p>
+<span class="target" id="module-base.base_components"></span><p>Base components are the building blocks of measuring and tracking
+variables of interest in the simulation environment.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="base.base_components.BaseComponent">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">base.base_components.</span></span><span class="sig-name descname"><span class="pre">BaseComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/base/base_components.html#BaseComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#base.base_components.BaseComponent" title="Permalink to this definition">¶</a></dt>
@@ -1055,7 +1159,7 @@ SystemStateModule.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>

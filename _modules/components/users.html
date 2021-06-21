@@ -158,7 +158,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Suite of classes related to users of the system, including predicted user-item</span>
 <span class="sd">scores, predicted user profiles, actual user profiles, and a Users class (which</span>
-<span class="sd">encapsulates some of these concepts)</span>
+<span class="sd">encapsulates some of these concepts).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
@@ -190,7 +190,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -------------</span>
 
-<span class="sd">        item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">        item_indices: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`</span>
 <span class="sd">            A matrix with :math:`|U|` rows that specifies the indices of items</span>
 <span class="sd">            requested for each user.</span>
 
@@ -219,7 +219,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -------------</span>
 
-<span class="sd">        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">        new_scores: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`</span>
 <span class="sd">            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,</span>
 <span class="sd">            where :math:`I_{new}` indicates the number of new items whose scores</span>
 <span class="sd">            are being to be appended.</span>
@@ -255,7 +255,7 @@
 
 <div class="viewcode-block" id="ActualUserProfiles"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserProfiles">[docs]</a><span class="k">class</span> <span class="nc">ActualUserProfiles</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Real user profiles, unknown to the model. This class is a container</span>
+<span class="sd">    True user profiles, unknown to the model. This class is a container</span>
 <span class="sd">    compatible with Numpy operations and it does not make assumptions on the</span>
 <span class="sd">    size of the representation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -267,7 +267,7 @@
 
 <div class="viewcode-block" id="ActualUserScores"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserScores">[docs]</a><span class="k">class</span> <span class="nc">ActualUserScores</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Real matrix of user-item scores, unknown to the model.</span>
+<span class="sd">    Matrix of true user-item scores, unknown to the model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -281,8 +281,8 @@
 
 <div class="viewcode-block" id="ActualUserScores.get_item_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.ActualUserScores.get_item_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_item_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the user scores for the items shown, in the correct</span>
-<span class="sd">        order specified.</span>
+<span class="sd">        Return the user scores for the items shown, in the order specified by the</span>
+<span class="sd">        list of items shown to each user.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_rows</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="n">num_users</span><span class="p">,</span> <span class="n">num_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">shape</span>
@@ -297,7 +297,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
-<span class="sd">            item_indices: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">            item_indices: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`</span>
 <span class="sd">                A matrix with :math:`|U|` rows that specifies the indices of items</span>
 <span class="sd">                requested for each user.</span>
 
@@ -317,7 +317,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -------------</span>
 
-<span class="sd">        new_scores: :obj:`numpy.ndarray` or `scipy.sparse.spmatrix`</span>
+<span class="sd">        new_scores: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`</span>
 <span class="sd">            Matrix of new scores with dimension :math:`|U|\\times|I_{new}|`,</span>
 <span class="sd">            where :math:`I_{new}` indicates the number of new items whose scores</span>
 <span class="sd">            are being to be appended.</span>
@@ -366,34 +366,34 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ------------</span>
 
-<span class="sd">        actual_user_profiles: array_like or None (optional, default: None)</span>
+<span class="sd">        actual_user_profiles: array_like, optional</span>
 <span class="sd">            Representation of the real user profiles.</span>
 
-<span class="sd">        actual_user_scores: array_like or None (optional, default: None)</span>
+<span class="sd">        actual_user_scores: array_like, optional</span>
 <span class="sd">            Representation of the real scores that users assign to items.</span>
 
-<span class="sd">        interact_with_items: callable or None (optional, default: None)</span>
+<span class="sd">        interact_with_items: callable, optional</span>
 <span class="sd">            Function that specifies the behavior of users when interacting with</span>
 <span class="sd">            items. If None, users follow the behavior specified in</span>
 <span class="sd">            :meth:`get_user_feedback()`.</span>
 
-<span class="sd">        num_users: int or None, (optional, default: None)</span>
+<span class="sd">        num_users: int, optional</span>
 <span class="sd">            The number of users in the system.</span>
 
-<span class="sd">        size: tuple, None (optional, default: None)</span>
+<span class="sd">        size: tuple, optional</span>
 <span class="sd">            Size of the user representation. It expects a tuple. If None,</span>
 <span class="sd">            it is chosen randomly.</span>
 
-<span class="sd">        drift: float (optional, default: 0)</span>
+<span class="sd">        drift: float, default 0</span>
 <span class="sd">            If greater than 0, user profiles will update dynamically as they</span>
 <span class="sd">            interact with items, &quot;drifting&quot; towards the item attribute vectors</span>
-<span class="sd">            they interact with. `drift` is a parameter between 0 and 1 that</span>
-<span class="sd">            controls the degree of rotational drift. If `t=1`, then the user</span>
+<span class="sd">            they interact with. ``drift`` is a parameter between 0 and 1 that</span>
+<span class="sd">            controls the degree of rotational drift. If ``t=1``, then the user</span>
 <span class="sd">            profile vector takes on the exact same direction as the attribute</span>
 <span class="sd">            vector of the item they just interacted with. If 0, user profiles</span>
 <span class="sd">            are generated once at initialization and never change.</span>
 
-<span class="sd">        attention_exp: float (optional, default: 0)</span>
+<span class="sd">        attention_exp: float, default 0</span>
 <span class="sd">            If this parameter is non-zero, then the order of the items</span>
 <span class="sd">            in the recommendation set affects the user&#39;s choice, in that</span>
 <span class="sd">            the item chosen will be a function of its index in the recommendation</span>
@@ -407,12 +407,12 @@
 <span class="sd">        score_fn: callable</span>
 <span class="sd">            Function that is used to calculate each user&#39;s scores for each</span>
 <span class="sd">            candidate item. The score function should take as input</span>
-<span class="sd">            user_profiles and item_attributes.</span>
+<span class="sd">            ``user_profiles`` and ``item_attributes``.</span>
 
-<span class="sd">        verbose: bool (optional, default: False)</span>
-<span class="sd">            If True, enables verbose mode. Disabled by default.</span>
+<span class="sd">        verbose: bool, default False</span>
+<span class="sd">            If ``True``, enables verbose mode. Disabled by default.</span>
 
-<span class="sd">        seed: int, None (optional, default: None)</span>
+<span class="sd">        seed: int, optional</span>
 <span class="sd">            Seed for random generator.</span>
 
 <span class="sd">    Attributes</span>
@@ -422,21 +422,21 @@
 <span class="sd">            Inherited by :class:`~trecs.components.base_components.BaseComponent`</span>
 
 <span class="sd">        actual_user_profiles: :obj:`numpy.ndarray`</span>
-<span class="sd">            A matrix representing the *real* similarity between each item and</span>
-<span class="sd">            attribute.</span>
+<span class="sd">            A matrix representing the *real* user profiles.</span>
 
 <span class="sd">        actual_user_scores: :obj:`numpy.ndarray`</span>
-<span class="sd">             A ```|U|x|I|``` matrix representing the *real* scores assigned by</span>
-<span class="sd">             each user to each item, where ```|U|``` is the number of users and</span>
-<span class="sd">             ```|I|``` is the number of items in the system. Item `[u, i]` is</span>
-<span class="sd">             the score assigned by user `u` to item `i`.</span>
+<span class="sd">             A :math:`|U|\\times|I|` matrix representing the *true* scores assigned by</span>
+<span class="sd">             each user to each item, where :math:`|U|` is the number of users and</span>
+<span class="sd">             :math:`|I|` is the number of items in the system. The element of this matrix</span>
+<span class="sd">             indexed by :math:`(u,i)` is the score assigned by user :math:`u` to item</span>
+<span class="sd">             :math:`i`.</span>
 
 <span class="sd">        interact_with_items: callable</span>
 <span class="sd">            A function that defines user behaviors when interacting with items.</span>
 <span class="sd">            If None, users follow the behavior in :meth:`get_user_feedback()`.</span>
 
 <span class="sd">        user_vector: :obj:`numpy.ndarray`</span>
-<span class="sd">            A ```|U|``` array of user indices.</span>
+<span class="sd">            A :math:`|U|` array of user indices.</span>
 
 <span class="sd">        score_fn: callable</span>
 <span class="sd">            Function that is used to calculate each user&#39;s scores for each</span>
@@ -444,8 +444,8 @@
 <span class="sd">            user_profiles and item_attributes.</span>
 
 <span class="sd">        repeat_interactions: bool (optional, default: True)</span>
-<span class="sd">            If `True`, then users will interact with items regardless of whether</span>
-<span class="sd">            they have already interacted with them before. If `False`, users</span>
+<span class="sd">            If ``True``, then users will interact with items regardless of whether</span>
+<span class="sd">            they have already interacted with them before. If ``False``, users</span>
 <span class="sd">            will not perform repeat interactions.</span>
 
 <span class="sd">    Raises</span>
@@ -455,7 +455,7 @@
 <span class="sd">            If parameters are of the wrong type.</span>
 
 <span class="sd">        ValueError</span>
-<span class="sd">            If both actual_user_profiles and size are None.</span>
+<span class="sd">            If both ``actual_user_profiles`` and ``size`` are None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -505,7 +505,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="o">=</span> <span class="n">interact_with_items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">=</span> <span class="n">drift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attention_exp</span> <span class="o">=</span> <span class="n">attention_exp</span>
-        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">score_fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">score_fn</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Custom score function must be a callable method&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">score_fn</span> <span class="o">=</span> <span class="n">score_fn</span>  <span class="c1"># function that dictates how scores will be generated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span> <span class="o">=</span> <span class="n">actual_user_scores</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_users</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -516,9 +517,10 @@
         <span class="n">BaseComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">init_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_user_profiles</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Users.set_score_function"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.set_score_function">[docs]</a>    <span class="k">def</span> <span class="nf">set_score_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_fn</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Users &quot;score&quot; items before &quot;deciding&quot; which item to interact with.</span>
-<span class="sd">            This function makes it possible to set an arbitrary function as the</span>
-<span class="sd">            score function.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Users &quot;score&quot; items before &quot;deciding&quot; which item to interact with.</span>
+<span class="sd">        This function makes it possible to set an arbitrary function as the</span>
+<span class="sd">        score function.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ------------</span>
@@ -528,13 +530,13 @@
 <span class="sd">            candidate item. Note that this function can be the same function</span>
 <span class="sd">            used by the recommender system to generate its predictions for</span>
 <span class="sd">            user-item scores. The score function should take as input</span>
-<span class="sd">            user_profiles and item_attributes.</span>
+<span class="sd">            ``user_profiles`` and ``item_attributes``.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        --------</span>
 
 <span class="sd">        TypeError</span>
-<span class="sd">            If score_fn is not callable.</span>
+<span class="sd">            If ``score_fn`` is not callable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">score_fn</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;score function must be callable&quot;</span><span class="p">)</span>
@@ -543,7 +545,7 @@
 <div class="viewcode-block" id="Users.compute_user_scores"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.compute_user_scores">[docs]</a>    <span class="k">def</span> <span class="nf">compute_user_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes and stores the actual scores that users assign to items</span>
-<span class="sd">        compatible with the system. Note that we expect the score_fn</span>
+<span class="sd">        compatible with the system. Note that we expect the ``self.score_fn``</span>
 <span class="sd">        attribute to be set to some callable function which takes item</span>
 <span class="sd">        attributes and user profiles.</span>
 
@@ -568,7 +570,7 @@
 <div class="viewcode-block" id="Users.score_new_items"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.score_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">score_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes and stores the actual scores that users assign to any new</span>
-<span class="sd">        items that enter the system. Note that we expect the score_fn</span>
+<span class="sd">        items that enter the system. Note that we expect the ``self.score_fn``</span>
 <span class="sd">        attribute to be set to some callable function which takes item</span>
 <span class="sd">        attributes and user profiles.</span>
 
@@ -593,27 +595,22 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            user: int or numpy.ndarray or list (optional, default: None)</span>
-<span class="sd">                Specifies the user index (or indices) for which to return the</span>
-<span class="sd">                actual user scores. If None, the function returns the whole</span>
-<span class="sd">                matrix.</span>
+<span class="sd">        user: int or :obj:`numpy.ndarray` or list (optional, default: None)</span>
+<span class="sd">            Specifies the user index (or indices) for which to return the</span>
+<span class="sd">            actual user scores. If ``None``, the function returns the whole</span>
+<span class="sd">            matrix.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        --------</span>
-
+<span class="sd">        scores:</span>
 <span class="sd">            An array of actual user scores for each item.</span>
-
-<span class="sd">        .. todo::</span>
-
-<span class="sd">            Raise exceptions</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[</span><span class="n">user</span><span class="p">,</span> <span class="p">:]</span></div>
 
-<div class="viewcode-block" id="Users.get_user_feedback"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.get_user_feedback">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Users.get_user_feedback"><a class="viewcode-back" href="../../reference/components.html#components.users.Users.get_user_feedback">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates user interactions at a given timestep, generally called by a</span>
 <span class="sd">        model.</span>
@@ -628,28 +625,22 @@
 <span class="sd">            A :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
 <span class="sd">            recommendations and new items.</span>
 
-<span class="sd">        item_attributes: :obj:`numpy.ndarray`</span>
-<span class="sd">            A :math:`|A|\\times|I|` matrix with item attributes.</span>
-
 <span class="sd">        Returns</span>
 <span class="sd">        ---------</span>
-<span class="sd">            Array of interactions s.t. element interactions_u(t) represents the</span>
-<span class="sd">            index of the item selected by user u at time t. Shape: :math:`|U|\\times 1`</span>
+<span class="sd">        :obj:`numpy.ndarray`</span>
+<span class="sd">            Array of interactions s.t. element :math:`\\text{interactions}_u(t)` represents the</span>
+<span class="sd">            index of the item selected by user `u` at time `t`. Shape: :math:`|U|\\times 1`</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        -------</span>
 
 <span class="sd">        ValueError</span>
-<span class="sd">            If :attr:`interact_with_items` is None and there is not `item`</span>
+<span class="sd">            If :attr:`interact_with_items` is ``None`` and there is not ``item``</span>
 <span class="sd">            parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># use custom item interaction function, if provided</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">item_attributes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;item_attributes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Items can&#39;t be None&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
             <span class="c1"># scores must be set back later to non-infinite values</span>
             <span class="n">prev_interacted_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="o">.</span><span class="n">get_item_scores</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_interactions</span><span class="p">)</span>
@@ -663,15 +654,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verbose</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User scores for given items are:</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">rec_item_scores</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Users interact with the following items respectively:</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Item attributes can&#39;t be None if user preferences are dynamic&quot;</span><span class="p">)</span>
-            <span class="c1"># update user profiles based on the attributes of items they</span>
-            <span class="c1"># interacted with</span>
-            <span class="n">interact_attrs</span> <span class="o">=</span> <span class="n">item_attributes</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">interactions</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interact_attrs</span><span class="p">)</span>
-            <span class="c1"># update user scores</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="n">item_attributes</span><span class="p">)</span>
         <span class="c1"># record interactions if needed to ensure users don&#39;t repeat interactions</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interactions</span><span class="p">:</span>
             <span class="c1"># set scores back to the original scores</span>
@@ -697,7 +679,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        ---------</span>
-<span class="sd">            recommended_item_scores: :obj:`numpy.ndarray`)</span>
+<span class="sd">            recommended_item_scores: :obj:`numpy.ndarray`</span>
 <span class="sd">                A :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
 <span class="sd">                transformed user-item scores that take into account</span>
 <span class="sd">                the positions in the recommendation list.</span>
@@ -719,9 +701,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">            interactions: numpy.ndarray or list</span>
-<span class="sd">                A matrix where row `i` corresponds to the attribute vector</span>
-<span class="sd">                that user `i` interacted with.</span>
+<span class="sd">            interactions: :obj:`numpy.ndarray` or list</span>
+<span class="sd">                A matrix where row ``i`` corresponds to the attribute vector</span>
+<span class="sd">                that user ``i`` interacted with.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># we make no assumptions about whether the user profiles or item</span>
         <span class="c1"># attributes vectors are normalized</span>
@@ -788,7 +770,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
 
-<div class="viewcode-block" id="DNUsers.get_user_feedback"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.get_user_feedback">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DNUsers.get_user_feedback"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.get_user_feedback">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates user interactions at a given timestep, generally called by a</span>
 <span class="sd">        model.</span>
@@ -799,17 +781,16 @@
 <span class="sd">        args, kwargs:</span>
 <span class="sd">            Parameters needed by the model&#39;s train function.</span>
 
-<span class="sd">        items_shown: :obj:`numpy.ndarray`): A</span>
-<span class="sd">            :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
+<span class="sd">        items_shown: :obj:`numpy.ndarray`</span>
+<span class="sd">            A :math:`|U|\\times\\text{num_items_per_iter}` matrix with</span>
 <span class="sd">            recommendations and new items.</span>
 
-<span class="sd">        item_attributes: :obj:`numpy.ndarray`):</span>
-<span class="sd">            A :math:`|A|\\times|I|` matrix with item attributes.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ---------</span>
-<span class="sd">            Array of interactions s.t. element :math:`interactions_{u(t)}` represents the</span>
-<span class="sd">            index of the item selected by user `u` at time `t`. Shape: |U|</span>
+<span class="sd">        :obj:`numpy.ndarray`</span>
+<span class="sd">            Array of interactions s.t. element :math:`\\text{interactions}_u(t)` represents the</span>
+<span class="sd">            index of the item selected by user `u` at time `t`. Shape: :math:`|U|\\times 1`</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        -------</span>
@@ -819,11 +800,8 @@
 <span class="sd">            parameter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">items_shown</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;items_shown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">item_attributes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;item_attributes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">items_shown</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Items can&#39;t be None&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interact_with_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">)</span>
+
         <span class="n">reshaped_user_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">items_shown</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">interaction_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_user_scores</span><span class="p">[</span><span class="n">reshaped_user_vector</span><span class="p">,</span> <span class="n">items_shown</span><span class="p">]</span>
 
@@ -833,15 +811,6 @@
         <span class="n">interactions</span> <span class="o">=</span> <span class="n">items_shown</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">sorted_user_preferences</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Users interact with the following items respectively:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">interactions</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drift</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item_attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Item attributes can&#39;t be None if user preferences are dynamic&quot;</span><span class="p">)</span>
-            <span class="c1"># update user profiles based on the attributes of items they</span>
-            <span class="c1"># interacted with</span>
-            <span class="n">interact_attrs</span> <span class="o">=</span> <span class="n">item_attributes</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">interactions</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_profiles</span><span class="p">(</span><span class="n">interact_attrs</span><span class="p">)</span>
-            <span class="c1"># update user scores</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">compute_user_scores</span><span class="p">(</span><span class="n">item_attributes</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">interactions</span></div>
 
 <div class="viewcode-block" id="DNUsers.normalize_values"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.normalize_values">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_item_scores</span><span class="p">):</span>
@@ -907,8 +876,8 @@
 <div class="viewcode-block" id="DNUsers.sample_from_error_dist"><a class="viewcode-back" href="../../reference/components.html#components.users.DNUsers.sample_from_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">sample_from_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_choices</span><span class="p">,</span> <span class="n">num_users</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The second stage of generating the divisive normalization utilities</span>
-<span class="sd">        :math:`interactions_{u(t)} is adding the error term</span>
-<span class="sd">        :math:`\\textbf{\\eta}`. In this implementation, we sample from</span>
+<span class="sd">        :math:`\\text{interactions}_{u(t)}` is adding the error term</span>
+<span class="sd">        :math:`\\eta`. In this implementation, we sample from</span>
 <span class="sd">        a specific multivariate normal distribution used by Webb et al.</span>
 <span class="sd">        (see https://github.com/UofT-Neuroecon-1/Normalization).</span>
 
@@ -951,7 +920,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>

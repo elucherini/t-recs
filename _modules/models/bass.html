@@ -269,52 +269,52 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 
-<span class="sd">        num_users: int (optional, default: 100)</span>
+<span class="sd">        num_users: int, default 100</span>
 <span class="sd">            The number of users :math:`|U|` in the system.</span>
 
-<span class="sd">        num_items: int (optional, default: 1250)</span>
+<span class="sd">        num_items: int, default 1250</span>
 <span class="sd">            The number of items :math:`|I|` in the system.</span>
 
-<span class="sd">        infection_state: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        infection_state: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            Component that tracks infection state, which is a binary (0/1) array with</span>
 <span class="sd">            an element recording whether each user is infected. Should be of</span>
 <span class="sd">            dimension :math:`|U|\\times|I|`.</span>
 
-<span class="sd">        infection_thresholds: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        infection_thresholds: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            Component that tracks infection thresholds for each user. Should be of</span>
 <span class="sd">            dimension :math:`1\\times|U|`.</span>
 
-<span class="sd">        user_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        user_representation: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            A :math:`|U|\\times|A|` matrix representing the similarity between</span>
 <span class="sd">            each item and attribute, as interpreted by the system.</span>
 
-<span class="sd">        item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        item_representation: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            A :math:`|A|\\times|I|` matrix representing the similarity between</span>
 <span class="sd">            each item and attribute.</span>
 
-<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or None or \</span>
-<span class="sd">                            :class:`~components.users.Users` (optional, default: None)</span>
+<span class="sd">        actual_user_representation: :obj:`numpy.ndarray` or \</span>
+<span class="sd">                            :class:`~components.users.Users`, optional</span>
 <span class="sd">            Either a :math:`|U|\\times|T|` matrix representing the real user profiles, where</span>
 <span class="sd">            :math:`T` is the number of attributes in the real underlying user profile,</span>
 <span class="sd">            or a `Users` object that contains the real user profiles or real</span>
 <span class="sd">            user-item scores. This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
-<span class="sd">        actual_item_representation: :obj:`numpy.ndarray` or None (optional, default: None)</span>
+<span class="sd">        actual_item_representation: :obj:`numpy.ndarray`, optional</span>
 <span class="sd">            A :math:`|T|\\times|I|` matrix representing the real user profiles, where</span>
 <span class="sd">            :math:`T` is the number of attributes in the real underlying item profile.</span>
 <span class="sd">            This matrix is **not** used for recommendations. This</span>
 <span class="sd">            is only kept for measurements and the system is unaware of it.</span>
 
-<span class="sd">        num_items_per_iter: int (optional, default: 10)</span>
+<span class="sd">        num_items_per_iter: int, default 10</span>
 <span class="sd">            Number of items presented to the user per iteration.</span>
 
-<span class="sd">        seed: int, None (optional, default: None)</span>
+<span class="sd">        seed: int, optional</span>
 <span class="sd">            Seed for random generator.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    -----------</span>
-<span class="sd">        Inherited by BaseRecommender: :class:`~models.recommender.BaseRecommender`</span>
+<span class="sd">        Inherited from BaseRecommender: :class:`~models.recommender.BaseRecommender`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable-all</span>
@@ -435,18 +435,21 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Private function that updates user profiles with data from</span>
-<span class="sd">            latest interactions.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private function that updates user profiles with data from</span>
+<span class="sd">        latest interactions.</span>
 
-<span class="sd">            Specifically, this function converts interactions into item attributes.</span>
-<span class="sd">            For example, if user :math:`u` has interacted with item :math:`i`,</span>
-<span class="sd">            then item :math:`i`&#39;s attributes will be updated to increase the</span>
-<span class="sd">            similarity between :math:`u` and :math:`i`.</span>
+<span class="sd">        Specifically, this function converts interactions into item attributes.</span>
+<span class="sd">        For example, if user :math:`u` has interacted with item :math:`i`,</span>
+<span class="sd">        then item :math:`i`&#39;s attributes will be updated to increase the</span>
+<span class="sd">        similarity between :math:`u` and :math:`i`.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            interactions (numpy.ndarray): An array of item indices that users have</span>
-<span class="sd">                interacted with in the latest step. Namely, interactions_u represents</span>
-<span class="sd">                the index of the item that the user has interacted with.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+<span class="sd">            interactions: :obj:`numpy.ndarray`</span>
+<span class="sd">                An array of item indices that users have interacted with in the</span>
+<span class="sd">                latest step. Namely, :math:`\\text{interactions}_u` represents</span>
+<span class="sd">                the index of the item that the user :math:`u` has interacted with.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># fetch infection probabilities for each user</span>
@@ -459,15 +462,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">infect_users</span><span class="p">(</span><span class="n">newly_infected_users</span><span class="p">,</span> <span class="n">interactions</span><span class="p">[</span><span class="n">newly_infected_users</span><span class="p">])</span>
 
 <div class="viewcode-block" id="BassModel.infection_probabilities"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.infection_probabilities">[docs]</a>    <span class="k">def</span> <span class="nf">infection_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_profiles</span><span class="p">,</span> <span class="n">item_attributes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the infection probabilities for each user at the current</span>
-<span class="sd">        timestep</span>
-<span class="sd">        Args:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the infection probabilities for each user at the current</span>
+<span class="sd">        timestep.</span>
 
-<span class="sd">        user_profiles: :obj:`array_like`</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+<span class="sd">        user_profiles: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`</span>
 <span class="sd">            First factor of the dot product, which should provide a</span>
 <span class="sd">            representation of users.</span>
 
-<span class="sd">        item_attributes: :obj:`array_like`</span>
+<span class="sd">        item_attributes: :obj:`numpy.ndarray`, :obj:`scipy.sparse.spmatrix`</span>
 <span class="sd">            Second factor of the dot product, which should provide a</span>
 <span class="sd">            representation of items.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -486,29 +491,30 @@
         <span class="n">timesteps</span><span class="o">=</span><span class="s2">&quot;until_completion&quot;</span><span class="p">,</span>
         <span class="n">startup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">train_between_steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Overrides run method of parent class :class:`Recommender`, so that</span>
-<span class="sd">        repeated_items defaults to True in Bass models.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrides run method of parent class :class:`Recommender`, so that</span>
+<span class="sd">        ``repeated_items`` defaults to ``True`` in Bass models.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            timestep (int, optional): number of timesteps for simulation</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ------------</span>
+<span class="sd">            timestep: int, optional</span>
+<span class="sd">                Number of timesteps for simulation</span>
 
-<span class="sd">            startup (bool, optional): if True, it runs the simulation in</span>
+<span class="sd">            startup: bool, default False</span>
+<span class="sd">                If True, it runs the simulation in</span>
 <span class="sd">                startup mode (see recommend() and startup_and_train())</span>
 
-<span class="sd">            train_between_steps (bool, optional): if True, the model is</span>
-<span class="sd">                retrained after each step with the information gathered</span>
-<span class="sd">                in the previous step.</span>
+<span class="sd">            train_between_steps: bool, default True</span>
+<span class="sd">                If True, the model is retrained after each step with the</span>
+<span class="sd">                information gathered in the previous step.</span>
 
-<span class="sd">            repeated_items (bool, optional): if True, repeated items are allowed</span>
-<span class="sd">                in the system -- that is, users can interact with the same</span>
-<span class="sd">                item more than once. Examples of common instances in which</span>
-<span class="sd">                this is useful: infection and network propagation models.</span>
-<span class="sd">                Default is False.</span>
+<span class="sd">            repeated_items: bool, default True</span>
+<span class="sd">                If True, repeated items are allowed in the system -- that</span>
+<span class="sd">                is, users can interact with the same item more than once.</span>
+<span class="sd">                Examples of common instances in which this is useful: infection</span>
+<span class="sd">                and network propagation models.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># NOTE: force repeated_items to True</span>
-        <span class="n">repeated_items</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># option to run until cascade completes</span>
         <span class="k">if</span> <span class="n">timesteps</span> <span class="o">==</span> <span class="s2">&quot;until_completion&quot;</span><span class="p">:</span>
             <span class="n">num_infected</span> <span class="o">=</span> <span class="mi">1</span>
@@ -517,7 +523,7 @@
                     <span class="bp">self</span><span class="p">,</span>
                     <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
                     <span class="n">train_between_steps</span><span class="o">=</span><span class="n">train_between_steps</span><span class="p">,</span>
-                    <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
+                    <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">disable_tqdm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">num_infected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_state</span><span class="o">.</span><span class="n">num_infected</span>
@@ -527,7 +533,7 @@
                 <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">,</span>
                 <span class="n">startup</span><span class="o">=</span><span class="n">startup</span><span class="p">,</span>
                 <span class="n">train_between_steps</span><span class="o">=</span><span class="n">train_between_steps</span><span class="p">,</span>
-                <span class="n">repeated_items</span><span class="o">=</span><span class="n">repeated_items</span><span class="p">,</span>
+                <span class="n">repeated_items</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BassModel.draw_diffusion_tree"><a class="viewcode-back" href="../../reference/models.html#models.bass.BassModel.draw_diffusion_tree">[docs]</a>    <span class="k">def</span> <span class="nf">draw_diffusion_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -553,7 +559,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Elena Lucherini.
+        &#169; Copyright 2021, Eli Lucherini.
 
     </p>
   </div>
