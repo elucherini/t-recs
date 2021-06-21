@@ -335,9 +335,7 @@ def top_k_indices(matrix, k, random_state):
     # scores are U x I; we can use argpartition to take the top k scores
     negated = -1 * matrix  # negate scores so indices go from highest to lowest
     # break ties using a random score component
-    vals_tiebreak = np.zeros(
-        negated.shape, dtype=[("score", "f8"), ("random", "f8")]
-    )
+    vals_tiebreak = np.zeros(negated.shape, dtype=[("score", "f8"), ("random", "f8")])
     vals_tiebreak["score"] = negated
     vals_tiebreak["random"] = random_state.random(negated.shape)
     top_k = vals_tiebreak.argpartition(k - 1, order=["score", "random"])[:, :k]

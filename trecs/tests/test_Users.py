@@ -54,14 +54,12 @@ class TestUsers:
             # return the first item shown
             return items_shown[:, 0]
 
-
         u = Users(interact_with_items=dummy_interact, size=(num_users, 1))
         items_shown = np.zeros((num_users, num_users))
         # the first item each user is shown corresponds to their own index
         items_shown[:, 0] = np.arange(num_users)
         result = u.get_user_feedback(items_shown=items_shown)
         np.testing.assert_array_equal(result, np.arange(num_users))
-
 
     def test_seeding(self, num_users=15, num_attr=15, seed=None):
         if seed is None:
