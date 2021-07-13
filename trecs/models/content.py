@@ -200,7 +200,10 @@ class ContentFiltering(BaseRecommender):
                 the item that the user has interacted with.
 
         """
-        sparse_interactions = sp.csr_matrix((np.ones(interactions.shape), (self.users.user_vector, interactions)), self.all_interactions.shape)
+        sparse_interactions = sp.csr_matrix(
+            (np.ones(interactions.shape), (self.users.user_vector, interactions)),
+            self.all_interactions.shape,
+        )
         self.all_interactions = self.all_interactions + sparse_interactions
 
     def train(self):
@@ -211,9 +214,13 @@ class ContentFiltering(BaseRecommender):
         Note: this function may run slowly because it requires a manual loop over every
         user.
         """
-        if self.all_interactions is not None and self.all_interactions.sum() > 0: # if there are interactions present:
+        if (
+            self.all_interactions is not None and self.all_interactions.sum() > 0
+        ):  # if there are interactions present:
             for i in range(self.num_users):
-                item_attr = mo.to_dense(self.predicted_item_attributes.T) # convert to dense so nnls can be used
+                item_attr = mo.to_dense(
+                    self.predicted_item_attributes.T
+                )  # convert to dense so nnls can be used
                 user_interactions = self.all_interactions[i, :].toarray()[0, :]
                 # solve for Content Filtering representation using nnls solver
                 self.users_hat.value[i, :] = nnls(item_attr, user_interactions)[0]
