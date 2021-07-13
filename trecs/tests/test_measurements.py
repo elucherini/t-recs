@@ -2,7 +2,7 @@ import test_helpers
 import numpy as np
 import pytest
 from trecs.components import Users, Items
-from trecs.models import SocialFiltering, ContentFiltering, BassModel
+from trecs.models import SocialFiltering, ContentFiltering, PopularityRecommender, BassModel
 from trecs.metrics import (
     InteractionSpread,
     MSEMeasurement,
@@ -109,7 +109,9 @@ class TestInteractionSpread:
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), InteractionSpread(), timesteps)
-        MeasurementUtils.test_generic_metric(ContentFiltering(), InteractionSpread(), timesteps)
+        MeasurementUtils.test_generic_metric(
+            PopularityRecommender(), InteractionSpread(), timesteps
+        )
 
 
 class TestRecSimilarity:
@@ -119,7 +121,9 @@ class TestRecSimilarity:
         # default # of users is 100
         pairs = [np.random.choice(100, 2, replace=False) for i in range(50)]
         MeasurementUtils.test_generic_metric(SocialFiltering(), RecSimilarity(pairs), timesteps)
-        MeasurementUtils.test_generic_metric(ContentFiltering(), RecSimilarity(pairs), timesteps)
+        MeasurementUtils.test_generic_metric(
+            PopularityRecommender(), RecSimilarity(pairs), timesteps
+        )
 
 
 class TestInteractionSimilarity:
@@ -131,7 +135,9 @@ class TestInteractionSimilarity:
         MeasurementUtils.test_generic_metric(
             SocialFiltering(), InteractionSimilarity(pairs), timesteps
         )
-        MeasurementUtils.test_generic_metric(ContentFiltering(), RecSimilarity(pairs), timesteps)
+        MeasurementUtils.test_generic_metric(
+            PopularityRecommender(), RecSimilarity(pairs), timesteps
+        )
 
     def test_functionality(self):
         num_users = 2
@@ -176,13 +182,13 @@ class TestMSEMeasurement:
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), MSEMeasurement(), timesteps)
-        MeasurementUtils.test_generic_metric(ContentFiltering(), MSEMeasurement(), timesteps)
+        MeasurementUtils.test_generic_metric(PopularityRecommender(), MSEMeasurement(), timesteps)
 
     def test_numeric(self):
-        content = ContentFiltering()
-        content.add_metrics(MSEMeasurement())
-        content.run(5)
-        mse = np.array(content.get_measurements()["mse"][1:])
+        pop = PopularityRecommender()
+        pop.add_metrics(MSEMeasurement())
+        pop.run(5)
+        mse = np.array(pop.get_measurements()["mse"][1:])
         assert not np.isnan(mse).any()
         assert not np.isinf(mse).any()
 
@@ -192,21 +198,21 @@ class TestRMSEMeasurement:
         if timesteps is None:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), RMSEMeasurement(), timesteps)
-        MeasurementUtils.test_generic_metric(ContentFiltering(), RMSEMeasurement(), timesteps)
+        MeasurementUtils.test_generic_metric(PopularityRecommender(), RMSEMeasurement(), timesteps)
 
     def test_functionality(self):
         num_users, num_attrs, num_items = 100, 20, 100
         user_profiles = np.random.randint(2, size=(num_users, num_attrs))
         items = np.random.randint(2, size=(num_attrs, num_items))
         users = Users(actual_user_profiles=user_profiles, repeat_interactions=False)
-        content = ContentFiltering(
+        pop = PopularityRecommender(
             actual_user_representation=users, actual_item_representation=items
         )
-        content.add_metrics(MSEMeasurement(), RMSEMeasurement())
-        content.run(5)
-        mse = np.array(content.get_measurements()["mse"][1:])
-        rmse = np.array(content.get_measurements()["rmse"][1:])
-        test_helpers.assert_equal_arrays(np.sqrt(mse), rmse)
+        pop.add_metrics(MSEMeasurement(), RMSEMeasurement())
+        pop.run(5)
+        mse = np.array(pop.get_measurements()["mse"][1:])
+        rmse = np.array(pop.get_measurements()["rmse"][1:])
+        np.testing.assert_almost_equal(np.sqrt(mse), rmse)
         assert not np.isnan(rmse).any()
         assert not np.isinf(rmse).any()
 
@@ -235,7 +241,7 @@ class TestInteractionMeasurement:
             timesteps = np.random.randint(2, 100)
         MeasurementUtils.test_generic_metric(SocialFiltering(), InteractionMeasurement(), timesteps)
         MeasurementUtils.test_generic_metric(
-            ContentFiltering(), InteractionMeasurement(), timesteps
+            PopularityRecommender(), InteractionMeasurement(), timesteps
         )
 
     def test_interactions(self, timesteps=None):
