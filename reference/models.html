@@ -88,7 +88,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">T-RECS (Tool for RecSys Simulation)</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="reference.html">Reference</a><ul class="current">
@@ -392,6 +392,15 @@ we simply return the new item attributes.</p>
 added into the system. Should be <span class="math notranslate nohighlight">\(|A|\times|I|\)</span></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.content.ContentFiltering.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the NNLS solver to train the user representations, based on the user
+interaction &amp; item attribute data.</p>
+<p>Note: this function may run slowly because it requires a manual loop over every
+user.</p>
 </dd></dl>
 
 </dd></dl>
@@ -953,7 +962,7 @@ were created.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>num_new_items</em>) – </p></li>
-<li><p><strong>this iteration</strong> (<em>in</em>) – </p></li>
+<li><p><strong>iteration</strong> (<em>in this</em>) – </p></li>
 </ul>
 </dd>
 </dl>

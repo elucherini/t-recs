@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">T-RECS (Tool for RecSys Simulation)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
@@ -162,6 +162,7 @@
 <span class="sd">are generated iteratively as users interact with items.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">nnls</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">trecs.matrix_ops</span> <span class="k">as</span> <span class="nn">mo</span>
 <span class="kn">from</span> <span class="nn">trecs.random</span> <span class="kn">import</span> <span class="n">Generator</span>
@@ -317,6 +318,9 @@
         <span class="k">if</span> <span class="n">actual_item_representation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">actual_item_representation</span> <span class="o">=</span> <span class="n">item_representation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
+        <span class="c1"># initialize cumulative interactions as a sparse matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="c1"># Initialize recommender system</span>
         <span class="n">BaseRecommender</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -331,6 +335,9 @@
             <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
+
+        <span class="c1"># set cumulative interactions as a sparse matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactions</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -350,14 +357,32 @@
 <span class="sd">                the item that the user has interacted with.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># interactions are naturally sparse, so use sparse matrix here</span>
-        <span class="n">interactions_per_user</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">interactions_per_user</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="c1"># perform an inner product with no normalization of the arguments</span>
-        <span class="n">user_attributes</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">inner_product</span><span class="p">(</span>
-            <span class="n">interactions_per_user</span><span class="p">,</span> <span class="n">mo</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="p">),</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="n">sparse_interactions</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">interactions</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">user_vector</span><span class="p">,</span> <span class="n">interactions</span><span class="p">)),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="n">user_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span> <span class="o">+</span> <span class="n">sparse_interactions</span>
+
+<div class="viewcode-block" id="ContentFiltering.train"><a class="viewcode-back" href="../../reference/models.html#models.content.ContentFiltering.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses the NNLS solver to train the user representations, based on the user</span>
+<span class="sd">        interaction &amp; item attribute data.</span>
+
+<span class="sd">        Note: this function may run slowly because it requires a manual loop over every</span>
+<span class="sd">        user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">):</span>  <span class="c1"># if there are interactions present:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">):</span>
+                <span class="n">item_attr</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">predicted_item_attributes</span><span class="o">.</span><span class="n">T</span>
+                <span class="p">)</span>  <span class="c1"># convert to dense so nnls can be used</span>
+                <span class="n">user_interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">toarray</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="c1"># solve for Content Filtering representation using nnls solver</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">nnls</span><span class="p">(</span><span class="n">item_attr</span><span class="p">,</span> <span class="n">user_interactions</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">train</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ContentFiltering.process_new_items"><a class="viewcode-back" href="../../reference/models.html#models.content.ContentFiltering.process_new_items">[docs]</a>    <span class="k">def</span> <span class="nf">process_new_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -371,6 +396,9 @@
 <span class="sd">                An array of items that represents new items that are being</span>
 <span class="sd">                added into the system. Should be :math:`|A|\\times|I|`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># add indices for new items into all interactions matrix</span>
+        <span class="n">empty_interactions</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">all_interactions</span><span class="p">,</span> <span class="n">empty_interactions</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">new_items</span></div></div>
 </pre></div>
 
