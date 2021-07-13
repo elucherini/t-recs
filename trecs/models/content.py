@@ -205,16 +205,18 @@ class ContentFiltering(BaseRecommender):
 
     def train(self):
         """
-        TODO
+        Uses the NNLS solver to train the user representations, based on the user
+        interaction & item attribute data.
+
+        Note: this function may run slowly because it requires a manual loop over every
+        user.
         """
         if self.all_interactions is not None and self.all_interactions.sum() > 0: # if there are interactions present:
-            # import pdb; pdb.set_trace()
             for i in range(self.num_users):
                 item_attr = mo.to_dense(self.predicted_item_attributes.T) # convert to dense so nnls can be used
                 user_interactions = self.all_interactions[i, :].toarray()[0, :]
                 # solve for Content Filtering representation using nnls solver
                 self.users_hat.value[i, :] = nnls(item_attr, user_interactions)[0]
-            # import pdb; pdb.set_trace()
 
         super().train()
 
