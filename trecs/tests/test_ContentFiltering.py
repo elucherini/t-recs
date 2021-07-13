@@ -232,8 +232,8 @@ class TestContentFiltering:
         s2.add_metrics(MSEMeasurement())
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
-        s1.run(timesteps=5)
-        s2.run(timesteps=5)
+        s1.run(timesteps=2)
+        s2.run(timesteps=2)
         # check that measurements are the same
         meas1 = s1.get_measurements()
         meas2 = s2.get_measurements()
@@ -252,8 +252,8 @@ class TestContentFiltering:
         s2.add_metrics(MSEMeasurement())
         test_helpers.assert_equal_arrays(s1.items_hat, s2.items_hat)
         test_helpers.assert_equal_arrays(s1.users_hat, s2.users_hat)
-        s1.run(timesteps=5)
-        s2.run(timesteps=5)
+        s1.run(timesteps=2)
+        s2.run(timesteps=2)
         # check that measurements are the same
         meas1 = s1.get_measurements()
         meas2 = s2.get_measurements()

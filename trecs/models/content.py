@@ -5,6 +5,7 @@ and predicted item profile. The predictions of user and item profiles
 are generated iteratively as users interact with items.
 """
 import numpy as np
+from scipy.optimize import nnls
 import scipy.sparse as sp
 import trecs.matrix_ops as mo
 from trecs.random import Generator
@@ -160,6 +161,9 @@ class ContentFiltering(BaseRecommender):
         if actual_item_representation is None:
             actual_item_representation = item_representation.copy()
 
+        # initialize cumulative interactions as a sparse matrix
+        self.all_interactions = None
+
         # Initialize recommender system
         BaseRecommender.__init__(
             self,
@@ -174,6 +178,9 @@ class ContentFiltering(BaseRecommender):
             seed=seed,
             **kwargs
         )
+
+        # set cumulative interactions as a sparse matrix
+        self.all_interactions = sp.csr_matrix((self.num_users, self.num_items), dtype=int)
 
     def _update_internal_state(self, interactions):
         """
@@ -193,14 +200,23 @@ class ContentFiltering(BaseRecommender):
                 the item that the user has interacted with.
 
         """
-        # interactions are naturally sparse, so use sparse matrix here
-        interactions_per_user = sp.lil_matrix((self.num_users, self.num_items), dtype=int)
-        interactions_per_user[self.users.user_vector, interactions] = 1
-        # perform an inner product with no normalization of the arguments
-        user_attributes = mo.inner_product(
-            interactions_per_user, mo.transpose(self.items_hat), False, False
-        )
-        self.users_hat.value += user_attributes
+        sparse_interactions = sp.csr_matrix((np.ones(interactions.shape), (self.users.user_vector, interactions)), self.all_interactions.shape)
+        self.all_interactions = self.all_interactions + sparse_interactions
+
+    def train(self):
+        """
+        TODO
+        """
+        if self.all_interactions is not None and self.all_interactions.sum() > 0: # if there are interactions present:
+            # import pdb; pdb.set_trace()
+            for i in range(self.num_users):
+                item_attr = mo.to_dense(self.predicted_item_attributes.T) # convert to dense so nnls can be used
+                user_interactions = self.all_interactions[i, :].toarray()[0, :]
+                # solve for Content Filtering representation using nnls solver
+                self.users_hat.value[i, :] = nnls(item_attr, user_interactions)[0]
+            # import pdb; pdb.set_trace()
+
+        super().train()
 
     def process_new_items(self, new_items):
         """
@@ -214,4 +230,7 @@ class ContentFiltering(BaseRecommender):
                 An array of items that represents new items that are being
                 added into the system. Should be :math:`|A|\\times|I|`
         """
+        # add indices for new items into all interactions matrix
+        empty_interactions = sp.csr_matrix((self.num_users, new_items.shape[1]), dtype=int)
+        self.all_interactions = sp.hstack([self.all_interactions, empty_interactions])
         return new_items
