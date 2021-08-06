@@ -66,10 +66,10 @@ Examples of how to use the simulator can be found in the notebooks below:
 - Advanced guide - `building a model`_: an introduction to adding your own models on top of the system.
 - Advanced guide - `adding metrics`_: an example of how to add new metrics to a model.
 
-.. _Quick start: examples/quick-start.ipynb
-.. _Complete guide: examples/complete-guide.ipynb
-.. _building a model: examples/advanced-models.ipynb
-.. _adding metrics: examples/advanced-metrics.ipynb
+.. _Quick start: https://github.com/elucherini/t-recs/blob/main/examples/quick-start.ipynb
+.. _Complete guide: https://github.com/elucherini/t-recs/blob/main/examples/complete-guide.ipynb
+.. _building a model: https://github.com/elucherini/t-recs/blob/main/examples/advanced-models.ipynb
+.. _adding metrics: https://github.com/elucherini/t-recs/blob/main/examples/advanced-metrics.ipynb
 
 Please check the examples_ directory for more notebooks.
 
