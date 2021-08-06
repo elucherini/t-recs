@@ -20,7 +20,14 @@ setup(
         "Operating System :: OS Independent",
     ],
     long_description=readme(),
-    packages=["trecs", "trecs.models", "trecs.metrics", "trecs.components", "trecs.base", "trecs.random"],
+    packages=[
+        "trecs",
+        "trecs.models",
+        "trecs.metrics",
+        "trecs.components",
+        "trecs.base",
+        "trecs.random",
+    ],
     install_requires=[
         "numpy>=1.17.0",
         "scipy>=1.4.1",
