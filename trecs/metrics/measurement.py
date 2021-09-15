@@ -6,6 +6,9 @@ from abc import ABC, abstractmethod
 import networkx as nx
 from networkx import wiener_index
 import numpy as np
+import pandas as pd
+from scipy.stats import skew, kurtosis, cumfreq, probplot
+import pylab
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
@@ -37,6 +40,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
+        self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "n"])
 
     def get_measurement(self):
         """
@@ -74,6 +78,25 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         else:
             to_append = observation
         self.measurement_history.append(to_append)
+
+    def diagnostics(self, observation, qq_plot=True):  # pylint: disable=arguments-differ
+        """
+        TBD
+
+        """
+        assert isinstance(observation, np.ndarray), 'diagnostics can only be performed on numpy arrays'
+
+        assert observation.ndim==1, 'diagnostics can only be performed on 1-d numpy arrays'
+
+        #["mean", "std", "median", "min", "max", "skew", "kurtosis"]
+
+        diagnostics = pd.DataFrame([[np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation), skew(observation), kurtosis(observation), observation.size]])
+        self.measurement_diagnostics.append(diagnostics)
+
+        if qq_plot:
+            probplot(observation, dist="norm", plot=pylab)
+            #pylab.show()
+            pylab.savefig("qqplot_{}.png".format(self.measurement_diagnostics.count))
 
     @abstractmethod
     def measure(self, recommender):
