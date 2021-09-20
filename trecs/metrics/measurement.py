@@ -16,6 +16,85 @@ from trecs.base import (
     register_observables,
 )
 
+class Diagnostics(object):
+
+    """
+    TBD
+    """
+
+    def __init__(self, plot=None, figpath="./diagnostic_plots"):
+
+        self.plot = plot
+        self.figpath = figpath
+        self.measurement_diagnostics = pd.DataFrame(
+            columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"])
+
+        # if diagnostics:
+        #     self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"])
+        #     self.plot = kwargs.pop("plot", None)
+        #     self.figpath = kwargs.pop("figpath", "./diagnostic_plots")
+        # else:
+        #     self.measurement_diagnostics=None
+
+        assert isinstance(self.plot, (list, str, type(None))), "plot type must be a list, string, or None"
+
+
+
+    def diagnose(self, observation):
+        """
+        TBD
+        TODO: Rework this to use the observe method?
+        """
+
+        assert isinstance(observation, np.ndarray), 'diagnostics can only be performed on numpy arrays'
+
+        assert observation.ndim == 1, 'diagnostics can only be performed on 1-d numpy arrays'
+
+
+
+        sw_test = shapiro(observation)
+
+        diagnostics = pd.Series(
+            [np.mean(observation), np.std(observation), np.median(observation), np.min(observation),
+             np.max(observation),
+             skew(observation), kurtosis(observation), sw_test.statistic, sw_test.pvalue, observation.size],
+            index=self.measurement_diagnostics.columns, )
+
+        self.measurement_diagnostics = self.measurement_diagnostics.append(diagnostics, ignore_index=True)
+
+        if self.plot:
+            if isinstance(self.plot, str):
+                self.plot = [self.plot]
+            else:
+                self.plot = self.plot
+
+            assert all(p in ["hist", "qq"] for p in self.plot), "unsupported plot type"
+
+            if not os.path.exists(self.figpath):
+                os.makedirs(self.figpath)
+
+            for p in self.plot:
+                if p == "hist":
+                    plt.hist(observation, bins='auto')
+                    plt.xlabel(self.name)
+                    plt.ylabel("observation count (total n={}".format(observation.size))
+                elif p == "qq":
+                    probplot(observation, dist="norm", plot=plt)
+                plt.savefig(
+                    "{fp}/{n}_{p}_{ts}.png".format(n=self.name, fp=self.figpath, p=p, ts=self.measurement_diagnostics.shape[0]-1))
+                plt.close()
+
+    # def get_diagnostics(self):
+    #     """
+    #     TODO: This does not work yet
+    #     """
+    #     # self.measurement_diagnostics
+    #     return self.observable(data=self.measurement_diagnostics)
+
+
+
+
+
 
 class Measurement(BaseObservable, VerboseMode, ABC):
     """
@@ -37,17 +116,12 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Name of the measurement quantity.
     """
 
-    def __init__(self, name, verbose=False, diagnostics=False, **kwargs):
+    def __init__(self, name, verbose=False, diagnostics=False):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
 
-        if diagnostics:
-            self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"])
-            self.plot = kwargs.pop("plot", None)
-            self.figpath = kwargs.pop("figpath", "./diagnostic_plots")
-        else:
-            self.measurement_diagnostics=None
+
 
     def get_measurement(self):
         """
@@ -62,12 +136,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         """
         return self.get_observable(data=self.measurement_history)
 
-    def get_diagnostics(self):
-        """
-        TBD
-        """
-        # self.measurement_diagnostics
-        return self.observable(data=self.measurement_diagnostics)
+
 
 
     def observe(self, observation, copy=True):  # pylint: disable=arguments-differ
@@ -94,50 +163,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             to_append = observation
         self.measurement_history.append(to_append)
 
-    def diagnose(self, observation, **kwargs):  # pylint: disable=arguments-differ
-        """
-        TBD
-        TODO: Rework this to use the get_observable method
-        """
 
-
-        assert isinstance(self.plot, (list, str, type(None))), "plot type must be a list, string, or None"
-
-        assert isinstance(observation, np.ndarray), 'diagnostics can only be performed on numpy arrays'
-
-        assert observation.ndim==1, 'diagnostics can only be performed on 1-d numpy arrays'
-
-        if self.plot:
-            if isinstance(self.plot, str):
-                plot = [self.plot]
-            else:
-                plot = self.plot
-
-            assert all(p in ["hist", "qq"] for p in plot), "unsupported plot type"
-
-            if not os.path.exists(self.figpath):
-                os.makedirs(self.figpath)
-
-            for p in plot:
-                if p == "hist":
-                    plt.hist(observation, bins='auto')
-                    plt.xlabel(self.name)
-                    plt.ylabel("observation count (total n={}".format(observation.size))
-                elif p == "qq":
-                    probplot(observation, dist="norm", plot=plt)
-                plt.savefig("{fp}/{p}_{n}.png".format(fp=self.figpath, p=p, n=self.measurement_diagnostics.shape[0]))
-                plt.close()
-
-        sw_test = shapiro(observation)
-
-        diagnostics = pd.Series([np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation),
-                                 skew(observation), kurtosis(observation), sw_test.statistic, sw_test.pvalue, observation.size],
-                                index=self.measurement_diagnostics.columns, )
-
-        #diagnostics = pd.Series([np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation), skew(observation), kurtosis(observation), observation.size], index=self.measurement_diagnostics.columns)
-        #print(diagnostics)
-        #df = df.append(a_series, ignore_index=True)
-        self.measurement_diagnostics = self.measurement_diagnostics.append(diagnostics, ignore_index=True)
 
         #print(self.measurement_diagnostics.head())
 
@@ -464,7 +490,7 @@ class InteractionSpread(InteractionMeasurement):
         self.histogram = histogram
 
 
-class MSEMeasurement(Measurement):
+class MSEMeasurement(Measurement, Diagnostics):
     """
     Measures the mean squared error (MSE) between real and predicted user scores.
 
@@ -487,7 +513,16 @@ class MSEMeasurement(Measurement):
     """
 
     def __init__(self, verbose=False, diagnostics=False, **kwargs):
-        Measurement.__init__(self, "mse", verbose=verbose, diagnostics=diagnostics, **kwargs)
+
+        self.diagnostics=diagnostics
+
+        Measurement.__init__(self, "mse", verbose=verbose)
+
+        plot = kwargs.pop("plot", None)
+        figpath = kwargs.pop("figpath", "./diagnostic_figures")
+
+        if diagnostics:
+            Diagnostics.__init__(self, plot, figpath)
 
 
     def measure(self, recommender):
@@ -503,9 +538,10 @@ class MSEMeasurement(Measurement):
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
 
-        if isinstance(self.measurement_diagnostics, pd.DataFrame):
-            self.diagnose((recommender.predicted_scores.value.mean(
-                axis=1) - recommender.users.actual_user_scores.value.mean(axis=1))**2)
+        if self.diagnostics:
+            if isinstance(self.measurement_diagnostics, pd.DataFrame):
+                self.diagnose((recommender.predicted_scores.value.mean(
+                    axis=1) - recommender.users.actual_user_scores.value.mean(axis=1))**2)
 
 
 
