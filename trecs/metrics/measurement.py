@@ -7,8 +7,9 @@ import networkx as nx
 from networkx import wiener_index
 import numpy as np
 import pandas as pd
-from scipy.stats import skew, kurtosis, cumfreq, probplot
-import pylab
+import os
+from scipy.stats import skew, kurtosis, cumfreq, probplot, shapiro
+import matplotlib.pyplot as plt
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
@@ -36,13 +37,15 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Name of the measurement quantity.
     """
 
-    def __init__(self, name, verbose=False, diagnostics=False):
+    def __init__(self, name, verbose=False, diagnostics=False, **kwargs):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
 
         if diagnostics:
-            self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "n"])
+            self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"])
+            self.plot = kwargs.pop("plot", None)
+            self.figpath = kwargs.pop("figpath", "./diagnostic_plots")
         else:
             self.measurement_diagnostics=None
 
@@ -61,16 +64,11 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
     def get_diagnostics(self):
         """
-        Returns measurements. See
-        :func:`~base.base_components.BaseObservable.get_observable`
-        for more details.
-
-        Returns
-        --------
-        dict:
-            Measurements
+        TBD
         """
-        return self.measurement_diagnostics
+        # self.measurement_diagnostics
+        return self.observable(data=self.measurement_diagnostics)
+
 
     def observe(self, observation, copy=True):  # pylint: disable=arguments-differ
         """
@@ -96,20 +94,45 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             to_append = observation
         self.measurement_history.append(to_append)
 
-    def diagnose(self, observation, qq_plot=False):  # pylint: disable=arguments-differ
+    def diagnose(self, observation, **kwargs):  # pylint: disable=arguments-differ
         """
         TBD
         TODO: Rework this to use the get_observable method
         """
+
+
+        assert isinstance(self.plot, (list, str, type(None))), "plot type must be a list, string, or None"
+
         assert isinstance(observation, np.ndarray), 'diagnostics can only be performed on numpy arrays'
 
         assert observation.ndim==1, 'diagnostics can only be performed on 1-d numpy arrays'
 
-        #["mean", "std", "median", "min", "max", "skew", "kurtosis"]
+        if self.plot:
+            if isinstance(self.plot, str):
+                plot = [self.plot]
+            else:
+                plot = self.plot
+
+            assert all(p in ["hist", "qq"] for p in plot), "unsupported plot type"
+
+            if not os.path.exists(self.figpath):
+                os.makedirs(self.figpath)
+
+            for p in plot:
+                if p == "hist":
+                    plt.hist(observation, bins='auto')
+                    plt.xlabel(self.name)
+                    plt.ylabel("observation count (total n={}".format(observation.size))
+                elif p == "qq":
+                    probplot(observation, dist="norm", plot=plt)
+                plt.savefig("{fp}/{p}_{n}.png".format(fp=self.figpath, p=p, n=self.measurement_diagnostics.shape[0]))
+                plt.close()
+
+        sw_test = shapiro(observation)
 
         diagnostics = pd.Series([np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation),
-                                 skew(observation), kurtosis(observation), observation.size],
-                                index=self.measurement_diagnostics.columns)
+                                 skew(observation), kurtosis(observation), sw_test.statistic, sw_test.pvalue, observation.size],
+                                index=self.measurement_diagnostics.columns, )
 
         #diagnostics = pd.Series([np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation), skew(observation), kurtosis(observation), observation.size], index=self.measurement_diagnostics.columns)
         #print(diagnostics)
@@ -117,11 +140,6 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         self.measurement_diagnostics = self.measurement_diagnostics.append(diagnostics, ignore_index=True)
 
         #print(self.measurement_diagnostics.head())
-
-        if qq_plot:
-            probplot(observation, dist="norm", plot=pylab)
-            #pylab.show()
-            pylab.savefig("qqplot_{}.png".format(self.measurement_diagnostics.size))
 
     @abstractmethod
     def measure(self, recommender):
@@ -468,8 +486,8 @@ class MSEMeasurement(Measurement):
             Name of the measurement component.
     """
 
-    def __init__(self, verbose=False, diagnostics=False):
-        Measurement.__init__(self, "mse", verbose=verbose, diagnostics=diagnostics)
+    def __init__(self, verbose=False, diagnostics=False, **kwargs):
+        Measurement.__init__(self, "mse", verbose=verbose, diagnostics=diagnostics, **kwargs)
 
 
     def measure(self, recommender):
