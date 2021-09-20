@@ -36,11 +36,15 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Name of the measurement quantity.
     """
 
-    def __init__(self, name, verbose=False):
+    def __init__(self, name, verbose=False, diagnostics=False):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
-        self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "n"])
+
+        if diagnostics:
+            self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "n"])
+        else:
+            self.measurement_diagnostics=None
 
     def get_measurement(self):
         """
@@ -54,6 +58,19 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Measurements
         """
         return self.get_observable(data=self.measurement_history)
+
+    def get_diagnostics(self):
+        """
+        Returns measurements. See
+        :func:`~base.base_components.BaseObservable.get_observable`
+        for more details.
+
+        Returns
+        --------
+        dict:
+            Measurements
+        """
+        return self.measurement_diagnostics
 
     def observe(self, observation, copy=True):  # pylint: disable=arguments-differ
         """
@@ -79,10 +96,10 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             to_append = observation
         self.measurement_history.append(to_append)
 
-    def diagnostics(self, observation, qq_plot=True):  # pylint: disable=arguments-differ
+    def diagnose(self, observation, qq_plot=False):  # pylint: disable=arguments-differ
         """
         TBD
-
+        TODO: Rework this to use the get_observable method
         """
         assert isinstance(observation, np.ndarray), 'diagnostics can only be performed on numpy arrays'
 
@@ -90,13 +107,21 @@ class Measurement(BaseObservable, VerboseMode, ABC):
 
         #["mean", "std", "median", "min", "max", "skew", "kurtosis"]
 
-        diagnostics = pd.DataFrame([[np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation), skew(observation), kurtosis(observation), observation.size]])
-        self.measurement_diagnostics.append(diagnostics)
+        diagnostics = pd.Series([np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation),
+                                 skew(observation), kurtosis(observation), observation.size],
+                                index=self.measurement_diagnostics.columns)
+
+        #diagnostics = pd.Series([np.mean(observation), np.std(observation), np.median(observation), np.min(observation), np.max(observation), skew(observation), kurtosis(observation), observation.size], index=self.measurement_diagnostics.columns)
+        #print(diagnostics)
+        #df = df.append(a_series, ignore_index=True)
+        self.measurement_diagnostics = self.measurement_diagnostics.append(diagnostics, ignore_index=True)
+
+        #print(self.measurement_diagnostics.head())
 
         if qq_plot:
             probplot(observation, dist="norm", plot=pylab)
             #pylab.show()
-            pylab.savefig("qqplot_{}.png".format(self.measurement_diagnostics.count))
+            pylab.savefig("qqplot_{}.png".format(self.measurement_diagnostics.size))
 
     @abstractmethod
     def measure(self, recommender):
@@ -443,8 +468,9 @@ class MSEMeasurement(Measurement):
             Name of the measurement component.
     """
 
-    def __init__(self, verbose=False):
-        Measurement.__init__(self, "mse", verbose=verbose)
+    def __init__(self, verbose=False, diagnostics=False):
+        Measurement.__init__(self, "mse", verbose=verbose, diagnostics=diagnostics)
+
 
     def measure(self, recommender):
         """
@@ -458,6 +484,11 @@ class MSEMeasurement(Measurement):
         """
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
+
+        if isinstance(self.measurement_diagnostics, pd.DataFrame):
+            self.diagnose((recommender.predicted_scores.value.mean(
+                axis=1) - recommender.users.actual_user_scores.value.mean(axis=1))**2)
+
 
 
 class RMSEMeasurement(Measurement):
