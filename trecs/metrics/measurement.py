@@ -23,10 +23,12 @@ class Diagnostics(object):
     TBD
     """
 
-    def __init__(self, plot=None, figpath="./diagnostic_plots"):
+    def __init__(self, **kwargs):
 
-        self.plot = plot
-        self.figpath = figpath
+        self.plot = kwargs.pop("plot", None)
+        self.figpath = kwargs.pop("figpath", "./diagnostic_figures")
+        # self.plot = plot
+        # self.figpath = figpath
         self.measurement_diagnostics = pd.DataFrame(
             columns=[
                 "mean",
@@ -60,6 +62,11 @@ class Diagnostics(object):
 
         sw_test = shapiro(observation)
 
+        if observation.size >= 5000:
+            sw_p = np.nan
+        else:
+            sw_p = sw_test.pvalue
+
         diagnostics = pd.Series(
             [
                 np.mean(observation),
@@ -70,7 +77,7 @@ class Diagnostics(object):
                 skew(observation),
                 kurtosis(observation),
                 sw_test.statistic,
-                sw_test.pvalue,
+                sw_p,
                 observation.size,
             ],
             index=self.measurement_diagnostics.columns,
@@ -327,7 +334,7 @@ class InteractionMeasurement(Measurement):
         self.observe(histogram, copy=True)
 
 
-class InteractionSimilarity(Measurement):
+class InteractionSimilarity(Measurement, Diagnostics):
     """
     Keeps track of the average Jaccard similarity between interactions with items
     between pairs of users at each timestep. The pairs of users must be passed
@@ -350,11 +357,15 @@ class InteractionSimilarity(Measurement):
             Name of the measurement component.
     """
 
-    def __init__(self, pairs, name="interaction_similarity", verbose=False):
+    def __init__(self, pairs, name="interaction_similarity", verbose=False, diagnostics=False, **kwargs):
         self.pairs = pairs
         # will eventually be a matrix where each row corresponds to 1 user
         self.interaction_hist = None
+        self.diagnostics = diagnostics
         Measurement.__init__(self, name, verbose)
+
+        if diagnostics:
+            Diagnostics.__init__(self, **kwargs)
 
     def measure(self, recommender):
         """
@@ -381,13 +392,23 @@ class InteractionSimilarity(Measurement):
             self.interaction_hist = np.hstack(
                 [self.interaction_hist, interactions.reshape((-1, 1))]
             )
+        pair_sim = []
         for pair in self.pairs:
             itemset_1 = set(self.interaction_hist[pair[0], :])
             itemset_2 = set(self.interaction_hist[pair[1], :])
             common = len(itemset_1.intersection(itemset_2))
             union = len(itemset_1.union(itemset_2))
             similarity += common / union / len(self.pairs)
+
+            if self.diagnostics:
+                pair_sim.append(common / union)
+
         self.observe(similarity)
+        self.diagnose(np.array(pair_sim))
+
+
+
+
 
 
 class RecSimilarity(Measurement):
@@ -531,11 +552,8 @@ class MSEMeasurement(Measurement, Diagnostics):
 
         Measurement.__init__(self, "mse", verbose=verbose)
 
-        plot = kwargs.pop("plot", None)
-        figpath = kwargs.pop("figpath", "./diagnostic_figures")
-
         if diagnostics:
-            Diagnostics.__init__(self, plot, figpath)
+            Diagnostics.__init__(self, **kwargs)
 
     def measure(self, recommender):
         """
