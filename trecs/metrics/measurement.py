@@ -16,6 +16,7 @@ from trecs.base import (
     register_observables,
 )
 
+
 class Diagnostics(object):
 
     """
@@ -27,18 +28,23 @@ class Diagnostics(object):
         self.plot = plot
         self.figpath = figpath
         self.measurement_diagnostics = pd.DataFrame(
-            columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"])
+            columns=[
+                "mean",
+                "std",
+                "median",
+                "min",
+                "max",
+                "skew",
+                "kurtosis",
+                "sw_stat",
+                "sw_p",
+                "n",
+            ]
+        )
 
-        # if diagnostics:
-        #     self.measurement_diagnostics = pd.DataFrame(columns = ["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"])
-        #     self.plot = kwargs.pop("plot", None)
-        #     self.figpath = kwargs.pop("figpath", "./diagnostic_plots")
-        # else:
-        #     self.measurement_diagnostics=None
-
-        assert isinstance(self.plot, (list, str, type(None))), "plot type must be a list, string, or None"
-
-
+        assert isinstance(
+            self.plot, (list, str, type(None))
+        ), "plot type must be a list, string, or None"
 
     def diagnose(self, observation):
         """
@@ -46,21 +52,33 @@ class Diagnostics(object):
         TODO: Rework this to use the observe method?
         """
 
-        assert isinstance(observation, np.ndarray), 'diagnostics can only be performed on numpy arrays'
+        assert isinstance(
+            observation, np.ndarray
+        ), "diagnostics can only be performed on numpy arrays"
 
-        assert observation.ndim == 1, 'diagnostics can only be performed on 1-d numpy arrays'
-
-
+        assert observation.ndim == 1, "diagnostics can only be performed on 1-d numpy arrays"
 
         sw_test = shapiro(observation)
 
         diagnostics = pd.Series(
-            [np.mean(observation), np.std(observation), np.median(observation), np.min(observation),
-             np.max(observation),
-             skew(observation), kurtosis(observation), sw_test.statistic, sw_test.pvalue, observation.size],
-            index=self.measurement_diagnostics.columns, )
+            [
+                np.mean(observation),
+                np.std(observation),
+                np.median(observation),
+                np.min(observation),
+                np.max(observation),
+                skew(observation),
+                kurtosis(observation),
+                sw_test.statistic,
+                sw_test.pvalue,
+                observation.size,
+            ],
+            index=self.measurement_diagnostics.columns,
+        )
 
-        self.measurement_diagnostics = self.measurement_diagnostics.append(diagnostics, ignore_index=True)
+        self.measurement_diagnostics = self.measurement_diagnostics.append(
+            diagnostics, ignore_index=True
+        )
 
         if self.plot:
             if isinstance(self.plot, str):
@@ -75,25 +93,27 @@ class Diagnostics(object):
 
             for p in self.plot:
                 if p == "hist":
-                    plt.hist(observation, bins='auto')
+                    plt.hist(observation, bins="auto")
                     plt.xlabel(self.name)
                     plt.ylabel("observation count (total n={}".format(observation.size))
                 elif p == "qq":
                     probplot(observation, dist="norm", plot=plt)
                 plt.savefig(
-                    "{fp}/{n}_{p}_{ts}.png".format(n=self.name, fp=self.figpath, p=p, ts=self.measurement_diagnostics.shape[0]-1))
+                    "{fp}/{n}_{p}_{ts}.png".format(
+                        n=self.name,
+                        fp=self.figpath,
+                        p=p,
+                        ts=self.measurement_diagnostics.shape[0] - 1,
+                    )
+                )
                 plt.close()
 
-    # def get_diagnostics(self):
-    #     """
-    #     TODO: This does not work yet
-    #     """
-    #     # self.measurement_diagnostics
-    #     return self.observable(data=self.measurement_diagnostics)
-
-
-
-
+    def get_diagnostics(self):
+        """
+        TODO: This does not work yet with the get_observable method. I couldn't figure out how to do this.
+        """
+        return self.measurement_diagnostics
+        # return self.get_observable(data=self.measurement_diagnostics)
 
 
 class Measurement(BaseObservable, VerboseMode, ABC):
@@ -121,8 +141,6 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()
 
-
-
     def get_measurement(self):
         """
         Returns measurements. See
@@ -135,9 +153,6 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Measurements
         """
         return self.get_observable(data=self.measurement_history)
-
-
-
 
     def observe(self, observation, copy=True):  # pylint: disable=arguments-differ
         """
@@ -163,9 +178,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             to_append = observation
         self.measurement_history.append(to_append)
 
-
-
-        #print(self.measurement_diagnostics.head())
+        # print(self.measurement_diagnostics.head())
 
     @abstractmethod
     def measure(self, recommender):
@@ -514,7 +527,7 @@ class MSEMeasurement(Measurement, Diagnostics):
 
     def __init__(self, verbose=False, diagnostics=False, **kwargs):
 
-        self.diagnostics=diagnostics
+        self.diagnostics = diagnostics
 
         Measurement.__init__(self, "mse", verbose=verbose)
 
@@ -523,7 +536,6 @@ class MSEMeasurement(Measurement, Diagnostics):
 
         if diagnostics:
             Diagnostics.__init__(self, plot, figpath)
-
 
     def measure(self, recommender):
         """
@@ -539,10 +551,13 @@ class MSEMeasurement(Measurement, Diagnostics):
         self.observe((diff ** 2).mean(), copy=False)
 
         if self.diagnostics:
-            if isinstance(self.measurement_diagnostics, pd.DataFrame):
-                self.diagnose((recommender.predicted_scores.value.mean(
-                    axis=1) - recommender.users.actual_user_scores.value.mean(axis=1))**2)
-
+            self.diagnose(
+                (
+                    recommender.predicted_scores.value.mean(axis=1)
+                    - recommender.users.actual_user_scores.value.mean(axis=1)
+                )
+                ** 2
+            )
 
 
 class RMSEMeasurement(Measurement):
