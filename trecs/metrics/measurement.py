@@ -10,13 +10,15 @@ import pandas as pd
 import os
 from scipy.stats import skew, kurtosis, cumfreq, probplot, shapiro
 import matplotlib.pyplot as plt
+import warnings
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
     register_observables,
 )
 
-
+#danger! suppressing for shapiro-wilk n warning
+warnings.filterwarnings("ignore")
 class Diagnostics(object):
 
     """
