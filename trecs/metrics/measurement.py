@@ -20,10 +20,21 @@ from trecs.base import (
 #danger! suppressing for shapiro-wilk n warning
 warnings.filterwarnings("ignore")
 class Diagnostics(object):
+    """
+        Class to generate diagnostics on measurements.
 
-    """
-    TBD
-    """
+        Attributes
+        -----------
+
+            measurement_diagnostics: pandas dataframe
+                Dataframe containing diagnostics statistics at each timestep.
+
+            plot: list or str
+                Specifies which diagnostics plots to generate.
+
+            figpath: str
+                file path for storing diagnostic plots.
+        """
 
     def __init__(self, **kwargs):
 
