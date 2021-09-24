@@ -115,12 +115,12 @@ class Diagnostics(object):
             for p in self.plot:
                 if p == "hist":
                     if self.split_index:
-                        plt.hist(observation[:self.split_index])
-                        plt.hist(observation[self.split_index:])
+                        plt.hist(observation[:self.split_index], alpha=0.7, color='b')
+                        plt.hist(observation[self.split_index:], alpha=0.7, color='r')
                     else:
                         plt.hist(observation, bins="auto")
                     plt.xlabel(self.name)
-                    plt.ylabel("observation count (total n={}".format(observation.size))
+                    plt.ylabel("observation count (total n={})".format(observation.size))
                 elif p == "qq":
                     probplot(observation, dist="norm", plot=plt)
                 plt.savefig(
