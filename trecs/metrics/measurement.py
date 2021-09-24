@@ -40,6 +40,7 @@ class Diagnostics(object):
 
         self.plot = kwargs.pop("plot", None)
         self.figpath = kwargs.pop("figpath", "./diagnostic_figures")
+        self.split_index = kwargs.pop("split_index", None)
         # self.plot = plot
         # self.figpath = figpath
         self.measurement_diagnostics = pd.DataFrame(
@@ -113,7 +114,11 @@ class Diagnostics(object):
 
             for p in self.plot:
                 if p == "hist":
-                    plt.hist(observation, bins="auto")
+                    if self.split_index:
+                        plt.hist(observation[:self.split_index])
+                        plt.hist(observation[self.split_index:])
+                    else:
+                        plt.hist(observation, bins="auto")
                     plt.xlabel(self.name)
                     plt.ylabel("observation count (total n={}".format(observation.size))
                 elif p == "qq":
