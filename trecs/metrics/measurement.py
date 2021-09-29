@@ -17,8 +17,6 @@ from trecs.base import (
     register_observables,
 )
 
-#danger! suppressing for shapiro-wilk n warning
-warnings.filterwarnings("ignore")
 class Diagnostics(object):
     """
         Class to generate diagnostics on measurements.
