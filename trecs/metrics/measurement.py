@@ -17,29 +17,30 @@ from trecs.base import (
     register_observables,
 )
 
+
 class DistributionDiagnostics(object):
     """
-        Class to generate diagnostics on measurements.
+    Class to generate diagnostics on measurements.
 
-        Attributes
-        -----------
+    Attributes
+    -----------
 
-            measurement_diagnostics: pandas dataframe
-                Dataframe containing diagnostics statistics at each timestep.
+        measurement_diagnostics: pandas dataframe
+            Dataframe containing diagnostics statistics at each timestep.
 
-            plot: list or str
-                Specifies which diagnostics plots to generate.
+        plot: list or str
+            Specifies which diagnostics plots to generate.
 
-            figpath: str
-                file path for storing diagnostic plots.
-        """
+        figpath: str
+            file path for storing diagnostic plots.
+    """
 
-    def __init__(self,
-                 columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"]):
+    def __init__(
+        self,
+        columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"],
+    ):
         self.columns = columns
-        self.measurement_diagnostics = pd.DataFrame(
-            columns
-        )
+        self.measurement_diagnostics = pd.DataFrame(columns)
 
         assert isinstance(
             self.plot, (list, str, type(None))
@@ -77,10 +78,12 @@ class DistributionDiagnostics(object):
             elif col == "kurtosis":
                 values.append(kurtosis(observation))
             elif col == "sw_stat":
-                if sw_test is None: sw_test = shapiro(observation)
+                if sw_test is None:
+                    sw_test = shapiro(observation)
                 values.append(sw_test.statistic)
             elif col == "sw_p":
-                if sw_test is None: sw_test = shapiro(observation)
+                if sw_test is None:
+                    sw_test = shapiro(observation)
                 if observation.size >= 5000:
                     sw_p = np.nan
                 else:
@@ -107,11 +110,10 @@ class DistributionDiagnostics(object):
         if len(split_indices) > 0:
             splits = [0] + split_indices + [self.last_observation.size]
             for i in range(len(splits) - 1):
-                values = self.last_observation[splits[i]:splits[i+1]]
-                plt.hist(values, alpha=0.7, color='b')
+                values = self.last_observation[splits[i] : splits[i + 1]]
+                plt.hist(values, alpha=0.7, color="b")
         else:
             plt.hist(self.last_observation, bins="auto")
-
 
     def qq(self):
         probplot(self.last_observation, dist="norm", plot=plt)
@@ -357,7 +359,9 @@ class InteractionSimilarity(Measurement, Diagnostics):
             Name of the measurement component.
     """
 
-    def __init__(self, pairs, name="interaction_similarity", verbose=False, diagnostics=False, **kwargs):
+    def __init__(
+        self, pairs, name="interaction_similarity", verbose=False, diagnostics=False, **kwargs
+    ):
         self.pairs = pairs
         # will eventually be a matrix where each row corresponds to 1 user
         self.interaction_hist = None
@@ -408,10 +412,6 @@ class InteractionSimilarity(Measurement, Diagnostics):
 
         if self.diagnostics:
             self.diagnose(np.array(pair_sim))
-
-
-
-
 
 
 class RecSimilarity(Measurement):
