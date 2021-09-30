@@ -9,8 +9,7 @@ import networkx as nx
 from networkx import wiener_index
 import numpy as np
 import pandas as pd
-import os
-from scipy.stats import skew, kurtosis, cumfreq, probplot, shapiro
+from scipy.stats import skew, kurtosis, probplot, shapiro
 import matplotlib.pyplot as plt
 from trecs.logging import VerboseMode
 from trecs.base import (
@@ -18,7 +17,7 @@ from trecs.base import (
     register_observables,
 )
 
-class Diagnostics(object):
+class DistributionDiagnostics(object):
     """
         Class to generate diagnostics on measurements.
 
@@ -35,61 +34,63 @@ class Diagnostics(object):
                 file path for storing diagnostic plots.
         """
 
-    def __init__(self, **kwargs):
-
-        self.plot = kwargs.pop("plot", None)
-        self.figpath = kwargs.pop("figpath", "./diagnostic_figures")
-        self.split_index = kwargs.pop("split_index", None)
+    def __init__(self,
+                 columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"]):
+        self.columns = columns
         self.measurement_diagnostics = pd.DataFrame(
-            columns=[
-                "mean",
-                "std",
-                "median",
-                "min",
-                "max",
-                "skew",
-                "kurtosis",
-                "sw_stat",
-                "sw_p",
-                "n",
-            ]
+            columns
         )
 
         assert isinstance(
             self.plot, (list, str, type(None))
         ), "plot type must be a list, string, or None"
+        self.last_observation = None
 
     def diagnose(self, observation):
         """
         TODO: write description
         """
 
-        assert isinstance(
-            observation, np.ndarray
-        ), "diagnostics can only be performed on numpy arrays"
+        # rudimentary type-checks
+        if not isinstance(observation, np.ndarray):
+            raise TypeError("Diagnostics can only be performed on numpy arrays")
 
-        assert observation.ndim == 1, "diagnostics can only be performed on 1-d numpy arrays"
+        if observation.ndim != 1:
+            raise ValueError("Diagnostics can only be performed on 1-d numpy arrays")
+        self.last_observation = observation
 
-        sw_test = shapiro(observation)
-
-        if observation.size >= 5000:
-            sw_p = np.nan
-        else:
-            sw_p = sw_test.pvalue
+        values = []
+        sw_test = None
+        for col in self.columns:
+            if col == "mean":
+                values.append(np.mean(observation))
+            elif col == "std":
+                values.append(np.std(observation))
+            elif col == "median":
+                values.append(np.std(observation))
+            elif col == "min":
+                values.append(np.min(observation))
+            elif col == "max":
+                values.append(np.max(observation))
+            elif col == "skew":
+                values.append(skew(observation))
+            elif col == "kurtosis":
+                values.append(kurtosis(observation))
+            elif col == "sw_stat":
+                if sw_test is None: sw_test = shapiro(observation)
+                values.append(sw_test.statistic)
+            elif col == "sw_p":
+                if sw_test is None: sw_test = shapiro(observation)
+                if observation.size >= 5000:
+                    sw_p = np.nan
+                else:
+                    sw_p = sw_test.pvalue
+                values.append(sw_p)
+            elif col == "n":
+                values.append(observation.size)
 
         diagnostics = pd.Series(
-            [
-                np.mean(observation),
-                np.std(observation),
-                np.median(observation),
-                np.min(observation),
-                np.max(observation),
-                skew(observation),
-                kurtosis(observation),
-                sw_test.statistic,
-                sw_p,
-                observation.size,
-            ],
+            values,
             index=self.measurement_diagnostics.columns,
         )
 
@@ -97,44 +98,29 @@ class Diagnostics(object):
             diagnostics, ignore_index=True
         )
 
-        if self.plot:
-            if isinstance(self.plot, str):
-                self.plot = [self.plot]
-            else:
-                self.plot = self.plot
+    def last_observation(self):
+        """
+        TODO: fill out, last observation recorded
+        """
 
-            assert all(p in ["hist", "qq"] for p in self.plot), "unsupported plot type"
+    def hist(self, split_indices=[]):
+        if len(split_indices) > 0:
+            splits = [0] + split_indices + [self.last_observation.size]
+            for i in range(len(splits) - 1):
+                values = self.last_observation[splits[i]:splits[i+1]]
+                plt.hist(values, alpha=0.7, color='b')
+        else:
+            plt.hist(self.last_observation, bins="auto")
 
-            if not os.path.exists(self.figpath):
-                os.makedirs(self.figpath)
 
-            for p in self.plot:
-                if p == "hist":
-                    if self.split_index:
-                        plt.hist(observation[:self.split_index], alpha=0.7, color='b')
-                        plt.hist(observation[self.split_index:], alpha=0.7, color='r')
-                    else:
-                        plt.hist(observation, bins="auto")
-                    plt.xlabel(self.name)
-                    plt.ylabel("observation count (total n={})".format(observation.size))
-                elif p == "qq":
-                    probplot(observation, dist="norm", plot=plt)
-                plt.savefig(
-                    "{fp}/{n}_{p}_{ts}.png".format(
-                        n=self.name,
-                        fp=self.figpath,
-                        p=p,
-                        ts=self.measurement_diagnostics.shape[0] - 1,
-                    )
-                )
-                plt.close()
+    def qq(self):
+        probplot(self.last_observation, dist="norm", plot=plt)
 
     def get_diagnostics(self):
         """
-        TODO: This does not work yet with the get_observable method. I couldn't figure out how to do this.
+        TODO: Description
         """
         return self.measurement_diagnostics
-        # return self.get_observable(data=self.measurement_diagnostics)
 
 
 class Measurement(BaseObservable, VerboseMode, ABC):
