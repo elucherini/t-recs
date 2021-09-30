@@ -1,6 +1,8 @@
 """
 Set of various measurements that can be used to track outcomes of interest
-throughout a simulation
+throughout a simulation. Diagnostics may optionally be included to measure
+ancillary information for each measurement, such as variance or
+kurtosis.
 """
 from abc import ABC, abstractmethod
 import networkx as nx
@@ -10,7 +12,6 @@ import pandas as pd
 import os
 from scipy.stats import skew, kurtosis, cumfreq, probplot, shapiro
 import matplotlib.pyplot as plt
-import warnings
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
@@ -39,8 +40,6 @@ class Diagnostics(object):
         self.plot = kwargs.pop("plot", None)
         self.figpath = kwargs.pop("figpath", "./diagnostic_figures")
         self.split_index = kwargs.pop("split_index", None)
-        # self.plot = plot
-        # self.figpath = figpath
         self.measurement_diagnostics = pd.DataFrame(
             columns=[
                 "mean",
@@ -62,8 +61,7 @@ class Diagnostics(object):
 
     def diagnose(self, observation):
         """
-        TBD
-        TODO: Rework this to use the observe method?
+        TODO: write description
         """
 
         assert isinstance(
@@ -408,6 +406,7 @@ class InteractionSimilarity(Measurement, Diagnostics):
             self.interaction_hist = np.hstack(
                 [self.interaction_hist, interactions.reshape((-1, 1))]
             )
+
         pair_sim = []
         for pair in self.pairs:
             itemset_1 = set(self.interaction_hist[pair[0], :])
@@ -420,7 +419,9 @@ class InteractionSimilarity(Measurement, Diagnostics):
                 pair_sim.append(common / union)
 
         self.observe(similarity)
-        self.diagnose(np.array(pair_sim))
+
+        if self.diagnostics:
+            self.diagnose(np.array(pair_sim))
 
 
 
