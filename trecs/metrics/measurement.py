@@ -18,7 +18,7 @@ from trecs.base import (
 )
 
 
-class DistributionDiagnostics(object):
+class Diagnostics(object):
     """
     Class to generate diagnostics on measurements.
 
@@ -30,9 +30,6 @@ class DistributionDiagnostics(object):
 
         plot: list or str
             Specifies which diagnostics plots to generate.
-
-        figpath: str
-            file path for storing diagnostic plots.
     """
 
     def __init__(
@@ -40,11 +37,7 @@ class DistributionDiagnostics(object):
         columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"],
     ):
         self.columns = columns
-        self.measurement_diagnostics = pd.DataFrame(columns)
-
-        assert isinstance(
-            self.plot, (list, str, type(None))
-        ), "plot type must be a list, string, or None"
+        self.measurement_diagnostics = pd.DataFrame(columns=columns)
         self.last_observation = None
 
     def diagnose(self, observation):
@@ -62,21 +55,18 @@ class DistributionDiagnostics(object):
 
         values = []
         sw_test = None
+        col_to_fn = {
+            "mean": np.mean,
+            "std": np.std,
+            "median": np.median,
+            "min": np.min,
+            "max": np.max,
+            "skew": skew,
+            "kurtosis": kurtosis,
+        }
         for col in self.columns:
-            if col == "mean":
-                values.append(np.mean(observation))
-            elif col == "std":
-                values.append(np.std(observation))
-            elif col == "median":
-                values.append(np.std(observation))
-            elif col == "min":
-                values.append(np.min(observation))
-            elif col == "max":
-                values.append(np.max(observation))
-            elif col == "skew":
-                values.append(skew(observation))
-            elif col == "kurtosis":
-                values.append(kurtosis(observation))
+            if col in col_to_fn:
+                values.append(col_to_fn[col](observation))
             elif col == "sw_stat":
                 if sw_test is None:
                     sw_test = shapiro(observation)
@@ -91,7 +81,6 @@ class DistributionDiagnostics(object):
                 values.append(sw_p)
             elif col == "n":
                 values.append(observation.size)
-
         diagnostics = pd.Series(
             values,
             index=self.measurement_diagnostics.columns,
@@ -114,6 +103,8 @@ class DistributionDiagnostics(object):
                 plt.hist(values, alpha=0.7, color="b")
         else:
             plt.hist(self.last_observation, bins="auto")
+        plt.xlabel(self.name)
+        plt.ylabel("observation count (total n={})".format(self.last_observation.size))
 
     def qq(self):
         probplot(self.last_observation, dist="norm", plot=plt)
