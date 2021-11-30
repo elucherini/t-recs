@@ -96,11 +96,14 @@ class Diagnostics(object):
         """
 
     def hist(self, split_indices=[]):
+        if len(split_indices) > 4:
+            raise RuntimeError("Too many split indices")
+        colors = ['blue', 'orange', 'red', 'yellow', 'green']
         if len(split_indices) > 0:
             splits = [0] + split_indices + [self.last_observation.size]
             for i in range(len(splits) - 1):
                 values = self.last_observation[splits[i] : splits[i + 1]]
-                plt.hist(values, alpha=0.7, color="b")
+                plt.hist(values, alpha=0.7, color=colors[i])
         else:
             plt.hist(self.last_observation, bins="auto")
         plt.xlabel(self.name)
