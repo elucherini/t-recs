@@ -89,6 +89,8 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
     User profiles as predicted by the model. This class is a container
     compatible with Numpy operations and it does not make assumptions on the
     size of the representation.
+
+    TODO: can this be made a subclass of Users?
     """
 
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
@@ -108,6 +110,14 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
         Shortcut getter method for the number of attributes in each user profile.
         """
         return self.current_state.shape[1]
+
+    def append_new_users(self, new_users):
+        """
+        Appends a set of new users (represented as some kind of matrix) to the current
+        set of items. Assumes the new users have dimension :math:`|U_{new}|\\times|A|`,
+        where :math:`U_{new}` indicates the number of new items to be appended.
+        """
+        self.current_state = mo.vstack([self.current_state, new_users])
 
 
 class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
