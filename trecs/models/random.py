@@ -160,3 +160,16 @@ class RandomRecommender(BaseRecommender):
         # start popularity of new items as 0
         new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)
         return new_representation
+
+    def process_new_users(self, new_users):
+        """
+        The representation of any new users is always zero.
+
+        ------------
+           new_users: :obj:`numpy.ndarray`
+                An array of users that represents new users that are being
+                added into the system. Should be of dimension :math:`|U|\\times|A|`
+        """
+        # start popularity of new users as 0
+        new_representation = np.zeros(new_users.shape[0]).reshape(-1, -1)
+        return new_representation
