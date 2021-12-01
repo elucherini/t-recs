@@ -177,7 +177,7 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
         num_items = item_indices.shape[1]
         self.current_state[self.user_rows[:, :num_items], item_indices] = value
 
-    def append_new_scores(self, new_scores):
+    def append_item_scores(self, new_scores):
         """
         Appends a set of scores for new items to the current set of scores.
 
@@ -191,6 +191,23 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
         """
         self.current_state = mo.hstack([self.current_state, new_scores])
         # update user rows matrix
+        num_users, num_items = self.current_state.shape
+        self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
+
+    def append_user_scores(self, new_scores):
+        """
+        Appends a set of scores for new users to the current set of scores.
+
+        Parameters
+        -------------
+
+        new_scores: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
+            Matrix of new scores with dimension :math:`|U_{new}|\\times|I|`,
+            where :math:`U_{new}` indicates the number of new users whose
+            scores are being appended.
+        """
+        self.current_state = mo.vstack([self.current_state, new_scores])
+         # update user rows matrix
         num_users, num_items = self.current_state.shape
         self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
 
