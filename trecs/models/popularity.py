@@ -174,3 +174,17 @@ class PopularityRecommender(BaseRecommender):
         # start popularity of new items as 0
         new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)
         return new_representation
+
+    def process_new_users(self, new_users):
+        """
+        New users are always represented with the digit 1.
+
+        Parameters
+        ------------
+            new_users: :obj:`numpy.ndarray`
+                An array of users that represents new users that are being
+                added into the system. Should be of dimension :math:`|U|\\times|A|`
+        """
+        # users initialized as 1
+        new_representation = np.ones((new_users.shape[1], 1))
+        return new_representation
