@@ -119,22 +119,6 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
         """
         self.current_state = mo.vstack([self.current_state, new_users])
 
-    @property
-    def num_attrs(self):
-        """
-        Shortcut getter method for the number of attributes of the items.
-        """
-        # rows = users, rows = attributes
-        return self.current_state.shape[1]
-
-    @property
-    def num_users(self):
-        """
-        Shortcut getter method for the number of items.
-        """
-        # rows = users, rows = attributes
-        return self.current_state.shape[0]
-
 
 class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
