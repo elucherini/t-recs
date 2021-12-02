@@ -139,12 +139,10 @@ class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
         # rows = users, cols = items
         return self.current_state.shape[0]
 
-    @property
-    def num_items(self):
+    def num_attrs(self):
         """
-        Shortcut getter method for the number of items.
+        Shortcut getter method for the number of attributes in each user profile.
         """
-        # rows = users, cols = items
         return self.current_state.shape[1]
 
     def append_new_users(self, new_users):

@@ -18,7 +18,7 @@ from trecs.base import (
 )
 
 
-class Diagnostics(object):
+class Diagnostics:
     """
     Class to generate diagnostics on measurements.
 
@@ -39,8 +39,21 @@ class Diagnostics(object):
 
     def __init__(
         self,
-        columns=["mean", "std", "median", "min", "max", "skew", "kurtosis", "sw_stat", "sw_p", "n"],
+        columns=None,
     ):
+        if columns is None:
+            columns = [
+                "mean",
+                "std",
+                "median",
+                "min",
+                "max",
+                "skew",
+                "kurtosis",
+                "sw_stat",
+                "sw_p",
+                "n",
+            ]
         self.columns = columns
         self.measurement_diagnostics = pd.DataFrame(columns=columns)
         self.last_observation = None
@@ -104,21 +117,36 @@ class Diagnostics(object):
             diagnostics, ignore_index=True
         )
 
-    def hist(self, split_indices=[]):
+    def hist(self, split_indices=None):
+        """
+        Draws a histogram of the most recent observation values.
+
+        Parameters
+        -----------
+            split_indices: list or None
+                Contains "splits" that determine which values
+                to use for distinct histograms. For example,
+                if there are 100 observation values and the
+                split index is 50, then two separate histograms are
+                created from the first 50 values and the second 50
+                values.
+        """
         if len(split_indices) > 4:
             raise RuntimeError("Too many split indices")
         colors = ["blue", "orange", "red", "yellow", "green"]
-        if len(split_indices) > 0:
+        if split_indices is not None and len(split_indices) > 0:
             splits = [0] + split_indices + [self.last_observation.size]
             for i in range(len(splits) - 1):
                 values = self.last_observation[splits[i] : splits[i + 1]]
                 plt.hist(values, alpha=0.7, color=colors[i])
         else:
             plt.hist(self.last_observation, bins="auto")
-        plt.xlabel(self.name)
         plt.ylabel("observation count (total n={})".format(self.last_observation.size))
 
-    def qq(self):
+    def qq(self):  # pylint: disable=invalid-name
+        """
+        Creates a QQ plot of the most recent observations.
+        """
         probplot(self.last_observation, dist="norm", plot=plt)
 
     def get_diagnostics(self):
@@ -151,7 +179,7 @@ class Measurement(BaseObservable, VerboseMode, ABC):
             Name of the measurement quantity.
     """
 
-    def __init__(self, name, verbose=False, diagnostics=False):
+    def __init__(self, name, verbose=False):
         self.name = name
         VerboseMode.__init__(self, __name__.upper(), verbose)
         self.measurement_history = list()

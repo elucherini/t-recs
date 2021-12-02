@@ -162,7 +162,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             representing the interleaved items for each user.
     """
 
-    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes,too-many-public-methods
     # The recommender system model contains everything needed to run the simulation,
     # so many instance attributes are justified in this case.
     @abstractmethod
