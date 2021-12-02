@@ -260,6 +260,6 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         # modify user representation by adding relationships from
         # old users to new users
         old_to_new = social_graph[:-num_new_users, -num_new_users:]
-        self.user_hat.value = mo.hstack([self.user_hat.value, old_to_new])
+        self.users_hat.value = mo.hstack([self.users_hat.value, old_to_new])
         new_to_all = social_graph[-num_new_users:, :]
         return new_to_all
