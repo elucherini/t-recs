@@ -268,3 +268,27 @@ class TestPopularityRecommender:
         assert p.items.num_items == 150  # 50 new items
         assert p.items_hat.num_items == 150
         assert p.users.actual_user_scores.num_items == 150
+
+    def test_new_users(self):
+        users = np.random.randint(10, size=(100, 10))
+        items = np.random.randint(2, size=(10, 100))
+        p = PopularityRecommender(
+            actual_user_representation=users,
+            actual_item_representation=items,
+        )
+        p.run(1, repeated_items=True)
+        num_new_users = 100
+        users = np.random.randint(10, size=(num_new_users, 10))
+        p.add_users(users)
+        # 50 new users + 150 original = 200
+        assert p.num_users == 200
+        assert p.users.num_users == 200
+        assert p.users_hat.num_users == 200
+        assert p.users.actual_user_scores.num_users == 200
+        p.run(1, repeated_items=True)
+        # verify the user representation
+        user_representation = np.ones(200).reshape(-1, 1)
+        test_helpers.assert_equal_arrays(user_representation, p.users_hat)
+        # the first iteration should have yielded
+        # 100 interactions, the second should yield another 200
+        assert p.items_hat.value.sum() == 300

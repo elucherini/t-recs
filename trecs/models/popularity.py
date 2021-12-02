@@ -186,5 +186,5 @@ class PopularityRecommender(BaseRecommender):
                 added into the system. Should be of dimension :math:`|U|\\times|A|`
         """
         # users initialized as 1
-        new_representation = np.ones((new_users.shape[1], 1))
+        new_representation = np.ones((new_users.shape[0], 1))
         return new_representation
