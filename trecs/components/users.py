@@ -207,7 +207,7 @@ class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
             scores are being appended.
         """
         self.current_state = mo.vstack([self.current_state, new_scores])
-         # update user rows matrix
+        # update user rows matrix
         num_users, num_items = self.current_state.shape
         self.user_rows = np.repeat(np.arange(num_users), num_items).reshape((num_users, -1))
 
@@ -607,9 +607,7 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         self.actual_user_profiles = mo.vstack([self.actual_user_profiles, new_users])
         # update new user scores
-        new_scores = self.score_fn(
-            user_profiles=self.new_users, item_attributes=existing_items
-        )
+        new_scores = self.score_fn(user_profiles=self.new_users, item_attributes=existing_items)
         self.actual_user_scores.append_user_scores(new_scores)
         self.actual_user_scores.store_state()
 

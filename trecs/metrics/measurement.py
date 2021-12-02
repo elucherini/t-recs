@@ -98,7 +98,7 @@ class Diagnostics(object):
     def hist(self, split_indices=[]):
         if len(split_indices) > 4:
             raise RuntimeError("Too many split indices")
-        colors = ['blue', 'orange', 'red', 'yellow', 'green']
+        colors = ["blue", "orange", "red", "yellow", "green"]
         if len(split_indices) > 0:
             splits = [0] + split_indices + [self.last_observation.size]
             for i in range(len(splits) - 1):
