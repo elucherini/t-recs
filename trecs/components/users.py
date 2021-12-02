@@ -132,7 +132,7 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
         """
         Shortcut getter method for the number of items.
         """
-         # rows = users, rows = attributes
+        # rows = users, rows = attributes
         return self.current_state.shape[0]
 
 
@@ -453,9 +453,8 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         """
         Shortcut getter method for the number of items.
         """
-         # rows = users, rows = attributes
+        # rows = users, rows = attributes
         return self.actual_user_profiles.num_users
-
 
     def set_score_function(self, score_fn):
         """
