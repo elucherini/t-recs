@@ -161,7 +161,7 @@ class RandomRecommender(BaseRecommender):
         new_representation = np.zeros(new_items.shape[1]).reshape(1, -1)
         return new_representation
 
-    def process_new_users(self, new_users):
+    def process_new_users(self, new_users, **kwargs):
         """
         The representation of any new users is always zero.
 

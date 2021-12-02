@@ -244,7 +244,7 @@ class ContentFiltering(BaseRecommender):
         self.all_interactions = sp.hstack([self.all_interactions, empty_interactions])
         return new_items
 
-    def process_new_users(self, new_users):
+    def process_new_users(self, new_users, **kwargs):
         """
         By default, the content filtering system assumes the predicted user profiles
         are zero vectors. (Note that this effectively corresponds to providing
