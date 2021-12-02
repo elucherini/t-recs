@@ -119,6 +119,22 @@ class PredictedUserProfiles(Component):  # pylint: disable=too-many-ancestors
         """
         self.current_state = mo.vstack([self.current_state, new_users])
 
+    @property
+    def num_attrs(self):
+        """
+        Shortcut getter method for the number of attributes of the items.
+        """
+        # rows = users, rows = attributes
+        return self.current_state.shape[1]
+
+    @property
+    def num_users(self):
+        """
+        Shortcut getter method for the number of items.
+        """
+         # rows = users, rows = attributes
+        return self.current_state.shape[0]
+
 
 class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     """
@@ -130,6 +146,30 @@ class ActualUserProfiles(Component):  # pylint: disable=too-many-ancestors
     def __init__(self, user_profiles=None, size=None, verbose=False, seed=None):
         self.name = "actual_user_profiles"
         Component.__init__(self, current_state=user_profiles, size=size, verbose=verbose, seed=seed)
+
+    @property
+    def num_users(self):
+        """
+        Shortcut getter method for the number of users.
+        """
+        # rows = users, cols = items
+        return self.current_state.shape[0]
+
+    @property
+    def num_items(self):
+        """
+        Shortcut getter method for the number of items.
+        """
+        # rows = users, cols = items
+        return self.current_state.shape[1]
+
+    def append_new_users(self, new_users):
+        """
+        Appends a set of new users (represented as some kind of matrix) to the current
+        set of items. Assumes the new users have dimension :math:`|U_{new}|\\times|A|`,
+        where :math:`U_{new}` indicates the number of new items to be appended.
+        """
+        self.current_state = mo.vstack([self.current_state, new_users])
 
 
 class ActualUserScores(Component):  # pylint: disable=too-many-ancestors
@@ -400,6 +440,23 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         self.name = "actual_user_scores"
         BaseComponent.__init__(self, verbose=verbose, init_value=self.actual_user_profiles.value)
 
+    @property
+    def num_attrs(self):
+        """
+        Shortcut getter method for the number of attributes of the items.
+        """
+        # rows = users, rows = attributes
+        return self.actual_user_profiles.num_attrs
+
+    @property
+    def num_users(self):
+        """
+        Shortcut getter method for the number of items.
+        """
+         # rows = users, rows = attributes
+        return self.actual_user_profiles.num_users
+
+
     def set_score_function(self, score_fn):
         """
         Users "score" items before "deciding" which item to interact with.
@@ -605,9 +662,13 @@ class Users(BaseComponent):  # pylint: disable=too-many-ancestors
         set of items. Assumes the new users have dimension :math:`|U_{new}|\\times|A|`,
         where :math:`U_{new}` indicates the number of new items to be appended.
         """
-        self.actual_user_profiles = mo.vstack([self.actual_user_profiles, new_users])
+        self.actual_user_profiles.append_new_users(new_users)
+        # update user vector
+        existing_users = self.user_vector.size
+        num_new = new_users.shape[0]
+        self.user_vector = np.concatenate((self.user_vector, existing_users + np.arange(num_new)))
         # update new user scores
-        new_scores = self.score_fn(user_profiles=self.new_users, item_attributes=existing_items)
+        new_scores = self.score_fn(user_profiles=new_users, item_attributes=existing_items)
         self.actual_user_scores.append_user_scores(new_scores)
         self.actual_user_scores.store_state()
 
