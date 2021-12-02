@@ -257,7 +257,8 @@ class ContentFiltering(BaseRecommender):
                 added into the system. Should be of dimension :math:`|U|\\times|A|`
         """
         # add indices for new items into all interactions matrix
-        empty_interactions = sp.csr_matrix((new_users.shape[0], self.num_items), dtype=int)
+        num_new = new_users.shape[0]
+        empty_interactions = sp.csr_matrix((num_new, self.num_items), dtype=int)
         self.all_interactions = sp.vstack([self.all_interactions, empty_interactions])
         # each user is initially represented as zeros
-        return np.zeros(new_users.shape)
+        return np.zeros((num_new, self.users_hat.num_attrs))
