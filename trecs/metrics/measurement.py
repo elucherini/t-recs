@@ -28,8 +28,13 @@ class Diagnostics(object):
         measurement_diagnostics: pandas dataframe
             Dataframe containing diagnostics statistics at each timestep.
 
-        plot: list or str
-            Specifies which diagnostics plots to generate.
+        last_observation: `None` or :obj:`numpy.ndarray`
+            1-D numpy array containing the values for the specified metric
+            at the most recent timestep.
+
+        columns: list
+            List of strings containing the column titles.
+
     """
 
     def __init__(
@@ -42,7 +47,16 @@ class Diagnostics(object):
 
     def diagnose(self, observation):
         """
-        TODO: write description
+        Calculates diagnostic measurements on the latest observation
+        from the recommender system. Also stores the current observation for
+        later reference.
+
+        Parameters
+        -----------
+
+            observation: :obj:`numpy.ndarray`
+                1-D numpy array containing the values for the specified metric
+                at this timestep.
         """
 
         # rudimentary type-checks
@@ -90,11 +104,6 @@ class Diagnostics(object):
             diagnostics, ignore_index=True
         )
 
-    def last_observation(self):
-        """
-        TODO: fill out, last observation recorded
-        """
-
     def hist(self, split_indices=[]):
         if len(split_indices) > 4:
             raise RuntimeError("Too many split indices")
@@ -114,7 +123,10 @@ class Diagnostics(object):
 
     def get_diagnostics(self):
         """
-        TODO: Description
+        Returns
+        --------
+        `pd.DataFrame`:
+            Dataframe containing diagnostics statistics at each timestep.
         """
         return self.measurement_diagnostics
 
