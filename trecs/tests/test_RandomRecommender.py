@@ -193,3 +193,21 @@ class TestRandomRecommender:
         assert r.items.num_items == 150  # 50 new items
         assert r.items_hat.num_items == 150
         assert r.users.actual_user_scores.num_items == 150
+
+    def test_new_users(self):
+        users = np.random.randint(10, size=(100, 10))
+        items = np.random.randint(2, size=(10, 100))
+        r = RandomRecommender(
+            actual_user_representation=users,
+            actual_item_representation=items,
+        )
+        r.run(1, repeated_items=True)
+        num_new_users = 100
+        users = np.random.randint(10, size=(num_new_users, 10))
+        r.add_users(users)
+        # 50 new users + 150 original = 200
+        assert r.num_users == 200
+        assert r.users.num_users == 200
+        assert r.users_hat.num_users == 200
+        assert r.users.actual_user_scores.num_users == 200
+        r.run(1, repeated_items=True)

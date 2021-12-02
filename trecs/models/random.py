@@ -171,5 +171,5 @@ class RandomRecommender(BaseRecommender):
                 added into the system. Should be of dimension :math:`|U|\\times|A|`
         """
         # start popularity of new users as 0
-        new_representation = np.zeros(new_users.shape[0]).reshape(-1, -1)
+        new_representation = np.zeros(new_users.shape[0]).reshape(-1, 1)
         return new_representation
