@@ -280,7 +280,7 @@ class TestPopularityRecommender:
         num_new_users = 100
         users = np.random.randint(10, size=(num_new_users, 10))
         p.add_users(users)
-        # 50 new users + 150 original = 200
+        # 100 new users + 100 original = 200
         assert p.num_users == 200
         assert p.users.num_users == 200
         assert p.users_hat.num_users == 200

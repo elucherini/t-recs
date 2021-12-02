@@ -205,7 +205,7 @@ class TestRandomRecommender:
         num_new_users = 100
         users = np.random.randint(10, size=(num_new_users, 10))
         r.add_users(users)
-        # 50 new users + 150 original = 200
+        # 100 new users + 100 original = 200
         assert r.num_users == 200
         assert r.users.num_users == 200
         assert r.users_hat.num_users == 200
