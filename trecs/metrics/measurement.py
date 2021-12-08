@@ -143,12 +143,6 @@ class Diagnostics:
             plt.hist(self.last_observation, bins="auto")
         plt.ylabel("observation count (total n={})".format(self.last_observation.size))
 
-    def qq(self):  # pylint: disable=invalid-name
-        """
-        Creates a QQ plot of the most recent observations.
-        """
-        probplot(self.last_observation, dist="norm", plot=plt)
-
     def get_diagnostics(self):
         """
         Returns
