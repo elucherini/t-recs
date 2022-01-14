@@ -397,6 +397,61 @@ class InteractionSpread(InteractionMeasurement):
         self._old_histogram = np.copy(histogram)
         self.histogram = histogram
 
+class RecallMeasurement(Measurement):
+    """
+    Keeps track of the average Jaccard similarity between interactions with items
+    between pairs of users at each timestep. The pairs of users must be passed
+    in by the user.
+
+    Parameters
+    -----------
+        pairs: iterable of tuples
+            Contains tuples representing each pair of users. Each user should
+            be represented as an index into the user profiles matrix.
+
+        verbose: bool, default False
+            If ``True``, enables verbose mode. Disabled by default.
+
+    Attributes
+    -----------
+        Inherited by Measurement: :class:`.Measurement`
+
+        name: str, default ``"interaction_similarity"``
+            Name of the measurement component.
+    """
+
+    def __init__(self, k=5, name="recall_at_k", verbose=False):
+        self.k = k
+        Measurement.__init__(self, name, verbose)
+
+    def measure(self, recommender):
+        """
+        TODO.
+
+        Parameters
+        ------------
+            recommender: :class:`~models.recommender.BaseRecommender`
+                Model that inherits from
+                :class:`~models.recommender.BaseRecommender`.
+        """
+        if self.k <= recommender.num_items_per_iter:
+            raise ValueError("k must be smaller than the number of items per iteration")
+
+        interactions = recommender.interactions
+        if interactions.size == 0:
+            self.observe(None)  # no interactions yet
+            return
+
+        else:
+            shown_item_scores = np.take(recommender.predicted_scores.value, recommender.items_shown)
+            #item_val = dict(zip(default_filtering.items_shown[0], np.round(shown_item_scores[0], 2)))
+            shown_item_ranks = np.argsort(shown_item_scores, axis=1)
+            top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k:])
+            recall = len(
+                np.where(np.isin(recommender.interactions, top_k_items))[0]) / recommender.num_users
+            
+        self.observe(recall)
+
 
 class MSEMeasurement(Measurement):
     """
