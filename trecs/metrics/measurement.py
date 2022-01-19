@@ -399,24 +399,18 @@ class InteractionSpread(InteractionMeasurement):
 
 class RecallMeasurement(Measurement):
     """
-    Keeps track of the average Jaccard similarity between interactions with items
-    between pairs of users at each timestep. The pairs of users must be passed
-    in by the user.
+    TBD.
 
     Parameters
     -----------
-        pairs: iterable of tuples
-            Contains tuples representing each pair of users. Each user should
-            be represented as an index into the user profiles matrix.
-
-        verbose: bool, default False
-            If ``True``, enables verbose mode. Disabled by default.
+        k: int
+            The rank at which recall should be evaluated.
 
     Attributes
     -----------
         Inherited by Measurement: :class:`.Measurement`
 
-        name: str, default ``"interaction_similarity"``
+        name: str, default ``"recall_at_k"``
             Name of the measurement component.
     """
 
@@ -434,7 +428,7 @@ class RecallMeasurement(Measurement):
                 Model that inherits from
                 :class:`~models.recommender.BaseRecommender`.
         """
-        if self.k <= recommender.num_items_per_iter:
+        if self.k >= recommender.num_items_per_iter:
             raise ValueError("k must be smaller than the number of items per iteration")
 
         interactions = recommender.interactions
@@ -449,7 +443,7 @@ class RecallMeasurement(Measurement):
             top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k:])
             recall = len(
                 np.where(np.isin(recommender.interactions, top_k_items))[0]) / recommender.num_users
-            
+
         self.observe(recall)
 
 
