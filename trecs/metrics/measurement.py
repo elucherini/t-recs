@@ -400,7 +400,8 @@ class InteractionSpread(InteractionMeasurement):
 
 class RecallMeasurement(Measurement):
     """
-    TBD.
+    Measures the proportion of relevant items (i.e., those users interacted with) falling
+    within the top k ranked items shown.
 
     Parameters
     -----------
@@ -426,7 +427,8 @@ class RecallMeasurement(Measurement):
 
     def measure(self, recommender):
         """
-        TODO.
+        Measures the proportion of relevant items (i.e., those users interacted with) falling
+        within the top k ranked items shown..
 
         Parameters
         ------------
