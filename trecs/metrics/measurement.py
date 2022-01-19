@@ -397,6 +397,7 @@ class InteractionSpread(InteractionMeasurement):
         self._old_histogram = np.copy(histogram)
         self.histogram = histogram
 
+
 class RecallMeasurement(Measurement):
     """
     TBD.
@@ -413,9 +414,12 @@ class RecallMeasurement(Measurement):
         name: str, default ``"recall_at_k"``
             Name of the measurement component.
     """
-    #Note: RecallMeasurement evalutes recall for the top-k (i.e., highest predicted value) items regardless of whether these
-    #items derive from the recommender or from randomly interleaved items. Currently, this metric will only be correct for
-    #cases in which users iteract with one item per timestep
+
+    # Note: RecallMeasurement evalutes recall for the top-k (i.e., highest predicted value)
+    # items regardless of whether these items derive from the recommender or from randomly
+    # interleaved items. Currently, this metric will only be correct for
+    # cases in which users iteract with one item per timestep
+
     def __init__(self, k=5, name="recall_at_k", verbose=False):
         self.k = k
         Measurement.__init__(self, name, verbose)
@@ -440,11 +444,12 @@ class RecallMeasurement(Measurement):
 
         else:
             shown_item_scores = np.take(recommender.predicted_scores.value, recommender.items_shown)
-            #item_val = dict(zip(default_filtering.items_shown[0], np.round(shown_item_scores[0], 2)))
             shown_item_ranks = np.argsort(shown_item_scores, axis=1)
-            top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k:])
-            recall = len(
-                np.where(np.isin(recommender.interactions, top_k_items))[0]) / recommender.num_users
+            top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k :])
+            recall = (
+                len(np.where(np.isin(recommender.interactions, top_k_items))[0])
+                / recommender.num_users
+            )
 
         self.observe(recall)
 
