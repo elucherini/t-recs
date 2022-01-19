@@ -413,7 +413,9 @@ class RecallMeasurement(Measurement):
         name: str, default ``"recall_at_k"``
             Name of the measurement component.
     """
-
+    #Note: RecallMeasurement evalutes recall for the top-k (i.e., highest predicted value) items regardless of whether these
+    #items derive from the recommender or from randomly interleaved items. Currently, this metric will only be correct for
+    #cases in which users iteract with one item per timestep
     def __init__(self, k=5, name="recall_at_k", verbose=False):
         self.k = k
         Measurement.__init__(self, name, verbose)

@@ -11,4 +11,5 @@ from .measurement import (
     StructuralVirality,
     InteractionMeasurement,
     AverageFeatureScoreRange,
+    RecallMeasurement,
 )
