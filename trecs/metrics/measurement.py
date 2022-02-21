@@ -9,7 +9,7 @@ import networkx as nx
 from networkx import wiener_index
 import numpy as np
 import pandas as pd
-from scipy.stats import skew, kurtosis, probplot, shapiro
+from scipy.stats import skew, kurtosis, shapiro
 import matplotlib.pyplot as plt
 from trecs.logging import VerboseMode
 from trecs.base import (
