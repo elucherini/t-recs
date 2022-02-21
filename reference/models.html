@@ -1,74 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Models &mdash; T-RECS 0.1.0b documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Metrics" href="metrics.html" />
     <link rel="prev" title="Components" href="components.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> T-RECS
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">T-RECS (Tool for RecSys Simulation)</a></li>
@@ -107,83 +57,41 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">T-RECS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="reference.html">Reference</a> &raquo;</li>
-        
       <li>Models</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/reference/models.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="models">
-<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-models.popularity">
-<span id="popularity-recommender"></span><h2>Popularity Recommender<a class="headerlink" href="#module-models.popularity" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline"></a></h1>
+<section id="module-models.popularity">
+<span id="popularity-recommender"></span><h2>Popularity Recommender<a class="headerlink" href="#module-models.popularity" title="Permalink to this headline"></a></h2>
 <p>The popularity-based recommender system recommends the same items to all users,
 ranked from greatest to least in terms of popularity (i.e., how many interactions
 each item has received).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.popularity.PopularityRecommender">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.popularity.</span></span><span class="sig-name descname"><span class="pre">PopularityRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.popularity.</span></span><span class="sig-name descname"><span class="pre">PopularityRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender" title="Permalink to this definition"></a></dt>
 <dd><p>A customizable popularity recommendation system.</p>
 <p>With the popularity recommender system, users are presented items that are
 popular in the system. The popularity of an item is measured by the number
@@ -200,8 +108,8 @@ item attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
 <li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
 each item and attribute. If this is not None, <cite>num_items</cite> is ignored.</p></li>
 <li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
@@ -217,8 +125,8 @@ system is unaware of it.</p></li>
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
 </ul>
 </dd>
 </dl>
@@ -270,7 +178,7 @@ Likewise, one cannot pass in <code class="docutils literal notranslate"><span cl
 <code class="docutils literal notranslate"><span class="pre">item_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">500)</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.popularity.PopularityRecommender.process_new_items">
-<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender.process_new_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender.process_new_items" title="Permalink to this definition"></a></dt>
 <dd><p>The popularity of any new items is always zero.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -280,18 +188,30 @@ added into the system. Should be of dimension <span class="math notranslate nohi
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="models.popularity.PopularityRecommender.process_new_users">
+<span class="sig-name descname"><span class="pre">process_new_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/popularity.html#PopularityRecommender.process_new_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.popularity.PopularityRecommender.process_new_users" title="Permalink to this definition"></a></dt>
+<dd><p>New users are always represented with the digit 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_users</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – An array of users that represents new users that are being
+added into the system. Should be of dimension <span class="math notranslate nohighlight">\(|U|\times|A|\)</span></p>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-models.content">
-<span id="content-filtering-recommender"></span><h2>Content Filtering Recommender<a class="headerlink" href="#module-models.content" title="Permalink to this headline">¶</a></h2>
+</dd></dl>
+
+</section>
+<section id="module-models.content">
+<span id="content-filtering-recommender"></span><h2>Content Filtering Recommender<a class="headerlink" href="#module-models.content" title="Permalink to this headline"></a></h2>
 <p>The content filtering recommender system attempts to match users to items
 based on highest predicted inner product between the predicted user profile
 and predicted item profile. The predictions of user and item profiles
 are generated iteratively as users interact with items.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.content.ContentFiltering">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.content.</span></span><span class="sig-name descname"><span class="pre">ContentFiltering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilistic_recommendations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.content.</span></span><span class="sig-name descname"><span class="pre">ContentFiltering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilistic_recommendations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering" title="Permalink to this definition"></a></dt>
 <dd><p>A customizable content-filtering recommendation system.</p>
 <p>With content filtering, items and users are represented by a set of
 attributes A. This class assumes that the attributes used for items and
@@ -306,9 +226,9 @@ the similarity to each attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
-<li><p><strong>num_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1000</em>) – The number of attributes <span class="math notranslate nohighlight">\(|A|\)</span> in the system.</p></li>
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>num_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 1000</em>) – The number of attributes <span class="math notranslate nohighlight">\(|A|\)</span> in the system.</p></li>
 <li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|A|\)</span> matrix representing the similarity between
 each item and attribute, as interpreted by the system.</p></li>
 <li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|A|\times|I|\)</span> matrix representing the similarity between
@@ -322,8 +242,8 @@ is only kept for measurements and the system is unaware of it.</p></li>
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
@@ -382,7 +302,7 @@ Likewise, one cannot pass in <code class="docutils literal notranslate"><span cl
 <code class="docutils literal notranslate"><span class="pre">item_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(100,</span> <span class="pre">500)</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.content.ContentFiltering.process_new_items">
-<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.process_new_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.process_new_items" title="Permalink to this definition"></a></dt>
 <dd><p>We assume the content filtering system has perfect knowledge
 of the new items; therefore, when new items are created,
 we simply return the new item attributes.</p>
@@ -395,8 +315,22 @@ added into the system. Should be <span class="math notranslate nohighlight">\(|A
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="models.content.ContentFiltering.process_new_users">
+<span class="sig-name descname"><span class="pre">process_new_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_users</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.process_new_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.process_new_users" title="Permalink to this definition"></a></dt>
+<dd><p>By default, the content filtering system assumes the predicted user profiles
+are zero vectors. (Note that this effectively corresponds to providing
+random recommendations to each user).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_users</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – An array of users that represents new users that are being
+added into the system. Should be of dimension <span class="math notranslate nohighlight">\(|U|\times|A|\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="models.content.ContentFiltering.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.train" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/content.html#ContentFiltering.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.content.ContentFiltering.train" title="Permalink to this definition"></a></dt>
 <dd><p>Uses the NNLS solver to train the user representations, based on the user
 interaction &amp; item attribute data.</p>
 <p>Note: this function may run slowly because it requires a manual loop over every
@@ -405,14 +339,14 @@ user.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-models.social">
-<span id="social-filtering-recommender"></span><h2>Social Filtering Recommender<a class="headerlink" href="#module-models.social" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-models.social">
+<span id="social-filtering-recommender"></span><h2>Social Filtering Recommender<a class="headerlink" href="#module-models.social" title="Permalink to this headline"></a></h2>
 <p>Social filtering recommender system, where users get shown items that were
 interacted with by users in their social networks</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.social.SocialFiltering">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.social.</span></span><span class="sig-name descname"><span class="pre">SocialFiltering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilistic_recommendations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.social.SocialFiltering" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.social.</span></span><span class="sig-name descname"><span class="pre">SocialFiltering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilistic_recommendations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.social.SocialFiltering" title="Permalink to this definition"></a></dt>
 <dd><p>A customizable social filtering recommendation system.</p>
 <p>With social filtering, users are presented items that were previously
 liked by other users in their social networks.</p>
@@ -433,8 +367,8 @@ relationship.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
 <li><p><strong>user_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|U|\)</span> adjacency matrix representing each users’
 social network. If this is not None, <cite>num_users</cite> is ignored.</p></li>
 <li><p><strong>item_representation</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A <span class="math notranslate nohighlight">\(|U|\times|I|\)</span> matrix representing the past user interactions.
@@ -449,8 +383,8 @@ system is unaware of it.</p></li>
 where <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying
 item profile. This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
@@ -509,7 +443,7 @@ otherwise, an error is thrown. For example, one cannot pass in
 <code class="docutils literal notranslate"><span class="pre">item_representation.shape</span></code> be <code class="docutils literal notranslate"><span class="pre">(200,</span> <span class="pre">500)</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.social.SocialFiltering.process_new_items">
-<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.social.SocialFiltering.process_new_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.social.SocialFiltering.process_new_items" title="Permalink to this definition"></a></dt>
 <dd><p>New items are simply represented as zeros, since they have not received
 interactions from any users yet.</p>
 <dl class="field-list simple">
@@ -520,16 +454,31 @@ added into the system. Should be <span class="math notranslate nohighlight">\(|A
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="models.social.SocialFiltering.process_new_users">
+<span class="sig-name descname"><span class="pre">process_new_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_users</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/social.html#SocialFiltering.process_new_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.social.SocialFiltering.process_new_users" title="Permalink to this definition"></a></dt>
+<dd><p>The representation of any new users is always zero. If you
+want to add users who have different ties to existing users, you
+should modify <cite>items_hat</cite> directly after calling <cite>model.add_users()</cite>.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>new_users: <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></dt><dd><p>An array of users that represents new users that are being
+added into the system. Should be of dimension <span class="math notranslate nohighlight">\(|U|\times|A|\)</span></p>
+</dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
-</div>
-<div class="section" id="module-models.bass">
-<span id="bass-diffusion-model"></span><h2>Bass Diffusion Model<a class="headerlink" href="#module-models.bass" title="Permalink to this headline">¶</a></h2>
+</dd></dl>
+
+</section>
+<section id="module-models.bass">
+<span id="bass-diffusion-model"></span><h2>Bass Diffusion Model<a class="headerlink" href="#module-models.bass" title="Permalink to this headline"></a></h2>
 <p>Bass Model for modeling the spread of infection. This can be applied to studying
 virality in online communications.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.bass.BassModel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.bass.</span></span><span class="sig-name descname"><span class="pre">BassModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infection_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infection_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.bass.</span></span><span class="sig-name descname"><span class="pre">BassModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infection_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infection_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_user_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_item_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel" title="Permalink to this definition"></a></dt>
 <dd><p>Bass model that, for now, only supports one item at a time.</p>
 <p>In this model, individuals are “infected” by an item, and then
 infect their susceptible (i.e., not yet “infected”) contacts independently
@@ -541,8 +490,8 @@ always equal to 1).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 100</em>) – The number of users <span class="math notranslate nohighlight">\(|U|\)</span> in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 1250</em>) – The number of items <span class="math notranslate nohighlight">\(|I|\)</span> in the system.</p></li>
 <li><p><strong>infection_state</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – Component that tracks infection state, which is a binary (0/1) array with
 an element recording whether each user is infected. Should be of
 dimension <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>.</p></li>
@@ -561,8 +510,8 @@ is only kept for measurements and the system is unaware of it.</p></li>
 <span class="math notranslate nohighlight">\(T\)</span> is the number of attributes in the real underlying item profile.
 This matrix is <strong>not</strong> used for recommendations. This
 is only kept for measurements and the system is unaware of it.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 10</em>) – Number of items presented to the user per iteration.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator.</p></li>
 </ul>
 </dd>
 </dl>
@@ -578,19 +527,19 @@ is only kept for measurements and the system is unaware of it.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.BassModel.draw_diffusion_tree">
-<span class="sig-name descname"><span class="pre">draw_diffusion_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.draw_diffusion_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.draw_diffusion_tree" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">draw_diffusion_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.draw_diffusion_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.draw_diffusion_tree" title="Permalink to this definition"></a></dt>
 <dd><p>Draw diffusion tree using matplotlib</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.BassModel.get_structural_virality">
-<span class="sig-name descname"><span class="pre">get_structural_virality</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.get_structural_virality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.get_structural_virality" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_structural_virality</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.get_structural_virality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.get_structural_virality" title="Permalink to this definition"></a></dt>
 <dd><p>Return the value of the structural virality metric</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.BassModel.infection_probabilities">
-<span class="sig-name descname"><span class="pre">infection_probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.infection_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.infection_probabilities" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">infection_probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_profiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.infection_probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.infection_probabilities" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the infection probabilities for each user at the current
 timestep.</p>
 <dl class="field-list simple">
@@ -607,18 +556,18 @@ representation of items.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.BassModel.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'until_completion'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_between_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.run" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'until_completion'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_between_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#BassModel.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.BassModel.run" title="Permalink to this definition"></a></dt>
 <dd><p>Overrides run method of parent class <code class="xref py py-class docutils literal notranslate"><span class="pre">Recommender</span></code>, so that
 <code class="docutils literal notranslate"><span class="pre">repeated_items</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> in Bass models.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Number of timesteps for simulation</p></li>
-<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, it runs the simulation in
+<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Number of timesteps for simulation</p></li>
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, it runs the simulation in
 startup mode (see recommend() and startup_and_train())</p></li>
-<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, the model is retrained after each step with the
+<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, the model is retrained after each step with the
 information gathered in the previous step.</p></li>
-<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, repeated items are allowed in the system – that
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, repeated items are allowed in the system – that
 is, users can interact with the same item more than once.
 Examples of common instances in which this is useful: infection
 and network propagation models.</p></li>
@@ -631,18 +580,18 @@ and network propagation models.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="models.bass.InfectionState">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.bass.</span></span><span class="sig-name descname"><span class="pre">InfectionState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infection_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.bass.</span></span><span class="sig-name descname"><span class="pre">InfectionState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infection_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState" title="Permalink to this definition"></a></dt>
 <dd><p>Component that tracks infection state, which is a binary array with
 an element recording whether each user is infected</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.InfectionState.infect_users">
-<span class="sig-name descname"><span class="pre">infect_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState.infect_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState.infect_users" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">infect_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState.infect_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState.infect_users" title="Permalink to this definition"></a></dt>
 <dd><p>Update infection state with users who have become newly infected.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.InfectionState.infected_users">
-<span class="sig-name descname"><span class="pre">infected_users</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState.infected_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState.infected_users" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">infected_users</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState.infected_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState.infected_users" title="Permalink to this definition"></a></dt>
 <dd><p>Return indices of users who are currently infected and not recovered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -652,20 +601,20 @@ second element is a numpy array of the column indices (i.e.,
 item indices)</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.bass.InfectionState.num_infected">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">num_infected</span></span><a class="headerlink" href="#models.bass.InfectionState.num_infected" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_infected</span></span><a class="headerlink" href="#models.bass.InfectionState.num_infected" title="Permalink to this definition"></a></dt>
 <dd><p>Return number of infected users.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.bass.InfectionState.recovered_users">
-<span class="sig-name descname"><span class="pre">recovered_users</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState.recovered_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState.recovered_users" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">recovered_users</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionState.recovered_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionState.recovered_users" title="Permalink to this definition"></a></dt>
 <dd><p>Return indices of users who have recovered (and are no longer susceptible
 to infection).</p>
 <dl class="field-list simple">
@@ -676,7 +625,7 @@ second element is a numpy array of the column indices (i.e.,
 item indices)</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)">tuple</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -685,19 +634,19 @@ item indices)</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="models.bass.InfectionThresholds">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.bass.</span></span><span class="sig-name descname"><span class="pre">InfectionThresholds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infection_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionThresholds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionThresholds" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.bass.</span></span><span class="sig-name descname"><span class="pre">InfectionThresholds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infection_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/bass.html#InfectionThresholds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.bass.InfectionThresholds" title="Permalink to this definition"></a></dt>
 <dd><p>Component that tracks infection thresholds, where each user has their own
 threshold for infection</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-models.recommender">
-<span id="baserecommender"></span><h2>BaseRecommender<a class="headerlink" href="#module-models.recommender" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-models.recommender">
+<span id="baserecommender"></span><h2>BaseRecommender<a class="headerlink" href="#module-models.recommender" title="Permalink to this headline"></a></h2>
 <p>BaseRecommender, the foundational class for all recommender systems
 implementable in our simulation library</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">models.recommender.</span></span><span class="sig-name descname"><span class="pre">BaseRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">users_hat</span></em>, <em class="sig-param"><span class="pre">items_hat</span></em>, <em class="sig-param"><span class="pre">users</span></em>, <em class="sig-param"><span class="pre">items</span></em>, <em class="sig-param"><span class="pre">num_users</span></em>, <em class="sig-param"><span class="pre">num_items</span></em>, <em class="sig-param"><span class="pre">num_items_per_iter</span></em>, <em class="sig-param"><span class="pre">creators=None</span></em>, <em class="sig-param"><span class="pre">probabilistic_recommendations=False</span></em>, <em class="sig-param"><span class="pre">measurements=None</span></em>, <em class="sig-param"><span class="pre">record_base_state=False</span></em>, <em class="sig-param"><span class="pre">system_state=None</span></em>, <em class="sig-param"><span class="pre">score_fn=&lt;function</span> <span class="pre">inner_product&gt;</span></em>, <em class="sig-param"><span class="pre">interleaving_fn=None</span></em>, <em class="sig-param"><span class="pre">verbose=False</span></em>, <em class="sig-param"><span class="pre">seed=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.recommender.</span></span><span class="sig-name descname"><span class="pre">BaseRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_hat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items_hat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creators=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilistic_recommendations=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_base_state=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_state=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_fn=&lt;function</span> <span class="pre">inner_product&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interleaving_fn=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract class representing a recommender system.</p>
 <p>The attributes and methods in this class can be generalized beyond
 recommender systems and are currently common to all pre-loaded models.</p>
@@ -716,26 +665,26 @@ a <cite>numpy.ndarray</cite> is passed in, we assume this represents the user
 <li><p><strong>items</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <a class="reference internal" href="components.html#components.items.Items" title="components.items.Items"><code class="xref py py-class docutils literal notranslate"><span class="pre">Items</span></code></a>) – An array representing real item attributes unknown to the
 system. Shape is <span class="math notranslate nohighlight">\(|A|\times|I|\)</span>, where <span class="math notranslate nohighlight">\(|I|\)</span> is the
 number of items and <span class="math notranslate nohighlight">\(|A|\)</span> is the number of attributes.</p></li>
-<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of users in the system.</p></li>
-<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of items in the system.</p></li>
-<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of items presented to the user at each iteration.</p></li>
-<li><p><strong>measurements</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – List of metrics to monitor.</p></li>
-<li><p><strong>record_base_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, the system will record at each time step its internal
+<li><p><strong>num_users</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The number of users in the system.</p></li>
+<li><p><strong>num_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The number of items in the system.</p></li>
+<li><p><strong>num_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Number of items presented to the user at each iteration.</p></li>
+<li><p><strong>measurements</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a>) – List of metrics to monitor.</p></li>
+<li><p><strong>record_base_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, the system will record at each time step its internal
 representation of users profiles and item profiles, as well as the
 true user profiles and item profiles. It will also record the
 predicted user-item scores at each time step.</p></li>
-<li><p><strong>system_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – List of system state components to monitor.</p></li>
+<li><p><strong>system_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a>) – List of system state components to monitor.</p></li>
 <li><p><strong>score_fn</strong> (<em>callable</em>) – Function that is used to calculate each user’s predicted scores for
 each candidate item. The score function should take as input
 user_profiles and item_attributes.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
-<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator used</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em> (</em><em>optional</em><em>, </em><em>default: False</em><em>)</em>) – If True, it enables verbose mode.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Seed for random generator used</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.users_hat">
-<span class="sig-name descname"><span class="pre">users_hat</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.users_hat" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">users_hat</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.users_hat" title="Permalink to this definition"></a></dt>
 <dd><p>An array representing users, matching user_representation. The
 shape and meaning depends on the implementation of the concrete
 class.</p>
@@ -748,7 +697,7 @@ class.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.items_hat">
-<span class="sig-name descname"><span class="pre">items_hat</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.items_hat" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">items_hat</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.items_hat" title="Permalink to this definition"></a></dt>
 <dd><p>An array representing items, matching item_representation. The
 shape and meaning depends on the implementation of the concrete
 class.</p>
@@ -761,7 +710,7 @@ class.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.users">
-<span class="sig-name descname"><span class="pre">users</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.users" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">users</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.users" title="Permalink to this definition"></a></dt>
 <dd><p>An array representing real user preferences. Shape should be
 <span class="math notranslate nohighlight">\(|U| \times |A|\)</span>, and should match items.</p>
 <dl class="field-list simple">
@@ -773,7 +722,7 @@ class.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.items">
-<span class="sig-name descname"><span class="pre">items</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">items</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.items" title="Permalink to this definition"></a></dt>
 <dd><p>An array representing actual item attributes. Shape should be
 <span class="math notranslate nohighlight">\(|A| \times |I|\)</span>, and should match users.</p>
 <dl class="field-list simple">
@@ -785,7 +734,7 @@ class.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.predicted_scores">
-<span class="sig-name descname"><span class="pre">predicted_scores</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_scores" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predicted_scores</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_scores" title="Permalink to this definition"></a></dt>
 <dd><p>An array representing the user preferences as perceived by the
 system. The shape is always <span class="math notranslate nohighlight">\(|U| \times |I|\)</span>, where
 <span class="math notranslate nohighlight">\(|U|\)</span> is the number of users in the system and <span class="math notranslate nohighlight">\(|I|\)</span>
@@ -800,42 +749,42 @@ the dot product of <a class="reference internal" href="#models.recommender.BaseR
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.num_users">
-<span class="sig-name descname"><span class="pre">num_users</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.num_users" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">num_users</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.num_users" title="Permalink to this definition"></a></dt>
 <dd><p>The number of users in the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.num_items">
-<span class="sig-name descname"><span class="pre">num_items</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.num_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">num_items</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.num_items" title="Permalink to this definition"></a></dt>
 <dd><p>The number of items in the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.num_items_per_iter">
-<span class="sig-name descname"><span class="pre">num_items_per_iter</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.num_items_per_iter" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">num_items_per_iter</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.num_items_per_iter" title="Permalink to this definition"></a></dt>
 <dd><p>Number of items presented to the user per iteration. If <cite>“all”</cite>, then
 the system will serve recommendations from the set of all items in the
 system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.probabilistic_recommendations">
-<span class="sig-name descname"><span class="pre">probabilistic_recommendations</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.probabilistic_recommendations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">probabilistic_recommendations</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.probabilistic_recommendations" title="Permalink to this definition"></a></dt>
 <dd><p>When this flag is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the recommendations (excluding
 any random interleaving) will be randomized, meaning that items
 will be recommended with a probability proportionate to their
@@ -843,14 +792,14 @@ predicted score, rather than the top <cite>k</cite> items, as ranked by their
 predicted score, being recommended.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a> (optional, default: False)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a> (optional, default: False)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.random_state">
-<span class="sig-name descname"><span class="pre">random_state</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.random_state" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">random_state</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.random_state" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="random.html#trecs.random.generators.Generator" title="trecs.random.generators.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">trecs.random.generators.Generator</span></code></a></p>
@@ -860,7 +809,7 @@ predicted score, being recommended.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.indices">
-<span class="sig-name descname"><span class="pre">indices</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.indices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">indices</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.indices" title="Permalink to this definition"></a></dt>
 <dd><p>A <span class="math notranslate nohighlight">\(|U| \times |I|\)</span> array representing the past interactions of each
 user. This keeps track of which items each user has interacted
 with, so that it won’t be presented to the user again if
@@ -874,7 +823,7 @@ with, so that it won’t be presented to the user again if
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.items_shown">
-<span class="sig-name descname"><span class="pre">items_shown</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.items_shown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">items_shown</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.items_shown" title="Permalink to this definition"></a></dt>
 <dd><p>A <span class="math notranslate nohighlight">\(|U| \times \text{num_items_per_iter}\)</span> array representing the
 indices of the items that each user was shown (i.e., their recommendations)
 from the most recent timestep.</p>
@@ -887,7 +836,7 @@ from the most recent timestep.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.interactions">
-<span class="sig-name descname"><span class="pre">interactions</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.interactions" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">interactions</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.interactions" title="Permalink to this definition"></a></dt>
 <dd><p>A <span class="math notranslate nohighlight">\(|U| \times 1\)</span> array representing the indices of the items
 that each user interacted with at the most recent time step.</p>
 <dl class="field-list simple">
@@ -899,7 +848,7 @@ that each user interacted with at the most recent time step.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.score_fn">
-<span class="sig-name descname"><span class="pre">score_fn</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.score_fn" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">score_fn</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.score_fn" title="Permalink to this definition"></a></dt>
 <dd><p>Function that is used to calculate each user’s predicted scores for
 each candidate item. The score function should take as input
 <code class="docutils literal notranslate"><span class="pre">user_profiles</span></code> and <code class="docutils literal notranslate"><span class="pre">item_attributes</span></code>.</p>
@@ -912,7 +861,7 @@ each candidate item. The score function should take as input
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.interleaving_fn">
-<span class="sig-name descname"><span class="pre">interleaving_fn</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.interleaving_fn" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">interleaving_fn</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.interleaving_fn" title="Permalink to this definition"></a></dt>
 <dd><p>Function that is used to determine the indices of items that will be
 interleaved into the recommender system’s recommendations. The
 interleaving function should take as input an integer <code class="docutils literal notranslate"><span class="pre">k</span></code> (representing
@@ -929,7 +878,7 @@ representing the interleaved items for each user.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.actual_item_attributes">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">actual_item_attributes</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.actual_item_attributes" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actual_item_attributes</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.actual_item_attributes" title="Permalink to this definition"></a></dt>
 <dd><p>Property that is an alias for the matrix representation of
 actual item attributes. Returns a matrix of dimension
 <span class="math notranslate nohighlight">\(|A^*|\times|I|\)</span>, where <span class="math notranslate nohighlight">\(|A^*|\)</span> is the number
@@ -938,7 +887,7 @@ of attributes the “true” item representation has.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.actual_user_item_scores">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">actual_user_item_scores</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.actual_user_item_scores" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actual_user_item_scores</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.actual_user_item_scores" title="Permalink to this definition"></a></dt>
 <dd><p>Property that is an alias for the matrix representation of
 the true user-item score matrix. Returns a matrix of
 dimension <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>.</p>
@@ -946,7 +895,7 @@ dimension <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>.</p
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.actual_user_profiles">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">actual_user_profiles</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.actual_user_profiles" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actual_user_profiles</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.actual_user_profiles" title="Permalink to this definition"></a></dt>
 <dd><p>Property that is an alias for the matrix representation of
 true user profiles. Returns a matrix of dimension
 <span class="math notranslate nohighlight">\(|U|\times|A^*|\)</span>, where <span class="math notranslate nohighlight">\(|A^*|\)</span> is the number
@@ -955,7 +904,7 @@ of attributes the “true” item/user representation has.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.add_new_item_indices">
-<span class="sig-name descname"><span class="pre">add_new_item_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.add_new_item_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.add_new_item_indices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_new_item_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.add_new_item_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.add_new_item_indices" title="Permalink to this definition"></a></dt>
 <dd><p>Expands the indices matrix to include entries for new items that
 were created.</p>
 <dl class="field-list simple">
@@ -969,8 +918,42 @@ were created.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="models.recommender.BaseRecommender.add_new_user_indices">
+<span class="sig-name descname"><span class="pre">add_new_user_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_new_users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.add_new_user_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.add_new_user_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Expands the indices matrix to include entries for new users that
+were created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>num_new_users</em>) – </p></li>
+<li><p><strong>iteration</strong> (<em>in this</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.recommender.BaseRecommender.add_users">
+<span class="sig-name descname"><span class="pre">add_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_users</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.add_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.add_users" title="Permalink to this definition"></a></dt>
+<dd><p>Create pool of new users</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_users</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – An array representing users. Should be of dimension
+<span class="math notranslate nohighlight">\(|U_n| \times |A|\)</span>, where <span class="math notranslate nohighlight">\(|U_n|\)</span> represents
+the number of new users, and <span class="math notranslate nohighlight">\(|A|\)</span> represents
+the number of attributes for each user profile.</p></li>
+<li><p><strong>**kwargs</strong> – Any additional information about users
+can be passed through <cite>kwargs</cite> (see <cite>social.py</cite>) for
+an example.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.choose_interleaved_items">
-<span class="sig-name descname"><span class="pre">choose_interleaved_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.choose_interleaved_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.choose_interleaved_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">choose_interleaved_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.choose_interleaved_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.choose_interleaved_items" title="Permalink to this definition"></a></dt>
 <dd><p>Chooses k items out of the item set to “interleave” into
 the system’s recommendations. In this case, we define “interleaving”
 as a process by which items can be inserted into the set of items
@@ -987,7 +970,7 @@ repeats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of items that should be interleaved in the
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Number of items that should be interleaved in the
 recommendation set for each user.</p></li>
 <li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Array that contains the valid item indices for each user;
 that is, the indices of items that they have not yet
@@ -1005,18 +988,18 @@ interacted with.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.create_and_process_items">
-<span class="sig-name descname"><span class="pre">create_and_process_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.create_and_process_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.create_and_process_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create_and_process_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.create_and_process_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.create_and_process_items" title="Permalink to this definition"></a></dt>
 <dd><p>Creates and processes items made by content creators</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.generate_recommendations">
-<span class="sig-name descname"><span class="pre">generate_recommendations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.generate_recommendations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.generate_recommendations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">generate_recommendations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.generate_recommendations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.generate_recommendations" title="Permalink to this definition"></a></dt>
 <dd><p>Generate recommendations for each user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 1</em>) – Number of items to recommend.</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 1</em>) – Number of items to recommend.</p></li>
 <li><p><strong>item_indices</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, optional) – A matrix containing the indices of the items each user has not yet
 interacted with. It is used to ensure that the user is presented
 with items they have not already interacted with. If <cite>None</cite>,
@@ -1035,7 +1018,7 @@ interacted with.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.get_measurements">
-<span class="sig-name descname"><span class="pre">get_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.get_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.get_measurements" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_measurements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.get_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.get_measurements" title="Permalink to this definition"></a></dt>
 <dd><p>Returns all available measurements. For more details, please see the
 <a class="reference internal" href="metrics.html#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> class.</p>
 <dl class="field-list simple">
@@ -1043,14 +1026,14 @@ interacted with.</p></li>
 <dd class="field-odd"><p><strong>Monitored measurements</strong></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.get_system_state">
-<span class="sig-name descname"><span class="pre">get_system_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.get_system_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.get_system_state" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_system_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.get_system_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.get_system_state" title="Permalink to this definition"></a></dt>
 <dd><p>Return history of system state components stored in the
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">state_history</span></code> of the
 components stored in <a class="reference internal" href="components.html#base.base_components.SystemStateModule._system_state" title="base.base_components.SystemStateModule._system_state"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SystemStateModule._system_state</span></code></a>.</p>
@@ -1059,21 +1042,21 @@ components stored in <a class="reference internal" href="components.html#base.ba
 <dd class="field-odd"><p><strong>System state</strong></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.initialize_user_scores">
-<span class="sig-name descname"><span class="pre">initialize_user_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.initialize_user_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.initialize_user_scores" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">initialize_user_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.initialize_user_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.initialize_user_scores" title="Permalink to this definition"></a></dt>
 <dd><p>If the Users object does not already have known user-item scores,
 then we calculate these scores.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.predicted_item_attributes">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">predicted_item_attributes</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_item_attributes" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predicted_item_attributes</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_item_attributes" title="Permalink to this definition"></a></dt>
 <dd><p>Property that is an alias for the matrix representation of
 predicted item attributes. Returns a matrix of dimension
 <span class="math notranslate nohighlight">\(|\hat{A}|\times|I|\)</span>,  where <span class="math notranslate nohighlight">\(|\hat{A}|\)</span> is the
@@ -1083,7 +1066,7 @@ item and user.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.predicted_user_item_scores">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">predicted_user_item_scores</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_user_item_scores" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predicted_user_item_scores</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_user_item_scores" title="Permalink to this definition"></a></dt>
 <dd><p>Property that is an alias for the matrix representation of
 the RS algorithm’s predicted user-item score matrix.  Returns
 a matrix of dimension <span class="math notranslate nohighlight">\(|U|\times|I|\)</span>.</p>
@@ -1091,7 +1074,7 @@ a matrix of dimension <span class="math notranslate nohighlight">\(|U|\times|I|\
 
 <dl class="py property">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.predicted_user_profiles">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">predicted_user_profiles</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_user_profiles" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predicted_user_profiles</span></span><a class="headerlink" href="#models.recommender.BaseRecommender.predicted_user_profiles" title="Permalink to this definition"></a></dt>
 <dd><p>Property that is an alias for the matrix representation of
 predicted user profiles. Returns a matrix of dimension
 <span class="math notranslate nohighlight">\(|U|\times|\hat{A}|\)</span>, where <span class="math notranslate nohighlight">\(|\hat{A}|\)</span> is the
@@ -1101,31 +1084,38 @@ item and user.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.process_new_items">
-<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.process_new_items" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_new_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.process_new_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.process_new_items" title="Permalink to this definition"></a></dt>
 <dd><p>Creates new item representations based on items that were just created.</p>
 <p>Must be defined in the concrete class.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="models.recommender.BaseRecommender.process_new_users">
+<span class="sig-name descname"><span class="pre">process_new_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_users</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.process_new_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.process_new_users" title="Permalink to this definition"></a></dt>
+<dd><p>Creates new user representations based on items that were just created.</p>
+<p>Must be defined in the concrete class.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.recommend">
-<span class="sig-name descname"><span class="pre">recommend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vary_random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeated_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.recommend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">recommend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vary_random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeated_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.recommend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.recommend" title="Permalink to this definition"></a></dt>
 <dd><p>Implements the recommendation process by combining recommendations and
 new (random) items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, the system is in “startup”  (exploration) mode and
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, the system is in “startup”  (exploration) mode and
 only presents the user with new randomly chosen items. This is
 done to maximize exploration.</p></li>
-<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 0</em>) – Number of per-user item recommendations that should be
+<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 0</em>) – Number of per-user item recommendations that should be
 randomly generated. Passing in <code class="docutils literal notranslate"><span class="pre">self.num_items_per_iter</span></code>
 will result in all recommendations being randomly generated,
 while passing in <code class="docutils literal notranslate"><span class="pre">0</span></code> will result in all recommendations
 coming from predicted score.</p></li>
-<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then at each timestep, the # of items that are recommended
+<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then at each timestep, the # of items that are recommended
 randomly is itself randomly generated between 0 and
 <code class="docutils literal notranslate"><span class="pre">random_items_per_iter</span></code>, inclusive.</p></li>
-<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, repeated items are allowed in the system – that is,
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, repeated items are allowed in the system – that is,
 users can interact with the same item more than once.</p></li>
 </ul>
 </dd>
@@ -1140,27 +1130,27 @@ users can interact with the same item more than once.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_between_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vary_random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeated_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_new_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_tqdm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.run" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_between_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vary_random_items_per_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeated_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_new_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_tqdm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.run" title="Permalink to this definition"></a></dt>
 <dd><p>Runs simulation for the given timesteps.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of timesteps for simulation.</p></li>
-<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it runs the simulation in startup mode (see
+<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of timesteps for simulation.</p></li>
+<li><p><strong>startup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it runs the simulation in startup mode (see
 <a class="reference internal" href="#models.recommender.BaseRecommender.recommend" title="models.recommender.BaseRecommender.recommend"><code class="xref py py-func docutils literal notranslate"><span class="pre">recommend()</span></code></a> and <a class="reference internal" href="#models.recommender.BaseRecommender.startup_and_train" title="models.recommender.BaseRecommender.startup_and_train"><code class="xref py py-func docutils literal notranslate"><span class="pre">startup_and_train()</span></code></a>)</p></li>
-<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the model is retrained after each timestep with the
+<li><p><strong>train_between_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the model is retrained after each timestep with the
 information gathered in the previous step.</p></li>
-<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 0</em>) – Number of per-user item recommendations that should be
+<li><p><strong>random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 0</em>) – Number of per-user item recommendations that should be
 randomly generated. Passing in <code class="docutils literal notranslate"><span class="pre">self.num_items_per_iter</span></code> will
 result in all recommendations being randomly generated, while passing
 in <code class="docutils literal notranslate"><span class="pre">0</span></code> will result in all recommendations coming from predicted scores.</p></li>
-<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then at each timestep, the # of items that are recommended
+<li><p><strong>vary_random_items_per_iter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then at each timestep, the # of items that are recommended
 randomly is itself randomly generated between 0 and
 <code class="docutils literal notranslate"><span class="pre">random_items_per_iter</span></code>, inclusive.</p></li>
-<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, repeated items are allowed in the system – that is,
+<li><p><strong>repeated_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, repeated items are allowed in the system – that is,
 the system can recommend items to users that they’ve already previously
 interacted with.</p></li>
-<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no new items are created during these timesteps. This
+<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no new items are created during these timesteps. This
 can be helpful, say, during a “training” period where no new items should be
 made.</p></li>
 </ul>
@@ -1170,22 +1160,22 @@ made.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.set_num_items_per_iter">
-<span class="sig-name descname"><span class="pre">set_num_items_per_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.set_num_items_per_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.set_num_items_per_iter" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_num_items_per_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_items_per_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.set_num_items_per_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.set_num_items_per_iter" title="Permalink to this definition"></a></dt>
 <dd><p>Change the number of items that will be shown
 to each user per iteration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.startup_and_train">
-<span class="sig-name descname"><span class="pre">startup_and_train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_new_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.startup_and_train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.startup_and_train" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">startup_and_train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timesteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_new_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.startup_and_train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.startup_and_train" title="Permalink to this definition"></a></dt>
 <dd><p>Runs simulation in startup mode by calling <a class="reference internal" href="#models.recommender.BaseRecommender.run" title="models.recommender.BaseRecommender.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a> with
 startup=True. For more information about startup mode, see <a class="reference internal" href="#models.recommender.BaseRecommender.run" title="models.recommender.BaseRecommender.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a>
 and <a class="reference internal" href="#models.recommender.BaseRecommender.recommend" title="models.recommender.BaseRecommender.recommend"><code class="xref py py-func docutils literal notranslate"><span class="pre">recommend()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>timesteps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of timesteps for simulation</p></li>
-<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no new items are created during these timesteps.
+<li><p><strong>timesteps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of timesteps for simulation</p></li>
+<li><p><strong>no_new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no new items are created during these timesteps.
 This is only relevant when you have item
 <a class="reference internal" href="components.html#components.creators.Creators" title="components.creators.Creators"><code class="xref py py-class docutils literal notranslate"><span class="pre">Creators</span></code></a>. This can be helpful, say, during
 a “training” period where no new items should be made.</p></li>
@@ -1196,7 +1186,7 @@ a “training” period where no new items should be made.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="models.recommender.BaseRecommender.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.train" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/recommender.html#BaseRecommender.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.recommender.BaseRecommender.train" title="Permalink to this definition"></a></dt>
 <dd><p>Updates scores predicted by the system based on the internal state of the
 recommender system. Under default initialization, it updates
 <a class="reference internal" href="#models.recommender.BaseRecommender.predicted_scores" title="models.recommender.BaseRecommender.predicted_scores"><code class="xref py py-attr docutils literal notranslate"><span class="pre">predicted_scores</span></code></a> with a dot product of user and item attributes.</p>
@@ -1212,55 +1202,38 @@ recommender system. Under default initialization, it updates
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="components.html" class="btn btn-neutral float-left" title="Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Eli Lucherini.
-
-    </p>
+    <p>&#169; Copyright 2021, Eli Lucherini.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

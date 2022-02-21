@@ -1,71 +1,31 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>models.social &mdash; T-RECS 0.1.0b documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> T-RECS
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -73,87 +33,37 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">T-RECS (Tool for RecSys Simulation)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/reference.html">Reference</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">T-RECS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
       <li>models.social</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for models.social</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Social filtering recommender system, where users get shown items that were</span>
@@ -389,50 +299,64 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># users have never interacted with new items</span>
         <span class="n">new_representation</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">num_users</span><span class="p">,</span> <span class="n">new_items</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="n">new_representation</span></div></div>
+        <span class="k">return</span> <span class="n">new_representation</span></div>
+
+<div class="viewcode-block" id="SocialFiltering.process_new_users"><a class="viewcode-back" href="../../reference/models.html#models.social.SocialFiltering.process_new_users">[docs]</a>    <span class="k">def</span> <span class="nf">process_new_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_users</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The representation of any new users is always zero. If you</span>
+<span class="sd">        want to add users who have different ties to existing users, you</span>
+<span class="sd">        should modify `items_hat` directly after calling `model.add_users()`.</span>
+
+<span class="sd">        ------------</span>
+<span class="sd">           new_users: :obj:`numpy.ndarray`</span>
+<span class="sd">                An array of users that represents new users that are being</span>
+<span class="sd">                added into the system. Should be of dimension :math:`|U|\\times|A|`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">social_graph</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;social_graph&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">social_graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;social_graph must be passed in as a keyword argument &quot;</span>
+                <span class="s2">&quot;to add_users(). It must be dimension |U|x|U|, where &quot;</span>
+                <span class="s2">&quot;|U| is the total number of users (including new users).&quot;</span>
+            <span class="p">)</span>
+        <span class="n">num_new_users</span> <span class="o">=</span> <span class="n">new_users</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># modify item representation to reflect new users</span>
+        <span class="n">item_rep</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">new_users</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_items</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">items_hat</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">item_rep</span><span class="p">])</span>
+        <span class="c1"># modify user representation by adding relationships from</span>
+        <span class="c1"># old users to new users</span>
+        <span class="n">old_to_new</span> <span class="o">=</span> <span class="n">social_graph</span><span class="p">[:</span><span class="o">-</span><span class="n">num_new_users</span><span class="p">,</span> <span class="o">-</span><span class="n">num_new_users</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">mo</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">users_hat</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">old_to_new</span><span class="p">])</span>
+        <span class="n">new_to_all</span> <span class="o">=</span> <span class="n">social_graph</span><span class="p">[</span><span class="o">-</span><span class="n">num_new_users</span><span class="p">:,</span> <span class="p">:]</span>
+        <span class="k">return</span> <span class="n">new_to_all</span></div></div>
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Eli Lucherini.
-
-    </p>
+    <p>&#169; Copyright 2021, Eli Lucherini.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

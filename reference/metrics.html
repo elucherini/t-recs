@@ -1,74 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Metrics &mdash; T-RECS 0.1.0b documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Random Generators" href="random.html" />
     <link rel="prev" title="Models" href="models.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> T-RECS
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">T-RECS (Tool for RecSys Simulation)</a></li>
@@ -111,89 +61,47 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">T-RECS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="reference.html">Reference</a> &raquo;</li>
-        
       <li>Metrics</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/reference/metrics.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="metrics">
-<h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="metrics">
+<h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline"></a></h1>
 <p><strong>Metrics</strong> are components that track and store a given quantity over the duration of the simulation. All metrics in this module are based on the <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> abstract class, which inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseObservable</span></code> abstract class (refer to the <a class="reference external" href="https://en.wikipedia.org/wiki/Observer_pattern">Observer design pattern</a> for more details).</p>
 <p>This module comes with a number of pre-loaded metrics, as well as a simple programmer interface to develop new metrics.</p>
-<div class="section" id="interaction-measurement">
-<h2>Interaction Measurement<a class="headerlink" href="#interaction-measurement" title="Permalink to this headline">¶</a></h2>
+<section id="interaction-measurement">
+<h2>Interaction Measurement<a class="headerlink" href="#interaction-measurement" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionMeasurement">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_histogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_histogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement" title="Permalink to this definition"></a></dt>
 <dd><p>Keeps track of the interactions between users and items.</p>
 <p>Specifically, at each timestep, it stores a histogram of length
 <span class="math notranslate nohighlight">\(|I|\)</span>, where element <span class="math notranslate nohighlight">\(i\)</span> is the number of interactions
 received by item <span class="math notranslate nohighlight">\(i\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -208,7 +116,7 @@ received by item <span class="math notranslate nohighlight">\(i\)</span>.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionMeasurement.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.InteractionMeasurement.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.InteractionMeasurement.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -219,7 +127,7 @@ received by item <span class="math notranslate nohighlight">\(i\)</span>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionMeasurement.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Measures and stores a histogram of the number of interactions per
 item at the given timestep.</p>
 <dl class="field-list simple">
@@ -231,19 +139,19 @@ item at the given timestep.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="interaction-spread">
-<h2>Interaction Spread<a class="headerlink" href="#interaction-spread" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="interaction-spread">
+<h2>Interaction Spread<a class="headerlink" href="#interaction-spread" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSpread">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionSpread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSpread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSpread" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionSpread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSpread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSpread" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the diversity of the interactions between users and items.</p>
 <p>Specifically, at each timestep, it measures whether interactions are spread
 among many items or only a few items.</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.InteractionMeasurement" title="metrics.measurement.InteractionMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">InteractionMeasurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -258,7 +166,7 @@ among many items or only a few items.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSpread.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.InteractionSpread.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.InteractionSpread.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -269,18 +177,18 @@ among many items or only a few items.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSpread._old_histogram">
-<span class="sig-name descname"><span class="pre">_old_histogram</span></span><a class="headerlink" href="#metrics.measurement.InteractionSpread._old_histogram" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_old_histogram</span></span><a class="headerlink" href="#metrics.measurement.InteractionSpread._old_histogram" title="Permalink to this definition"></a></dt>
 <dd><p>A copy of the histogram at the previous timestep.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>, array_like</p>
+<dd class="field-odd"><p>None, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>, array_like</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSpread.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSpread.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSpread.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSpread.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSpread.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the diversity of user interactions – that is, whether
 interactions are spread among many items or only a few items.</p>
 <dl class="field-list simple">
@@ -293,12 +201,12 @@ interactions are spread among many items or only a few items.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="recsimilarity">
-<h2>RecSimilarity<a class="headerlink" href="#recsimilarity" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="recsimilarity">
+<h2>RecSimilarity<a class="headerlink" href="#recsimilarity" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.RecSimilarity">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">RecSimilarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rec_similarity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#RecSimilarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.RecSimilarity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">RecSimilarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rec_similarity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#RecSimilarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.RecSimilarity" title="Permalink to this definition"></a></dt>
 <dd><p>Keeps track of the average Jaccard similarity between items seen by pairs
 of users at each timestep. The pairs of users must be passed in by the
 user.</p>
@@ -307,7 +215,7 @@ user.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pairs</strong> (<em>iterable of tuples</em>) – Contains tuples representing each pair of users. Each user should
 be represented as an index into the user profiles matrix.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -323,7 +231,7 @@ be represented as an index into the user profiles matrix.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.RecSimilarity.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.RecSimilarity.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.RecSimilarity.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -334,7 +242,7 @@ be represented as an index into the user profiles matrix.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.RecSimilarity.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#RecSimilarity.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.RecSimilarity.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#RecSimilarity.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.RecSimilarity.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the average Jaccard index of items shown to pairs of users in
 the system. Intuitively, a higher average Jaccard index corresponds to
 increasing “homogenization” in that the recommender system is starting
@@ -349,12 +257,12 @@ to treat each user the same way (i.e., show them the same items).</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="interactionsimilarity">
-<h2>InteractionSimilarity<a class="headerlink" href="#interactionsimilarity" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="interactionsimilarity">
+<h2>InteractionSimilarity<a class="headerlink" href="#interactionsimilarity" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSimilarity">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionSimilarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_similarity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSimilarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSimilarity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionSimilarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_similarity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagnostics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSimilarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSimilarity" title="Permalink to this definition"></a></dt>
 <dd><p>Keeps track of the average Jaccard similarity between interactions with items
 between pairs of users at each timestep. The pairs of users must be passed
 in by the user.</p>
@@ -363,7 +271,7 @@ in by the user.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pairs</strong> (<em>iterable of tuples</em>) – Contains tuples representing each pair of users. Each user should
 be represented as an index into the user profiles matrix.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -379,7 +287,7 @@ be represented as an index into the user profiles matrix.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSimilarity.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.InteractionSimilarity.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.InteractionSimilarity.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -390,7 +298,7 @@ be represented as an index into the user profiles matrix.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSimilarity.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSimilarity.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSimilarity.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSimilarity.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSimilarity.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the average Jaccard index of items that pairs of users have interacted
 with in the system. Intuitively, a higher average Jaccard index corresponds to
 increasing “homogenization” in that user behavior is becoming more and more
@@ -405,18 +313,18 @@ similar (i.e., users have all interacted with the same items).</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="mse-measurement">
-<h2>MSE Measurement<a class="headerlink" href="#mse-measurement" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="mse-measurement">
+<h2>MSE Measurement<a class="headerlink" href="#mse-measurement" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.MSEMeasurement">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">MSEMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#MSEMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.MSEMeasurement" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">MSEMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagnostics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#MSEMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.MSEMeasurement" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the mean squared error (MSE) between real and predicted user scores.</p>
 <p>It can be used to evaluate how accurate the model predictions are.</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -431,18 +339,18 @@ similar (i.e., users have all interacted with the same items).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.MSEMeasurement.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.MSEMeasurement.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.MSEMeasurement.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> (optional, default: “mse”)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a> (optional, default: “mse”)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.MSEMeasurement.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#MSEMeasurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.MSEMeasurement.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#MSEMeasurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.MSEMeasurement.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Measures and records the mean squared error between the user preferences
 predicted by the system and the users’ actual preferences.</p>
 <dl class="field-list simple">
@@ -454,12 +362,12 @@ predicted by the system and the users’ actual preferences.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="diffusion-tree">
-<h2>Diffusion Tree<a class="headerlink" href="#diffusion-tree" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="diffusion-tree">
+<h2>Diffusion Tree<a class="headerlink" href="#diffusion-tree" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">DiffusionTreeMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">DiffusionTreeMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement" title="Permalink to this definition"></a></dt>
 <dd><p>Class that implements an information diffusion tree. The current
 implementation assumes that agents using this class (i.e., a model)
 implement an <code class="xref py py-attr docutils literal notranslate"><span class="pre">infection_state</span></code> matrix that
@@ -473,7 +381,7 @@ Networkx’s <a class="reference external" href="https://networkx.github.io/docu
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>infection_state</strong> (<a class="reference internal" href="models.html#models.bass.InfectionState" title="models.bass.InfectionState"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfectionState</span></code></a>) – The initial “infection state” of all users</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -489,7 +397,7 @@ Networkx’s <a class="reference external" href="https://networkx.github.io/docu
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the metric that is recorded at each time step. Note that,
 in this case, the metric stored in
 <a class="reference internal" href="#metrics.measurement.Measurement.measurement_history" title="metrics.measurement.Measurement.measurement_history"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurement_history</span></code></a> is actually the
@@ -504,7 +412,7 @@ the <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasur
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement.diffusion_tree">
-<span class="sig-name descname"><span class="pre">diffusion_tree</span></span><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.diffusion_tree" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">diffusion_tree</span></span><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.diffusion_tree" title="Permalink to this definition"></a></dt>
 <dd><p>Diffusion tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -515,7 +423,7 @@ the <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasur
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement._old_infection_state">
-<span class="sig-name descname"><span class="pre">_old_infection_state</span></span><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement._old_infection_state" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_old_infection_state</span></span><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement._old_infection_state" title="Permalink to this definition"></a></dt>
 <dd><p>Infection state at the previous timestep.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -526,13 +434,13 @@ the <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasur
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement.draw_tree">
-<span class="sig-name descname"><span class="pre">draw_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement.draw_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.draw_tree" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">draw_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement.draw_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.draw_tree" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the tree using the Networkx library API.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Updates tree with new infections and stores information about new
 infections. In <a class="reference internal" href="#metrics.measurement.Measurement.measurement_history" title="metrics.measurement.Measurement.measurement_history"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurement_history</span></code></a>, it stores the
 total number of infected users in the system – that is, the number of
@@ -546,38 +454,38 @@ nodes in the tree.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="measurement-of-structural-virality">
-<h2>Measurement of Structural Virality<a class="headerlink" href="#measurement-of-structural-virality" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="measurement-of-structural-virality">
+<h2>Measurement of Structural Virality<a class="headerlink" href="#measurement-of-structural-virality" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.StructuralVirality">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">StructuralVirality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">StructuralVirality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality" title="Permalink to this definition"></a></dt>
 <dd><p>This class extends <a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement" title="metrics.measurement.DiffusionTreeMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a> with the concept of
 structural virality developed by Goel, Anderson, Hofman, and Watts in
 <a class="reference external" href="https://5harad.com/papers/twiral.pdf">The Structural Virality of Online Diffusion</a>. It is used in
 <a class="reference internal" href="models.html#models.bass.BassModel" title="models.bass.BassModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BassModel</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.StructuralVirality.get_structural_virality">
-<span class="sig-name descname"><span class="pre">get_structural_virality</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality.get_structural_virality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality.get_structural_virality" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_structural_virality</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality.get_structural_virality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality.get_structural_virality" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a measure of structural virality.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>Structural virality</strong></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="average-feature-score-range">
-<h2>Average Feature Score Range<a class="headerlink" href="#average-feature-score-range" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="average-feature-score-range">
+<h2>Average Feature Score Range<a class="headerlink" href="#average-feature-score-range" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.AverageFeatureScoreRange">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">AverageFeatureScoreRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'afsr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#AverageFeatureScoreRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">AverageFeatureScoreRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'afsr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#AverageFeatureScoreRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the average range (across users) of item attributes for items
 users were recommended at a time step.</p>
 <p>This metric is based on the item diversity measure used in :</p>
@@ -590,7 +498,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 <p>This class inherits from <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -605,7 +513,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.AverageFeatureScoreRange.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -616,7 +524,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.AverageFeatureScoreRange.measure">
-<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#AverageFeatureScoreRange.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange.measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#AverageFeatureScoreRange.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Measures the average range (across users) of item attributes for items
 users were recommended at a time step. Used as a measure of within
 list recommendation diversity</p>
@@ -635,43 +543,43 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="measurement-base-class">
-<h2>Measurement: base class<a class="headerlink" href="#measurement-base-class" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="measurement-base-class">
+<h2>Measurement: base class<a class="headerlink" href="#measurement-base-class" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract observable class to store measurements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
+<dd class="field-odd"><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement.measurement_history">
-<span class="sig-name descname"><span class="pre">measurement_history</span></span><a class="headerlink" href="#metrics.measurement.Measurement.measurement_history" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">measurement_history</span></span><a class="headerlink" href="#metrics.measurement.Measurement.measurement_history" title="Permalink to this definition"></a></dt>
 <dd><p>List of measurements. A new element is added at each timestep.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.Measurement.name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metrics.measurement.Measurement.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the measurement quantity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement.get_measurement">
-<span class="sig-name descname"><span class="pre">get_measurement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_measurement" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_measurement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_measurement" title="Permalink to this definition"></a></dt>
 <dd><p>Returns measurements. See
 <a class="reference internal" href="components.html#base.base_components.BaseObservable.get_observable" title="base.base_components.BaseObservable.get_observable"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_observable()</span></code></a>
 for more details.</p>
@@ -680,14 +588,14 @@ for more details.</p>
 <dd class="field-odd"><p>Measurements</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement.get_timesteps">
-<span class="sig-name descname"><span class="pre">get_timesteps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_timesteps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_timesteps" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_timesteps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.get_timesteps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.get_timesteps" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of measurements stored (which is equivalent to the
 number of timesteps that the system has been measuring).</p>
 <dl class="field-list simple">
@@ -695,28 +603,28 @@ number of timesteps that the system has been measuring).</p>
 <dd class="field-odd"><p>Length of <code class="docutils literal notranslate"><span class="pre">measurement_history</span></code></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement.measure">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.measure" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recommender</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.measure" title="Permalink to this definition"></a></dt>
 <dd><p>Function that should calculate some outcome of interest of the system
 at the current timestep</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement.observe">
-<span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.observe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.observe" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement.observe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement.observe" title="Permalink to this definition"></a></dt>
 <dd><p>Stores measurements. It can be called by implementations to ensure
 consistency when storing different measurements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>observation</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Element that will be stored</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the function stores a copy of observation. Useful for
+<li><p><strong>observation</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>None</em>) – Element that will be stored</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the function stores a copy of observation. Useful for
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p></li>
 </ul>
 </dd>
@@ -725,55 +633,38 @@ consistency when storing different measurements.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="random.html" class="btn btn-neutral float-right" title="Random Generators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="models.html" class="btn btn-neutral float-left" title="Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="random.html" class="btn btn-neutral float-right" title="Random Generators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Eli Lucherini.
-
-    </p>
+    <p>&#169; Copyright 2021, Eli Lucherini.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
