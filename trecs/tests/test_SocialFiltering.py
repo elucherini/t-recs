@@ -4,7 +4,7 @@ import numpy as np
 import scipy.sparse as sp
 from trecs.metrics.measurement import MSEMeasurement
 import trecs.matrix_ops as mo
-from trecs.models import SocialFiltering
+from trecs.models import SocialFiltering, social
 from trecs.components import Creators
 
 
@@ -316,3 +316,37 @@ class TestSocialFiltering:
         assert sf.items_hat.num_attrs == 100  # 100 users
         assert sf.users.actual_user_scores.num_users == 100
         assert sf.users.actual_user_scores.num_items == 150
+
+    def test_new_users(self):
+        # network initialized with 5 users
+        # but in reality, there will be 10 total users
+        num_users = 10
+        num_items = 10
+        users = np.eye(num_users)
+        items = np.eye(num_items)
+        social_network = np.roll(users, 1, axis=1)  # every user i is connected to (i+1) % 10
+
+        first_users = users[:5, :].copy()
+        first_network = social_network[:5, :5]
+        model = SocialFiltering(
+            user_representation=first_network,
+            actual_item_representation=items,
+            actual_user_representation=first_users,
+            num_items_per_iter=10,
+        )
+
+        model.run(1, repeated_items=True)
+        second_users = users[5:, :]
+        model.add_users(second_users, social_graph=social_network)
+        # should be a total of 10 users
+        assert model.num_users == 10
+        assert model.users.num_users == 10
+        assert model.users_hat.num_users == 10
+        assert model.users.actual_user_scores.num_users == 10
+        # assert new users are represented as zeros
+        test_helpers.assert_equal_arrays(social_network, model.users_hat.value)
+        assert model.items_hat.value.sum() == 5.0
+        model.run(1, repeated_items=True)
+        # the first iteration should have yielded
+        # 5 interactions, the second should yield another 10
+        assert model.items_hat.value.sum() == 15.0
