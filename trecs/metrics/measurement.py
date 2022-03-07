@@ -1,16 +1,156 @@
 """
 Set of various measurements that can be used to track outcomes of interest
-throughout a simulation
+throughout a simulation. Diagnostics may optionally be included to measure
+ancillary information for each measurement, such as variance or
+kurtosis.
 """
 from abc import ABC, abstractmethod
 import networkx as nx
 from networkx import wiener_index
 import numpy as np
+import pandas as pd
+from scipy.stats import skew, kurtosis, shapiro
+import matplotlib.pyplot as plt
 from trecs.logging import VerboseMode
 from trecs.base import (
     BaseObservable,
     register_observables,
 )
+
+
+class Diagnostics:
+    """
+    Class to generate diagnostics on measurements.
+
+    Attributes
+    -----------
+
+        measurement_diagnostics: pandas dataframe
+            Dataframe containing diagnostics statistics at each timestep.
+
+        last_observation: `None` or :obj:`numpy.ndarray`
+            1-D numpy array containing the values for the specified metric
+            at the most recent timestep.
+
+        columns: list
+            List of strings containing the column titles.
+
+    """
+
+    def __init__(
+        self,
+        columns=None,
+    ):
+        if columns is None:
+            columns = [
+                "mean",
+                "std",
+                "median",
+                "min",
+                "max",
+                "skew",
+                "kurtosis",
+                "sw_stat",
+                "sw_p",
+                "n",
+            ]
+        self.columns = columns
+        self.measurement_diagnostics = pd.DataFrame(columns=columns)
+        self.last_observation = None
+
+    def diagnose(self, observation):
+        """
+        Calculates diagnostic measurements on the latest observation
+        from the recommender system. Also stores the current observation for
+        later reference.
+
+        Parameters
+        -----------
+
+            observation: :obj:`numpy.ndarray`
+                1-D numpy array containing the values for the specified metric
+                at this timestep.
+        """
+
+        # rudimentary type-checks
+        if not isinstance(observation, np.ndarray):
+            raise TypeError("Diagnostics can only be performed on numpy arrays")
+
+        if observation.ndim != 1:
+            raise ValueError("Diagnostics can only be performed on 1-d numpy arrays")
+        self.last_observation = observation
+
+        values = []
+        sw_test = None
+        col_to_fn = {
+            "mean": np.mean,
+            "std": np.std,
+            "median": np.median,
+            "min": np.min,
+            "max": np.max,
+            "skew": skew,
+            "kurtosis": kurtosis,
+        }
+        for col in self.columns:
+            if col in col_to_fn:
+                values.append(col_to_fn[col](observation))
+            elif col == "sw_stat":
+                if sw_test is None:
+                    sw_test = shapiro(observation)
+                values.append(sw_test.statistic)
+            elif col == "sw_p":
+                if sw_test is None:
+                    sw_test = shapiro(observation)
+                if observation.size >= 5000:
+                    sw_p = np.nan
+                else:
+                    sw_p = sw_test.pvalue
+                values.append(sw_p)
+            elif col == "n":
+                values.append(observation.size)
+        diagnostics = pd.Series(
+            values,
+            index=self.measurement_diagnostics.columns,
+        )
+
+        self.measurement_diagnostics = self.measurement_diagnostics.append(
+            diagnostics, ignore_index=True
+        )
+
+    def hist(self, split_indices=None):
+        """
+        Draws a histogram of the most recent observation values.
+
+        Parameters
+        -----------
+            split_indices: list or None
+                Contains "splits" that determine which values
+                to use for distinct histograms. For example,
+                if there are 100 observation values and the
+                split index is 50, then two separate histograms are
+                created from the first 50 values and the second 50
+                values.
+        """
+        if len(split_indices) > 4:
+            raise RuntimeError("Too many split indices")
+        colors = ["blue", "orange", "red", "yellow", "green"]
+        if split_indices is not None and len(split_indices) > 0:
+            splits = [0] + split_indices + [self.last_observation.size]
+            for i in range(len(splits) - 1):
+                values = self.last_observation[splits[i] : splits[i + 1]]
+                plt.hist(values, alpha=0.7, color=colors[i])
+        else:
+            plt.hist(self.last_observation, bins="auto")
+        plt.ylabel("observation count (total n={})".format(self.last_observation.size))
+
+    def get_diagnostics(self):
+        """
+        Returns
+        --------
+        `pd.DataFrame`:
+            Dataframe containing diagnostics statistics at each timestep.
+        """
+        return self.measurement_diagnostics
 
 
 class Measurement(BaseObservable, VerboseMode, ABC):
@@ -74,6 +214,8 @@ class Measurement(BaseObservable, VerboseMode, ABC):
         else:
             to_append = observation
         self.measurement_history.append(to_append)
+
+        # print(self.measurement_diagnostics.head())
 
     @abstractmethod
     def measure(self, recommender):
@@ -222,7 +364,7 @@ class InteractionMeasurement(Measurement):
         self.observe(histogram, copy=True)
 
 
-class InteractionSimilarity(Measurement):
+class InteractionSimilarity(Measurement, Diagnostics):
     """
     Keeps track of the average Jaccard similarity between interactions with items
     between pairs of users at each timestep. The pairs of users must be passed
@@ -245,11 +387,17 @@ class InteractionSimilarity(Measurement):
             Name of the measurement component.
     """
 
-    def __init__(self, pairs, name="interaction_similarity", verbose=False):
+    def __init__(
+        self, pairs, name="interaction_similarity", verbose=False, diagnostics=False, **kwargs
+    ):
         self.pairs = pairs
         # will eventually be a matrix where each row corresponds to 1 user
         self.interaction_hist = None
+        self.diagnostics = diagnostics
         Measurement.__init__(self, name, verbose)
+
+        if diagnostics:
+            Diagnostics.__init__(self, **kwargs)
 
     def measure(self, recommender):
         """
@@ -276,13 +424,22 @@ class InteractionSimilarity(Measurement):
             self.interaction_hist = np.hstack(
                 [self.interaction_hist, interactions.reshape((-1, 1))]
             )
+
+        pair_sim = []
         for pair in self.pairs:
             itemset_1 = set(self.interaction_hist[pair[0], :])
             itemset_2 = set(self.interaction_hist[pair[1], :])
             common = len(itemset_1.intersection(itemset_2))
             union = len(itemset_1.union(itemset_2))
             similarity += common / union / len(self.pairs)
+
+            if self.diagnostics:
+                pair_sim.append(common / union)
+
         self.observe(similarity)
+
+        if self.diagnostics:
+            self.diagnose(np.array(pair_sim))
 
 
 class RecSimilarity(Measurement):
@@ -398,6 +555,7 @@ class InteractionSpread(InteractionMeasurement):
         self.histogram = histogram
 
 
+
 class RecallMeasurement(Measurement):
     """
     Measures the proportion of relevant items (i.e., those users interacted with) falling
@@ -456,7 +614,8 @@ class RecallMeasurement(Measurement):
         self.observe(recall)
 
 
-class MSEMeasurement(Measurement):
+
+class MSEMeasurement(Measurement, Diagnostics):
     """
     Measures the mean squared error (MSE) between real and predicted user scores.
 
@@ -478,8 +637,14 @@ class MSEMeasurement(Measurement):
             Name of the measurement component.
     """
 
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, diagnostics=False, **kwargs):
+
+        self.diagnostics = diagnostics
+
         Measurement.__init__(self, "mse", verbose=verbose)
+
+        if diagnostics:
+            Diagnostics.__init__(self, **kwargs)
 
     def measure(self, recommender):
         """
@@ -493,6 +658,15 @@ class MSEMeasurement(Measurement):
         """
         diff = recommender.predicted_scores.value - recommender.users.actual_user_scores.value
         self.observe((diff ** 2).mean(), copy=False)
+
+        if self.diagnostics:
+            self.diagnose(
+                (
+                    recommender.predicted_scores.value.mean(axis=1)
+                    - recommender.users.actual_user_scores.value.mean(axis=1)
+                )
+                ** 2
+            )
 
 
 class RMSEMeasurement(Measurement):

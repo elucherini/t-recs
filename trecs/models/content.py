@@ -243,3 +243,22 @@ class ContentFiltering(BaseRecommender):
         empty_interactions = sp.csr_matrix((self.num_users, new_items.shape[1]), dtype=int)
         self.all_interactions = sp.hstack([self.all_interactions, empty_interactions])
         return new_items
+
+    def process_new_users(self, new_users, **kwargs):
+        """
+        By default, the content filtering system assumes the predicted user profiles
+        are zero vectors. (Note that this effectively corresponds to providing
+        random recommendations to each user).
+
+        Parameters
+        ------------
+           new_users: :obj:`numpy.ndarray`
+                An array of users that represents new users that are being
+                added into the system. Should be of dimension :math:`|U|\\times|A|`
+        """
+        # add indices for new items into all interactions matrix
+        num_new = new_users.shape[0]
+        empty_interactions = sp.csr_matrix((num_new, self.num_items), dtype=int)
+        self.all_interactions = sp.vstack([self.all_interactions, empty_interactions])
+        # each user is initially represented as zeros
+        return np.zeros((num_new, self.users_hat.num_attrs))

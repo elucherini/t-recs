@@ -388,3 +388,31 @@ class TestContentFiltering:
             num_items_per_iter=num_items,
         )
         model.run(1)
+
+    def test_new_users(self):
+        users = np.random.randint(10, size=(100, 10))
+        items = np.random.randint(2, size=(10, 100))
+        model = ContentFiltering(
+            actual_user_representation=users,
+            actual_item_representation=items,
+        )
+        model.run(1, repeated_items=True)
+        num_new_users = 100
+        users = np.random.randint(10, size=(num_new_users, 10))
+        model.add_users(users)
+        # 100 new users + 100 original = 200
+        assert model.num_users == 200
+        assert model.users.num_users == 200
+        assert model.users_hat.num_users == 200
+        assert model.users.actual_user_scores.num_users == 200
+        # assert new users are represented as zeros
+        user_representation = np.zeros((100, model.users_hat.num_attrs))
+        test_helpers.assert_equal_arrays(user_representation, model.users_hat.value[100:, :])
+        assert model.all_interactions.sum() == 100.0
+        model.run(1, repeated_items=True)
+        # verify the user representation has changed after a new training step
+        with pytest.raises(AssertionError):
+            test_helpers.assert_equal_arrays(user_representation, model.users_hat.value[100:, :])
+        # the first iteration should have yielded
+        # 100 interactions, the second should yield another 200
+        assert model.all_interactions.sum() == 300.0

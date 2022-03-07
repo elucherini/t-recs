@@ -233,3 +233,33 @@ class SocialFiltering(BaseRecommender, BinarySocialGraph):
         # users have never interacted with new items
         new_representation = sp.csr_matrix((self.num_users, new_items.shape[1]))
         return new_representation
+
+    def process_new_users(self, new_users, **kwargs):
+        """
+        The representation of any new users is always zero. If you
+        want to add users who have different ties to existing users, you
+        should modify `items_hat` directly after calling `model.add_users()`.
+
+        ------------
+           new_users: :obj:`numpy.ndarray`
+                An array of users that represents new users that are being
+                added into the system. Should be of dimension :math:`|U|\\times|A|`
+
+        """
+        social_graph = kwargs.pop("social_graph", None)
+        if social_graph is None:
+            raise RuntimeError(
+                "social_graph must be passed in as a keyword argument "
+                "to add_users(). It must be dimension |U|x|U|, where "
+                "|U| is the total number of users (including new users)."
+            )
+        num_new_users = new_users.shape[0]
+        # modify item representation to reflect new users
+        item_rep = sp.csr_matrix((new_users.shape[0], self.num_items))
+        self.items_hat.value = mo.vstack([self.items_hat.value, item_rep])
+        # modify user representation by adding relationships from
+        # old users to new users
+        old_to_new = social_graph[:-num_new_users, -num_new_users:]
+        self.users_hat.value = mo.hstack([self.users_hat.value, old_to_new])
+        new_to_all = social_graph[-num_new_users:, :]
+        return new_to_all

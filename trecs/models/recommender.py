@@ -162,7 +162,7 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
             representing the interleaved items for each user.
     """
 
-    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes,too-many-public-methods
     # The recommender system model contains everything needed to run the simulation,
     # so many instance attributes are justified in this case.
     @abstractmethod
@@ -595,8 +595,19 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         Must be defined in the concrete class.
         """
         raise RuntimeError(
-            "new_item_representation not defined. Support for representing new"
+            "process_new_items not defined. Support for representing new"
             "items must be implemented by the user!"
+        )
+
+    def process_new_users(self, new_users, **kwargs):  # pylint: disable=R0201
+        """
+        Creates new user representations based on items that were just created.
+
+        Must be defined in the concrete class.
+        """
+        raise RuntimeError(
+            "process_new_users not defined. Support for representing new"
+            "users must be implemented by the user!"
         )
 
     def run(
@@ -737,9 +748,40 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         self.add_new_item_indices(new_items.shape[1])
         # create new predicted scores if not in startup
         new_item_pred_score = self.score_fn(self.users_hat.value, new_items_hat)
-        self.predicted_scores.append_new_scores(new_item_pred_score)
+        self.predicted_scores.append_item_scores(new_item_pred_score)
         # have users update their own scores too
         self.users.score_new_items(new_items)
+
+    def add_users(self, new_users, **kwargs):
+        """
+        Create pool of new users
+
+        Parameters
+        -----------
+
+            new_users: :obj:`numpy.ndarray`
+                An array representing users. Should be of dimension
+                :math:`|U_n| \\times |A|`, where :math:`|U_n|` represents
+                the number of new users, and :math:`|A|` represents
+                the number of attributes for each user profile.
+
+            **kwargs:
+                Any additional information about users
+                can be passed through `kwargs` (see `social.py`) for
+                an example.
+        """
+        self.num_users += new_users.shape[0]
+        # register new user profiles & new user-item scores
+        self.users.append_new_users(new_users, self.items.value)
+
+        # update predicted user profiles
+        new_users_hat = self.process_new_users(new_users, **kwargs)
+        self.users_hat.append_new_users(new_users_hat)
+
+        self.add_new_user_indices(new_users.shape[0])
+        # create new predicted scores if not in startup
+        new_item_pred_score = self.score_fn(new_users_hat, self.items_hat.value)
+        self.predicted_scores.append_user_scores(new_item_pred_score)
 
     def set_num_items_per_iter(self, num_items_per_iter):
         """Change the number of items that will be shown
@@ -765,6 +807,19 @@ class BaseRecommender(MeasurementModule, SystemStateModule, VerboseMode, ABC):
         num_existing_items = self.indices.shape[1]
         new_indices = num_existing_items + np.tile(np.arange(num_new_items), (self.num_users, 1))
         self.indices = np.hstack([self.indices, new_indices])
+
+    def add_new_user_indices(self, num_new_users):
+        """
+        Expands the indices matrix to include entries for new users that
+        were created.
+
+        Parameters
+        -----------
+            num_new_users (int): The number of new items added to the system
+            in this iteration
+        """
+        new_indices = np.tile(np.arange(self.num_items), (num_new_users, 1))
+        self.indices = np.vstack([self.indices, new_indices])
 
     def get_measurements(self):
         """

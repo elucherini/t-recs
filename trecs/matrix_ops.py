@@ -262,6 +262,25 @@ def hstack(matrix_list):
     return generic_matrix_op(np.hstack, sp.hstack, matrix_list)
 
 
+def vstack(matrix_list):
+    """
+    Wrapper for `numpy.vstack` and `scipy.sparse.vstack`. Vertically
+    concatenates matrices and returns a `numpy` array or `scipy` sparse
+    matrix, depending on the arguments provided.
+
+    Parameters
+    -----------
+        matrix_list: list
+            List of matrices to be concatenated
+
+    Returns
+    --------
+        matrix: :obj:`numpy.ndarray` or :obj:`scipy.sparse.spmatrix`
+            Resulting sparse matrix or dense matrix.
+    """
+    return generic_matrix_op(np.vstack, sp.vstack, matrix_list)
+
+
 def sparse_argmax(matrix, axis=None):
     """
     By default, the implementation of `argmax` in `scipy` returns

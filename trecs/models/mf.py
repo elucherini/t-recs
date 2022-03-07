@@ -289,3 +289,18 @@ class ImplicitMF(BaseRecommender):
             avg_item = np.zeros(self.num_latent_factors)
         new_items = np.tile(avg_item, (num_new_items, 1)).T
         return new_items
+
+    def process_new_users(self, new_users, **kwargs):
+        """
+        The representation of any new users is randomy sampled from the
+        normal distribution.
+
+        ------------
+           new_users: :obj:`numpy.ndarray`
+                An array of users that represents new users that are being
+                added into the system. Should be of dimension :math:`|U|\\times|A|`
+        """
+        new_representation = self.random_state.normal(
+            size=(new_users.shape[0], self.num_latent_factors)
+        )
+        return new_representation
