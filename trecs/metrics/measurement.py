@@ -56,6 +56,7 @@ class Diagnostics:
             ]
         self.columns = columns
         self.measurement_diagnostics = pd.DataFrame(columns=columns)
+
         self.last_observation = None
 
     def diagnose(self, observation):
@@ -78,6 +79,7 @@ class Diagnostics:
 
         if observation.ndim != 1:
             raise ValueError("Diagnostics can only be performed on 1-d numpy arrays")
+
         self.last_observation = observation
 
         values = []
@@ -555,7 +557,6 @@ class InteractionSpread(InteractionMeasurement):
         self.histogram = histogram
 
 
-
 class RecallMeasurement(Measurement):
     """
     Measures the proportion of relevant items (i.e., those users interacted with) falling
@@ -581,6 +582,7 @@ class RecallMeasurement(Measurement):
 
     def __init__(self, k=5, name="recall_at_k", verbose=False):
         self.k = k
+
         Measurement.__init__(self, name, verbose)
 
     def measure(self, recommender):
@@ -612,7 +614,6 @@ class RecallMeasurement(Measurement):
             )
 
         self.observe(recall)
-
 
 
 class MSEMeasurement(Measurement, Diagnostics):
