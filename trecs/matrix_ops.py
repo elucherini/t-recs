@@ -418,7 +418,7 @@ def sparse_dot(mat1, mat2):
     return mat1.dot(mat2)
 
 
-def inner_product(user_profiles, item_attributes, normalize_users=True, normalize_items=False):
+def inner_product(user_profiles, item_attributes, normalize_users=False, normalize_items=False):
     """
     Performs a dot product multiplication between user profiles and
     item attributes to return the scores (utility) each item possesses
@@ -426,6 +426,7 @@ def inner_product(user_profiles, item_attributes, normalize_users=True, normaliz
     `item_attributes` but note that you could perform an arbitrary matrix
     dot product with this method.
 
+    NOTE TO AMY: You changed normalize_users to False to test MSE = 0 for ideal. Could not figure out how to do this otherwise
     Parameters
     -----------
 
