@@ -605,7 +605,10 @@ class RecallMeasurement(Measurement):
             return
 
         else:
+            #Find the predicted values of all the items that were shown
             shown_item_scores = np.take(recommender.predicted_scores.value, recommender.items_shown)
+            #Find the rank of all the items that were shown. If there are no random items intersperced, this will be
+            #ordered as per shown_item_scores
             shown_item_ranks = np.argsort(shown_item_scores, axis=1)
             top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k :])
             recall = (
