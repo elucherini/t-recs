@@ -605,16 +605,22 @@ class RecallMeasurement(Measurement):
             return
 
         else:
-            #Find the predicted values of all the items that were shown
+            # Find the scores of the items that were shown
             shown_item_scores = np.take(recommender.predicted_scores.value, recommender.items_shown)
-            #Find the rank of all the items that were shown. If there are no random items intersperced, this will be
-            #ordered as per shown_item_scores
+
+            # calcluate their ranks
             shown_item_ranks = np.argsort(shown_item_scores, axis=1)
-            top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k :])
-            recall = (
-                len(np.where(np.isin(recommender.interactions, top_k_items))[0])
-                / recommender.num_users
-            )
+
+            # argsort will return the item ids such that the first item id in the array is the lowest scored,
+            #the last item id is the highest scored
+            # So take the last k ids of shown_item_ranks, which will contain the item ids of the top k (i.e., highest) predicted items
+
+            #AMY:DOUBLE CHECK IF THIS SHOULD BE TAKE ALONG AXIS!
+            top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, recommender.items_shown.shape[1] - self.k:])
+
+            # reshape interactions to allow for testing between the interaction array and the top k items array
+            interactions = recommender.interactions.reshape(recommender.num_users, 1)
+            recall = len(np.where(interactions == top_k_items)[0]) / recommender.num_users
 
         self.observe(recall)
 
