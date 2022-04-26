@@ -615,9 +615,9 @@ class RecallMeasurement(Measurement):
             #the last item id is the highest scored
             # So take the last k ids of shown_item_ranks, which will contain the item ids of the top k (i.e., highest) predicted items
 
-            top_item_idxs = shown_item_ranks[:, -self.k:]
+            top_item_ids = shown_item_ranks[:, -self.k:]
 
-            top_k_items = np.take_along_axis(recommender.items_shown, top_item_idxs, axis=1)
+            top_k_items = np.take_along_axis(recommender.items_shown, top_item_ids, axis=1)
 
             # reshape interactions to allow for testing between the interaction array and the top k items array
             interactions = recommender.interactions.reshape(recommender.num_users, 1)
