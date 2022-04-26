@@ -615,9 +615,6 @@ class RecallMeasurement(Measurement):
             #the last item id is the highest scored
             # So take the last k ids of shown_item_ranks, which will contain the item ids of the top k (i.e., highest) predicted items
 
-            #AMY:DOUBLE CHECK IF THIS SHOULD BE TAKE ALONG AXIS!
-            #top_item_idxs = shown_item_ranks[:, recommender.items_shown.shape[1] - self.k:]
-            #AMY TEST IF THIS FORMULATION WORKS
             top_item_idxs = shown_item_ranks[:, -self.k:]
 
             top_k_items = np.take_along_axis(recommender.items_shown, top_item_idxs, axis=1)
