@@ -56,7 +56,6 @@ class Diagnostics:
             ]
         self.columns = columns
         self.measurement_diagnostics = pd.DataFrame(columns=columns)
-
         self.last_observation = None
 
     def diagnose(self, observation):
@@ -79,7 +78,6 @@ class Diagnostics:
 
         if observation.ndim != 1:
             raise ValueError("Diagnostics can only be performed on 1-d numpy arrays")
-
         self.last_observation = observation
 
         values = []
@@ -555,65 +553,6 @@ class InteractionSpread(InteractionMeasurement):
         self.observe(np.trapz(self._old_histogram, dx=1) - np.trapz(histogram, dx=1), copy=False)
         self._old_histogram = np.copy(histogram)
         self.histogram = histogram
-
-
-class RecallMeasurement(Measurement):
-    """
-    Measures the proportion of relevant items (i.e., those users interacted with) falling
-    within the top k ranked items shown.
-
-    Parameters
-    -----------
-        k: int
-            The rank at which recall should be evaluated.
-
-    Attributes
-    -----------
-        Inherited by Measurement: :class:`.Measurement`
-
-        name: str, default ``"recall_at_k"``
-            Name of the measurement component.
-    """
-
-    # Note: RecallMeasurement evalutes recall for the top-k (i.e., highest predicted value)
-    # items regardless of whether these items derive from the recommender or from randomly
-    # interleaved items. Currently, this metric will only be correct for
-    # cases in which users iteract with one item per timestep
-
-    def __init__(self, k=5, name="recall_at_k", verbose=False):
-        self.k = k
-
-        Measurement.__init__(self, name, verbose)
-
-    def measure(self, recommender):
-        """
-        Measures the proportion of relevant items (i.e., those users interacted with) falling
-        within the top k ranked items shown..
-
-        Parameters
-        ------------
-            recommender: :class:`~models.recommender.BaseRecommender`
-                Model that inherits from
-                :class:`~models.recommender.BaseRecommender`.
-        """
-        if self.k >= recommender.num_items_per_iter:
-            raise ValueError("k must be smaller than the number of items per iteration")
-
-        interactions = recommender.interactions
-        if interactions.size == 0:
-            self.observe(None)  # no interactions yet
-            return
-
-        else:
-            shown_item_scores = np.take(recommender.predicted_scores.value, recommender.items_shown)
-            shown_item_ranks = np.argsort(shown_item_scores, axis=1)
-            top_k_items = np.take(recommender.items_shown, shown_item_ranks[:, self.k :])
-            recall = (
-                len(np.where(np.isin(recommender.interactions, top_k_items))[0])
-                / recommender.num_users
-            )
-
-        self.observe(recall)
 
 
 class MSEMeasurement(Measurement, Diagnostics):
