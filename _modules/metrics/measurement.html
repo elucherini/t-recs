@@ -13,7 +13,9 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -123,7 +125,6 @@
             <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measurement_diagnostics</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">last_observation</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
@@ -146,7 +147,6 @@
 
         <span class="k">if</span> <span class="n">observation</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Diagnostics can only be performed on 1-d numpy arrays&quot;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">last_observation</span> <span class="o">=</span> <span class="n">observation</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
@@ -622,65 +622,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">histogram</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old_histogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">histogram</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">histogram</span> <span class="o">=</span> <span class="n">histogram</span></div></div>
-
-
-<span class="k">class</span> <span class="nc">RecallMeasurement</span><span class="p">(</span><span class="n">Measurement</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Measures the proportion of relevant items (i.e., those users interacted with) falling</span>
-<span class="sd">    within the top k ranked items shown.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    -----------</span>
-<span class="sd">        k: int</span>
-<span class="sd">            The rank at which recall should be evaluated.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    -----------</span>
-<span class="sd">        Inherited by Measurement: :class:`.Measurement`</span>
-
-<span class="sd">        name: str, default ``&quot;recall_at_k&quot;``</span>
-<span class="sd">            Name of the measurement component.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Note: RecallMeasurement evalutes recall for the top-k (i.e., highest predicted value)</span>
-    <span class="c1"># items regardless of whether these items derive from the recommender or from randomly</span>
-    <span class="c1"># interleaved items. Currently, this metric will only be correct for</span>
-    <span class="c1"># cases in which users iteract with one item per timestep</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;recall_at_k&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
-
-        <span class="n">Measurement</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recommender</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Measures the proportion of relevant items (i.e., those users interacted with) falling</span>
-<span class="sd">        within the top k ranked items shown..</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ------------</span>
-<span class="sd">            recommender: :class:`~models.recommender.BaseRecommender`</span>
-<span class="sd">                Model that inherits from</span>
-<span class="sd">                :class:`~models.recommender.BaseRecommender`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">&gt;=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_items_per_iter</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k must be smaller than the number of items per iteration&quot;</span><span class="p">)</span>
-
-        <span class="n">interactions</span> <span class="o">=</span> <span class="n">recommender</span><span class="o">.</span><span class="n">interactions</span>
-        <span class="k">if</span> <span class="n">interactions</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># no interactions yet</span>
-            <span class="k">return</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">shown_item_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">predicted_scores</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">recommender</span><span class="o">.</span><span class="n">items_shown</span><span class="p">)</span>
-            <span class="n">shown_item_ranks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">shown_item_scores</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">top_k_items</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">items_shown</span><span class="p">,</span> <span class="n">shown_item_ranks</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="p">:])</span>
-            <span class="n">recall</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">recommender</span><span class="o">.</span><span class="n">interactions</span><span class="p">,</span> <span class="n">top_k_items</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="o">/</span> <span class="n">recommender</span><span class="o">.</span><span class="n">num_users</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MSEMeasurement"><a class="viewcode-back" href="../../reference/metrics.html#metrics.measurement.MSEMeasurement">[docs]</a><span class="k">class</span> <span class="nc">MSEMeasurement</span><span class="p">(</span><span class="n">Measurement</span><span class="p">,</span> <span class="n">Diagnostics</span><span class="p">):</span>

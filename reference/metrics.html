@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -45,15 +47,42 @@
 <li class="toctree-l2"><a class="reference internal" href="components.html">Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#interaction-measurement">Interaction Measurement</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#interaction-spread">Interaction Spread</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#recsimilarity">RecSimilarity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#interactionsimilarity">InteractionSimilarity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mse-measurement">MSE Measurement</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#diffusion-tree">Diffusion Tree</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#measurement-of-structural-virality">Measurement of Structural Virality</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#average-feature-score-range">Average Feature Score Range</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#measurement-base-class">Measurement: base class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interaction-measurement">Interaction Measurement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.InteractionMeasurement"><code class="docutils literal notranslate"><span class="pre">InteractionMeasurement</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#interaction-spread">Interaction Spread</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.InteractionSpread"><code class="docutils literal notranslate"><span class="pre">InteractionSpread</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#recsimilarity">RecSimilarity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.RecSimilarity"><code class="docutils literal notranslate"><span class="pre">RecSimilarity</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#interactionsimilarity">InteractionSimilarity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.InteractionSimilarity"><code class="docutils literal notranslate"><span class="pre">InteractionSimilarity</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mse-measurement">MSE Measurement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.MSEMeasurement"><code class="docutils literal notranslate"><span class="pre">MSEMeasurement</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#diffusion-tree">Diffusion Tree</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.DiffusionTreeMeasurement"><code class="docutils literal notranslate"><span class="pre">DiffusionTreeMeasurement</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#measurement-of-structural-virality">Measurement of Structural Virality</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.StructuralVirality"><code class="docutils literal notranslate"><span class="pre">StructuralVirality</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#average-feature-score-range">Average Feature Score Range</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.AverageFeatureScoreRange"><code class="docutils literal notranslate"><span class="pre">AverageFeatureScoreRange</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#measurement-base-class">Measurement: base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metrics.measurement.Measurement"><code class="docutils literal notranslate"><span class="pre">Measurement</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="random.html">Random Generators</a></li>
@@ -87,11 +116,11 @@
            <div itemprop="articleBody">
              
   <section id="metrics">
-<h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline"></a></h1>
+<h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading"></a></h1>
 <p><strong>Metrics</strong> are components that track and store a given quantity over the duration of the simulation. All metrics in this module are based on the <a class="reference internal" href="#metrics.measurement.Measurement" title="metrics.measurement.Measurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code></a> abstract class, which inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseObservable</span></code> abstract class (refer to the <a class="reference external" href="https://en.wikipedia.org/wiki/Observer_pattern">Observer design pattern</a> for more details).</p>
 <p>This module comes with a number of pre-loaded metrics, as well as a simple programmer interface to develop new metrics.</p>
 <section id="interaction-measurement">
-<h2>Interaction Measurement<a class="headerlink" href="#interaction-measurement" title="Permalink to this headline"></a></h2>
+<h2>Interaction Measurement<a class="headerlink" href="#interaction-measurement" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionMeasurement">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_histogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionMeasurement" title="Permalink to this definition"></a></dt>
@@ -141,7 +170,7 @@ item at the given timestep.</p>
 
 </section>
 <section id="interaction-spread">
-<h2>Interaction Spread<a class="headerlink" href="#interaction-spread" title="Permalink to this headline"></a></h2>
+<h2>Interaction Spread<a class="headerlink" href="#interaction-spread" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSpread">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionSpread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSpread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSpread" title="Permalink to this definition"></a></dt>
@@ -203,7 +232,7 @@ interactions are spread among many items or only a few items.</p>
 
 </section>
 <section id="recsimilarity">
-<h2>RecSimilarity<a class="headerlink" href="#recsimilarity" title="Permalink to this headline"></a></h2>
+<h2>RecSimilarity<a class="headerlink" href="#recsimilarity" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.RecSimilarity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">RecSimilarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rec_similarity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#RecSimilarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.RecSimilarity" title="Permalink to this definition"></a></dt>
@@ -213,7 +242,7 @@ user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pairs</strong> (<em>iterable of tuples</em>) – Contains tuples representing each pair of users. Each user should
+<li><p><strong>pairs</strong> (<em>iterable</em><em> of </em><em>tuples</em>) – Contains tuples representing each pair of users. Each user should
 be represented as an index into the user profiles matrix.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
@@ -259,7 +288,7 @@ to treat each user the same way (i.e., show them the same items).</p>
 
 </section>
 <section id="interactionsimilarity">
-<h2>InteractionSimilarity<a class="headerlink" href="#interactionsimilarity" title="Permalink to this headline"></a></h2>
+<h2>InteractionSimilarity<a class="headerlink" href="#interactionsimilarity" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.InteractionSimilarity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">InteractionSimilarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction_similarity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagnostics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#InteractionSimilarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.InteractionSimilarity" title="Permalink to this definition"></a></dt>
@@ -269,7 +298,7 @@ in by the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pairs</strong> (<em>iterable of tuples</em>) – Contains tuples representing each pair of users. Each user should
+<li><p><strong>pairs</strong> (<em>iterable</em><em> of </em><em>tuples</em>) – Contains tuples representing each pair of users. Each user should
 be represented as an index into the user profiles matrix.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables verbose mode. Disabled by default.</p></li>
 </ul>
@@ -315,7 +344,7 @@ similar (i.e., users have all interacted with the same items).</p>
 
 </section>
 <section id="mse-measurement">
-<h2>MSE Measurement<a class="headerlink" href="#mse-measurement" title="Permalink to this headline"></a></h2>
+<h2>MSE Measurement<a class="headerlink" href="#mse-measurement" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.MSEMeasurement">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">MSEMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagnostics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#MSEMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.MSEMeasurement" title="Permalink to this definition"></a></dt>
@@ -364,7 +393,7 @@ predicted by the system and the users’ actual preferences.</p>
 
 </section>
 <section id="diffusion-tree">
-<h2>Diffusion Tree<a class="headerlink" href="#diffusion-tree" title="Permalink to this headline"></a></h2>
+<h2>Diffusion Tree<a class="headerlink" href="#diffusion-tree" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.DiffusionTreeMeasurement">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">DiffusionTreeMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#DiffusionTreeMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.DiffusionTreeMeasurement" title="Permalink to this definition"></a></dt>
@@ -456,7 +485,7 @@ nodes in the tree.</p>
 
 </section>
 <section id="measurement-of-structural-virality">
-<h2>Measurement of Structural Virality<a class="headerlink" href="#measurement-of-structural-virality" title="Permalink to this headline"></a></h2>
+<h2>Measurement of Structural Virality<a class="headerlink" href="#measurement-of-structural-virality" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.StructuralVirality">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">StructuralVirality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#StructuralVirality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.StructuralVirality" title="Permalink to this definition"></a></dt>
@@ -482,7 +511,7 @@ structural virality developed by Goel, Anderson, Hofman, and Watts in
 
 </section>
 <section id="average-feature-score-range">
-<h2>Average Feature Score Range<a class="headerlink" href="#average-feature-score-range" title="Permalink to this headline"></a></h2>
+<h2>Average Feature Score Range<a class="headerlink" href="#average-feature-score-range" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.AverageFeatureScoreRange">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">AverageFeatureScoreRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'afsr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#AverageFeatureScoreRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.AverageFeatureScoreRange" title="Permalink to this definition"></a></dt>
@@ -545,7 +574,7 @@ and User-Adapted Interaction, 26(4), 347-389.</p>
 
 </section>
 <section id="measurement-base-class">
-<h2>Measurement: base class<a class="headerlink" href="#measurement-base-class" title="Permalink to this headline"></a></h2>
+<h2>Measurement: base class<a class="headerlink" href="#measurement-base-class" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="metrics.measurement.Measurement">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metrics.measurement.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metrics/measurement.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metrics.measurement.Measurement" title="Permalink to this definition"></a></dt>

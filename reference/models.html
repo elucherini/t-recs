@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -44,11 +46,28 @@
 <li class="toctree-l1 current"><a class="reference internal" href="reference.html">Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="components.html">Components</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-models.popularity">Popularity Recommender</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-models.content">Content Filtering Recommender</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-models.social">Social Filtering Recommender</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-models.bass">Bass Diffusion Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-models.recommender">BaseRecommender</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.popularity">Popularity Recommender</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.popularity.PopularityRecommender"><code class="docutils literal notranslate"><span class="pre">PopularityRecommender</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.content">Content Filtering Recommender</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.content.ContentFiltering"><code class="docutils literal notranslate"><span class="pre">ContentFiltering</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.social">Social Filtering Recommender</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.social.SocialFiltering"><code class="docutils literal notranslate"><span class="pre">SocialFiltering</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.bass">Bass Diffusion Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.bass.BassModel"><code class="docutils literal notranslate"><span class="pre">BassModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.bass.InfectionState"><code class="docutils literal notranslate"><span class="pre">InfectionState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#models.bass.InfectionThresholds"><code class="docutils literal notranslate"><span class="pre">InfectionThresholds</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.recommender">BaseRecommender</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.recommender.BaseRecommender"><code class="docutils literal notranslate"><span class="pre">BaseRecommender</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="metrics.html">Metrics</a></li>
@@ -83,9 +102,9 @@
            <div itemprop="articleBody">
              
   <section id="models">
-<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline"></a></h1>
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h1>
 <section id="module-models.popularity">
-<span id="popularity-recommender"></span><h2>Popularity Recommender<a class="headerlink" href="#module-models.popularity" title="Permalink to this headline"></a></h2>
+<span id="popularity-recommender"></span><h2>Popularity Recommender<a class="headerlink" href="#module-models.popularity" title="Permalink to this heading"></a></h2>
 <p>The popularity-based recommender system recommends the same items to all users,
 ranked from greatest to least in terms of popularity (i.e., how many interactions
 each item has received).</p>
@@ -204,7 +223,7 @@ added into the system. Should be of dimension <span class="math notranslate nohi
 
 </section>
 <section id="module-models.content">
-<span id="content-filtering-recommender"></span><h2>Content Filtering Recommender<a class="headerlink" href="#module-models.content" title="Permalink to this headline"></a></h2>
+<span id="content-filtering-recommender"></span><h2>Content Filtering Recommender<a class="headerlink" href="#module-models.content" title="Permalink to this heading"></a></h2>
 <p>The content filtering recommender system attempts to match users to items
 based on highest predicted inner product between the predicted user profile
 and predicted item profile. The predictions of user and item profiles
@@ -341,7 +360,7 @@ user.</p>
 
 </section>
 <section id="module-models.social">
-<span id="social-filtering-recommender"></span><h2>Social Filtering Recommender<a class="headerlink" href="#module-models.social" title="Permalink to this headline"></a></h2>
+<span id="social-filtering-recommender"></span><h2>Social Filtering Recommender<a class="headerlink" href="#module-models.social" title="Permalink to this heading"></a></h2>
 <p>Social filtering recommender system, where users get shown items that were
 interacted with by users in their social networks</p>
 <dl class="py class">
@@ -473,7 +492,7 @@ added into the system. Should be of dimension <span class="math notranslate nohi
 
 </section>
 <section id="module-models.bass">
-<span id="bass-diffusion-model"></span><h2>Bass Diffusion Model<a class="headerlink" href="#module-models.bass" title="Permalink to this headline"></a></h2>
+<span id="bass-diffusion-model"></span><h2>Bass Diffusion Model<a class="headerlink" href="#module-models.bass" title="Permalink to this heading"></a></h2>
 <p>Bass Model for modeling the spread of infection. This can be applied to studying
 virality in online communications.</p>
 <dl class="py class">
@@ -641,7 +660,7 @@ threshold for infection</p>
 
 </section>
 <section id="module-models.recommender">
-<span id="baserecommender"></span><h2>BaseRecommender<a class="headerlink" href="#module-models.recommender" title="Permalink to this headline"></a></h2>
+<span id="baserecommender"></span><h2>BaseRecommender<a class="headerlink" href="#module-models.recommender" title="Permalink to this heading"></a></h2>
 <p>BaseRecommender, the foundational class for all recommender systems
 implementable in our simulation library</p>
 <dl class="py class">

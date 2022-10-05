@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -43,11 +45,37 @@
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">T-RECS (Tool for RecSys Simulation)</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="reference.html">Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Components</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-components.users">Users</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-components.items">Items</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-components.creators">Creators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#binary-social-graph">Binary Social Graph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#base-components">Base Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-components.users">Users</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#components.users.ActualUserProfiles"><code class="docutils literal notranslate"><span class="pre">ActualUserProfiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#components.users.ActualUserScores"><code class="docutils literal notranslate"><span class="pre">ActualUserScores</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#components.users.DNUsers"><code class="docutils literal notranslate"><span class="pre">DNUsers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#components.users.PredictedScores"><code class="docutils literal notranslate"><span class="pre">PredictedScores</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#components.users.PredictedUserProfiles"><code class="docutils literal notranslate"><span class="pre">PredictedUserProfiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#components.users.Users"><code class="docutils literal notranslate"><span class="pre">Users</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-components.items">Items</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#components.items.Items"><code class="docutils literal notranslate"><span class="pre">Items</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#components.items.PredictedItems"><code class="docutils literal notranslate"><span class="pre">PredictedItems</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-components.creators">Creators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#components.creators.Creators"><code class="docutils literal notranslate"><span class="pre">Creators</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#binary-social-graph">Binary Social Graph</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#components.socialgraph.BinarySocialGraph"><code class="docutils literal notranslate"><span class="pre">BinarySocialGraph</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#base-components">Base Components</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#base.base_components.BaseComponent"><code class="docutils literal notranslate"><span class="pre">BaseComponent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base.base_components.BaseObservable"><code class="docutils literal notranslate"><span class="pre">BaseObservable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base.base_components.Component"><code class="docutils literal notranslate"><span class="pre">Component</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base.base_components.SystemStateModule"><code class="docutils literal notranslate"><span class="pre">SystemStateModule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base.base_components.register_observables"><code class="docutils literal notranslate"><span class="pre">register_observables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base.base_components.unregister_observables"><code class="docutils literal notranslate"><span class="pre">unregister_observables()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
@@ -83,10 +111,10 @@
            <div itemprop="articleBody">
              
   <section id="components">
-<h1>Components<a class="headerlink" href="#components" title="Permalink to this headline"></a></h1>
+<h1>Components<a class="headerlink" href="#components" title="Permalink to this heading"></a></h1>
 <p>This modules contains essential classes, such as Users and Items, as well as mixins that can be used to enhance the functionality of a model.</p>
 <section id="module-components.users">
-<span id="users"></span><h2>Users<a class="headerlink" href="#module-components.users" title="Permalink to this headline"></a></h2>
+<span id="users"></span><h2>Users<a class="headerlink" href="#module-components.users" title="Permalink to this heading"></a></h2>
 <p>Suite of classes related to users of the system, including predicted user-item
 scores, predicted user profiles, actual user profiles, and a Users class (which
 encapsulates some of these concepts).</p>
@@ -688,7 +716,7 @@ that user <code class="docutils literal notranslate"><span class="pre">i</span><
 
 </section>
 <section id="module-components.items">
-<span id="items"></span><h2>Items<a class="headerlink" href="#module-components.items" title="Permalink to this headline"></a></h2>
+<span id="items"></span><h2>Items<a class="headerlink" href="#module-components.items" title="Permalink to this heading"></a></h2>
 <p>Class definition for Items in our recommender systems - can represent anything
 ranging from disease to consumer goods</p>
 <dl class="py class">
@@ -796,7 +824,7 @@ representation is generated randomly using a binomial distribution (see
 
 </section>
 <section id="module-components.creators">
-<span id="creators"></span><h2>Creators<a class="headerlink" href="#module-components.creators" title="Permalink to this headline"></a></h2>
+<span id="creators"></span><h2>Creators<a class="headerlink" href="#module-components.creators" title="Permalink to this heading"></a></h2>
 <p>Suite of classes related to content creators, including predicted user-item
 scores, predicted user profiles, actual creator profiles, and a Creators class (which
 encapsulates some of these concepts)</p>
@@ -903,7 +931,7 @@ that user <span class="math notranslate nohighlight">\(i\)</span> interacted wit
 
 </section>
 <section id="binary-social-graph">
-<h2>Binary Social Graph<a class="headerlink" href="#binary-social-graph" title="Permalink to this headline"></a></h2>
+<h2>Binary Social Graph<a class="headerlink" href="#binary-social-graph" title="Permalink to this heading"></a></h2>
 <p>This mixin helps define the behavior of agents (such as models) that implement a social network.</p>
 <span class="target" id="module-components.socialgraph"></span><p>A binary social graph represents relationships between users which
 can be used in different types of recommender systems.</p>
@@ -990,7 +1018,7 @@ link that goes from one user to the other.</p>
 
 </section>
 <section id="base-components">
-<h2>Base Components<a class="headerlink" href="#base-components" title="Permalink to this headline"></a></h2>
+<h2>Base Components<a class="headerlink" href="#base-components" title="Permalink to this heading"></a></h2>
 <p>These are mainly abstract classes that are not supposed to be instantiated.</p>
 <span class="target" id="module-base.base_components"></span><p>Base components are the building blocks of measuring and tracking
 variables of interest in the simulation environment.</p>

@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -83,13 +85,13 @@
            <div itemprop="articleBody">
              
   <section id="t-recs-tool-for-recsys-simulation">
-<h1>T-RECS (Tool for RecSys Simulation)<a class="headerlink" href="#t-recs-tool-for-recsys-simulation" title="Permalink to this headline"></a></h1>
+<h1>T-RECS (Tool for RecSys Simulation)<a class="headerlink" href="#t-recs-tool-for-recsys-simulation" title="Permalink to this heading"></a></h1>
 <a class="reference internal image-reference" href="https://i.imgur.com/3ZRDVaD.png"><img alt="Picture of T-Rex next to letters T-RECS" src="https://i.imgur.com/3ZRDVaD.png" style="width: 400px;" /></a>
 <p>A library for using agent-based modeling to perform simulation studies of sociotechnical systems.</p>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
 <section id="system-requirements">
-<h3>System requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline"></a></h3>
+<h3>System requirements<a class="headerlink" href="#system-requirements" title="Permalink to this heading"></a></h3>
 <p>Currently, the simulator has only been tested extensively on MacOS 10.15 and Ubuntu 20.04.
 This simulator supports Python 3.7+ and it has not been tested with older versions of Python 3. If you have not configured a Python environment locally, please follow Scipy’s <a class="reference external" href="https://scipy.org/install.html">instructions for installing a scientific Python distribution</a>.</p>
 <p>If you do not have Python 3.7+ installed, you can create a new environment with Python 3.7 by running the following command in terminal:</p>
@@ -99,14 +101,14 @@ This simulator supports Python 3.7+ and it has not been tested with older versio
 <p>To ensure the example Jupyter notebooks run in your Python 3.7 environment, follow <a class="reference external" href="https://medium.com/&#64;nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084">the instructions from this blog post</a>. <strong>Note</strong>: you will also need <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to run the example notebooks. As of December 2020, we recommend installing <code class="docutils literal notranslate"><span class="pre">pandas</span> <span class="pre">v1.0.5</span></code> using the command: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'pandas==1.0.5'</span></code>. This will help avoid package conflicts between <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and <code class="docutils literal notranslate"><span class="pre">pylint</span></code> if you also plan on contributing to <code class="docutils literal notranslate"><span class="pre">trecs</span></code> and running tests.</p>
 </section>
 <section id="for-users">
-<h3>For users<a class="headerlink" href="#for-users" title="Permalink to this headline"></a></h3>
+<h3>For users<a class="headerlink" href="#for-users" title="Permalink to this heading"></a></h3>
 <p>To install the simulator, you will need the Python package manager, <code class="docutils literal notranslate"><span class="pre">pip</span></code>. After activating your virtual environment, run the following command in a terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install trecs
 </pre></div>
 </div>
 </section>
 <section id="for-developers">
-<h3>For developers<a class="headerlink" href="#for-developers" title="Permalink to this headline"></a></h3>
+<h3>For developers<a class="headerlink" href="#for-developers" title="Permalink to this heading"></a></h3>
 <p>If you’d like to install the latest version of <code class="docutils literal notranslate"><span class="pre">trecs</span></code> based on what is currently in the main branch of the repository, run the following commands after activating your virtual environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/elucherini/t-recs.git
 <span class="nb">cd</span> t-recs
@@ -115,13 +117,13 @@ pip install -e .
 </div>
 <p>Additionally, you may run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements-dev.txt</span></code> to install a few additional dependencies that will be useful for linting, testing, etc.</p>
 <section id="documentation">
-<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline"></a></h4>
+<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading"></a></h4>
 <p>If you would like to edit the documentation, see the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> folder. To build the documentation on your local folder, you will need to install <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> and the <code class="docutils literal notranslate"><span class="pre">sphinx-rtd-theme</span></code> via <code class="docutils literal notranslate"><span class="pre">pip</span></code>. Next, <code class="docutils literal notranslate"><span class="pre">cd</span></code> into the <code class="docutils literal notranslate"><span class="pre">docs</span></code> folder and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code>. The output of the command should tell you where the compiled HTML documentation is located.</p>
 </section>
 </section>
 </section>
 <section id="tutorials">
-<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline"></a></h2>
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading"></a></h2>
 <p>Examples of how to use the simulator can be found in the notebooks below:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/elucherini/t-recs/blob/main/examples/quick-start.ipynb">Quick start</a>: start here for a brief introduction.</p></li>
@@ -132,7 +134,7 @@ pip install -e .
 <p>Please check the <a class="reference external" href="examples/">examples</a> directory for more notebooks.</p>
 </section>
 <section id="example-usage">
-<h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline"></a></h2>
+<h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import trecs
 
 <span class="nv">recsys</span> <span class="o">=</span> trecs.models.ContentFiltering<span class="o">()</span>
@@ -142,11 +144,11 @@ recsys.run<span class="o">(</span><span class="nv">timesteps</span><span class="
 </div>
 </section>
 <section id="id1">
-<h2>Documentation<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<h2>Documentation<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <p>A first draft of the documentation is available <a class="reference external" href="https://elucherini.github.io/t-recs/index.html">here</a>. In its current version, the documentation can be used as a supplement to exploring details in the code. Currently, the tutorials in <a class="reference external" href="examples/">examples</a> might be a more useful and centralized resource to learn how to use the system.</p>
 </section>
 <section id="contributing">
-<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline"></a></h2>
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading"></a></h2>
 <p>Thanks for your interest in contributing! Check out the guidelines for contributors in <a class="reference external" href="https://github.com/elucherini/t-recs/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
 </section>
 </section>
