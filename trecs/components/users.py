@@ -39,7 +39,8 @@ class PredictedScores(Component):  # pylint: disable=too-many-ancestors
 
         """
         if item_indices.shape[0] != self.current_state.shape[0]:
-            error_msg = "Number of users does not match between score matrix and item index matrix"
+            error_msg = f"Number of users does not match between score matrix ({self.current_state.shape[0]}) and item " \
+                        f"index matrix ({item_indices.shape[0]})"
             raise ValueError(error_msg)
         # generates row matrix like the following:
         # [0, 0, 0, ..., 0]

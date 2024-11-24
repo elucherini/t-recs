@@ -35,6 +35,7 @@ setup(
         "tqdm>=4.46.0",
         "lenskit>=0.11.1",
         "pandas==1.0.5",
+	"matplotlib",
     ],
     zip_safe=False,
 )
